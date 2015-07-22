@@ -68,3 +68,6 @@ docs/_build/
 target/
 
 ..nvimrc-rplugin~
+
+# vim-plug
+plugged/

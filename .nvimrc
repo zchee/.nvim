@@ -229,6 +229,8 @@ Gautocmd BufRead * silent :NeoSnippetSource<CR>
 imap     <Nul> <C-Space>
 inoremap <expr><C-Space> deoplete#mappings#manual_complete()
 inoremap <expr><BS>      deoplete#mappings#close_popup()."\<C-h>"
+inoremap <expr><Left>  pumvisible() ? deoplete#mappings#cancel_popup()."\<Left>"  : "\<Left>"
+inoremap <expr><Right> pumvisible() ? deoplete#mappings#cancel_popup()."\<Right>" : "\<Right>"
 " Deoplete now support omni completion patterns is,
 " https://github.com/Shougo/deoplete.nvim/blob/master/autoload/deoplete/init.vim#L111-L131
 " g:deoplete#_omni_patterns, 'html,xhtml,xml,markdown,mkd', '<[^>]*')

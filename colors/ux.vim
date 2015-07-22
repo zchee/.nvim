@@ -46,6 +46,7 @@ highlight SpellBad        guifg=#2B2E28 guibg=#282A2B gui=NONE
 highlight SpellCap        guifg=#2B2E28 guibg=#282A2B gui=NONE
 highlight SpellLocal      guifg=#2B2E28 guibg=#282A2B gui=NONE
 highlight SpellRare       guifg=#2B2E28 guibg=#282A2B gui=NONE
+highlight SignColumn      guifg=#47555B guibg=#0D1011 gui=NONE
 highlight StatusLine      guifg=#D4D7D6 guibg=#4C4F4F gui=bold
 highlight StatusLineNC    guifg=#D4D7D6 guibg=#4C4F4F gui=NONE
 highlight TabLine         guifg=#151718 guibg=#4FA5C7 gui=NONE

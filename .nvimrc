@@ -770,6 +770,40 @@ if has('vertsplit')
   let &t_RV .= "\e[?6;69h\e[1;3s\e[3;9H\e[6n\e[0;0s\e[?6;69l"
 endif
 
+" http://superuser.com/questions/401926/how-to-get-shiftarrows-and-ctrlarrows-working-in-vim-in-tmux
+if $TERM =~ '^xterm'
+  " tmux will send xterm-style keys when its xterm-keys option is on
+  execute "set <Up>=\Eku"
+  execute "set <Down>=\Ekd"
+  execute "set <Right>=\Ekr"
+  execute "set <Left>=\Ekl"
+  execute "set <xUp>=\Eku"
+  execute "set <xDown>=\Ekd"
+  execute "set <xRight>=\Ekr"
+  execute "set <xLeft>=\Ekl"
+endif
+if $TERM =~ '^screen'
+  " tmux will send xterm-style keys when its xterm-keys option is on
+  execute "set <xUp>=\e[1;*A"
+  execute "set <xDown>=\e[1;*B"
+  execute "set <xRight>=\e[1;*C"
+  execute "set <xLeft>=\e[1;*D"
+endif
+
+" http://vim.wikia.com/wiki/Fix_arrow_keys_that_display_A_B_C_D_on_remote_shell
+noremap <silent> <Up> <Nop>
+noremap <silent> <Down> <Nop>
+noremap <silent> <Right> <Nop>
+noremap <silent> <Left> <Nop>
+nnoremap <silent> <Up>    <Nop>
+nnoremap <silent> <Down>  <Nop>
+nnoremap <silent> <Right> <Nop>
+nnoremap <silent> <Left>  <Nop>
+nnoremap <silent> <Left>  h
+nnoremap <silent> <Down>  j
+nnoremap <silent> <Up>    k
+nnoremap <silent> <Right> l
+
 " When cursor key's digraphs, return triple <ESC>
 Gautocmd InsertCharPre <buffer> if v:char == 'Û' | "\<ESC>\<ESC>\<ESC>" | endif
 " }}}

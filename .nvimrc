@@ -20,7 +20,6 @@
 " Init "{{{
 "
 set encoding=utf-8
-scriptencoding 'utf-8'
 " }}}
 
 
@@ -64,6 +63,8 @@ Plug 'kana/vim-textobj-line'
 Plug 'kana/vim-textobj-user'
 Plug 'lambdalisue/vim-gista' ", { 'on': ['Gista'] }
 Plug 'lambdalisue/vim-gita' ", { 'on': ['Gita'] }
+Plug 'lambdalisue/vital-ArgumentParser'
+Plug 'lambdalisue/vital-VCS-Git'
 Plug 'LanguageTool'
 Plug 'LeafCage/yankround.vim'
 Plug 'leafgarland/typescript-vim'
@@ -134,7 +135,6 @@ syntax on
 colorscheme ux
 filetype on
 filetype plugin indent on
-" filetype indent on
 
 " Environment variables
 let $TERM = 'xterm-256color'
@@ -287,27 +287,9 @@ let g:vimfiler_data_directory = $HOME . '/.cache/vimfiler'
 
 " lightline
 let g:lightline = { 'colorscheme': 'ux' }
-let g:lightline.active = {
-  \ 'left':  [ [ 'mode', 'paste' ],
-  \            [ 'filetype' ],
-  \            [ 'readonly', 'absolutepath' ] ],
-  \ 'right': [ [ 'lineinfo', 'percent' ],
-  \            [ 'fileencoding' ] ]
-  \ }
-let g:lightline.inactive = {
-  \ 'left':  [ [ 'filename' ] ],
-  \ 'right': [ [ 'lineinfo' ],
-  \            [ 'percent' ] ]
-  \ }
-let g:lightline.tabline = {
-  \  'left':  [ [ 'tabs' ] ],
-  \  'right': [
-  \    [ 'git_branch', 'git_traffic', 'git_status', 'cwd' ],
-  \  ],
-  \ }
-let g:lightline.tab = {
-  \ 'active': [ 'tabnum', 'filename', 'modified' ],
-  \ 'inactive': [ 'tabnum', 'filename', 'modified' ]
+let g:lightline.enable = {
+  \ 'statusline': 1,
+  \ 'tabline': 1
   \ }
 let g:lightline.component = {
   \ 'mode': '%{lightline#mode()}',
@@ -331,23 +313,42 @@ let g:lightline.component = {
   \ 'column': '%c',
   \ 'close': '%999X X '
   \ }
-let g:lightline.tab_component_function = {
-  \ 'pyenv': 'pyenv#statusline#component',
-  \ 'git_branch': 'g:lightline.e.git_branch',
-  \ 'git_traffic': 'g:lightline.e.git_traffic',
-  \ 'git_status': 'g:lightline.e.git_status',
+let g:lightline.active = {
+  \ 'left':  [ [ 'mode', 'paste' ],
+  \            [ 'filetype' ],
+  \            [ 'readonly', 'absolutepath' ] ],
+  \ 'right': [ [ 'lineinfo', 'percent' ],
+  \            [ 'fileencoding' ] ]
+  \ }
+let g:lightline.inactive = {
+  \ 'left':  [ [ 'filename' ] ],
+  \ 'right': [ [ 'lineinfo', 'percent' ],
+  \            [ 'fileencoding' ] ]
+  \ }
+let g:lightline.tabline = {
+  \  'left':  [ [ 'tabs' ] ],
+  \  'right': [ [ 'git_branch', 'git_traffic', 'git_status', 'cmd'] ]
+  \ }
+let g:lightline.tab = {
+  \ 'active':   [ 'tabnum', 'filename', 'modified' ],
+  \ 'inactive': [ 'tabnum', 'filename', 'modified' ]
   \ }
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '', 'right': '' }
-let g:lightline.e = {}
-function! g:lightline.e.git_branch()
-  return gita#statusline#preset('branch') : ''
+let g:lightline.component_function = {
+  \ 'git_branch':  'g:lightline.my.git_branch',
+  \ 'git_traffic': 'g:lightline.my.git_traffic',
+  \ 'git_status':  'g:lightline.my.git_status'
+  \ }
+let g:lightline.my = {}
+function g:lightline.my.git_branch()
+  return gita#statusline#preset('branch')
 endfunction
-function! g:lightline.e.git_traffic()
-  return gita#statusline#preset('traffic') : ''
+function g:lightline.my.git_traffic()
+  return gita#statusline#preset('traffic')
 endfunction
-function! g:lightline.e.git_status()
-  return gita#statusline#preset('status') : ''
+function g:lightline.my.git_status()
+  return gita#statusline#preset('status')
 endfunction
 
 
@@ -703,8 +704,8 @@ Gautocmd FileType go nmap .f         :GoFmt<CR>
 
 
 " ruby
-" Gautocmdft ruby,eruby,ruby.rspec nnoremap <silent><buffer>KK :<C-u>Unite -no-start-insert ref/ri   -input=<C-R><C-W><CR>
-" Gautocmdft ruby,eruby,ruby.rspec nnoremap <silent><buffer>K  :<C-u>Unite -no-start-insert ref/refe -input=<C-R><C-W><CR>
+Gautocmdft ruby,eruby,ruby.rspec nnoremap <silent><buffer>K  :<C-u>Unite -no-start-insert ref/refe -input=<C-R><C-W><CR>
+Gautocmdft ruby,eruby,ruby.rspec nnoremap <silent><buffer>KK :<C-u>Unite -no-start-insert ref/ri   -input=<C-R><C-W><CR>
 " }}}
 
 

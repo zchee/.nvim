@@ -42,6 +42,7 @@ Plug 'kana/vim-operator-user'
 Plug 'kana/vim-textobj-fold'
 Plug 'kana/vim-textobj-indent'
 Plug 'kana/vim-textobj-lastpat'
+Plug 'kana/vim-textobj-line'
 Plug 'kana/vim-textobj-user'
 Plug 'lambdalisue/vim-gista' ", { 'on': ['Gista'] }
 Plug 'lambdalisue/vim-gita' ", { 'on': ['Gita'] }

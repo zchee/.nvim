@@ -26,7 +26,6 @@ Plug 'dgryski/vim-godef' ", { 'for': ['go'] }
 Plug 'docker/docker', { 'rtp': '/contrib/syntax/vim', 'for': ['Dockerfile'] }
 Plug 'emonkak/vim-operator-comment'
 Plug 'emonkak/vim-operator-sort'
-Plug 'yuku-t/vim-ref-ri'
 Plug 'fatih/vim-go' ", { 'for': ['go'] }
 Plug 'godlygeek/tabular'
 Plug 'google/vim-codefmt'
@@ -48,11 +47,13 @@ Plug 'lambdalisue/vim-gista' ", { 'on': ['Gista'] }
 Plug 'lambdalisue/vim-gita' ", { 'on': ['Gita'] }
 Plug 'LanguageTool'
 Plug 'LeafCage/yankround.vim'
+Plug 'leafgarland/typescript-vim'
 Plug 'majutsushi/tagbar' ", { 'on': ['TagbarToggle'] }
 Plug 'mattn/benchvimrc-vim' ", { 'on': ['BenchVimrc'] }
 Plug 'mattn/ctrlp-ghq'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'plasticboy/vim-markdown'
+Plug 'Quramy/tsuquyomi'
 Plug 'rhysd/vim-operator-surround'
 Plug 'scrooloose/nerdtree'
 Plug 'sgur/ctrlp-extensions.vim'
@@ -66,8 +67,8 @@ Plug 'Shougo/vimfiler' ", { 'on': ['VimFilerTab', 'VimFiler', 'VimFilerExplorer'
 Plug 'Shougo/vimproc.vim' ", { 'do': 'make -f make_mac.mak' }
 Plug 'thinca/vim-operator-sequence'
 Plug 'thinca/vim-quickrun'
-Plug 'thinca/vim-themis'
 Plug 'thinca/vim-ref'
+Plug 'thinca/vim-themis'
 Plug 'tmux-plugins/vim-tmux'
 Plug 'tpope/vim-surround'
 Plug 'tyru/open-browser-github.vim'
@@ -77,6 +78,7 @@ Plug 'vim-jp/vimdoc-ja'
 Plug 'vim-jp/vital.vim'
 Plug 'wakatime/vim-wakatime'
 Plug 'xu-cheng/brew.vim'
+Plug 'yuku-t/vim-ref-ri'
 
 " Archive plugins
 " Plug 'cocopon/colorswatch.vim'
@@ -803,6 +805,10 @@ nnoremap <silent> <Left>  h
 nnoremap <silent> <Down>  j
 nnoremap <silent> <Up>    k
 nnoremap <silent> <Right> l
+vnoremap <silent> <Left>  <Left>
+vnoremap <silent> <Down>  <Down>
+vnoremap <silent> <Up>    <Up>
+vnoremap <silent> <Right> <Right>
 
 " When cursor key's digraphs, return triple <ESC>
 Gautocmd InsertCharPre <buffer> if v:char == 'Û' | "\<ESC>\<ESC>\<ESC>" | endif

@@ -313,19 +313,24 @@ let g:lightline.component = {
   \ 'column': '%c',
   \ 'close': '%999X X '
   \ }
-" let g:lightline.component_visible_condition = {
-"   \  'lineinfo': '(winwidth(0) >= 70)',
-"   \ },
-"   \ 'component_function': {
-"   \   'git_branch': 'g:lightline.my.git_branch',
-"   \   'git_traffic': 'g:lightline.my.git_traffic',
-"   \   'git_status': 'g:lightline.my.git_status',
-"   \ },
 let g:lightline.tab_component_function = {
   \ 'pyenv': 'pyenv#statusline#component',
+  \ 'git_branch': 'g:lightline.e.git_branch',
+  \ 'git_traffic': 'g:lightline.e.git_traffic',
+  \ 'git_status': 'g:lightline.e.git_status',
   \ }
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '', 'right': '' }
+let g:lightline.e = {}
+function! g:lightline.e.git_branch()
+  return gita#statusline#preset('branch') : ''
+endfunction
+function! g:lightline.e.git_traffic()
+  return gita#statusline#preset('traffic') : ''
+endfunction
+function! g:lightline.e.git_status()
+  return gita#statusline#preset('status') : ''
+endfunction
 
 
 " CtrlP

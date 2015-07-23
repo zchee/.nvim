@@ -34,6 +34,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'Align'
 Plug 'benekastah/neomake'
 Plug 'Blackrush/vim-gocode' " , { 'for': ['go'] }
+Plug 'bruno-/vim-man'
 Plug 'cespare/vim-toml'
 Plug 'chrisbra/Colorizer'
 Plug 'ctrlpvim/ctrlp.vim'
@@ -45,9 +46,6 @@ Plug 'emonkak/vim-operator-comment'
 Plug 'emonkak/vim-operator-sort'
 Plug 'fatih/vim-go' ", { 'for': ['go'] }
 Plug 'godlygeek/tabular'
-Plug 'google/vim-codefmt'
-Plug 'google/vim-glaive'
-Plug 'google/vim-maktaba'
 Plug 'haya14busa/vital-exe-assert'
 Plug 'itchyny/lightline.vim'
 Plug 'jiangmiao/auto-pairs'
@@ -88,8 +86,10 @@ Plug 'Shougo/vimproc.vim' ", { 'do': 'make -f make_mac.mak' }
 Plug 'thinca/vim-operator-sequence'
 Plug 'thinca/vim-quickrun'
 Plug 'thinca/vim-ref'
+Plug 'thinca/vim-singleton'
 Plug 'thinca/vim-themis'
 Plug 'tmux-plugins/vim-tmux'
+Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-surround'
 Plug 'tyru/open-browser-github.vim'
 Plug 'tyru/open-browser.vim'
@@ -101,6 +101,9 @@ Plug 'xu-cheng/brew.vim'
 Plug 'yuku-t/vim-ref-ri'
 
 " Archive plugins
+" Plug 'google/vim-codefmt'
+" Plug 'google/vim-glaive'
+" Plug 'google/vim-maktaba'
 " Plug 'cocopon/colorswatch.vim'
 " Plug 'critiqjo/lldb.nvim'
 " Plug 'drmikehenry/vim-fixkey'
@@ -131,13 +134,14 @@ call plug#end()
 "
 " Settings "{{{
 "
-syntax on
 colorscheme ux
-filetype on
+syntax on
+" filetype on
 filetype plugin indent on
 
 " Environment variables
-let $TERM = 'xterm-256color'
+" let $TERM = 'xterm-256color'
+let $TERM = 'xterm-8bit'
 let $TERMINFO = $HOME . '/.terminfo'
 
 " set
@@ -174,8 +178,8 @@ set list
 set listchars=tab:»-,extends:»,precedes:«,nbsp:%,eol:↲
 set number
 set ruler
-set scrolljump=4
-set scrolloff=8
+set scrolljump=2
+set scrolloff=5
 set shiftwidth=2
 set showmode
 set showtabline=2
@@ -186,12 +190,10 @@ set switchbuf=useopen
 set tabstop=2
 set tags=./tags;,tags " nvim set by default
 set textwidth=0
-set timeout
-set timeoutlen=350
+set timeoutlen=100
 set title
 set titlelen=120
 set ttimeout
-set ttimeoutlen=0
 set undodir=~/.nvim/undo
 set undofile
 set updatetime=10000
@@ -211,6 +213,7 @@ set nocursorline
 set nodigraph
 set noerrorbells
 set noesckeys
+set notimeout
 set norelativenumber
 set noshowcmd
 set noshowmatch
@@ -838,15 +841,15 @@ vnoremap <silent> <Up>    <Up>
 vnoremap <silent> <Right> <Right>
 
 " When cursor key's digraphs, return triple <ESC>
-Gautocmd InsertCharPre <buffer> if v:char == 'Û' | "\<ESC>\<ESC>\<ESC>" | endif
+Gautocmd InsertCharPre <buffer> if v:char == 'Û' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
 " }}}
 
 
 "
 " Syntax "{{{
 "
-Gautocmd BufRead,BufNewFile *dockerfile set filetype=Dockerfile.Bash
-Gautocmd BufRead,BufNewFile Dockerfile* set filetype=Dockerfile.Bash
+Gautocmd BufRead,BufNewFile *dockerfile set filetype=Bash.Dockerfile
+Gautocmd BufRead,BufNewFile Dockerfile* set filetype=Bash.Dockerfile
 " }}}
 
 
@@ -885,7 +888,6 @@ Gautocmd BufWritePre if FileType != 'mkd,markdown' ? :%s/\s\+$//ge : ''
 
 " Auto cursorline when change window
 " http://d.hatena.ne.jp/thinca/20090530/1243615055
-
 Gautocmd CursorMoved,CursorMovedI * call s:auto_cursorline('CursorMoved')
 Gautocmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
 Gautocmd WinEnter * call s:auto_cursorline('WinEnter')

@@ -1,13 +1,13 @@
-"
-" '                                                                                                '
+"                                                                                                  '
+" `                                                                                                `
 "                  /\ \                                             __                              
 "    ____      ___ \ \ \___       __      __         ___    __  __ /\_\     ___ ___    _ __   ___   
 "   /\_ ,`\   /'___\\ \  _ `\   /'__`\  /'__`\     /' _ `\ /\ \/\ \\/\ \  /' __` __`\ /\`'__\/'___\ 
 "   \/_/  /_ /\ \__/ \ \ \ \ \ /\  __/ /\  __/     /\ \/\ \\ \ \_/ |\ \ \ /\ \/\ \/\ \\ \ \//\ \__/ 
 "     /\____\\ \____\ \ \_\ \_\\ \____\\ \____\    \ \_\ \_\\ \___/  \ \_\\ \_\ \_\ \_\\ \_\\ \____\
 "     \/____/ \/____/  \/_/\/_/ \/____/ \/____/     \/_/\/_/ \/__/    \/_/ \/_/\/_/\/_/ \/_/ \/____/
-" '                                                                                                '
-"
+" `                                                                                                `
+"                                                                                                  '
 " Prefix
 " autocmd             is Gautocmd
 " autocmd FileType    is Gautocmdft
@@ -20,6 +20,7 @@
 " Init "{{{
 "
 set encoding=utf-8
+" scriptencoding utf-8
 " }}}
 
 
@@ -30,6 +31,7 @@ filetype off
 call plug#begin('~/.nvim/plugged')
 Plug 'junegunn/vim-plug'
 
+" Plug 'vimcommunity/vim-pi'
 Plug 'airblade/vim-gitgutter'
 Plug 'Align'
 Plug 'benekastah/neomake'
@@ -41,7 +43,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'davidhalter/jedi-vim', { 'for': ['python'] }
 Plug 'deris/vim-operator-insert'
 Plug 'dgryski/vim-godef' ", { 'for': ['go'] }
-Plug 'docker/docker', { 'rtp': '/contrib/syntax/vim', 'for': ['Dockerfile'] }
+Plug 'ekalinin/Dockerfile.vim'
 Plug 'emonkak/vim-operator-comment'
 Plug 'emonkak/vim-operator-sort'
 Plug 'fatih/vim-go' ", { 'for': ['go'] }
@@ -70,13 +72,15 @@ Plug 'majutsushi/tagbar' ", { 'on': ['TagbarToggle'] }
 Plug 'mattn/benchvimrc-vim' ", { 'on': ['BenchVimrc'] }
 Plug 'mattn/ctrlp-ghq'
 Plug 'nathanaelkane/vim-indent-guides'
-Plug 'plasticboy/vim-markdown'
+Plug 'pgdouyon/vim-accio'
+" Plug 'plasticboy/vim-markdown'
 Plug 'Quramy/tsuquyomi'
 Plug 'rhysd/vim-operator-surround'
 Plug 'scrooloose/nerdtree'
 Plug 'sgur/ctrlp-extensions.vim'
 Plug 'Shougo/deoplete.nvim'
 Plug 'Shougo/neco-vim'
+Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/unite-outline' " , { 'on': ['Unite'] }
@@ -101,13 +105,14 @@ Plug 'xu-cheng/brew.vim'
 Plug 'yuku-t/vim-ref-ri'
 
 " Archive plugins
+" Plug 'docker/docker', { 'rtp': '/contrib/syntax/vim', 'for': ['Dockerfile'] }
 " Plug 'google/vim-codefmt'
 " Plug 'google/vim-glaive'
 " Plug 'google/vim-maktaba'
 " Plug 'cocopon/colorswatch.vim'
 " Plug 'critiqjo/lldb.nvim'
 " Plug 'drmikehenry/vim-fixkey'
-" Plug 'guns/xterm-color-table.vim', { 'on': ['XtermColorTable'] }
+Plug 'guns/xterm-color-table.vim', { 'on': ['XtermColorTable'] }
 " Plug 'haya14busa/incsearch.vim'
 " Plug 'mattn/ctrlp-gist', { 'autoload': { 'commands': ['Gist'] } }
 " Plug 'mattn/gist-vim', { 'depends': 'mattn/webapi-vim' }
@@ -134,15 +139,16 @@ call plug#end()
 "
 " Settings "{{{
 "
-colorscheme ux
 syntax on
+colorscheme ux
 " filetype on
-filetype plugin indent on
+" filetype plugin indent on
 
 " Environment variables
-" let $TERM = 'xterm-256color'
-let $TERM = 'xterm-8bit'
+let $TERM = 'rxvt-unicode-256color'
+" let $TERM = 'xterm-8bit'
 let $TERMINFO = $HOME . '/.terminfo'
+
 
 " set
 set autochdir
@@ -154,7 +160,6 @@ set clipboard+=unnamedplus
 set cmdheight=1
 set completeopt+=noselect " ,noinsert
 set completeopt-=preview
-set esckeys
 set expandtab
 set formatoptions+=j
 set formatoptions+=l
@@ -163,7 +168,7 @@ set formatoptions-=o
 set formatoptions-=r
 set formatoptions-=t
 set formatoptions-=v
-set guicursor=n-v-c:block-blinkon0-nCursor,o:hor50,i-ci:hor15,r-cr:hor30,sm:block
+set guicursor=n-v-c:block-nCursor,o:hor50,i-ci:hor15,r-cr:hor30,sm:block,a:blinkon0,a:block-nCursorblock-nCursor
 set helpheight=12
 set helplang=ja,en
 set hidden
@@ -171,15 +176,13 @@ set history=10000
 set hlsearch " nvim set by default
 set ignorecase
 set incsearch " nvim set by default
-set infercase
 set laststatus=2
-set lazyredraw
 set list
 set listchars=tab:»-,extends:»,precedes:«,nbsp:%,eol:↲
 set number
 set ruler
-set scrolljump=2
-set scrolloff=5
+set scrolljump=1
+set scrolloff=10
 set shiftwidth=2
 set showmode
 set showtabline=2
@@ -190,10 +193,8 @@ set switchbuf=useopen
 set tabstop=2
 set tags=./tags;,tags " nvim set by default
 set textwidth=0
-set timeoutlen=100
 set title
 set titlelen=120
-set ttimeout
 set undodir=~/.nvim/undo
 set undofile
 set updatetime=10000
@@ -203,10 +204,12 @@ set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.so,*.out,*.class
 set wildignore+=*.swp,*.swo,*.swn
 set wildignore=.git,.hg,.svn
 set wildmenu " nvim set by default
-set nofoldenable
 set wildmode=longest,full
 set wrap
 
+set nolazyredraw
+set noesckeys
+set nofoldenable
 set nobackup
 set nocursorcolumn
 set nocursorline
@@ -214,9 +217,11 @@ set nodigraph
 set noerrorbells
 set noesckeys
 set notimeout
+set nottimeout
 set norelativenumber
 set noshowcmd
 set noshowmatch
+set noinfercase
 set noswapfile
 set novisualbell
 set nowrapscan
@@ -245,6 +250,8 @@ let g:plug_window = 'vertical botright new'
 " deoplete.nvim
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_smart_case = 0
+let g:deoplete#auto_completion_start_length = 1
+
 Gautocmd BufRead * silent :NeoSnippetSource<CR>
 " Enable <expr><C-Space> keymap
 imap     <Nul> <C-Space>
@@ -483,6 +490,16 @@ let g:quickrun_config['lint/go'] = {
   \ 'runner' : 'vimproc',
   \ }
 Gautocmd BufWritePost *.go call <SID>check_syntax('go')
+
+" Dockerfile
+" let g:quickrun_config['syntax/Dockerfile'] = {
+"   \ 'command' : 'docker',
+"   \ 'cmdopt' : 'build -t',
+"   \ 'exec' : '%c %o %s %s:p',
+"   \ 'outputter' : 'quickfix',
+"   \ 'runner' : 'vimproc',
+"   \ 'errorformat' : '%E%r',
+"   \ }
 
 " JavaScript
 function! s:check_js_syntax() abort
@@ -842,14 +859,22 @@ vnoremap <silent> <Right> <Right>
 
 " When cursor key's digraphs, return triple <ESC>
 Gautocmd InsertCharPre <buffer> if v:char == 'Û' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
+Gautocmd InsertCharPre <buffer> if v:char == 'ÛD' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
+Gautocmd InsertCharPre <buffer> if v:char == 'ÛC' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
+Gautocmd InsertCharPre <buffer> if v:char == 'ÛA' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
+Gautocmd InsertCharPre <buffer> if v:char == 'ÛB' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
 " }}}
 
 
 "
 " Syntax "{{{
 "
-Gautocmd BufRead,BufNewFile *dockerfile set filetype=Bash.Dockerfile
-Gautocmd BufRead,BufNewFile Dockerfile* set filetype=Bash.Dockerfile
+" Gautocmd BufRead,BufNewFile *dockerfile set filetype=Bash.Dockerfile
+" Gautocmd BufRead,BufNewFile Dockerfile* set filetype=Bash.Dockerfile
+
+" Enable bash syntax on /bin/sh shevang
+" http://tyru.hatenablog.com/entry/20101007/
+let g:is_bash = 1
 " }}}
 
 
@@ -939,6 +964,46 @@ function! s:smart_help(args)
         silent! AdjustWindowWidth --direction=shrink
     endif
 endfunction
+
+" VimShowHlGroup Show highlight group name under a cursor
+command! VimShowHlGroup echo synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
+function! s:get_syn_id(transparent)
+  let synid = synID(line("."), col("."), 1)
+  if a:transparent
+    return synIDtrans(synid)
+  else
+    return synid
+  endif
+endfunction
+function! s:get_syn_attr(synid)
+  let name = synIDattr(a:synid, "name")
+  let ctermfg = synIDattr(a:synid, "fg", "cterm")
+  let ctermbg = synIDattr(a:synid, "bg", "cterm")
+  let guifg = synIDattr(a:synid, "fg", "gui")
+  let guibg = synIDattr(a:synid, "bg", "gui")
+  return {
+        \ "name": name,
+        \ "ctermfg": ctermfg,
+        \ "ctermbg": ctermbg,
+        \ "guifg": guifg,
+        \ "guibg": guibg}
+endfunction
+function! s:get_syn_info()
+  let baseSyn = s:get_syn_attr(s:get_syn_id(0))
+  echo "name: " . baseSyn.name .
+        \ " ctermfg: " . baseSyn.ctermfg .
+        \ " ctermbg: " . baseSyn.ctermbg .
+        \ " guifg: " . baseSyn.guifg .
+        \ " guibg: " . baseSyn.guibg
+  let linkedSyn = s:get_syn_attr(s:get_syn_id(1))
+  echo "link to"
+  echo "name: " . linkedSyn.name .
+        \ " ctermfg: " . linkedSyn.ctermfg .
+        \ " ctermbg: " . linkedSyn.ctermbg .
+        \ " guifg: " . linkedSyn.guifg .
+        \ " guibg: " . linkedSyn.guibg
+endfunction
+command! SyntaxInfo call s:get_syn_info()
 " }}}
 
 
@@ -1017,6 +1082,8 @@ nnoremap <Tab> %
 " http://ku.ido.nu/post/90355094974/how-to-grep-a-word-under-the-cursor-on-vim
 nnoremap <M-h> :<C-u>SmartHelp<Space><C-R><C-w><CR>
 nnoremap zk    zkzkzj
+
+Gautocmdft tmux nnoremap <silent><buffer> K :call tmux#man()<CR>
 
 " 
 " Insert

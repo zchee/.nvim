@@ -15,7 +15,7 @@ let g:colors_name = 'ux'
 
 highlight ColorColumn     guifg=NONE    guibg=#282A2B gui=NONE
 highlight Conceal         guifg=NONE    guibg=NONE    gui=NONE
-highlight Cursor          guifg=#151718 guibg=#151718 gui=NONE
+highlight Cursor          guifg=#151718 guibg=#00FF00 gui=NONE
 highlight CursorColumn    guifg=NONE    guibg=#282A2B gui=NONE
 highlight CursorLine      guifg=NONE    guibg=#282A2B gui=NONE
 highlight Directory       guifg=#44545c guibg=NONE    gui=NONE

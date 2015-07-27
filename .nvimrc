@@ -146,7 +146,6 @@ colorscheme ux
 
 " Environment variables
 let $TERM = 'rxvt-unicode-256color'
-" let $TERM = 'xterm-8bit'
 let $TERMINFO = $HOME . '/.terminfo'
 
 
@@ -158,7 +157,7 @@ set backspace=indent,eol,start
 set cindent
 set clipboard+=unnamedplus
 set cmdheight=1
-set completeopt+=noselect " ,noinsert
+set completeopt+=noselect,noinsert
 set completeopt-=preview
 set expandtab
 set formatoptions+=j

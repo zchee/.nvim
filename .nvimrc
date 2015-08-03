@@ -20,7 +20,8 @@
 " Init "{{{
 "
 set encoding=utf-8
-" scriptencoding utf-8
+set cpo&vim
+scriptencoding utf-8
 " }}}
 
 
@@ -31,8 +32,8 @@ filetype off
 call plug#begin('~/.nvim/plugged')
 Plug 'junegunn/vim-plug'
 
-" Plug 'vimcommunity/vim-pi'
 Plug 'airblade/vim-gitgutter'
+Plug 'junegunn/vim-easy-align'
 Plug 'Align'
 Plug 'benekastah/neomake'
 Plug 'Blackrush/vim-gocode' " , { 'for': ['go'] }
@@ -48,7 +49,6 @@ Plug 'emonkak/vim-operator-comment'
 Plug 'emonkak/vim-operator-sort'
 Plug 'fatih/vim-go' ", { 'for': ['go'] }
 Plug 'godlygeek/tabular'
-Plug 'haya14busa/vital-exe-assert'
 Plug 'itchyny/lightline.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'justinmk/vim-dirvish'
@@ -63,62 +63,64 @@ Plug 'kana/vim-textobj-line'
 Plug 'kana/vim-textobj-user'
 Plug 'lambdalisue/vim-gista' ", { 'on': ['Gista'] }
 Plug 'lambdalisue/vim-gita' ", { 'on': ['Gita'] }
-Plug 'lambdalisue/vital-ArgumentParser'
-Plug 'lambdalisue/vital-VCS-Git'
-Plug 'LanguageTool'
 Plug 'LeafCage/yankround.vim'
-Plug 'leafgarland/typescript-vim'
 Plug 'majutsushi/tagbar' ", { 'on': ['TagbarToggle'] }
-Plug 'mattn/benchvimrc-vim' ", { 'on': ['BenchVimrc'] }
-Plug 'mattn/ctrlp-ghq'
 Plug 'nathanaelkane/vim-indent-guides'
-Plug 'pgdouyon/vim-accio'
-" Plug 'plasticboy/vim-markdown'
-Plug 'Quramy/tsuquyomi'
+Plug 'plasticboy/vim-markdown'
 Plug 'rhysd/vim-operator-surround'
 Plug 'scrooloose/nerdtree'
 Plug 'sgur/ctrlp-extensions.vim'
 Plug 'Shougo/deoplete.nvim'
+Plug 'Shougo/neco-syntax'
 Plug 'Shougo/neco-vim'
-Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/unite-outline' " , { 'on': ['Unite'] }
 Plug 'Shougo/unite.vim' ", { 'on': ['Unite', 'UniteWithBufferDir'] }
-Plug 'Shougo/vimfiler' ", { 'on': ['VimFilerTab', 'VimFiler', 'VimFilerExplorer'] }
 Plug 'Shougo/vimproc.vim' ", { 'do': 'make -f make_mac.mak' }
 Plug 'thinca/vim-operator-sequence'
-Plug 'thinca/vim-quickrun'
 Plug 'thinca/vim-ref'
 Plug 'thinca/vim-singleton'
 Plug 'thinca/vim-themis'
 Plug 'tmux-plugins/vim-tmux'
-Plug 'tomtom/tcomment_vim'
+" Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-surround'
 Plug 'tyru/open-browser-github.vim'
 Plug 'tyru/open-browser.vim'
 Plug 'tyru/operator-camelize.vim'
 Plug 'vim-jp/vimdoc-ja'
-Plug 'vim-jp/vital.vim'
 Plug 'wakatime/vim-wakatime'
 Plug 'xu-cheng/brew.vim'
 Plug 'yuku-t/vim-ref-ri'
-
-" Archive plugins
+" Plug 'altercation/vim-colors-solarized'
+" Plug 'cocopon/colorswatch.vim'
+" Plug 'critiqjo/lldb.nvim'
 " Plug 'docker/docker', { 'rtp': '/contrib/syntax/vim', 'for': ['Dockerfile'] }
+" Plug 'drmikehenry/vim-fixkey'
 " Plug 'google/vim-codefmt'
 " Plug 'google/vim-glaive'
 " Plug 'google/vim-maktaba'
-" Plug 'cocopon/colorswatch.vim'
-" Plug 'critiqjo/lldb.nvim'
-" Plug 'drmikehenry/vim-fixkey'
-Plug 'guns/xterm-color-table.vim', { 'on': ['XtermColorTable'] }
+" Plug 'guns/xterm-color-table.vim', { 'on': ['XtermColorTable'] }
 " Plug 'haya14busa/incsearch.vim'
+" Plug 'haya14busa/vital-exe-assert'
+" Plug 'lambdalisue/vital-ArgumentParser'
+" Plug 'lambdalisue/vital-VCS-Git'
+" Plug 'LanguageTool'
+" Plug 'leafgarland/typescript-vim'
+" Plug 'mattn/benchvimrc-vim' ", { 'on': ['BenchVimrc'] }
+" Plug 'mattn/ctrlp-ghq'
 " Plug 'mattn/ctrlp-gist', { 'autoload': { 'commands': ['Gist'] } }
 " Plug 'mattn/gist-vim', { 'depends': 'mattn/webapi-vim' }
+" Plug 'pgdouyon/vim-accio'
+" Plug 'Quramy/tsuquyomi'
 " Plug 'rhysd/try-colorscheme.vim'
 " Plug 'scrooloose/syntastic'
+" Plug 'Shougo/neoinclude.vim'
+" Plug 'Shougo/vimfiler' ", { 'on': ['VimFilerTab', 'VimFiler', 'VimFilerExplorer'] }
 " Plug 'SirVer/ultisnips'
+" Plug 'thinca/vim-quickrun'
+" Plug 'vim-jp/vital.vim'
+" Plug 'vimcommunity/vim-pi'
 " Plug 'Yggdroot/indentLine'
 
 " https://github.com/junegunn/vim-plug/blob/master/plug.vim#L169
@@ -145,9 +147,8 @@ colorscheme ux
 " filetype plugin indent on
 
 " Environment variables
+let $TERMINFO = "/usr/local/share/terminfo"
 let $TERM = 'rxvt-unicode-256color'
-let $TERMINFO = $HOME . '/.terminfo'
-
 
 " set
 set autochdir
@@ -176,8 +177,10 @@ set hlsearch " nvim set by default
 set ignorecase
 set incsearch " nvim set by default
 set laststatus=2
+set lazyredraw
 set list
 set listchars=tab:»-,extends:»,precedes:«,nbsp:%,eol:↲
+set notimeout
 set number
 set ruler
 set scrolljump=1
@@ -192,8 +195,10 @@ set switchbuf=useopen
 set tabstop=2
 set tags=./tags;,tags " nvim set by default
 set textwidth=0
+set notimeout
 set title
 set titlelen=120
+set ttimeout
 set undodir=~/.nvim/undo
 set undofile
 set updatetime=10000
@@ -206,21 +211,17 @@ set wildmenu " nvim set by default
 set wildmode=longest,full
 set wrap
 
-set nolazyredraw
-set noesckeys
-set nofoldenable
 set nobackup
 set nocursorcolumn
 set nocursorline
 set nodigraph
 set noerrorbells
 set noesckeys
-set notimeout
-set nottimeout
+set nofoldenable
+set noinfercase
 set norelativenumber
 set noshowcmd
 set noshowmatch
-set noinfercase
 set noswapfile
 set novisualbell
 set nowrapscan
@@ -249,7 +250,7 @@ let g:plug_window = 'vertical botright new'
 " deoplete.nvim
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_smart_case = 0
-let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#auto_completion_start_length = 2
 
 Gautocmd BufRead * silent :NeoSnippetSource<CR>
 " Enable <expr><C-Space> keymap
@@ -291,7 +292,7 @@ endif
 
 
 " vimfiler
-let g:vimfiler_data_directory = $HOME . '/.cache/vimfiler'
+" let g:vimfiler_data_directory = $HOME . '/.cache/vimfiler'
 
 
 " lightline
@@ -437,209 +438,207 @@ let g:wakatime_PythonBinary = '/usr/local/bin/python'
 
 
 " mattn/ctrlp-ghq
-let g:ctrlp_ghq_actions = [
-\ {"label": "open", "action": "e", "path": 1},
-\ {"label": "look", "action": "!ghq look", "path": 0},
-\]
-let ctrlp_ghq_default_action = 'e'
-let g:ctrlp_ghq_cache_enabled = 1
+" let g:ctrlp_ghq_actions = [
+" \ {"label": "open", "action": "e", "path": 1},
+" \ {"label": "look", "action": "!ghq look", "path": 0},
+" \]
+" let ctrlp_ghq_default_action = 'e'
+" let g:ctrlp_ghq_cache_enabled = 1
 
 
-" tinca/quickrun
-" Will rewrite port Neomake?
-" https://github.com/rhysd/dotfiles/blob/master/nvimrc#L833-L888
+" " tinca/quickrun
+" " Will rewrite port Neomake?
+" " https://github.com/rhysd/dotfiles/blob/master/nvimrc#L833-L888
+" "
+" " Init quickrun_config
+" let g:quickrun_config = get(g:, 'quickrun_config', {})
+" " Check file syntax
+" " https://github.com/rhysd/dotfiles/blob/master/vimrc#L2280-L2287
 "
-" Init quickrun_config
-let g:quickrun_config = get(g:, 'quickrun_config', {})
-" Check file syntax
-" https://github.com/rhysd/dotfiles/blob/master/vimrc#L2280-L2287
-
-" Global config
-let g:quickrun_config._ = {
-  \ 'outputter' : 'error:buffer:quickfix',
-  \ 'split' : 'rightbelow 12sp',
-  \ }
-" outputter
-let g:quickrun_unite_quickfix_outputter_unite_context = { 'no_empty' : 1 }
-" Polling interval use runner vimproc
-let g:quickrun_config['_']['runner/vimproc/updatetime'] = 500
-Gautocmd BufReadPost,BufNewFile [Rr]akefile{,.rb} let b:quickrun_config = {'exec': 'rake -f %s'}
-
-" FileType config
-function! s:check_syntax(ft) abort
-    let type = 'syntax/' . a:ft
-    if has_key(g:quickrun_config[type], 'command') && !executable(g:quickrun_config[type].command)
-        return
-    endif
-    execute 'QuickRun' '-type' type
-endfunction
-
-" Go
-let g:quickrun_config['syntax/go'] = {
-  \ 'command' : 'go',
-  \ 'exec' : '%c vet %o %s:p',
-  \ 'outputter' : 'quickfix',
-  \ 'runner' : 'vimproc',
-  \ 'errorformat' : '%Evet: %.%\+: %f:%l:%c: %m,%W%f:%l: %m,%-G%.%#',
-  \ }
-let g:quickrun_config['lint/go'] = {
-  \ 'command' : 'golint',
-  \ 'exec' : '%c %o %s:p',
-  \ 'outputter' : 'quickfix',
-  \ 'runner' : 'vimproc',
-  \ }
-Gautocmd BufWritePost *.go call <SID>check_syntax('go')
-
-" Dockerfile
-" let g:quickrun_config['syntax/Dockerfile'] = {
-"   \ 'command' : 'docker',
-"   \ 'cmdopt' : 'build -t',
-"   \ 'exec' : '%c %o %s %s:p',
+" " Global config
+" let g:quickrun_config._ = {
+"   \ 'outputter' : 'error:buffer:quickfix',
+"   \ 'split' : 'rightbelow 12sp',
+"   \ }
+" " outputter
+" let g:quickrun_unite_quickfix_outputter_unite_context = { 'no_empty' : 1 }
+" " Polling interval use runner vimproc
+" let g:quickrun_config['_']['runner/vimproc/updatetime'] = 500
+" Gautocmd BufReadPost,BufNewFile [Rr]akefile{,.rb} let b:quickrun_config = {'exec': 'rake -f %s'}
+"
+" " FileType config
+" function! s:check_syntax(ft) abort
+"     let type = 'syntax/' . a:ft
+"     if has_key(g:quickrun_config[type], 'command') && !executable(g:quickrun_config[type].command)
+"         return
+"     endif
+"     execute 'QuickRun' '-type' type
+" endfunction
+"
+" " Go
+" let g:quickrun_config['syntax/go'] = {
+"   \ 'command' : 'go',
+"   \ 'exec' : '%c vet %o %s:p',
 "   \ 'outputter' : 'quickfix',
 "   \ 'runner' : 'vimproc',
-"   \ 'errorformat' : '%E%r',
+"   \ 'errorformat' : '%Evet: %.%\+: %f:%l:%c: %m,%W%f:%l: %m,%-G%.%#',
 "   \ }
-
-" JavaScript
-function! s:check_js_syntax() abort
-  if &ft ==# 'javascript'
-      \ && has_key(g:quickrun_config['syntax/javascript'], 'command')
-      \ && executable(g:quickrun_config['syntax/javascript'].command)
-      \ && getline(1) !~? '^//\s\+jsx'
-      QuickRun -type syntax/javascript
-  endif
-endfunction
-let g:quickrun_config['syntax/javascript'] = {
-  \ 'command' : 'jshint',
-  \ 'outputter' : 'quickfix',
-  \ 'exec'    : '%c %o %s:p',
-  \ 'runner' : 'vimproc',
-  \ 'errorformat' : '%f: line %l\, col %c\, %m',
-  \ }
-Gautocmd BufWritePost *.js call <SID>check_js_syntax()
-
-" Ruby
-let g:quickrun_config['syntax/ruby'] = {
-  \ 'runner' : 'vimproc',
-  \ 'outputter' : 'quickfix',
-  \ 'command' : 'ruby',
-  \ 'exec' : '%c -c %s:p %o',
-  \ }
-Gautocmd BufWritePost *.rb call <SID>check_syntax('ruby')
-
-" Crystal
-let g:quickrun_config['syntax/crystal'] = {
-  \   'command' : 'crystal',
-  \   'cmdopt' : 'run --no-build --no-color',
-  \   'exec' : '%c %o %s:p',
-  \   'outputter' : 'quickfix',
-  \   'runner' : 'vimproc',
-  \ }
-Gautocmd BufWritePost *.cr call <SID>check_syntax('crystal')
-
-" Python
-let g:quickrun_config['syntax/python'] = {
-  \ 'command' : 'pyflakes',
-  \ 'exec' : '%c %o %s:p',
-  \ 'outputter' : 'quickfix',
-  \ 'runner' : 'vimproc',
-  \ 'errorformat' : '%f:%l:%m',
-  \ }
-Gautocmd BufWritePost *.py call <SID>check_syntax('python')
-
-" Rust
-let g:quickrun_config['syntax/rust'] = {
-  \   'command' : 'rustc',
-  \   'cmdopt' : '-Zparse-only',
-  \   'exec' : '%c %o %s:p',
-  \   'outputter' : 'quickfix',
-  \ }
-Gautocmd BufWritePost *.rs call <SID>check_syntax('rust')
-
-" tmux
-let g:quickrun_config['tmux'] = {
-  \ 'command' : 'tmux',
-  \ 'cmdopt' : 'source-file',
-  \ 'exec' : ['%c %o %s:p', 'echo "sourced %s"'],
-  \ }
-
-" Haml
-let g:quickrun_config['syntax/haml'] = {
-  \ 'runner' : 'vimproc',
-  \ 'command' : 'haml',
-  \ 'outputter' : 'quickfix',
-  \ 'exec'    : '%c -c %o %s:p',
-  \ 'errorformat' : 'Haml error on line %l: %m,Syntax error on line %l: %m,%-G%.%#',
-  \ }
-Gautocmd BufWritePost *.haml call <SID>check_syntax('haml')
-
-" C++
-let g:quickrun_config.cpp = {
-  \ 'command' : 'clang++',
-  \ 'cmdopt' : '-std=c++1y -Wall -Wextra -O2',
-  \ }
-let g:quickrun_config['cpp/llvm'] = {
-  \ 'type' : 'cpp/clang++',
-  \ 'exec' : '%c %o -emit-llvm -S %s -o -',
-  \ }
-let g:quickrun_config['c/llvm'] = {
-  \ 'type' : 'c/clang',
-  \ 'exec' : '%c %o -emit-llvm -S %s -o -',
-  \ }
-let g:quickrun_config['dachs'] = {
-  \ 'command' : './bin/dachs',
-  \ }
-let g:quickrun_config['dachs/llvm'] = {
-  \ 'type' : 'dachs',
-  \ 'cmdopt' : '--emit-llvm',
-  \ }
-let g:quickrun_config['llvm'] = {
-  \ 'exec' : 'llvm-as-3.4 %s:p -o=- | lli-3.4 - %a',
-  \ }
-" Only pre-process
-let g:quickrun_config['cpp/preprocess/g++'] = { 'type' : 'cpp/g++', 'exec' : '%c -P -E %s' }
-let g:quickrun_config['cpp/preprocess/clang++'] = { 'type' : 'cpp/clang++', 'exec' : '%c -P -E %s' }
-let g:quickrun_config['cpp/preprocess'] = { 'type' : 'cpp', 'exec' : '%c -P -E %s' }
-let g:quickrun_config['cpp/clang'] = { 'command' : 'clang++', 'cmdopt' : '-stdlib=libc++ -std=c++11 -Wall -Wextra -O2' }
-Gautocmd FileType cpp nnoremap <silent><buffer><Leader>qc :<C-u>QuickRun -type cpp/clang<CR>
-
-" cpp/g++
-let g:quickrun_config['syntax/cpp/g++'] = {
-  \ 'runner' : 'vimproc',
-  \ 'outputter' : 'quickfix',
-  \ 'command' : 'g++',
-  \ 'cmdopt' : '-std=c++1y -Wall -Wextra -O2',
-  \ 'exec' : '%c %o -fsyntax-only %s:p'
-  \ }
-
-" llc
-if executable('llc-3.5')
-  let g:vimrc_llc_command = 'llc-3.5'
-elseif executable('llc')
-  let g:vimrc_llc_command = 'llc'
-endif
-if exists('g:vimrc_llc_command')
-  let g:quickrun_config['syntax/llvm'] = {
-    \ 'command' : g:vimrc_llc_command,
-    \ 'cmdopt' : '-filetype=null -o=/dev/null',
-    \ 'exec' : '%c %o %s:p',
-    \ 'outputter' : 'quickfix',
-    \ 'runner' : 'vimproc',
-    \ }
-  Gautocmd BufWritePost *.ll QuickRun -type syntax/llvm
-endif
+" let g:quickrun_config['lint/go'] = {
+"   \ 'command' : 'golint',
+"   \ 'exec' : '%c %o %s:p',
+"   \ 'outputter' : 'quickfix',
+"   \ 'runner' : 'vimproc',
+"   \ }
+" Gautocmd BufWritePost *.go call <SID>check_syntax('go')
+"
+" " Dockerfile
+" " let g:quickrun_config['syntax/Dockerfile'] = {
+" "   \ 'command' : 'docker',
+" "   \ 'cmdopt' : 'build -t',
+" "   \ 'exec' : '%c %o %s %s:p',
+" "   \ 'outputter' : 'quickfix',
+" "   \ 'runner' : 'vimproc',
+" "   \ 'errorformat' : '%E%r',
+" "   \ }
+"
+" " JavaScript
+" function! s:check_js_syntax() abort
+"   if &ft ==# 'javascript'
+"       \ && has_key(g:quickrun_config['syntax/javascript'], 'command')
+"       \ && executable(g:quickrun_config['syntax/javascript'].command)
+"       \ && getline(1) !~? '^//\s\+jsx'
+"       QuickRun -type syntax/javascript
+"   endif
+" endfunction
+" let g:quickrun_config['syntax/javascript'] = {
+"   \ 'command' : 'jshint',
+"   \ 'outputter' : 'quickfix',
+"   \ 'exec'    : '%c %o %s:p',
+"   \ 'runner' : 'vimproc',
+"   \ 'errorformat' : '%f: line %l\, col %c\, %m',
+"   \ }
+" Gautocmd BufWritePost *.js call <SID>check_js_syntax()
+"
+" " Ruby
+" let g:quickrun_config['syntax/ruby'] = {
+"   \ 'runner' : 'vimproc',
+"   \ 'outputter' : 'quickfix',
+"   \ 'command' : 'ruby',
+"   \ 'exec' : '%c -c %s:p %o',
+"   \ }
+" Gautocmd BufWritePost *.rb call <SID>check_syntax('ruby')
+"
+" " Crystal
+" let g:quickrun_config['syntax/crystal'] = {
+"   \   'command' : 'crystal',
+"   \   'cmdopt' : 'run --no-build --no-color',
+"   \   'exec' : '%c %o %s:p',
+"   \   'outputter' : 'quickfix',
+"   \   'runner' : 'vimproc',
+"   \ }
+" Gautocmd BufWritePost *.cr call <SID>check_syntax('crystal')
+"
+" " Python
+" let g:quickrun_config['syntax/python'] = {
+"   \ 'command' : 'pyflakes',
+"   \ 'exec' : '%c %o %s:p',
+"   \ 'outputter' : 'quickfix',
+"   \ 'runner' : 'vimproc',
+"   \ 'errorformat' : '%f:%l:%m',
+"   \ }
+" Gautocmd BufWritePost *.py call <SID>check_syntax('python')
+"
+" " Rust
+" let g:quickrun_config['syntax/rust'] = {
+"   \   'command' : 'rustc',
+"   \   'cmdopt' : '-Zparse-only',
+"   \   'exec' : '%c %o %s:p',
+"   \   'outputter' : 'quickfix',
+"   \ }
+" Gautocmd BufWritePost *.rs call <SID>check_syntax('rust')
+"
+" " tmux
+" let g:quickrun_config['tmux'] = {
+"   \ 'command' : 'tmux',
+"   \ 'cmdopt' : 'source-file',
+"   \ 'exec' : ['%c %o %s:p', 'echo "sourced %s"'],
+"   \ }
+"
+" " Haml
+" let g:quickrun_config['syntax/haml'] = {
+"   \ 'runner' : 'vimproc',
+"   \ 'command' : 'haml',
+"   \ 'outputter' : 'quickfix',
+"   \ 'exec'    : '%c -c %o %s:p',
+"   \ 'errorformat' : 'Haml error on line %l: %m,Syntax error on line %l: %m,%-G%.%#',
+"   \ }
+" Gautocmd BufWritePost *.haml call <SID>check_syntax('haml')
+"
+" " C++
+" let g:quickrun_config.cpp = {
+"   \ 'command' : 'clang++',
+"   \ 'cmdopt' : '-std=c++1y -Wall -Wextra -O2',
+"   \ }
+" let g:quickrun_config['cpp/llvm'] = {
+"   \ 'type' : 'cpp/clang++',
+"   \ 'exec' : '%c %o -emit-llvm -S %s -o -',
+"   \ }
+" let g:quickrun_config['c/llvm'] = {
+"   \ 'type' : 'c/clang',
+"   \ 'exec' : '%c %o -emit-llvm -S %s -o -',
+"   \ }
+" let g:quickrun_config['dachs'] = {
+"   \ 'command' : './bin/dachs',
+"   \ }
+" let g:quickrun_config['dachs/llvm'] = {
+"   \ 'type' : 'dachs',
+"   \ 'cmdopt' : '--emit-llvm',
+"   \ }
+" let g:quickrun_config['llvm'] = {
+"   \ 'exec' : 'llvm-as-3.4 %s:p -o=- | lli-3.4 - %a',
+"   \ }
+" " Only pre-process
+" let g:quickrun_config['cpp/preprocess/g++'] = { 'type' : 'cpp/g++', 'exec' : '%c -P -E %s' }
+" let g:quickrun_config['cpp/preprocess/clang++'] = { 'type' : 'cpp/clang++', 'exec' : '%c -P -E %s' }
+" let g:quickrun_config['cpp/preprocess'] = { 'type' : 'cpp', 'exec' : '%c -P -E %s' }
+" let g:quickrun_config['cpp/clang'] = { 'command' : 'clang++', 'cmdopt' : '-stdlib=libc++ -std=c++11 -Wall -Wextra -O2' }
+" Gautocmd FileType cpp nnoremap <silent><buffer><Leader>qc :<C-u>QuickRun -type cpp/clang<CR>
+"
+" " cpp/g++
+" let g:quickrun_config['syntax/cpp/g++'] = {
+"   \ 'runner' : 'vimproc',
+"   \ 'outputter' : 'quickfix',
+"   \ 'command' : 'g++',
+"   \ 'cmdopt' : '-std=c++1y -Wall -Wextra -O2',
+"   \ 'exec' : '%c %o -fsyntax-only %s:p'
+"   \ }
+"
+" " llc
+" if executable('llc-3.5')
+"   let g:vimrc_llc_command = 'llc-3.5'
+" elseif executable('llc')
+"   let g:vimrc_llc_command = 'llc'
+" endif
+" if exists('g:vimrc_llc_command')
+"   let g:quickrun_config['syntax/llvm'] = {
+"     \ 'command' : g:vimrc_llc_command,
+"     \ 'cmdopt' : '-filetype=null -o=/dev/null',
+"     \ 'exec' : '%c %o %s:p',
+"     \ 'outputter' : 'quickfix',
+"     \ 'runner' : 'vimproc',
+"     \ }
+"   Gautocmd BufWritePost *.ll QuickRun -type syntax/llvm
+" endif
 
 
 " vim-markdown
 let g:vim_markdown_folding_disabled = 1
 
-" }}}
-
 
 " vital-exe-assert
-let g:__vital_exe_assert_config = { '__debug__': 1, '__abort__': 0 }
-let s:V = vital#of('vital')
-let g:assert = s:V.import('ExeAssert').make()
+" let g:__vital_exe_assert_config = { '__debug__': 1, '__abort__': 0 }
+" let s:V = vital#of('vital')
+" let g:assert = s:V.import('ExeAssert').make()
 
 
 " tyru/open-browser.vim
@@ -675,6 +674,9 @@ endfunction
 let g:ref_cache_dir = $HOME . '/.cache/vim-ref'
 let g:red_use_vimproc = 1
 let g:ref_noenter = 1
+
+" }}}
+
 
 
 "
@@ -740,58 +742,21 @@ Gautocmd FileType,WinEnter $MYVIMRC,~/.nvimrc,vim set tags=~/.nvim/tags
 Gautocmd BufWritePost *.vim silent! !cd ~/.nvim/ && ctags -R --languages=Vim -F ~/.nvim &
 Gautocmdft vim nnoremap ,m :ColorToggle<CR>
 
-Gautocmd BufWritePost * Neomake
-
 " Vimgrep results in quickfix window
 Gautocmd QuickFixCmdPost *grep* cwindow
 
 " for languages documents
-Gautocmdft help   call On_FileType_doc_define_mappings()
-Gautocmdft ref call On_FileType_doc_define_mappings()
-" }}}
-
-
-"
-" Function "{{{
-"
-
-function! ToggleRelativeNumber()
-  if(&relativenumber == 1) && (&number == 1)
-    set nonumber
-    set norelativenumber
-  elseif(&number == 1)
-    set number
-    set relativenumber
-  else
-    set norelativenumber
-    set number
-  endif
-endfunc
-
-function! ToggleCursorline()
-  if !(&cursorline)
-    set cursorline
-  else
-    set nocursorline
-  endif
-endfunc
-
+Gautocmdft help,ref,man call On_FileType_doc_define_mappings()
 function! On_FileType_doc_define_mappings()
-  if &l:readonly
-    " Jump to under the cursor word tags
-    nnoremap <buffer>J <C-]>
-    " Back to the before tag jump buffer
-    nnoremap <buffer>K <C-t>
-    " Select the linked word
-    nnoremap <buffer><silent><Tab> /\%(\_.\zs<Bar>[^ ]\+<Bar>\ze\_.\<Bar>CTRL-.\<Bar><[^ >]\+>\)<CR>
-    " less like
-    nnoremap <buffer>u <C-u>
-    nnoremap <buffer>d <C-d>
-    nnoremap <buffer>q :<C-u>q<CR>
-  endif
+  " Select the linked word
+  nnoremap <buffer><silent><Tab> /\%(\_.\zs<Bar>[^ ]\+<Bar>\ze\_.\<Bar>CTRL-.\<Bar><[^ >]\+>\)<CR>
+  " less like keymap
+  nnoremap <buffer>u <C-u>
+  nnoremap <buffer>d <C-d>
+  nnoremap <buffer>q :<C-u>q<CR>
 endfunction
-
 " }}}
+
 
 
 "
@@ -818,52 +783,6 @@ if has('vertsplit')
   let &t_RV .= "\e[?6;69h\e[1;3s\e[3;9H\e[6n\e[0;0s\e[?6;69l"
 endif
 
-" http://superuser.com/questions/401926/how-to-get-shiftarrows-and-ctrlarrows-working-in-vim-in-tmux
-if $TERM =~ '^xterm'
-  " tmux will send xterm-style keys when its xterm-keys option is on
-  execute "set <Up>=\Eku"
-  execute "set <Down>=\Ekd"
-  execute "set <Right>=\Ekr"
-  execute "set <Left>=\Ekl"
-  execute "set <xUp>=\Eku"
-  execute "set <xDown>=\Ekd"
-  execute "set <xRight>=\Ekr"
-  execute "set <xLeft>=\Ekl"
-endif
-if $TERM =~ '^screen'
-  " tmux will send xterm-style keys when its xterm-keys option is on
-  execute "set <xUp>=\e[1;*A"
-  execute "set <xDown>=\e[1;*B"
-  execute "set <xRight>=\e[1;*C"
-  execute "set <xLeft>=\e[1;*D"
-endif
-
-" http://vim.wikia.com/wiki/Fix_arrow_keys_that_display_A_B_C_D_on_remote_shell
-noremap <silent> <Up> <Nop>
-noremap <silent> <Down> <Nop>
-noremap <silent> <Right> <Nop>
-noremap <silent> <Left> <Nop>
-nnoremap <silent> <Up>    <Nop>
-nnoremap <silent> <Down>  <Nop>
-nnoremap <silent> <Right> <Nop>
-nnoremap <silent> <Left>  <Nop>
-nnoremap <silent> <Left>  h
-nnoremap <silent> <Down>  j
-nnoremap <silent> <Up>    k
-nnoremap <silent> <Right> l
-vnoremap <silent> <Left>  <Left>
-vnoremap <silent> <Down>  <Down>
-vnoremap <silent> <Up>    <Up>
-vnoremap <silent> <Right> <Right>
-
-" When cursor key's digraphs, return triple <ESC>
-Gautocmd InsertCharPre <buffer> if v:char == 'Û' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
-Gautocmd InsertCharPre <buffer> if v:char == 'ÛD' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
-Gautocmd InsertCharPre <buffer> if v:char == 'ÛC' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
-Gautocmd InsertCharPre <buffer> if v:char == 'ÛA' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
-Gautocmd InsertCharPre <buffer> if v:char == 'ÛB' | "\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>\<ESC>" | endif
-" }}}
-
 
 "
 " Syntax "{{{
@@ -874,6 +793,7 @@ Gautocmd InsertCharPre <buffer> if v:char == 'ÛB' | "\<ESC>\<ESC>\<ESC>\<ESC>\<
 " Enable bash syntax on /bin/sh shevang
 " http://tyru.hatenablog.com/entry/20101007/
 let g:is_bash = 1
+
 " }}}
 
 
@@ -1006,6 +926,7 @@ command! SyntaxInfo call s:get_syn_info()
 " }}}
 
 
+
 "
 " Keymap "{{{
 " Swap semicolon and colon is move to Karabiner
@@ -1022,7 +943,6 @@ Arpeggiomap sh :<C-u>tabnew<CR>:<C-u>terminal<CR>
 " Dvorak Center
 nnoremap <Space> <Nop>
 " Dvorak Leftside
-nnoremap q       <Nop>
 nnoremap .       <Nop>
 " Dvorak Rightside
 nnoremap s       <Nop>
@@ -1134,6 +1054,7 @@ cmap w!! w !sudo tee > /dev/null %
 " }}}
 
 
+
 "
 " Neovim configuration "{{{
 "
@@ -1141,8 +1062,8 @@ cmap w!! w !sudo tee > /dev/null %
 " Most required absolude python path.
 " Not works '~' of relative pathon path.
 " And, installed neovim python client by `pip install neovim`
-let g:python3_host_prog  = '/usr/local/bin/python3'
-let g:python_host_prog   = '/usr/local/bin/python'
+let g:python3_host_prog  = '/Users/zchee/.pyenv/shims/python3'
+let g:python_host_prog  = '/Users/zchee/.pyenv/shims/python'
 let g:python_host_skip_check = 1
 let g:python3_host_skip_check = 1
 
@@ -1153,7 +1074,7 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
 " TERM config
 if exists(':terminal')
-  let g:terminal_color    = 'xterm-256color'
+  let g:terminal_color    = 'rxvt-unicode-256color'
   " allow terminal buffer size to be very large
   let g:terminal_scrollback_buffer_size = 100000
   " map esc to exit to normal mode in terminal too

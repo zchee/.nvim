@@ -67,7 +67,11 @@ docs/_build/
 # PyBuilder
 target/
 
+# Neovim
 ..nvimrc-rplugin~
 
 # vim-plug
 plugged/
+
+# NeoBundle
+bundle/

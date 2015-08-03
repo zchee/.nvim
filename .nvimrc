@@ -17,125 +17,248 @@
 " Warning - prefix is It might changes.
 " It varies with my mood.
 
+
 " Init "{{{
-"
 set encoding=utf-8
 set cpo&vim
 scriptencoding utf-8
 " }}}
 
+" NeoBundle "{{{
+set runtimepath+=~/.nvim/bundle/neobundle.vim
+call neobundle#begin(expand('~/.nvim/bundle/'))
+
+NeoBundle 'airblade/vim-gitgutter'
+NeoBundle 'bruno-/vim-man'
+NeoBundle 'cespare/vim-toml'
+NeoBundle 'ctrlpvim/ctrlp.vim'
+NeoBundle 'godlygeek/tabular'
+NeoBundle 'itchyny/lightline.vim'
+NeoBundle 'jiangmiao/auto-pairs'
+NeoBundle 'junegunn/vim-easy-align'
+NeoBundle 'justinmk/vim-dirvish'
+NeoBundle 'kana/vim-arpeggio'
+NeoBundle 'kana/vim-operator-user'
+NeoBundle 'LeafCage/yankround.vim'
+NeoBundle 'nathanaelkane/vim-indent-guides'
+NeoBundle 'rhysd/vim-operator-surround'
+NeoBundle 'sgur/ctrlp-extensions.vim'
+NeoBundle 'Shougo/deoplete.nvim'
+NeoBundle 'Shougo/unite-help'
+NeoBundle 'thinca/vim-prettyprint'
+NeoBundle 'thinca/vim-unite-history'
+NeoBundle 'Shougo/neco-syntax'
+NeoBundle 'Shougo/neco-vim'
+NeoBundle 'Shougo/neomru.vim'
+NeoBundle 'Shougo/neosnippet-snippets'
+NeoBundle 'Shougo/neosnippet.vim'
+NeoBundle 'Shougo/vimproc.vim', { 'build' : { 'mac' : 'make -f make_mac.mak', 'linux' : 'make', 'unix' : 'gmake' } }
+NeoBundle 'thinca/vim-operator-sequence'
+NeoBundle 'thinca/vim-ref'
+NeoBundle 'thinca/vim-singleton'
+NeoBundle 'thinca/vim-themis'
+NeoBundle 'tpope/vim-surround'
+NeoBundle 'tyru/operator-camelize.vim'
+NeoBundle 'wakatime/vim-wakatime'
+NeoBundle 'yuku-t/vim-ref-ri'
+
+
+NeoBundleLazy 'Shougo/unite.vim', {
+        \       'autoload' : {
+        \         'commands' : [{'name': 'Unite', 'complete' : 'customlist,unite#complete_source'},
+        \                      {'name': 'UniteWithBufferDir', 'complete' : 'customlist,unite#complete_source'},
+        \                      {'name': 'UniteWithCursorWord', 'complete' : 'customlist,unite#complete_source'},
+        \                      {'name': 'UniteWithWithInput', 'complete' : 'customlist,unite#complete_source'}]
+        \       }
+        \     }
+NeoBundleLazy 'Shougo/unite-outline', {
+       \        'autoload' : {
+       \          'commands' : 'Unite'
+       \        }
+       \      }
+NeoBundleLazy 'Shougo/vimfiler.vim', {
+       \        'depends' : 'Shougo/unite.vim',
+       \          'autoload' : {
+       \          'commands' : ['VimFiler', 'VimFilerCurrentDir',
+       \                        'VimFilerBufferDir', 'VimFilerSplit',
+       \                        'VimFilerExplorer', 'VimFilerDouble']
+       \        }
+       \      }
+NeoBundleLazy 'benekastah/neomake', {
+       \        'autoload' : {
+       \          'commands' : 'Neomake'
+       \        }
+       \      }
+NeoBundleLazy 'lambdalisue/vim-gista', {
+       \        'autoload' : {
+       \          'commands' : 'Gista'
+       \        }
+       \      }
+NeoBundleLazy 'lambdalisue/vim-gita', {
+       \        'autoload' : {
+       \          'commands' : 'Gita'
+       \        }
+       \      }
+NeoBundleLazy 'majutsushi/tagbar', {
+       \        'autoload' : {
+       \          'commands' : 'Tagbar'
+       \        }
+       \      }
+
+" vim-operator-user
+NeoBundleLazy 'kana/vim-operator-replace', {
+       \        'autoload' : {
+       \          'mappings' : '<Plug>(operator-replace)'
+       \        }
+       \      }
+NeoBundleLazy 'emonkak/vim-operator-comment', {
+       \        'autoload' : {
+       \          'mappings' : '<Plug>(operator-comment)'
+       \        }
+       \      }
+NeoBundleLazy 'emonkak/vim-operator-sort', {
+       \        'autoload' : {
+       \          'mappings' : '<Plug>(operator-sort)'
+       \        }
+       \      }
+
+" open-browser
+NeoBundleLazy 'tyru/open-browser.vim', {
+       \        'autoload' : {
+       \          'commands' : ['OpenBrowser', 'OpenBrowserSearch', 'OpenBrowserSmartSearch'],
+       \          'mappings' : '<Plug>(openbrowser-',
+       \        }
+       \      }
+NeoBundleLazy 'tyru/open-browser-github.vim', {
+       \        'depends' : 'tyru/open-browser.vim',
+       \        'autoload' : {
+       \          'commands' : ['OpenGithubFile', 'OpenGithubIssue', 'OpenGithubPullReq']
+       \        }
+       \      }
 
 "
-" vim-plug "{{{
+" Language syntax
 "
-filetype off
-call plug#begin('~/.nvim/plugged')
-Plug 'junegunn/vim-plug'
 
-Plug 'airblade/vim-gitgutter'
-Plug 'junegunn/vim-easy-align'
-Plug 'Align'
-Plug 'benekastah/neomake'
-Plug 'Blackrush/vim-gocode' " , { 'for': ['go'] }
-Plug 'bruno-/vim-man'
-Plug 'cespare/vim-toml'
-Plug 'chrisbra/Colorizer'
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'davidhalter/jedi-vim', { 'for': ['python'] }
-Plug 'deris/vim-operator-insert'
-Plug 'dgryski/vim-godef' ", { 'for': ['go'] }
-Plug 'ekalinin/Dockerfile.vim'
-Plug 'emonkak/vim-operator-comment'
-Plug 'emonkak/vim-operator-sort'
-Plug 'fatih/vim-go' ", { 'for': ['go'] }
-Plug 'godlygeek/tabular'
-Plug 'itchyny/lightline.vim'
-Plug 'jiangmiao/auto-pairs'
-Plug 'justinmk/vim-dirvish'
-Plug 'kamichidu/vim-textobj-function-go'
-Plug 'kana/vim-arpeggio'
-Plug 'kana/vim-operator-replace'
-Plug 'kana/vim-operator-user'
-Plug 'kana/vim-textobj-fold'
-Plug 'kana/vim-textobj-indent'
-Plug 'kana/vim-textobj-lastpat'
-Plug 'kana/vim-textobj-line'
-Plug 'kana/vim-textobj-user'
-Plug 'lambdalisue/vim-gista' ", { 'on': ['Gista'] }
-Plug 'lambdalisue/vim-gita' ", { 'on': ['Gita'] }
-Plug 'LeafCage/yankround.vim'
-Plug 'majutsushi/tagbar' ", { 'on': ['TagbarToggle'] }
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'plasticboy/vim-markdown'
-Plug 'rhysd/vim-operator-surround'
-Plug 'scrooloose/nerdtree'
-Plug 'sgur/ctrlp-extensions.vim'
-Plug 'Shougo/deoplete.nvim'
-Plug 'Shougo/neco-syntax'
-Plug 'Shougo/neco-vim'
-Plug 'Shougo/neosnippet-snippets'
-Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/unite-outline' " , { 'on': ['Unite'] }
-Plug 'Shougo/unite.vim' ", { 'on': ['Unite', 'UniteWithBufferDir'] }
-Plug 'Shougo/vimproc.vim' ", { 'do': 'make -f make_mac.mak' }
-Plug 'thinca/vim-operator-sequence'
-Plug 'thinca/vim-ref'
-Plug 'thinca/vim-singleton'
-Plug 'thinca/vim-themis'
-Plug 'tmux-plugins/vim-tmux'
-" Plug 'tomtom/tcomment_vim'
-Plug 'tpope/vim-surround'
-Plug 'tyru/open-browser-github.vim'
-Plug 'tyru/open-browser.vim'
-Plug 'tyru/operator-camelize.vim'
-Plug 'vim-jp/vimdoc-ja'
-Plug 'wakatime/vim-wakatime'
-Plug 'xu-cheng/brew.vim'
-Plug 'yuku-t/vim-ref-ri'
-" Plug 'altercation/vim-colors-solarized'
-" Plug 'cocopon/colorswatch.vim'
-" Plug 'critiqjo/lldb.nvim'
-" Plug 'docker/docker', { 'rtp': '/contrib/syntax/vim', 'for': ['Dockerfile'] }
-" Plug 'drmikehenry/vim-fixkey'
-" Plug 'google/vim-codefmt'
-" Plug 'google/vim-glaive'
-" Plug 'google/vim-maktaba'
-" Plug 'guns/xterm-color-table.vim', { 'on': ['XtermColorTable'] }
-" Plug 'haya14busa/incsearch.vim'
-" Plug 'haya14busa/vital-exe-assert'
-" Plug 'lambdalisue/vital-ArgumentParser'
-" Plug 'lambdalisue/vital-VCS-Git'
-" Plug 'LanguageTool'
-" Plug 'leafgarland/typescript-vim'
-" Plug 'mattn/benchvimrc-vim' ", { 'on': ['BenchVimrc'] }
-" Plug 'mattn/ctrlp-ghq'
-" Plug 'mattn/ctrlp-gist', { 'autoload': { 'commands': ['Gist'] } }
-" Plug 'mattn/gist-vim', { 'depends': 'mattn/webapi-vim' }
-" Plug 'pgdouyon/vim-accio'
-" Plug 'Quramy/tsuquyomi'
-" Plug 'rhysd/try-colorscheme.vim'
-" Plug 'scrooloose/syntastic'
-" Plug 'Shougo/neoinclude.vim'
-" Plug 'Shougo/vimfiler' ", { 'on': ['VimFilerTab', 'VimFiler', 'VimFilerExplorer'] }
-" Plug 'SirVer/ultisnips'
-" Plug 'thinca/vim-quickrun'
-" Plug 'vim-jp/vital.vim'
-" Plug 'vimcommunity/vim-pi'
-" Plug 'Yggdroot/indentLine'
+" Go
+NeoBundleLazy 'Blackrush/vim-gocode', {
+        \       'autoload' : {
+        \         'filetypes' : 'go',
+        \       }
+        \     }
+NeoBundleLazy 'dgryski/vim-godef', {
+        \       'autoload' : {
+        \         'filetypes' : 'go',
+        \       }
+        \     }
+NeoBundleLazy 'fatih/vim-go', {
+        \       'autoload' : {
+        \         'filetypes' : 'go',
+        \       }
+        \     }
+NeoBundle 'kamichidu/vim-textobj-function-go', {
+        \       'autoload' : {
+        \         'filetypes' : 'go',
+        \       }
+        \     }
 
-" https://github.com/junegunn/vim-plug/blob/master/plug.vim#L169
-" function! plug#helptags()
-"   for spec in values(g:plugs)
-"     let docd = join([spec.dir, 'doc'])
-"     if isdirectory(docd)
-"       silent! execute 'helptags' s:esc(docd)
-"     endif
-"   endfor
-"   return 1
-" endfunction
+" Ruby
+NeoBundleLazy 'basyura/unite-rails', {
+       \        'autoload' : {'filetypes' : 'ruby'}
+       \      }
+NeoBundleLazy 'rhysd/vim-textobj-ruby', {
+       \        'autoload' : {'filetypes' : 'ruby'}
+       \      }
+NeoBundleLazy 'rhysd/neco-ruby-keyword-args', {
+       \        'autoload' : {'filetypes' : 'ruby'}
+       \      }
 
-call plug#end()
+" Python
+NeoBundleLazy 'davidhalter/jedi-vim', {
+        \       'autoload' : {
+        \         'filetypes' : 'python',
+        \       }
+        \     }
+NeoBundleLazy 'hynek/vim-python-pep8-indent', {
+        \       'autoload' : {
+        \         'filetypes' : 'python',
+        \       }
+        \     }
+NeoBundleLazy 'digitaltoad/vim-jade', {
+        \       'autoload' : {
+        \         'filetypes' : 'jade',
+        \       }
+        \     }
+
+" Dockerfile
+NeoBundleLazy 'ekalinin/Dockerfile.vim', {
+        \       'autoload' : {
+        \         'filetypes' : 'dockerfile',
+        \       }
+        \     }
+NeoBundleLazy 'plasticboy/vim-markdown', {
+        \       'autoload' : {
+        \         'filetypes' : [ 'mkd', 'markdown' ]
+        \       }
+        \     }
+
+" Vim Help
+NeoBundleLazy 'vim-jp/vimdoc-ja', {
+        \       'autoload' : {
+        \         'filetypes' : 'help',
+        \       }
+        \     }
+
+" Misc
+NeoBundleLazy 'tmux-plugins/vim-tmux', {
+        \       'autoload' : {
+        \         'filetypes' : 'tmux',
+        \       }
+        \     }
+NeoBundleLazy 'xu-cheng/brew.vim', {
+        \       'autoload' : {
+        \         'filetypes' : 'ruby',
+        \       }
+        \     }
+
+" NeoBundle 'altercation/vim-colors-solarized'
+" NeoBundle 'cocopon/colorswatch.vim'
+" NeoBundle 'scrooloose/nerdtree'
+" NeoBundle 'Align'
+" NeoBundle 'critiqjo/lldb.nvim'
+" NeoBundle 'docker/docker', { 'rtp': '/contrib/syntax/vim', 'for': ['Dockerfile'] }
+" NeoBundle 'drmikehenry/vim-fixkey'
+" NeoBundle 'google/vim-codefmt'
+" NeoBundle 'google/vim-glaive'
+" NeoBundle 'google/vim-maktaba'
+" NeoBundle 'guns/xterm-color-table.vim', { 'on': ['XtermColorTable'] }
+" NeoBundle 'haya14busa/incsearch.vim'
+" NeoBundle 'haya14busa/vital-exe-assert'
+" NeoBundle 'lambdalisue/vital-ArgumentParser'
+" NeoBundle 'lambdalisue/vital-VCS-Git'
+" NeoBundle 'LanguageTool'
+" NeoBundle 'leafgarland/typescript-vim'
+" NeoBundle 'mattn/benchvimrc-vim' ", { 'on': ['BenchVimrc'] }
+" NeoBundle 'mattn/ctrlp-ghq'
+" NeoBundle 'mattn/ctrlp-gist', { 'autoload': { 'commands': ['Gist'] } }
+" NeoBundle 'mattn/gist-vim', { 'depends': 'mattn/webapi-vim' }
+" NeoBundle 'tomtom/tcomment_vim'
+" NeoBundle 'pgdouyon/vim-accio'
+" NeoBundle 'Quramy/tsuquyomi'
+" NeoBundle 'rhysd/try-colorscheme.vim'
+" NeoBundle 'scrooloose/syntastic'
+" NeoBundle 'Shougo/neoinclude.vim'
+" NeoBundle 'Shougo/vimfiler' ", { 'on': ['VimFilerTab', 'VimFiler', 'VimFilerExplorer'] }
+" NeoBundle 'SirVer/ultisnips'
+" NeoBundle 'thinca/vim-quickrun'
+" NeoBundle 'vim-jp/vital.vim'
+" NeoBundle 'vimcommunity/vim-pi'
+" NeoBundle 'Yggdroot/indentLine'
+
+call neobundle#end()
+filetype plugin indent on
 " }}}
+
 
 
 "
@@ -151,7 +274,7 @@ let $TERMINFO = "/usr/local/share/terminfo"
 let $TERM = 'rxvt-unicode-256color'
 
 " set
-set autochdir
+" set autochdir
 set autoindent " nvim set by default
 set autoread
 set backspace=indent,eol,start
@@ -195,7 +318,8 @@ set switchbuf=useopen
 set tabstop=2
 set tags=./tags;,tags " nvim set by default
 set textwidth=0
-set notimeout
+set timeoutlen=100
+set nottimeout
 set title
 set titlelen=120
 set ttimeout
@@ -229,7 +353,7 @@ set nowritebackup
 "}}}
 
 
-" nvimrc augroup "{{{
+" nvimrc user augroup "{{{
 " syntax highlight's is ~/.nvim/after/syntax/vim.vim
 augroup GlobalAutoCmd
   autocmd!
@@ -408,13 +532,15 @@ let g:gitgutter_enabled = 1
 let g:gitgutter_realtime = 1
 let g:gitgutter_sign_column_always = 1
 let g:gitgutter_max_signs = 1000
+let g:gitgutter_map_keys = 0
 
+" vim-dirvish
+let g:dirvish_hijack_netrw = 1
 
 " NERDTree
-let NERDTreeHijackNetrw=1
-let NERDTreeMinimalUI=1
-let NERDTreeShowHidden=1
-
+let NERDTreeHijackNetrw = 0
+let NERDTreeMinimalUI = 1
+let NERDTreeShowHidden = 1
 
 " nathanaelkane/vim-indent-guides
 let g:indent_guides_enable_on_vim_startup = 1
@@ -431,215 +557,8 @@ let g:yankround_dir = $HOME . "/.cache/yankround"
 let g:wakatime_PythonBinary = '/usr/local/bin/python'
 
 
-" haya14busa/incsearch
-" map /  <Plug>(incsearch-forward)
-" map ?  <Plug>(incsearch-backward)
-" map g/ <Plug>(incsearch-stay)
-
-
-" mattn/ctrlp-ghq
-" let g:ctrlp_ghq_actions = [
-" \ {"label": "open", "action": "e", "path": 1},
-" \ {"label": "look", "action": "!ghq look", "path": 0},
-" \]
-" let ctrlp_ghq_default_action = 'e'
-" let g:ctrlp_ghq_cache_enabled = 1
-
-
-" " tinca/quickrun
-" " Will rewrite port Neomake?
-" " https://github.com/rhysd/dotfiles/blob/master/nvimrc#L833-L888
-" "
-" " Init quickrun_config
-" let g:quickrun_config = get(g:, 'quickrun_config', {})
-" " Check file syntax
-" " https://github.com/rhysd/dotfiles/blob/master/vimrc#L2280-L2287
-"
-" " Global config
-" let g:quickrun_config._ = {
-"   \ 'outputter' : 'error:buffer:quickfix',
-"   \ 'split' : 'rightbelow 12sp',
-"   \ }
-" " outputter
-" let g:quickrun_unite_quickfix_outputter_unite_context = { 'no_empty' : 1 }
-" " Polling interval use runner vimproc
-" let g:quickrun_config['_']['runner/vimproc/updatetime'] = 500
-" Gautocmd BufReadPost,BufNewFile [Rr]akefile{,.rb} let b:quickrun_config = {'exec': 'rake -f %s'}
-"
-" " FileType config
-" function! s:check_syntax(ft) abort
-"     let type = 'syntax/' . a:ft
-"     if has_key(g:quickrun_config[type], 'command') && !executable(g:quickrun_config[type].command)
-"         return
-"     endif
-"     execute 'QuickRun' '-type' type
-" endfunction
-"
-" " Go
-" let g:quickrun_config['syntax/go'] = {
-"   \ 'command' : 'go',
-"   \ 'exec' : '%c vet %o %s:p',
-"   \ 'outputter' : 'quickfix',
-"   \ 'runner' : 'vimproc',
-"   \ 'errorformat' : '%Evet: %.%\+: %f:%l:%c: %m,%W%f:%l: %m,%-G%.%#',
-"   \ }
-" let g:quickrun_config['lint/go'] = {
-"   \ 'command' : 'golint',
-"   \ 'exec' : '%c %o %s:p',
-"   \ 'outputter' : 'quickfix',
-"   \ 'runner' : 'vimproc',
-"   \ }
-" Gautocmd BufWritePost *.go call <SID>check_syntax('go')
-"
-" " Dockerfile
-" " let g:quickrun_config['syntax/Dockerfile'] = {
-" "   \ 'command' : 'docker',
-" "   \ 'cmdopt' : 'build -t',
-" "   \ 'exec' : '%c %o %s %s:p',
-" "   \ 'outputter' : 'quickfix',
-" "   \ 'runner' : 'vimproc',
-" "   \ 'errorformat' : '%E%r',
-" "   \ }
-"
-" " JavaScript
-" function! s:check_js_syntax() abort
-"   if &ft ==# 'javascript'
-"       \ && has_key(g:quickrun_config['syntax/javascript'], 'command')
-"       \ && executable(g:quickrun_config['syntax/javascript'].command)
-"       \ && getline(1) !~? '^//\s\+jsx'
-"       QuickRun -type syntax/javascript
-"   endif
-" endfunction
-" let g:quickrun_config['syntax/javascript'] = {
-"   \ 'command' : 'jshint',
-"   \ 'outputter' : 'quickfix',
-"   \ 'exec'    : '%c %o %s:p',
-"   \ 'runner' : 'vimproc',
-"   \ 'errorformat' : '%f: line %l\, col %c\, %m',
-"   \ }
-" Gautocmd BufWritePost *.js call <SID>check_js_syntax()
-"
-" " Ruby
-" let g:quickrun_config['syntax/ruby'] = {
-"   \ 'runner' : 'vimproc',
-"   \ 'outputter' : 'quickfix',
-"   \ 'command' : 'ruby',
-"   \ 'exec' : '%c -c %s:p %o',
-"   \ }
-" Gautocmd BufWritePost *.rb call <SID>check_syntax('ruby')
-"
-" " Crystal
-" let g:quickrun_config['syntax/crystal'] = {
-"   \   'command' : 'crystal',
-"   \   'cmdopt' : 'run --no-build --no-color',
-"   \   'exec' : '%c %o %s:p',
-"   \   'outputter' : 'quickfix',
-"   \   'runner' : 'vimproc',
-"   \ }
-" Gautocmd BufWritePost *.cr call <SID>check_syntax('crystal')
-"
-" " Python
-" let g:quickrun_config['syntax/python'] = {
-"   \ 'command' : 'pyflakes',
-"   \ 'exec' : '%c %o %s:p',
-"   \ 'outputter' : 'quickfix',
-"   \ 'runner' : 'vimproc',
-"   \ 'errorformat' : '%f:%l:%m',
-"   \ }
-" Gautocmd BufWritePost *.py call <SID>check_syntax('python')
-"
-" " Rust
-" let g:quickrun_config['syntax/rust'] = {
-"   \   'command' : 'rustc',
-"   \   'cmdopt' : '-Zparse-only',
-"   \   'exec' : '%c %o %s:p',
-"   \   'outputter' : 'quickfix',
-"   \ }
-" Gautocmd BufWritePost *.rs call <SID>check_syntax('rust')
-"
-" " tmux
-" let g:quickrun_config['tmux'] = {
-"   \ 'command' : 'tmux',
-"   \ 'cmdopt' : 'source-file',
-"   \ 'exec' : ['%c %o %s:p', 'echo "sourced %s"'],
-"   \ }
-"
-" " Haml
-" let g:quickrun_config['syntax/haml'] = {
-"   \ 'runner' : 'vimproc',
-"   \ 'command' : 'haml',
-"   \ 'outputter' : 'quickfix',
-"   \ 'exec'    : '%c -c %o %s:p',
-"   \ 'errorformat' : 'Haml error on line %l: %m,Syntax error on line %l: %m,%-G%.%#',
-"   \ }
-" Gautocmd BufWritePost *.haml call <SID>check_syntax('haml')
-"
-" " C++
-" let g:quickrun_config.cpp = {
-"   \ 'command' : 'clang++',
-"   \ 'cmdopt' : '-std=c++1y -Wall -Wextra -O2',
-"   \ }
-" let g:quickrun_config['cpp/llvm'] = {
-"   \ 'type' : 'cpp/clang++',
-"   \ 'exec' : '%c %o -emit-llvm -S %s -o -',
-"   \ }
-" let g:quickrun_config['c/llvm'] = {
-"   \ 'type' : 'c/clang',
-"   \ 'exec' : '%c %o -emit-llvm -S %s -o -',
-"   \ }
-" let g:quickrun_config['dachs'] = {
-"   \ 'command' : './bin/dachs',
-"   \ }
-" let g:quickrun_config['dachs/llvm'] = {
-"   \ 'type' : 'dachs',
-"   \ 'cmdopt' : '--emit-llvm',
-"   \ }
-" let g:quickrun_config['llvm'] = {
-"   \ 'exec' : 'llvm-as-3.4 %s:p -o=- | lli-3.4 - %a',
-"   \ }
-" " Only pre-process
-" let g:quickrun_config['cpp/preprocess/g++'] = { 'type' : 'cpp/g++', 'exec' : '%c -P -E %s' }
-" let g:quickrun_config['cpp/preprocess/clang++'] = { 'type' : 'cpp/clang++', 'exec' : '%c -P -E %s' }
-" let g:quickrun_config['cpp/preprocess'] = { 'type' : 'cpp', 'exec' : '%c -P -E %s' }
-" let g:quickrun_config['cpp/clang'] = { 'command' : 'clang++', 'cmdopt' : '-stdlib=libc++ -std=c++11 -Wall -Wextra -O2' }
-" Gautocmd FileType cpp nnoremap <silent><buffer><Leader>qc :<C-u>QuickRun -type cpp/clang<CR>
-"
-" " cpp/g++
-" let g:quickrun_config['syntax/cpp/g++'] = {
-"   \ 'runner' : 'vimproc',
-"   \ 'outputter' : 'quickfix',
-"   \ 'command' : 'g++',
-"   \ 'cmdopt' : '-std=c++1y -Wall -Wextra -O2',
-"   \ 'exec' : '%c %o -fsyntax-only %s:p'
-"   \ }
-"
-" " llc
-" if executable('llc-3.5')
-"   let g:vimrc_llc_command = 'llc-3.5'
-" elseif executable('llc')
-"   let g:vimrc_llc_command = 'llc'
-" endif
-" if exists('g:vimrc_llc_command')
-"   let g:quickrun_config['syntax/llvm'] = {
-"     \ 'command' : g:vimrc_llc_command,
-"     \ 'cmdopt' : '-filetype=null -o=/dev/null',
-"     \ 'exec' : '%c %o %s:p',
-"     \ 'outputter' : 'quickfix',
-"     \ 'runner' : 'vimproc',
-"     \ }
-"   Gautocmd BufWritePost *.ll QuickRun -type syntax/llvm
-" endif
-
-
 " vim-markdown
 let g:vim_markdown_folding_disabled = 1
-
-
-" vital-exe-assert
-" let g:__vital_exe_assert_config = { '__debug__': 1, '__abort__': 0 }
-" let s:V = vital#of('vital')
-" let g:assert = s:V.import('ExeAssert').make()
-
 
 " tyru/open-browser.vim
 let g:netrw_nogx = 1 
@@ -667,6 +586,12 @@ function! OpenPlugPath(motion_wise)
     call openbrowser#open('https://github.com/vim-scripts/'.sel)
   endif
 endfunction
+
+nmap <Leader>o <Plug>(openbrowser-smart-search)
+xmap <Leader>o <Plug>(openbrowser-smart-search)
+nnoremap <Leader>O :<C-u>OpenGithubFile<CR>
+vnoremap <Leader>O :OpenGithubFile<CR>
+"}}}
 
 
 " thinca/vim-ref
@@ -862,7 +787,6 @@ endfunction
 " smart help window
 " https://github.com/rhysd/dotfiles/blob/master/nvimrc#L380-L405
 command! -nargs=* -complete=help SmartHelp call <SID>smart_help(<q-args>)
-nnoremap <silent><Leader>h :<C-u>SmartHelp<Space><C-l>
 function! s:smart_help(args)
     try
         if winwidth(0) > winheight(0) * 2
@@ -962,8 +886,8 @@ nnoremap .y   :CtrlPYankRound<CR>
 
 " Map Leader
 let mapleader = "\<Space>"
-nnoremap <Leader>ct :!cd $PWD/$(git rev-parse --show-cdup) && !ctags -R .<CR>
-nnoremap <Leader>h  :<C-u>SmartHelp<Space>
+nnoremap <Leader>c :!cd $PWD/$(git rev-parse --show-cdup) && !ctags -R .<CR>
+nnoremap <Leader>h :<C-u>SmartHelp<Space><C-l>
 nnoremap <Leader>n  :TagbarToggle<CR>
 nnoremap <Leader>r  :QuickRun<CR>
 nnoremap <Leader>t  :NERDTreeToggle<CR>

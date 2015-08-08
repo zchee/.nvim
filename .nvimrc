@@ -202,8 +202,7 @@ let $LANG     = "ja_JP.UTF-8"
 set cindent
 set clipboard=unnamed,unnamedplus
 set cmdheight=1
-set completeopt+=noselect,noinsert
-set completeopt-=preview
+set completeopt+=noselect,noinsert,preview
 set expandtab
 set formatoptions+=j
 set formatoptions+=l
@@ -564,8 +563,12 @@ let g:vim_markdown_folding_disabled = 1
 " File Syntax "{{{
 "
 " Go
+let g:go_auto_type_info = 1
 let g:go_fmt_command = 'goimports'
-" let g:go_doc_command = 'getool doc'
+let g:go_fmt_experimental = 1
+let g:go_def_mapping_enabled = 0
+let g:go_doc_command = 'godoc'
+let g:go_doc_options = ''
 let g:go_snippet_engine = 'neosnippet'
 let g:go_highlight_operators = 1
 let g:go_highlight_functions = 1
@@ -606,23 +609,12 @@ Gautocmd BufWritePost *.vim silent! !cd ~/.nvim/ && ctags -R --languages=Vim -F 
 " Vimgrep results in quickfix window
 Gautocmd QuickFixCmdPost *grep* cwindow
 
-" for languages documents
-Gautocmdft help,ref,man,qf call On_FileType_doc_define_mappings()
-function! On_FileType_doc_define_mappings()
-  " Select the linked word
-  nnoremap <buffer><silent><Tab> /\%(\_.\zs<Bar>[^ ]\+<Bar>\ze\_.\<Bar>CTRL-.\<Bar><[^ >]\+>\)<CR>
-  " less like keymap
-  nnoremap <buffer>u <C-u>
-  nnoremap <buffer>d <C-d>
-  nnoremap <buffer>q :<C-u>q<CR>
-endfunction
-
 " http://d.hatena.ne.jp/osyo-manga/20130311/1363012363 
 
 " Japanese input auto change
 " Use https://github.com/hnakamur/inputsource
 " Ref http://superuser.com/questions/224161/switch-to-specific-input-source
-Gautocmd InsertLeave *.md silent! !inputsource 'com.apple.keylayout.US' &
+Gautocmd InsertLeave * silent! !inputsource 'com.apple.keylayout.US' &
 
 " Japanese input deoplete issue?
 Gautocmdft mkd,markdown let g:deoplete#enable_at_startup = 0
@@ -808,7 +800,7 @@ nnoremap <Leader>w :w<CR>
 Gautocmdft go nmap <Leader>f :GoFmt<CR>
 Gautocmdft go nmap <Leader>g :call GodefUnderCursor()<CR>
 Gautocmdft go nmap <Leader>i <Plug>(go-info)
-
+Gautocmdft go nmap <C-]>     <Plug>(go-def-split)
 
 " yankround
 nmap p  <Plug>(yankround-p)
@@ -839,7 +831,7 @@ nnoremap <S-Right> $
 " Jump to match pair brackets
 nnoremap <Tab> %
 " http://ku.ido.nu/post/90355094974/how-to-grep-a-word-under-the-cursor-on-vim
-nnoremap <M-h> :<C-u>SmartHelp<Space><C-R><C-w><CR>
+nnoremap <M-h> :<C-u>SmartHelp<Space><C-r><C-w><CR>
 nnoremap zk    zkzkzj
 
 " 
@@ -868,6 +860,17 @@ inoremap <silent> <C-y>L <Esc>ly$<Insert>
 " https://github.com/neovim/neovim/issues/2701
 " set <F37>=^?
 " inoremap <F37> <C-w>
+
+" for languages documents
+Gautocmdft help,ref,man,qf call On_FileType_doc_define_mappings()
+function! On_FileType_doc_define_mappings()
+  " Select the linked word
+  nnoremap <buffer><silent><Tab> /\%(\_.\zs<Bar>[^ ]\+<Bar>\ze\_.\<Bar>CTRL-.\<Bar><[^ >]\+>\)<CR>
+  " less like keymap
+  nnoremap <buffer>u <C-u>
+  nnoremap <buffer>d <C-d>
+  nnoremap <buffer>q :<C-u>q<CR>
+endfunction
 
 "
 " Visual
@@ -902,7 +905,7 @@ cmap w!! w !sudo tee > /dev/null %
 " Not works '~' of relative python path.
 " And, installed neovim python client by `pip install git+https://github.com/neovim/python-client`
 let g:python_host_prog  = '/usr/local/var/pyenv/shims/python'
-let g:python3_host_prog  = '/Users/zchee/.pyenv/shims/python3'
+let g:python3_host_prog  = '/usr/local/var/pyenv/shims/python3'
 let g:python_host_skip_check = 1
 let g:python3_host_skip_check = 1
 

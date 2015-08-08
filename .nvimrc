@@ -900,8 +900,8 @@ cmap w!! w !sudo tee > /dev/null %
 "
 
 " Most required absolude python path.
-" Not works '~' of relative pathon path.
-" And, installed neovim python client by `pip install neovim`
+" Not works '~' of relative python path.
+" And, installed neovim python client by `pip install git+https://github.com/neovim/python-client`
 let g:python_host_prog  = '/usr/local/var/pyenv/shims/python'
 let g:python3_host_prog  = '/Users/zchee/.pyenv/shims/python3'
 let g:python_host_skip_check = 1

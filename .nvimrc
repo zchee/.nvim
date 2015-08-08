@@ -622,8 +622,7 @@ endfunction
 " Japanese input auto change
 " Use https://github.com/hnakamur/inputsource
 " Ref http://superuser.com/questions/224161/switch-to-specific-input-source
-Gautocmd InsertLeave * silent! !inputsource 'com.apple.keylayout.US' &
-
+Gautocmd InsertLeave *.md silent! !inputsource 'com.apple.keylayout.US' &
 
 " Japanese input deoplete issue?
 Gautocmdft mkd,markdown let g:deoplete#enable_at_startup = 0

@@ -601,7 +601,7 @@ Gautocmd BufRead,BufNewFile *.md set filetype=markdown
 " autocmd BufEnter * :syntax sync fromstart
 
 " develop nvimrc helper
-Gautocmd BufWritePost $MYVIMRC,~/.nvimrc,*.vim nested silent! source $MYVIMRC
+Gautocmd BufWritePost $MYVIMRC,~/.nvim/.nvimrc,*.vim nested silent! source $MYVIMRC
 Gautocmd WinEnter $MYVIMRC,~/.nvimrc set tags=~/.nvim/tags
 Gautocmdft vim set tags=~/.nvim/tags
 Gautocmd BufWritePost *.vim silent! !cd ~/.nvim/ && ctags -R --languages=Vim -F ~/.nvim &

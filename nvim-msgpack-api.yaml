@@ -1,0 +1,443 @@
+error_types:
+  Exception: {id: 0}
+  Validation: {id: 1}
+functions:
+- can_fail: true
+  deferred: false
+  name: buffer_line_count
+  parameters:
+  - [Buffer, buffer]
+  return_type: Integer
+- can_fail: true
+  deferred: false
+  name: buffer_get_line
+  parameters:
+  - [Buffer, buffer]
+  - [Integer, index]
+  return_type: String
+- can_fail: true
+  deferred: true
+  name: buffer_set_line
+  parameters:
+  - [Buffer, buffer]
+  - [Integer, index]
+  - [String, line]
+  return_type: void
+- can_fail: true
+  deferred: true
+  name: buffer_del_line
+  parameters:
+  - [Buffer, buffer]
+  - [Integer, index]
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: buffer_get_line_slice
+  parameters:
+  - [Buffer, buffer]
+  - [Integer, start]
+  - [Integer, end]
+  - [Boolean, include_start]
+  - [Boolean, include_end]
+  return_type: ArrayOf(String)
+- can_fail: true
+  deferred: true
+  name: buffer_set_line_slice
+  parameters:
+  - [Buffer, buffer]
+  - [Integer, start]
+  - [Integer, end]
+  - [Boolean, include_start]
+  - [Boolean, include_end]
+  - [ArrayOf(String), replacement]
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: buffer_get_var
+  parameters:
+  - [Buffer, buffer]
+  - [String, name]
+  return_type: Object
+- can_fail: true
+  deferred: true
+  name: buffer_set_var
+  parameters:
+  - [Buffer, buffer]
+  - [String, name]
+  - [Object, value]
+  return_type: Object
+- can_fail: true
+  deferred: false
+  name: buffer_get_option
+  parameters:
+  - [Buffer, buffer]
+  - [String, name]
+  return_type: Object
+- can_fail: true
+  deferred: true
+  name: buffer_set_option
+  parameters:
+  - [Buffer, buffer]
+  - [String, name]
+  - [Object, value]
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: buffer_get_number
+  parameters:
+  - [Buffer, buffer]
+  return_type: Integer
+- can_fail: true
+  deferred: false
+  name: buffer_get_name
+  parameters:
+  - [Buffer, buffer]
+  return_type: String
+- can_fail: true
+  deferred: true
+  name: buffer_set_name
+  parameters:
+  - [Buffer, buffer]
+  - [String, name]
+  return_type: void
+- deferred: false
+  name: buffer_is_valid
+  parameters:
+  - [Buffer, buffer]
+  return_type: Boolean
+- can_fail: true
+  deferred: true
+  name: buffer_insert
+  parameters:
+  - [Buffer, buffer]
+  - [Integer, lnum]
+  - [ArrayOf(String), lines]
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: buffer_get_mark
+  parameters:
+  - [Buffer, buffer]
+  - [String, name]
+  return_type: ArrayOf(Integer, 2)
+- can_fail: true
+  deferred: false
+  name: tabpage_get_windows
+  parameters:
+  - [Tabpage, tabpage]
+  return_type: ArrayOf(Window)
+- can_fail: true
+  deferred: false
+  name: tabpage_get_var
+  parameters:
+  - [Tabpage, tabpage]
+  - [String, name]
+  return_type: Object
+- can_fail: true
+  deferred: true
+  name: tabpage_set_var
+  parameters:
+  - [Tabpage, tabpage]
+  - [String, name]
+  - [Object, value]
+  return_type: Object
+- can_fail: true
+  deferred: false
+  name: tabpage_get_window
+  parameters:
+  - [Tabpage, tabpage]
+  return_type: Window
+- deferred: false
+  name: tabpage_is_valid
+  parameters:
+  - [Tabpage, tabpage]
+  return_type: Boolean
+- can_fail: true
+  deferred: true
+  name: vim_command
+  parameters:
+  - [String, str]
+  return_type: void
+- deferred: true
+  name: vim_feedkeys
+  parameters:
+  - [String, keys]
+  - [String, mode]
+  - [Boolean, escape_csi]
+  return_type: void
+- deferred: false
+  name: vim_input
+  parameters:
+  - [String, keys]
+  return_type: Integer
+- deferred: false
+  name: vim_replace_termcodes
+  parameters:
+  - [String, str]
+  - [Boolean, from_part]
+  - [Boolean, do_lt]
+  - [Boolean, special]
+  return_type: String
+- can_fail: true
+  deferred: false
+  name: vim_command_output
+  parameters:
+  - [String, str]
+  return_type: String
+- can_fail: true
+  deferred: true
+  name: vim_eval
+  parameters:
+  - [String, str]
+  return_type: Object
+- can_fail: true
+  deferred: true
+  name: vim_call_function
+  parameters:
+  - [String, fname]
+  - [Array, args]
+  return_type: Object
+- can_fail: true
+  deferred: false
+  name: vim_strwidth
+  parameters:
+  - [String, str]
+  return_type: Integer
+- deferred: false
+  name: vim_list_runtime_paths
+  parameters: []
+  return_type: ArrayOf(String)
+- can_fail: true
+  deferred: false
+  name: vim_change_directory
+  parameters:
+  - [String, dir]
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: vim_get_current_line
+  parameters: []
+  return_type: String
+- can_fail: true
+  deferred: true
+  name: vim_set_current_line
+  parameters:
+  - [String, line]
+  return_type: void
+- can_fail: true
+  deferred: true
+  name: vim_del_current_line
+  parameters: []
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: vim_get_var
+  parameters:
+  - [String, name]
+  return_type: Object
+- can_fail: true
+  deferred: true
+  name: vim_set_var
+  parameters:
+  - [String, name]
+  - [Object, value]
+  return_type: Object
+- can_fail: true
+  deferred: false
+  name: vim_get_vvar
+  parameters:
+  - [String, name]
+  return_type: Object
+- can_fail: true
+  deferred: false
+  name: vim_get_option
+  parameters:
+  - [String, name]
+  return_type: Object
+- can_fail: true
+  deferred: true
+  name: vim_set_option
+  parameters:
+  - [String, name]
+  - [Object, value]
+  return_type: void
+- deferred: true
+  name: vim_out_write
+  parameters:
+  - [String, str]
+  return_type: void
+- deferred: true
+  name: vim_err_write
+  parameters:
+  - [String, str]
+  return_type: void
+- deferred: true
+  name: vim_report_error
+  parameters:
+  - [String, str]
+  return_type: void
+- deferred: false
+  name: vim_get_buffers
+  parameters: []
+  return_type: ArrayOf(Buffer)
+- deferred: false
+  name: vim_get_current_buffer
+  parameters: []
+  return_type: Buffer
+- can_fail: true
+  deferred: true
+  name: vim_set_current_buffer
+  parameters:
+  - [Buffer, buffer]
+  return_type: void
+- deferred: false
+  name: vim_get_windows
+  parameters: []
+  return_type: ArrayOf(Window)
+- deferred: false
+  name: vim_get_current_window
+  parameters: []
+  return_type: Window
+- can_fail: true
+  deferred: true
+  name: vim_set_current_window
+  parameters:
+  - [Window, window]
+  return_type: void
+- deferred: false
+  name: vim_get_tabpages
+  parameters: []
+  return_type: ArrayOf(Tabpage)
+- deferred: false
+  name: vim_get_current_tabpage
+  parameters: []
+  return_type: Tabpage
+- can_fail: true
+  deferred: true
+  name: vim_set_current_tabpage
+  parameters:
+  - [Tabpage, tabpage]
+  return_type: void
+- deferred: false
+  name: vim_subscribe
+  parameters:
+  - [String, event]
+  receives_channel_id: true
+  return_type: void
+- deferred: false
+  name: vim_unsubscribe
+  parameters:
+  - [String, event]
+  receives_channel_id: true
+  return_type: void
+- deferred: false
+  name: vim_name_to_color
+  parameters:
+  - [String, name]
+  return_type: Integer
+- deferred: false
+  name: vim_get_color_map
+  parameters: []
+  return_type: Dictionary
+- deferred: false
+  name: vim_get_api_info
+  parameters: []
+  receives_channel_id: true
+  return_type: Array
+- can_fail: true
+  deferred: false
+  name: window_get_buffer
+  parameters:
+  - [Window, window]
+  return_type: Buffer
+- can_fail: true
+  deferred: false
+  name: window_get_cursor
+  parameters:
+  - [Window, window]
+  return_type: ArrayOf(Integer, 2)
+- can_fail: true
+  deferred: true
+  name: window_set_cursor
+  parameters:
+  - [Window, window]
+  - ['ArrayOf(Integer, 2)', pos]
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: window_get_height
+  parameters:
+  - [Window, window]
+  return_type: Integer
+- can_fail: true
+  deferred: true
+  name: window_set_height
+  parameters:
+  - [Window, window]
+  - [Integer, height]
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: window_get_width
+  parameters:
+  - [Window, window]
+  return_type: Integer
+- can_fail: true
+  deferred: true
+  name: window_set_width
+  parameters:
+  - [Window, window]
+  - [Integer, width]
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: window_get_var
+  parameters:
+  - [Window, window]
+  - [String, name]
+  return_type: Object
+- can_fail: true
+  deferred: true
+  name: window_set_var
+  parameters:
+  - [Window, window]
+  - [String, name]
+  - [Object, value]
+  return_type: Object
+- can_fail: true
+  deferred: false
+  name: window_get_option
+  parameters:
+  - [Window, window]
+  - [String, name]
+  return_type: Object
+- can_fail: true
+  deferred: true
+  name: window_set_option
+  parameters:
+  - [Window, window]
+  - [String, name]
+  - [Object, value]
+  return_type: void
+- can_fail: true
+  deferred: false
+  name: window_get_position
+  parameters:
+  - [Window, window]
+  return_type: ArrayOf(Integer, 2)
+- can_fail: true
+  deferred: false
+  name: window_get_tabpage
+  parameters:
+  - [Window, window]
+  return_type: Tabpage
+- deferred: false
+  name: window_is_valid
+  parameters:
+  - [Window, window]
+  return_type: Boolean
+types:
+  Buffer: {id: 0}
+  Tabpage: {id: 2}
+  Window: {id: 1}
+

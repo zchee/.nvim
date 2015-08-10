@@ -658,34 +658,6 @@ endif
 " Without mkd or markdown FileTypes
 Gautocmd BufWritePre if FileType != 'markdown' ? :%s/\s\+$//ge : ''
 
-" Auto cursorline when change window
-" http://d.hatena.ne.jp/thinca/20090530/1243615055
-" Gautocmd CursorMoved,CursorMovedI * call s:auto_cursorline('CursorMoved')
-" Gautocmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
-" Gautocmd WinEnter * call s:auto_cursorline('WinEnter')
-" Gautocmd WinLeave * call s:auto_cursorline('WinLeave')
-" let s:cursorline_lock = 0
-" function! s:auto_cursorline(event)
-"   if a:event ==# 'WinEnter'
-"     setlocal cursorline cursorcolumn
-"     let s:cursorline_lock = 2
-"   elseif a:event ==# 'WinLeave'
-"     setlocal nocursorline nocursorcolumn
-"   elseif a:event ==# 'CursorMoved'
-"     if s:cursorline_lock
-"       if 1 < s:cursorline_lock
-"         let s:cursorline_lock = 1
-"       else
-"         setlocal nocursorline nocursorcolumn
-"         let s:cursorline_lock = 0
-"       endif
-"     endif
-"   elseif a:event ==# 'CursorHold'
-"     setlocal cursorline cursorcolumn
-"     let s:cursorline_lock = 1
-"   endif
-" endfunction
-
 " smart help window
 " https://github.com/rhysd/dotfiles/blob/master/nvimrc#L380-L405
 command! -nargs=* -complete=help SmartHelp call <SID>smart_help(<q-args>)

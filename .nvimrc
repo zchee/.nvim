@@ -28,11 +28,11 @@ set runtimepath+=~/.nvim/bundle/neobundle.vim
 call neobundle#begin(expand('~/.nvim/bundle/'))
 
 NeoBundle 'Shougo/deoplete.nvim'
-" NeoBundle 'Shougo/neco-syntax'
-" NeoBundle 'Shougo/neco-vim'
-" NeoBundle 'Shougo/neomru.vim'
-" NeoBundle 'Shougo/neosnippet-snippets'
-" NeoBundle 'Shougo/neosnippet.vim'
+NeoBundle 'Shougo/neco-syntax'
+NeoBundle 'Shougo/neco-vim'
+NeoBundle 'Shougo/neomru.vim'
+NeoBundle 'Shougo/neosnippet-snippets'
+NeoBundle 'Shougo/neosnippet.vim'
 
 " Build
 NeoBundleLazy 'thinca/vim-quickrun', { 'autoload' : { 'commands' : 'QuickRun' } }
@@ -188,21 +188,14 @@ filetype plugin indent on
 " Settings "{{{
 "
 syntax on
-" let g:hybrid_use_Xresources=1
-" colorscheme hybrid
 colorscheme ux
-
-" Environment variables
-let $TERMINFO = "/usr/local/share/terminfo"
-let $TERM     = "xterm-256color"
-let $LANG     = "ja_JP.UTF-8"
 
 " set
 " set autochdir
 set cindent
-set clipboard=unnamed,unnamedplus
+set clipboard=unnamedplus,unnamed
 set cmdheight=1
-set completeopt+=noselect,noinsert,preview
+" set completeopt+=noselect,noinsert
 set expandtab
 set formatoptions+=j
 set formatoptions+=l
@@ -211,7 +204,6 @@ set formatoptions-=o
 set formatoptions-=r
 set formatoptions-=t
 set formatoptions-=v
-set guicursor=n-v-c:block-nCursor,o:hor50,i-ci:hor15,r-cr:hor30,sm:block,a:blinkon0,a:block-nCursorblock-nCursor
 set helpheight=12
 set helplang=ja,en
 set hidden
@@ -226,13 +218,14 @@ set ruler
 set scrolljump=2
 set scrolloff=10
 set shiftwidth=2
-" set tags=./tags
 set showmode
+set pumheight=15
+set previewheight=3
 set showtabline=2
 set smartcase
 set smartindent
 set switchbuf=useopen
-set tabstop=2
+set tabstop=4
 set textwidth=0
 set timeoutlen=100
 set undodir=~/.nvim/undo
@@ -284,7 +277,7 @@ command! -nargs=* Gautocmdft autocmd GlobalAutoCmd FileType <args>
 " deoplete.nvim
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_smart_case = 0
-let g:deoplete#auto_completion_start_length = 2
+let g:deoplete#auto_completion_start_length = 1
 
 " Gautocmd BufRead * silent :NeoSnippetSource<CR>
 " Enable <expr><C-Space> keymap
@@ -294,8 +287,8 @@ inoremap <expr><BS>      deoplete#mappings#close_popup()."\<C-h>"
 inoremap <expr><Left>    pumvisible() ? deoplete#mappings#cancel_popup()."\<Left>"  : "\<Left>"
 inoremap <expr><Right>   pumvisible() ? deoplete#mappings#cancel_popup()."\<Right>" : "\<Right>"
 
-let g:deoplete#sources = {}
-let g:deoplete#sources._ = ['buffer', 'tag', 'file']
+" let g:deoplete#sources = {}
+" let g:deoplete#sources._ = ['buffer', 'file']
 " Deoplete now support omni completion patterns
 " g:deoplete#_omni_patterns, 'html,xhtml,xml,markdown,mkd', '<[^>]*')
 " g:deoplete#_omni_patterns, 'css,scss,sass', ['^\s+\w+', '\w+[):;]?\s+\w*|[@!]'])
@@ -309,7 +302,6 @@ let g:deoplete#omni_patterns          = {}
 let g:deoplete#omni_patterns.c        = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
 let g:deoplete#omni_patterns.clojure  = '\%(([^)]\+\)\|\*[[:alnum:]_-]\+'
 let g:deoplete#omni_patterns.cpp      = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
- " ? '\h\w*\.\?'
 let g:deoplete#omni_patterns.go       = '[^.[:digit:] *\t]\.\w*'
 let g:deoplete#omni_patterns.java     = '\%(\h\w*\|)\)\.\w*'
 let g:deoplete#omni_patterns.objc     = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
@@ -575,16 +567,26 @@ let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_build_constraints = 1
-" Gautocmd BufWritePost *.go silent! !ctags -R --languages=Go &
+Gautocmd BufWritePost *.go silent! !cd ./$(git rev-parse --show-cdup) && gotags -f tags -R -sort -silent ./ &
 " vim-gocode
 let g:gocomplete#system_function = 'vimproc#system'
 " vim-godef
-let g:godef_split = 3
+let g:godef_split = 0
 let g:godef_same_file_in_same_window = 1
+" Gautocmdft go setlocal softtabstop=4
+" Gautocmdft go setlocal shiftwidth=4
+" Gautocmdft go setlocal noexpandtab
 
 " Ruby
 Gautocmdft ruby,eruby,ruby.rspec nnoremap <silent><buffer>K  :<C-u>Unite -no-start-insert ref/refe -input=<C-R><C-W><CR>
 Gautocmdft ruby,eruby,ruby.rspec nnoremap <silent><buffer>KK :<C-u>Unite -no-start-insert ref/ri   -input=<C-R><C-W><CR>
+
+" Python
+" Gautocmdft python setlocal softtabstop=4
+" Gautocmdft python setlocal shiftwidth=4
+" Gautocmdft python setlocal smarttab
+" Gautocmdft python setlocal noexpandtab
+" Gautocmdft python setlocal nosmartindent
 
 " tmux
 Gautocmdft tmux nnoremap <silent><buffer> K :call tmux#man()<CR>
@@ -654,35 +656,35 @@ endif
 
 " Trim whitespace when write buffer
 " Without mkd or markdown FileTypes
-Gautocmd BufWritePre if FileType != 'mkd,markdown' ? :%s/\s\+$//ge : ''
+Gautocmd BufWritePre if FileType != 'markdown' ? :%s/\s\+$//ge : ''
 
 " Auto cursorline when change window
 " http://d.hatena.ne.jp/thinca/20090530/1243615055
-Gautocmd CursorMoved,CursorMovedI * call s:auto_cursorline('CursorMoved')
-Gautocmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
-Gautocmd WinEnter * call s:auto_cursorline('WinEnter')
-Gautocmd WinLeave * call s:auto_cursorline('WinLeave')
-let s:cursorline_lock = 0
-function! s:auto_cursorline(event)
-  if a:event ==# 'WinEnter'
-    setlocal cursorline cursorcolumn
-    let s:cursorline_lock = 2
-  elseif a:event ==# 'WinLeave'
-    setlocal nocursorline nocursorcolumn
-  elseif a:event ==# 'CursorMoved'
-    if s:cursorline_lock
-      if 1 < s:cursorline_lock
-        let s:cursorline_lock = 1
-      else
-        setlocal nocursorline nocursorcolumn
-        let s:cursorline_lock = 0
-      endif
-    endif
-  elseif a:event ==# 'CursorHold'
-    setlocal cursorline cursorcolumn
-    let s:cursorline_lock = 1
-  endif
-endfunction
+" Gautocmd CursorMoved,CursorMovedI * call s:auto_cursorline('CursorMoved')
+" Gautocmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
+" Gautocmd WinEnter * call s:auto_cursorline('WinEnter')
+" Gautocmd WinLeave * call s:auto_cursorline('WinLeave')
+" let s:cursorline_lock = 0
+" function! s:auto_cursorline(event)
+"   if a:event ==# 'WinEnter'
+"     setlocal cursorline cursorcolumn
+"     let s:cursorline_lock = 2
+"   elseif a:event ==# 'WinLeave'
+"     setlocal nocursorline nocursorcolumn
+"   elseif a:event ==# 'CursorMoved'
+"     if s:cursorline_lock
+"       if 1 < s:cursorline_lock
+"         let s:cursorline_lock = 1
+"       else
+"         setlocal nocursorline nocursorcolumn
+"         let s:cursorline_lock = 0
+"       endif
+"     endif
+"   elseif a:event ==# 'CursorHold'
+"     setlocal cursorline cursorcolumn
+"     let s:cursorline_lock = 1
+"   endif
+" endfunction
 
 " smart help window
 " https://github.com/rhysd/dotfiles/blob/master/nvimrc#L380-L405
@@ -798,9 +800,10 @@ nnoremap <Leader>t :silent! VimFilerExplorer -split -simple -winwidth=35 -toggle
 nnoremap <Leader>w :w<CR>
 
 Gautocmdft go nmap <Leader>f :GoFmt<CR>
-Gautocmdft go nmap <Leader>g :call GodefUnderCursor()<CR>
+Gautocmdft go nmap <Leader>g <Plug>(go-def-split)
 Gautocmdft go nmap <Leader>i <Plug>(go-info)
-Gautocmdft go nmap <C-]>     <Plug>(go-def-split)
+Gautocmdft go nmap <C-]>     <Plug>(go-def)
+" Gautocmdft go nmap <C-]>     :call GodefUnderCursor()<CR>
 
 " yankround
 nmap p  <Plug>(yankround-p)

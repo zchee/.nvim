@@ -654,8 +654,7 @@ if !exists(":DiffOrig")
   command DiffOrig vert new | set buftype=nofile | read ++edit # | 0d_ | diffthis | wincmd p | diffthis
 endif
 
-" Trim whitespace when write buffer
-" Without mkd or markdown FileTypes
+" Trim whitespace when write buffer without mkd or markdown FileTypes
 Gautocmd BufWritePre if FileType != 'markdown' ? :%s/\s\+$//ge : ''
 
 " smart help window
@@ -673,13 +672,6 @@ function! s:smart_help(args)
         echomsg "E149: Sorry, no help for " . a:args
         echohl None
     endtry
-    " if &buftype ==# 'help'
-    "     if winwidth(0) < 80
-    "         execute 'quit'
-    "         execute 'tab help ' . a:args
-    "     endif
-    "     silent! AdjustWindowWidth --direction=shrink
-    " endif
 endfunction
 
 " VimShowHlGroup Show highlight group name under a cursor

@@ -756,11 +756,10 @@ nnoremap .y   :CtrlPYankRound<CR>
 " Map Leader
 let mapleader = "\<Space>"
 nnoremap <Leader>c :!cd $PWD/$(git rev-parse --show-cdup) && !ctags -R .<CR>
-" nnoremap <Leader>g :<C-u>CtrlPGhq<CR>
 nnoremap <Leader>h :<C-u>SmartHelp<Space><C-l>
 nnoremap <Leader>n :TagbarToggle<CR>
-nnoremap <Leader>r :silent! QuickRun<CR>
-nnoremap <Leader>t :silent! VimFilerExplorer -split -simple -winwidth=35 -toggle -no-quit -direction=botright<CR>
+nnoremap <Leader>r :<silent> QuickRun<CR>
+nnoremap <Leader>t :<silent> VimFilerExplorer -split -simple -winwidth=35 -toggle -no-quit -direction=botright<CR>
 nnoremap <Leader>w :w<CR>
 
 Gautocmdft go nmap <Leader>f :GoFmt<CR>

@@ -75,3 +75,6 @@ plugged/
 
 # NeoBundle
 bundle/
+
+# Neovim ShaDa
+shada/

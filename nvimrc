@@ -17,82 +17,79 @@
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" NeoBundle settings "{{{
+" Plug settings "{{{
 
 " Init
 set encoding=utf-8
 set fileencoding=utf-8
-set runtimepath+=~/.nvim/bundle/neobundle.vim
-call neobundle#begin(expand('~/.nvim/bundle/'))
+call plug#begin('~/.nvim/plugged')
 
 " Code Completion
-NeoBundle 'Valloric/YouCompleteMe'
-NeoBundle 'rdnetto/YCM-Generator'
-NeoBundle 'SirVer/ultisnips'
-NeoBundle 'honza/vim-snippets'
+Plug 'Valloric/YouCompleteMe'
+Plug 'rdnetto/YCM-Generator', { 'branch' : 'develop' }
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 
 " Build
-NeoBundleLazy 'benekastah/neomake', { 'autoload' : { 'commands' : 'Neomake' } }
-" NeoBundleLazy 'pgdouyon/vim-accio', { 'autoload' : { 'commands' : 'Accio' } }
-NeoBundle 'thinca/vim-quickrun'
+Plug 'benekastah/neomake', { 'on' : 'Neomake' }
+" Plug 'pgdouyon/vim-accio', { 'on' : 'Accio' }
+Plug 'thinca/vim-quickrun'
 
 " Asynchronous
-NeoBundle 'zchee/asynchronous.nvim'
-NeoBundle 'Shougo/vimproc.vim', { 'build' : { 'mac' : 'make -f make_mac.mak', 'linux' : 'make' } }
-NeoBundle 'tpope/vim-dispatch'
-" NeoBundle 'fmoralesc/nvimfs'
+Plug 'zchee/asynchronous.nvim'
+Plug 'Shougo/vimproc.vim', { 'do' : 'make -f make_mac.mak' }
+Plug 'tpope/vim-dispatch'
+" Plug 'fmoralesc/nvimfs'
 
 " Terminal
-NeoBundle 'kassio/neoterm'
+Plug 'kassio/neoterm'
 
 " Fuzzy
-NeoBundle 'ctrlpvim/ctrlp.vim'
-NeoBundle 'sgur/ctrlp-extensions.vim'
-NeoBundleLazy 'rking/ag.vim', { 'autoload': { 'commands': 'Ag' } }
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'sgur/ctrlp-extensions.vim'
+Plug 'rking/ag.vim', { 'on': 'Ag' }
 
 " Interface
-NeoBundle 'bling/vim-airline'
-NeoBundle 'justinmk/vim-dirvish'
-" NeoBundleLazy 'majutsushi/tagbar', { 'autoload' : { 'commands' : 'Tagbar' } }
+Plug 'bling/vim-airline'
+Plug 'justinmk/vim-dirvish'
+" Plug 'majutsushi/tagbar', { 'on' : 'Tagbar' }
 
 " Color
-NeoBundle 'zchee/vim-hybrid-material'
+Plug 'zchee/vim-hybrid-material'
 
 " Git
-NeoBundle 'airblade/vim-gitgutter'
-" NeoBundle 'zchee/gitgutter.nvim'
-NeoBundleLazy 'cohama/agit.vim', { 'autoload' : { 'commands' : 'Agit' } }
-NeoBundleLazy 'lambdalisue/vim-gista', { 'autoload' : { 'commands' : 'Gista' } }
-NeoBundleLazy 'lambdalisue/vim-gita', { 'autoload' : { 'commands' : 'Gita' } }
-" NeoBundle 'rhysd/github-complete.vim'
+Plug 'airblade/vim-gitgutter'
+" Plug 'zchee/gitgutter.nvim'
+Plug 'lambdalisue/vim-gista', { 'on' : 'Gista' }
+Plug 'lambdalisue/vim-gita', { 'on' : 'Gita' }
+Plug 'cohama/agit.vim', { 'on' : 'Agit' }
+" Plug 'rhysd/github-complete.vim'
 
 " References
-NeoBundle 'powerman/vim-plugin-viewdoc'
-NeoBundleLazy 'lambdalisue/vim-manpager', { 'autoload': { 'commands': 'MANPAGER' }}
-" NeoBundle 'rizzatti/dash.vim'
-" NeoBundle 'thinca/vim-ref'
+Plug 'powerman/vim-plugin-viewdoc'
+Plug 'lambdalisue/vim-manpager', { 'on': 'MANPAGER' }
+" Plug 'rizzatti/dash.vim'
+" Plug 'thinca/vim-ref'
 
 " Template
-" NeoBundle complete trick
-" http://lingr.com/room/vim/archives/2015/10/15#message-22606866
-NeoBundleLazy 'mattn/sonictemplate-vim' , { 'autoload' : { 'commands' : [{ 'name' : 'Template', 'complete' : 'customlist,sonictemplate#complete' }] } }
+Plug 'mattn/sonictemplate-vim'
 
 " Keymap extionsion
-NeoBundle 'kana/vim-arpeggio'
+Plug 'kana/vim-arpeggio'
 
 " vim-operator-user
-NeoBundle 'kana/vim-operator-user'
-NeoBundleLazy 'kana/vim-operator-replace', { 'autoload' : { 'mappings' : '<Plug>(operator-replace)' } }
-NeoBundleLazy 'emonkak/vim-operator-comment', { 'autoload' : { 'mappings' : '<Plug>(operator-comment)' } }
-NeoBundleLazy 'emonkak/vim-operator-sort', { 'autoload' : { 'mappings' : '<Plug>(operator-sort)' } }
+Plug 'kana/vim-operator-user'
+Plug 'kana/vim-operator-replace'
+Plug 'emonkak/vim-operator-comment'
+Plug 'emonkak/vim-operator-sort'
 
 " Utility
-NeoBundle 'LeafCage/yankround.vim'
-NeoBundle 'tomtom/tcomment_vim'
-" NeoBundle 'cazador481/fakeclip.neovim'
+Plug 'LeafCage/yankround.vim'
+Plug 'tomtom/tcomment_vim'
+" Plug 'cazador481/fakeclip.neovim'
 
 " Debugging
-NeoBundle 'critiqjo/lldb.nvim'
+Plug 'critiqjo/lldb.nvim'
 
 " }}}
 
@@ -101,56 +98,54 @@ NeoBundle 'critiqjo/lldb.nvim'
 " Language syntax plugins "{{{
 
 " Go
-NeoBundle 'fatih/vim-go'
-NeoBundle 'dgryski/vim-godef'
-NeoBundle 'garyburd/go-explorer'
-NeoBundleLazy 'godoctor/godoctor.vim', { 'autoload' : { 'filetypes' : 'go' } }
+Plug 'fatih/vim-go'
+Plug 'dgryski/vim-godef'
+Plug 'garyburd/go-explorer'
+Plug 'godoctor/godoctor.vim', { 'for' : 'go' }
 
 " C family
-NeoBundleLazy 'rhysd/vim-clang-format', { 'autoload' : { 'filetypes' : ['c', 'cpp', 'objc', 'objcpp'] } }
-NeoBundleLazy 'rhysd/wandbox-vim', { 'autoload' : { 'commands' : 'Wandbox' } }
-NeoBundleLazy 'kana/vim-altr', { 'autoload' : { 'filetypes' : ['c', 'cpp', 'objc', 'objcpp'] } }
-NeoBundleLazy 'vim-jp/vim-cpp', { 'autoload' : { 'filetypes' : ['c', 'cpp', 'objc', 'objcpp'] } }
-" NeoBundleLazy 'octol/vim-cpp-enhanced-highlight', { 'autoload' : { 'filetypes' : ['c', 'cpp', 'objc', 'objcpp'] } }
+Plug 'rhysd/vim-clang-format', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
+Plug 'rhysd/wandbox-vim', { 'on' : 'Wandbox' }
+Plug 'kana/vim-altr', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
+Plug 'vim-jp/vim-cpp', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
+" Plug 'octol/vim-cpp-enhanced-highlight', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
 
 " Python
-NeoBundleLazy 'nvie/vim-flake8', { 'autoload' : { 'filetypes' : 'python' } }
+Plug 'nvie/vim-flake8', { 'for' : 'python' }
 
 " Dockerfile
-NeoBundleLazy 'ekalinin/Dockerfile.vim', { 'autoload' : { 'filetypes' : 'Dockerfile' } }
+Plug 'ekalinin/Dockerfile.vim', { 'for' : 'Dockerfile' }
 
 " Markdown
-NeoBundleLazy 'godlygeek/tabular', { 'autoload' : { 'filetypes' : 'markdown' } }
-NeoBundleLazy 'plasticboy/vim-markdown', { 'autoload' : { 'filetypes' : 'markdown' } }
+Plug 'godlygeek/tabular', { 'for' : 'markdown' }
+Plug 'plasticboy/vim-markdown', { 'for' : 'markdown' }
 
 " tmux
-NeoBundleLazy 'tmux-plugins/vim-tmux', { 'autoload' : { 'filetypes' : 'tmux' } }
+Plug 'tmux-plugins/vim-tmux', { 'for' : 'tmux' }
 
 " Vim Help
-NeoBundle 'vim-jp/vimdoc-ja'
+Plug 'vim-jp/vimdoc-ja'
 
 " ninja
-NeoBundleLazy 'martine/ninja', { 'rtp': '/misc', 'autoload' : { 'filetypes' : [ 'ninja' ] } }
+Plug 'martine/ninja', { 'rtp': '/misc', 'for' : [ 'ninja' ] }
 
 " CMake
-NeoBundleLazy 'Kitware/CMake', { 'rtp' : '/Auxiliary', 'autoload' : { 'filetypes' : ['cmake'] } }
+Plug 'Kitware/CMake', { 'rtp' : '/Auxiliary', 'for' : 'cmake' }
 
 " JavaScript
-NeoBundleLazy 'millermedeiros/vim-esformatter', { 'autoload' : { 'commands' : 'Esformatter' } }
+Plug 'millermedeiros/vim-esformatter', { 'on' : 'Esformatter' }
 
 " Json
-" NeoBundleLazy 'elzr/vim-json', { 'autoload' : { 'filetypes' : 'json' } }
+" Plug 'elzr/vim-json', { 'for' : 'json' }
 
 " Misc
-NeoBundle 'Raimondi/delimitMate'
-NeoBundleLazy 'mattn/benchvimrc-vim', { 'autoload' : { 'commands' : 'BenchVimrc' } }
-" NeoBundle 'jiangmiao/auto-pairs'
-" NeoBundleLazy 'junegunn/vim-easy-align', { 'autoload' : { 'commands' : ['EasyAlign', 'LiveEasyAlign'] } }
+Plug 'mattn/benchvimrc-vim', { 'on' : 'BenchVimrc' }
+" Plug 'Raimondi/delimitMate'
+" Plug 'jiangmiao/auto-pairs'
+" Plug 'junegunn/vim-easy-align', { 'on' : ['EasyAlign', 'LiveEasyAlign'] }
 
 
-" Close NeoBundle
-call neobundle#end()
-filetype plugin indent on
+call plug#end()
 
 " }}}
 

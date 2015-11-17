@@ -1,0 +1,3 @@
+NoMatchParen
+setlocal noshowmatch
+

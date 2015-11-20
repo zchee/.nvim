@@ -45,7 +45,7 @@ Plug 'Shougo/neco-vim'
 Plug 'Shougo/echodoc.vim'
 Plug 'davidhalter/jedi-vim'
 
-Plug 'Valloric/YouCompleteMe'
+Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
 Plug 'rdnetto/YCM-Generator', { 'branch' : 'develop' }
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
@@ -133,11 +133,12 @@ Plug 'Raimondi/delimitMate'
 
 " Go
 Plug 'fatih/vim-go'
-" Plug 'nsf/gocode', { 'rtp': 'vim' }
+Plug 'nsf/gocode', { 'rtp': 'nvim', 'do': '~/.nvim/plugged/gocode/nvim/symlink.sh' }
 " Plug 'dgryski/vim-godef'
 Plug 'garyburd/go-explorer'
 Plug 'godoctor/godoctor.vim'
 Plug 'zchee/vim-go-stdlib'
+" Plug 'sotte/presenting.vim'
 
 " C family
 Plug 'rhysd/wandbox-vim', { 'on' : 'Wandbox' }
@@ -151,7 +152,7 @@ Plug 'Rip-Rip/clang_complete', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
 Plug 'nvie/vim-flake8', { 'for' : 'python' }
 
 " Ruby
-Plug 'osyo-manga/vim-monster', { 'for' : ['ruby'] }
+Plug 'osyo-manga/vim-monster', { 'for' : 'ruby' }
 
 " Dockerfile
 Plug 'ekalinin/Dockerfile.vim', { 'for' : 'Dockerfile' }
@@ -192,11 +193,12 @@ colorscheme hybrid_reverse
 
 " setting
 " set autochdir
+set ambiwidth=single
 set cindent
 " set cinoptions+=:0,g0,N-1,m1 " C++ under label https://github.com/rhysd/dotfiles/blob/master/vimrc#L1559-L1593
 set clipboard=unnamedplus
 set cmdheight=2
-set colorcolumn=120
+" set colorcolumn=120
 set completeopt+=noinsert
 set completeopt-=preview
 set expandtab
@@ -278,7 +280,7 @@ Gautocmdft go highlight goStdlib        gui=bold guifg='#81a2be'
 
 " C
 " Gautocmdft c,cpp,objc,objcpp highlight link cCustomFunc Function
-" Gautocmdft c,cpp,objc,objcpp highlight  cCustomFunc gui=NONE guifg='#f0c674'
+Gautocmdft c,cpp,objc,objcpp highlight cCustomFunc gui=NONE guifg='#f0c674'
 
 "}}}
 
@@ -312,9 +314,30 @@ endif
 
 " deoplete
 let g:deoplete#enable_at_startup = 1
-" let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#auto_completion_start_length = 1
 let g:deoplete#enable_ignore_case = 1
-call deoplete#custom#set('_', 'matchers', ['matcher_head'])
+" call deoplete#custom#set('_', 'matchers', ['matcher_head'])
+
+" clang_complete
+let g:clang_library_path = "/opt/llvm/lib/libclang.dylib"
+let g:clang_complete_auto = 0
+let g:clang_auto_select = 0
+let g:clang_default_keymappings = 0
+let g:clang_use_library = 1
+" vim-marching
+let g:marching_clang_command = "/usr/bin/clang"
+let g:marching#clang_command#options = {
+    \ "c" : "-std=c11",
+    \ "cpp" : "-std=c++1y"
+    \}
+let g:marching_include_paths = [
+    \ "/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include",
+    \ "/usr/local/include",
+    \ "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+    \ "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
+    \ "/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.0.0/include",
+    \ "/usr/include"
+    \]
 
 " jedi for deoplete
 let g:jedi#auto_vim_configuration = 0
@@ -545,6 +568,7 @@ let g:godef_split = 0
 Gautocmd BufWritePost *.go :let b:gitdir=system("git rev-parse --show-toplevel") |
     \ cd `=b:gitdir` |
     \ call vimproc#system("gotags -fields +l -sort -tag-relative -f tags -R ./ &")
+" Gautocmdft go setlocal omnifunc=
 
 " C family
 " Gautocmd BufRead,BufNewFile *.c set filetype=cpp
@@ -557,12 +581,6 @@ Gautocmdft c,cpp,objc,objcpp setlocal tabstop=2 softtabstop=2 shiftwidth=2 noexp
 let c_no_curly_error = 1 " https://github.com/vim-jp/vim-cpp/issues/16
 let c_no_bracket_error = 1
 " let cpp_no_cpp11 = 1
-
-let g:clang_library_path = "/opt/llvm/lib/libclang.dylib"
-let g:clang_complete_auto = 0
-let g:clang_auto_select = 0
-let g:clang_default_keymappings = 0
-let g:clang_use_library = 1
 
 " http://qiita.com/termoshtt/items/00552cbd776348f75750
 " function! s:clang_format()
@@ -608,6 +626,7 @@ Gautocmdft python setlocal tabstop=8 softtabstop=8 shiftwidth=4
 
 
 " Ruby
+Gautocmdft ruby setlocal expandtab tabstop=2 softtabstop=2 shiftwidth=2
 " Gautocmdft ruby,eruby,ruby.rspec nnoremap <silent><buffer>K  :<C-u>Unite -no-start-insert ref/refe -input=<C-R><C-W><CR>
 " Gautocmdft ruby,eruby,ruby.rspec nnoremap <silent><buffer>KK :<C-u>Unite -no-start-insert ref/ri   -input=<C-R><C-W><CR>
 
@@ -615,13 +634,16 @@ Gautocmdft python setlocal tabstop=8 softtabstop=8 shiftwidth=4
 " zsh
 " Gautocmdft zsh setlocal softtabstop=4 shiftwidth=4
 
+
 " tmux
 Gautocmdft tmux nnoremap <silent><buffer> K :call tmux#man()<CR>
 
 
 " markdown
 Gautocmd BufRead,BufNewFile *.md set filetype=markdown
-" Gautocmd Filetype godoc set filetype=gedoc
+Gautocmdft godoc set filetype=gedoc
+
+" |inputsource|
 " Japanese input auto change
 " Use https://github.com/hnakamur/inputsource
 " Ref http://superuser.com/questions/224161/switch-to-specific-input-source
@@ -631,6 +653,7 @@ Gautocmd InsertLeave *.md call vimproc#system("inputsource 'com.apple.keylayout.
 " Dockerfile
 Gautocmd BufRead,BufNewFile *.dockerfile,Dockerfile.* set filetype=Dockerfile
 Gautocmdft Dockerfile setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4
+
 
 " vim
 " develop nvimrc helper
@@ -658,9 +681,25 @@ Gautocmdft gitconfig setlocal softtabstop=4 shiftwidth=4 noexpandtab
 " Config files
 Gautocmd BufRead,BufNewFile .eslintrc set filetype=json " eslint
 
+
 " Vagrant
 Gautocmd BufRead,BufNewFile Vagrantfile set filetype=ruby
 
+
+" Go slide
+Gautocmd BufRead,BufNewFile *.slide set filetype=goslide
+Gautocmdft goslide setlocal noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
+Gautocmdft goslide let g:deoplete#disable_auto_complete  = 0
+" |inputsource|
+Gautocmd InsertCharPre *.slide call vimproc#system("inputsource 'com.apple.inputmethod.Kotoeri.Japanese' &")
+Gautocmd InsertLeave *.slide call vimproc#system("inputsource 'com.apple.keylayout.US' &")
+
+" *inputsource*
+" com.apple.keylayout.US:                 Apple English
+" com.apple.inputmethod.Kotoeri.Roman:    Kotoeri ASCII
+" com.apple.inputmethod.Kotoeri.Japanese: Kotoeri Hiragana
+" com.google.inputmethod.Japanese.Roman:  Google Japanese Input ASCII
+" com.google.inputmethod.Japanese.base:   Google Japanese Input Hiragana
 " }}}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -761,14 +800,14 @@ command! SyntaxInfo call s:get_syn_info()
 "     if endIdx - startIdx > 1
 "         let argsStr = strpart(abbr, startIdx+1, endIdx - startIdx -1)
 "         let argsList = split(argsStr, ",")
-"         let snippet = "" 
+"         let snippet = ""
 "         let c = 1
 "         for i in argsList
-"             if c > 1 
+"             if c > 1
 "                 let snippet = snippet. ", "
 "             endif
 "             " strip space
-"             let arg = substitute(i, '^\s*\(.\{-}\)\s*$', '\1', '') 
+"             let arg = substitute(i, '^\s*\(.\{-}\)\s*$', '\1', '')
 "             let snippet = snippet . '${'.c.":".arg.'}'
 "             let c += 1
 "         endfor
@@ -788,6 +827,20 @@ endfunction
 
 " Json Format
 command! -nargs=0 -bang -complete=command FormatJSON %!python -m json.tool
+
+" auto pair completion
+function! AutoPairDeoplete()
+  let g:lineword = getline('.')
+  let g:linelenght = len(getline('.')) - 1
+  if g:lineword[g:linelenght] == "("
+    call feedkeys("\)\<Left>")
+  endif
+endfunction
+"   echo matchstr(getline('.'), printf('^.*\%%%dc%s', col('.'), (mode() ==# 'i' ? '' : '.')))
+" endfunction
+
+Gautocmd CompleteDone <buffer> call AutoPairDeoplete()
+" Gautocmd CompleteDone error expand("<cword>")
 
 " }}}
 
@@ -1063,15 +1116,13 @@ Gautocmdft json nnoremap <silent> <leader>es :Esformatter<CR>
 " deoplete#mappings#close_popup():       Insert word on completion popup, and close popup
 " deoplete#mappings#smart_close_popup(): Insert candidate and re-generate popup menu for deoplete
 " deoplete#mappings#cancel_popup():      Not insert and close popup
-inoremap <expr><C-h>   deolete#mappings#smart_close_popup()."\<C-h>"
-inoremap <expr><BS>    deoplete#mappings#smart_close_popup()."\<C-h>"
-inoremap <expr><CR>    pumvisible() ? deoplete#mappings#close_popup() : "\<CR>"
-inoremap <expr><Up>    pumvisible() ? deoplete#mappings#cancel_popup()."\<Up>"  : "\<Up>"
-inoremap <expr><Down>  pumvisible() ? deoplete#mappings#cancel_popup()."\<Down>" : "\<Down>"
+inoremap <expr><Up>    pumvisible() ? "\<C-p>" : "\<Up>"
+inoremap <expr><Down>  pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr><Left>  pumvisible() ? deoplete#mappings#cancel_popup()."\<Left>"  : "\<Left>"
 inoremap <expr><Right> pumvisible() ? deoplete#mappings#cancel_popup()."\<Right>" : "\<Right>"
-" inoremap <expr><BS>    pumvisible() ? deoplete#mappings#smart_close_popup()."\<C-h>" : "\<BS>"
-" inoremap <expr><BS>    deoplete#mappings#smart_close_popup()."\<C-h>"
+inoremap <expr><C-h>   pumvisible() ? deolete#mappings#smart_close_popup()."\<C-h>" : "\<C-h>"
+inoremap <expr><BS>    pumvisible() ? deoplete#mappings#smart_close_popup()."\<C-h>" : "\<BS>"
+inoremap <expr><CR>    pumvisible() ? deoplete#mappings#close_popup() : "\<CR>"
 
 " QuickRun
 nnoremap <Leader>q  <Nop>

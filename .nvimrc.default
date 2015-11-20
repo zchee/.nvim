@@ -1,7 +1,0 @@
-version 6.0
-set fileencodings=ucs-bom,utf-8,default,latin1
-set helplang=en
-set noloadplugins
-set pastetoggle=<F37>
-set window=77
-" vim: set ft=vim :

@@ -350,7 +350,6 @@ Gautocmdft python setlocal omnifunc=jedi#completions
 let g:echodoc_enable_at_startup = 1
 
 " YouCompleteMe
-let g:ycm_auto_trigger = 0
 let g:ycm_min_num_of_chars_for_completion = 1
 let g:ycm_filetype_blacklist = {
     \ 'tagbar' : 1,
@@ -571,12 +570,10 @@ Gautocmd BufWritePost *.go :let b:gitdir=system("git rev-parse --show-toplevel")
 " Gautocmdft go setlocal omnifunc=
 
 " C family
-" Gautocmd BufRead,BufNewFile *.c set filetype=cpp
 Gautocmdft c,cpp,objc,objcpp setlocal tabstop=2 softtabstop=2 shiftwidth=2 noexpandtab
-" Gautocmdft c,cpp,objc,objcpp set path+=.,/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include,/usr/local/include/c++/v1,/usr/local/lib/clang/3.8.0/include,/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1,/usr/local/include,/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.0.0/include,/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include,/usr/local/include,/usr/include
-" Gautocmdft c,cpp,objc,objcpp let g:loadkeym_doxygen_syntax=1
+Gautocmdft c,cpp,objc,objcpp let g:deoplete#disable_auto_complete = 1
+Gautocmdft c,cpp,objc,objcpp call CtagsGitRoot()
 " Gautocmdft cpp setlocal matchpairs+=<:>
-" Gautocmdft c,cpp,objc,objcpp call CtagsGit()
 
 let c_no_curly_error = 1 " https://github.com/vim-jp/vim-cpp/issues/16
 let c_no_bracket_error = 1
@@ -819,10 +816,12 @@ command! SyntaxInfo call s:get_syn_info()
 
 " Set parent git directory to current path
 " http://michaelheap.com/set-parent-git-directory-to-current-path-in-vim/
-function! CtagsGit()
-    let b:gitdir=system("git rev-parse --show-toplevel")
+function! CtagsGitRoot()
+  let b:gitdir = system("git rev-parse --show-toplevel")
+  if b:gitdir !~? "^fatal"
     cd `=b:gitdir`
     call vimproc#system("ctags -R --fields=+l --sort=yes &")
+  endif
 endfunction
 
 " Json Format
@@ -892,7 +891,7 @@ nnoremap .w   <C-w>w
 
 let mapleader = "\<Space>"
 " nnoremap <Leader>gc :let b:gitdir=system("git rev-parse --show-toplevel") | :cd `=b:gitdir` | :call vimproc#system("ctags -R &")<CR>
-nnoremap <silent> <Leader>c :call CtagsGit()<CR>
+nnoremap <silent> <Leader>c :call CtagsGitRoot()<CR>
 nnoremap <Leader>h  :<C-u>SmartHelp<Space><C-l>
 nnoremap <Leader>n  :TagbarToggle<CR>
 nnoremap <Leader>r  :QuickRun<CR>

@@ -35,23 +35,24 @@ command! -nargs=* Gautocmdft autocmd GlobalAutoCmd FileType <args>
 " Init
 call plug#begin('$XDG_CONFIG_HOME/nvim/plugged')
 
-" Code Completion
+" Code Completion Shougo ware
 Plug 'Shougo/deoplete.nvim'
-Plug 'zchee/deoplete-go'
-Plug 'Shougo/neopairs.vim'
-Plug 'Shougo/neoinclude.vim'
+Plug 'Shougo/context_filetype.vim'
+Plug 'Shougo/echodoc.vim'
 Plug 'Shougo/neco-syntax'
 Plug 'Shougo/neco-vim'
-Plug 'Shougo/echodoc.vim'
+Plug 'Shougo/neoinclude.vim'
+Plug 'Shougo/neopairs.vim'
+Plug 'zchee/deoplete-go'
 
-" Plug 'Shougo/neosnippet.vim'
-" Plug 'Shougo/neosnippet-snippets'
-Plug 'Shougo/context_filetype.vim'
-Plug 'davidhalter/jedi-vim'
-
+" Code completion
 Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
 Plug 'rdnetto/YCM-Generator', { 'branch' : 'develop' }
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+
+" Plug 'davidhalter/jedi-vim'
+" Plug 'Shougo/neosnippet.vim'
+" Plug 'Shougo/neosnippet-snippets'
 
 " Build
 Plug 'benekastah/neomake', { 'on' : 'Neomake' }
@@ -85,7 +86,6 @@ Plug 'airblade/vim-gitgutter'
 Plug 'lambdalisue/vim-gista'
 Plug 'lambdalisue/vim-gita'
 Plug 'rhysd/committia.vim'
-" Plug 'rhysd/github-complete.vim'
 
 " Formatter
 Plug 'Chiel92/vim-autoformat'
@@ -100,9 +100,6 @@ Plug 'rizzatti/dash.vim'
 " Template
 Plug 'mattn/sonictemplate-vim'
 
-" Keymap extionsion
-" Plug 'kana/vim-arpeggio'
-
 " vim-operator-user
 Plug 'kana/vim-operator-user'
 Plug 'rhysd/vim-operator-surround'
@@ -114,8 +111,6 @@ Plug 'rhysd/vim-operator-surround'
 Plug 'LeafCage/yankround.vim'
 Plug 'tomtom/tcomment_vim'
 Plug 'tyru/open-browser.vim'
-" Plug 'rhysd/vim-grammarous'
-" Plug 'AndrewRadev/sideways.vim'
 " Plug 'haya14busa/incsearch.vim'
 " Plug 'cazador481/fakeclip.neovim'
 
@@ -125,6 +120,7 @@ Plug 'critiqjo/lldb.nvim'
 " Misc
 Plug 'mattn/benchvimrc-vim', { 'on' : 'BenchVimrc' }
 Plug 'Raimondi/delimitMate'
+Plug 'yasuharu519/vim-codic'
 " Plug 'jiangmiao/auto-pairs'
 " Plug 'junegunn/vim-easy-align', { 'on' : ['EasyAlign', 'LiveEasyAlign'] }
 
@@ -136,7 +132,6 @@ Plug 'Raimondi/delimitMate'
 
 " Go
 Plug 'fatih/vim-go'
-" Plug 'zchee/gocode', { 'rtp': '/nvim' }
 Plug 'garyburd/go-explorer'
 Plug 'godoctor/godoctor.vim'
 Plug 'zchee/vim-go-stdlib'
@@ -144,13 +139,10 @@ Plug 'zchee/vim-go-stdlib'
 " C family
 Plug 'vim-jp/vim-cpp', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
 " Plug 'rhysd/wandbox-vim', { 'on' : 'Wandbox' }
-" Plug 'kana/vim-altr', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
-" Plug 'octol/vim-cpp-enhanced-highlight', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
-" Plug 'osyo-manga/vim-marching', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
 " Plug 'Rip-Rip/clang_complete', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
 
 " Swift
-Plug 'zchee/vim-swift'
+Plug 'zchee/vim-swift-syntax', { 'for' : 'swift' }
 
 " Python
 Plug 'nvie/vim-flake8', { 'for' : 'python' }
@@ -177,12 +169,6 @@ Plug 'martine/ninja', { 'rtp': '/misc', 'for' : [ 'ninja' ] }
 " CMake
 Plug 'Kitware/CMake', { 'rtp' : '/Auxiliary', 'for' : 'cmake' }
 
-" JavaScript
-" Plug 'millermedeiros/vim-esformatter', { 'on' : 'Esformatter' }
-
-" Json
-" Plug 'elzr/vim-json', { 'for' : 'json' }
-
 call plug#end()
 filetype plugin indent on
 syntax on
@@ -200,10 +186,8 @@ let g:enable_bold_font = 1
 colorscheme hybrid_reverse
 
 " set
-set ambiwidth=single
 set autoindent
 set cindent
-" set cinoptions+=:0,g0,N-1,m1 " C++ under label https://github.com/rhysd/dotfiles/blob/master/vimrc#L1559-L1593
 set clipboard=unnamedplus
 set cmdheight=2
 " set colorcolumn=120
@@ -228,7 +212,7 @@ set path+=/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefaul
 set path+=/usr/include
 set path+=/usr/local/include
 set path+=,
-set pumheight=10 " 0 is Enable maximum displayed completion words in omnifunc list
+set pumheight=20 " 0 is Enable maximum displayed completion words in omnifunc list
 set ruler
 set scrolljump=1
 set scrolloff=10
@@ -238,8 +222,8 @@ set showtabline=2
 set smartcase
 set smartindent
 set softtabstop=2
-set tags=tags;
 set tabstop=2
+set tags=tags;
 set textwidth=0
 set timeout " More info, :help ttimeoutlen
 set timeoutlen=500
@@ -259,14 +243,12 @@ set wrap
 set nobackup
 set noerrorbells
 set nofoldenable
-set nolazyredraw
 set noswapfile
 set notitle
+set nolazyredraw
 set novisualbell
 set nowrapscan
 set nowritebackup
-
-" set switchbuf=useopen
 
 "}}}
 
@@ -337,11 +319,11 @@ let g:deoplete#sources#go = 'vim-go'
 
 " jedi for deoplete
 let g:jedi#auto_vim_configuration = 0
-let g:jedi#completions_enabled = 0
-let g:jedi#force_py_version = 3
-let g:jedi#show_call_signatures = 0
-let g:jedi#smart_auto_mappings = 0
-Gautocmdft python setlocal omnifunc=jedi#completions
+" let g:jedi#completions_enabled = 0
+" let g:jedi#force_py_version = 3
+" let g:jedi#show_call_signatures = 0
+" let g:jedi#smart_auto_mappings = 0
+" Gautocmdft python setlocal omnifunc=jedi#completions
 
 " clang_complete
 " let g:clang_library_path = "/opt/llvm/lib/libclang.dylib"
@@ -380,12 +362,10 @@ let g:ycm_goto_buffer_command = 'same-buffer' " ['same-buffer', 'horizontal-spli
 let g:ycm_key_list_select_completion = ['<Down>']
 let g:ycm_path_to_python_interpreter = '/usr/local/bin/python2'
 let g:ycm_seed_identifiers_with_syntax = 1
-let g:UltiSnipsUsePythonVersion = 2
-" g:UltiSnipsExpandTrigger               <tab>
-" g:UltiSnipsListSnippets                <c-tab>
-" g:UltiSnipsJumpForwardTrigger          <c-j>
-" g:UltiSnipsJumpBackwardTrigger         <c-k>
-let g:UltiSnipsExpandTrigger = "<C-t>"
+
+" UltiSnips
+let g:UltiSnipsUsePythonVersion = 3
+let g:UltiSnipsExpandTrigger = "<C-s>"
 let g:UltiSnipsJumpForwardTrigger = "<S-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<S-k>"
 
@@ -592,7 +572,7 @@ Gautocmd BufWritePost *.go :let b:gitdir=system("git rev-parse --show-toplevel")
     \ call vimproc#system("gotags -fields +l -sort -f tags -R ./ &")
 " Gautocmdft go setlocal tags+=/usr/local/go/tags
 Gautocmdft go setlocal tags+=c.tags
-
+" Gautocmdft go syn include @CSource syntax/c.vim
 
 " C family
 Gautocmdft c,cpp setlocal tags+=/usr/local/tags/c.tags
@@ -665,6 +645,7 @@ Gautocmdft tmux nnoremap <silent><buffer> K :call tmux#man()<CR>
 
 " markdown
 Gautocmd BufRead,BufNewFile *.md set filetype=markdown
+Gautocmd BufRead,BufNewFile *.md let g:deoplete#disable_auto_complete = 0
 " Gautocmdft godoc set filetype=gedoc
 
 " |inputsource|
@@ -681,14 +662,14 @@ Gautocmdft Dockerfile setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 
 
 " vim
 " develop nvimrc helper
-" Gautocmd BufWritePost $MYVIMRC,~/.nvim/nvimrc,*.vim nested silent! source $MYVIMRC
-" Gautocmd WinEnter $MYVIMRC,~/.nvim/nvimrc set tags=~/.nvim/tags
+Gautocmd BufWritePost $MYVIMRC,*.vim nested silent! source $MYVIMRC
+" Gautocmd BufRead,BufNewFile $MYVIMRC, init.vim setlocal tags=$MYVIMRC . '/tags'
 " Gautocmdft vim set tags=~/.nvim/tags
 " Gautocmd BufWritePost $MYVIMRC cd ~/.nvim; call vimproc#system("ctags -R --fields=+l --sort=yes &")
 " Gautocmd BufWritePost $MYVIMRC silent! call vimproc#system("ctags --fields=+l -f ~/.nvim/tags ~/.nvim/ &")
 
 
-" bash
+" Bash
 " Enable bash syntax on /bin/sh shevang
 " http://tyru.hatenablog.com/entry/20101007/
 let g:is_bash = 1
@@ -714,9 +695,6 @@ Gautocmd BufRead,BufNewFile Vagrantfile set filetype=ruby
 Gautocmd BufRead,BufNewFile *.slide set filetype=goslide
 Gautocmd BufRead,BufNewFile *.slide setlocal noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
 Gautocmd BufRead,BufNewFile *.slide let g:deoplete#disable_auto_complete = 1
-" |inputsource|
-Gautocmd InsertEnter *.slide call vimproc#system("inputsource 'com.apple.inputmethod.Kotoeri.Japanese' &")
-Gautocmd InsertLeave *.slide call vimproc#system("inputsource 'com.apple.keylayout.US' &")
 
 " *inputsource*
 " com.apple.keylayout.US:                 Apple English
@@ -724,6 +702,13 @@ Gautocmd InsertLeave *.slide call vimproc#system("inputsource 'com.apple.keylayo
 " com.apple.inputmethod.Kotoeri.Japanese: Kotoeri Hiragana
 " com.google.inputmethod.Japanese.Roman:  Google Japanese Input ASCII
 " com.google.inputmethod.Japanese.base:   Google Japanese Input Hiragana
+" |inputsource|
+Gautocmd InsertEnter *.slide call vimproc#system("inputsource 'com.apple.inputmethod.Kotoeri.Japanese' &")
+Gautocmd InsertLeave *.slide call vimproc#system("inputsource 'com.apple.keylayout.US' &")
+
+" vim-codic
+let g:vim_codic_access_token = "jjSSDATDsXde1Nru6yEvzl1kPSCfVVJK9v"
+
 " }}}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -740,16 +725,6 @@ Gautocmd BufReadPost *
     \   execute "normal! g`\"" |
     \   execute "call feedkeys('zz')" |
     \ endif
-
-" Convenient command to see the difference between the current buffer and the
-" file it was loaded from, thus the changes you made.
-" Only define it when not defined already.
-" if !(exists(":DiffOrig") && &ft!='gitcommit')
-"   command DiffOrig vert new | set buftype=nofile | read ++edit # | 0d_ | diffthis | wincmd p | diffthis
-" endif
-
-" Trim whitespace when write buffer without markdown FileTypes
-" Gautocmd BufWritePre <buffer> if &filetype != 'markdown' | execute '%s/\s\+$//ge'
 
 " Smart help window
 " https://github.com/rhysd/dotfiles/blob/master/nvimrc#L380-L405
@@ -810,41 +785,6 @@ function! s:get_syn_info()
 endfunction
 command! SyntaxInfo call s:get_syn_info()
 
-" https://github.com/Valloric/YouCompleteMe/issues/234#issuecomment-146774088
-" function! MyOnCompleteDone()
-"     if !exists('v:completed_item') || empty(v:completed_item)
-"         return
-"     endif
-"
-"     let complete_str = v:completed_item.word
-"     if complete_str == ''
-"         return
-"     endif
-"     let abbr = v:completed_item.abbr
-"     let startIdx = match(abbr,"(")
-"     let endIdx = match(abbr,")")
-"     echo startIdx
-"     echo endIdx
-"     if endIdx - startIdx > 1
-"         let argsStr = strpart(abbr, startIdx+1, endIdx - startIdx -1)
-"         let argsList = split(argsStr, ",")
-"         let snippet = ""
-"         let c = 1
-"         for i in argsList
-"             if c > 1
-"                 let snippet = snippet. ", "
-"             endif
-"             " strip space
-"             let arg = substitute(i, '^\s*\(.\{-}\)\s*$', '\1', '')
-"             let snippet = snippet . '${'.c.":".arg.'}'
-"             let c += 1
-"         endfor
-"         let snippet = snippet . ")$0"
-"         call UltiSnips#Anon(snippet)
-"     endif
-" endfunction
-" Gautocmd CompleteDone *.go call MyOnCompleteDone()
-
 " Set parent git directory to current path
 " http://michaelheap.com/set-parent-git-directory-to-current-path-in-vim/
 function! CtagsGitRoot()
@@ -857,20 +797,6 @@ endfunction
 
 " Json Format
 command! -nargs=0 -bang -complete=command FormatJSON %!python -m json.tool
-
-" auto pair completion
-" function! AutoPairDeoplete()
-"   let g:lineword = getline('.')
-"   let g:linelenght = len(getline('.')) - 1
-"   if g:lineword[g:linelenght] == "("
-"     call feedkeys("\)\<Left>")
-"   endif
-" endfunction
-" "   echo matchstr(getline('.'), printf('^.*\%%%dc%s', col('.'), (mode() ==# 'i' ? '' : '.')))
-" " endfunction
-"
-" Gautocmd CompleteDone <buffer> call AutoPairDeoplete()
-" Gautocmd CompleteDone error expand("<cword>")
 
 " Unload plugin in runtimepath
 function! PlugUnload(name)
@@ -933,6 +859,7 @@ let mapleader = "\<Space>"
 
 nnoremap  <silent> <Leader>c  :call CtagsGitRoot()<CR>
 nnoremap  <silent> <Leader>h  :<C-u>SmartHelp<Space><C-l>
+nnoremap  <silent> <Leader>i  :<C-u>nohlsearch<CR>
 nnoremap  <silent> <Leader>n  :TagbarToggle<CR>
 nnoremap  <silent> <Leader>r  :<C-u>QuickRun<CR>
 nnoremap  <silent> <Leader>s  :%s///g<Left><Left><Left>
@@ -949,10 +876,6 @@ Gautocmdft go nmap <silent> <Leader>gr <Plug>(go-rename)
 Gautocmdft go nmap <silent> <Leader>gs <Plug>(go-install)
 Gautocmdft go nmap <silent> <Leader>t  <Plug>(go-test)
 
-" nnoremap  <silent> <Leader>q  <Nop> " QuickRun
-" nnoremap  <silent> <Leader>qR :<C-u>QuickRun<Space> " QuickRun
-" nnoremap  <silent> <Leader>qr :<C-u>QuickRun<CR> " QuickRun
-
 " }}}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -965,7 +888,6 @@ Gautocmdft go nmap <silent> <Leader>t  <Plug>(go-test)
 nnoremap ZQ    <Nop>
 nnoremap <C-z> <Nop>
 " Disable hlsearch double hit <ESC>
-nnoremap <silent> <Esc><Esc> :nohlsearch<CR>
 " Don't use Ex mode, use Q for formatting
 nnoremap Q gq
 " Go to home and end using capitalized directions
@@ -1017,11 +939,11 @@ endfunction
 nnoremap zo :call SwitchBuffer()<CR>
 
 " http://qiita.com/nyarla/items/8ad44a30d529443a765a
-nmap <ESC>OA <Up>
-nmap <ESC>OB <Down>
-nmap <ESC>OC <Right>
-nmap <ESC>OD <Left>
-
+" nmap <ESC>OA <Up>
+" nmap <ESC>OB <Down>
+" nmap <ESC>OC <Right>
+" nmap <ESC>OD <Left>
+"
 " }}}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

@@ -165,9 +165,6 @@ Plug 'plasticboy/vim-markdown', { 'for' : 'markdown' }
 " tmux
 Plug 'tmux-plugins/vim-tmux', { 'for' : 'tmux' }
 
-" yml
-Plug 'stephpy/vim-yaml', { 'for' : 'yaml' }
-
 " ninja
 Plug 'martine/ninja', { 'rtp': '/misc', 'for' : [ 'ninja' ] }
 
@@ -372,14 +369,14 @@ let g:terminal_color_foreground="#c5c8c6"
 " deoplete
 let ignoredeoplete = ['c', 'cpp', 'objc', 'objcpp', 'gitcommit']
 Gautocmd BufWinEnter * if index(ignoredeoplete, &filetype) == -1 | DeopleteEnable | endif
-let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#auto_completion_start_length = 0
+let g:deoplete#file#enable_buffer_path = 0
+let g:deoplete#enable_refresh_always = 1
 let g:deoplete#enable_auto_pairs = 'true'
-" let g:deoplete#omni#_input_patterns = {}
-" let g:deoplete#omni#_input_patterns.go = ''
-" let g:deoplete#omni#_input_patterns.python = ''
-let g:deoplete#ignore_sources = {}
-let g:deoplete#ignore_sources.go = ['omni']
-let g:deoplete#ignore_sources.python = ['omni']
+let g:deoplete#omni#input_patterns = {}
+let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*\|\h\w*::']
+" let g:deoplete#ignore_sources = {}
+" let g:deoplete#ignore_sources.python = ['omni']
 " Go deoplete source config
 let g:deoplete#sources#go = 'vim-go'
 call deoplete#custom#set('go', 'rank', 9999)
@@ -742,36 +739,37 @@ endfunction
 Gautocmdft cpp nnoremap <silent><buffer>X :<C-u>call <SID>open_online_cpp_doc()<CR>
 
 
-" TypeScript
+" TypeScript:
 let g:typescript_compiler_options = '-sourcemap'
 
 
-" Ruby
+" Ruby:
 Gautocmdft ruby setlocal expandtab tabstop=2 softtabstop=2 shiftwidth=2
 Gautocmd BufWritePost *.rb :Autoformat
 Gautocmd BufWritePost *.rb call CtagsGitRoot()
+Gautocmd BufReadPost .pryrc setlocal filetype=ruby
 
 
-" zsh
+" Zsh:
 Gautocmdft zsh setlocal tabstop=4 softtabstop=4 shiftwidth=4
 
 
-" tmux
+" Tmux:
 Gautocmdft tmux nnoremap <silent><buffer> K :call tmux#man()<CR>
 
 
-" markdown
+" Markdown:
 Gautocmd BufRead,BufNewFile *.md set filetype=markdown
 Gautocmd BufRead,BufNewFile *.md let g:deoplete#disable_auto_complete = 0
 Gautocmd InsertLeave *.md call vimproc#system("issw 'com.apple.keylayout.US' &")
 
 
-" Dockerfile
+" Dockerfile:
 Gautocmd BufRead,BufNewFile *.dockerfile,Dockerfile.* set filetype=dockerfile
 Gautocmdft Dockerfile setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 nocindent
 
 
-" vim
+" Vim:
 " develop nvimrc helper
 Gautocmd BufWritePost $MYVIMRC,*.vim nested silent! source $MYVIMRC
 " Gautocmd BufRead,BufNewFile $MYVIMRC, init.vim setlocal tags=$MYVIMRC . '/tags'
@@ -780,36 +778,32 @@ Gautocmdft vim setlocal tags=$XDG_CONFIG_HOME/nvim/tags
 Gautocmd BufWritePost $MYVIMRC silent! call vimproc#system("ctags -R --fields=+l -f $XDG_CONFIG_HOME/nvim/tags $XDG_CONFIG_HOME/nvim &")
 
 
-" Bash
+" Bash:
 " Enable bash syntax on /bin/sh shevang
 " http://tyru.hatenablog.com/entry/20101007/
 let g:is_bash = 1
 
 
-" Xcode
+" Xcode:
 Gautocmd BufRead,BufNewFile *.xcconfig setlocal filetype=sh " TODO Dedicated syntax
 
 
-" gitconfig
+" Gitconfig:
 Gautocmdft gitconfig setlocal softtabstop=4 shiftwidth=4 noexpandtab
 
 
-" Json
+" Json:
 Gautocmd BufRead,BufNewFile .eslintrc set filetype=json " eslint
 
 
-" Vagrant
+" Vagrant:
 Gautocmd BufRead,BufNewFile Vagrantfile set filetype=ruby
 
 
-" goslide
+" Goslide:
 Gautocmd BufRead,BufNewFile *.slide set filetype=goslide
 Gautocmd BufRead,BufNewFile *.slide setlocal noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
 Gautocmd BufRead,BufNewFile *.slide let g:deoplete#disable_auto_complete = 1
-
-
-" vim-codic
-let g:vim_codic_access_token = "jjSSDATDsXde1Nru6yEvzl1kPSCfVVJK9v"
 
 
 " }}}
@@ -1278,10 +1272,12 @@ Gautocmdft vim nnoremap <silent> K :<C-u>SmartHelp<Space><C-r><C-w><CR>
 " deoplete#mappings#close_popup():       Insert word on completion popup, and close popup
 " deoplete#mappings#smart_close_popup(): Insert candidate and re-generate popup menu for deoplete
 " deoplete#mappings#cancel_popup():      Not insert and close popup
+" deoplete#mappings#refresh():           Refresh completion word list
+" deoplete#mappings#undo_completion():   Undo insert use deoplete completion
 "
-" If not &filetype is cfamily, Enable deoplete
-" If &filetype is cfamily, Enable YouCompleteMe
-Gautocmd BufReadPost * if index(ignoredeoplete, &filetype) == -1
+" If not &filetype is ignoredeoplete, Enable deoplete
+" If &filetype is ignoredeoplete, Enable YouCompleteMe
+Gautocmd BufReadPost * if index(ignoredeoplete, &filetype) < 0
             \| inoremap <silent><expr><Left>   pumvisible() ? deoplete#mappings#cancel_popup()."\<Left>"  : "\<Left>"
             \| inoremap <silent><expr><Right>  pumvisible() ? deoplete#mappings#cancel_popup()."\<Right>" : "\<Right>"
             \| inoremap <silent><expr><C-Up>   pumvisible() ? deoplete#mappings#cancel_popup()."\<Up>" : "\<C-Up>"
@@ -1289,44 +1285,31 @@ Gautocmd BufReadPost * if index(ignoredeoplete, &filetype) == -1
             \| inoremap <silent><expr><BS>     pumvisible() ? deoplete#mappings#smart_close_popup()."\<BS>" : "\<BS>"
             \| inoremap <silent><expr><C-t>    pumvisible() ? "\<C-r>=\<SID>deoplete_smart_close()\<CR>" : "\<C-s>"
             \| inoremap <silent><expr><S-Tab>  pumvisible() ? "\<S-Tab>" : deoplete#mappings#manual_complete()
+            \| inoremap <silent><expr><C-l>    pumvisible() ? deoplete#mappings#refresh() : "\<C-l>"
+            \| inoremap <silent><expr><C-z>    deoplete#mappings#undo_completion()
             \ | else
             \| inoremap <silent><expr><CR>    pumvisible() ? "\<C-y>" : "\<CR>"
             \ | endif
 
-" YouCompleteMe
-" inoremap <silent><expr><CR>     pumvisible() ? "\<C-y>" : "\<CR>"
 
 " neosnippet
 imap <C-s> <Plug>(neosnippet_expand_or_jump)
 smap <C-s> <Plug>(neosnippet_expand_or_jump)
 
 " vim-operator-user
-" operator-surround
+"  - operator-surround
 map <silent>sa <Plug>(operator-surround-append)
 map <silent>sd <Plug>(operator-surround-delete)
 map <silent>sr <Plug>(operator-surround-replace)
 
-" vim-altr
-nmap <Leader>a  <Plug>(altr-forward)
-
 " Dash.vim
-nmap <silent> <Leader>gd <Plug>DashSearch
-
-" kana/Arpeggio
-" call arpeggio#load()
-" Arpeggiomap oc <Plug>(operator-comment)
-" Arpeggiomap od <Plug>(operator-uncomment)
-" Arpeggiomap sh :<C-u>tabnew<CR>:<C-u>terminal<CR>
+" nmap <silent> <Leader>gd <Plug>DashSearch
 
 " vim-Gita
 Gautocmdft 'gita-blame-navi' nnoremap <buffer>q :<C-u>q<CR>:q<CR>
 
-" Tagbar
-
 " for languages documents
-Gautocmdft help,ref,man,qf,godoc,gedoc,quickrun,gita-blame-navi,go.godef,dirvish call On_FileType_doc_define_mappings()
-" Gautocmd BufWinEnter <buffer> if &readonly | call On_FileType_doc_define_mappings() | endif
-function! On_FileType_doc_define_mappings()
+function! DocMappings()
   " Select the linked word
   nnoremap <silent><buffer><Tab> /\%(\_.\zs<Bar>[^ ]\+<Bar>\ze\_.\<Bar>CTRL-.\<Bar><[^ >]\+>\)<CR>
   " less likes keymap
@@ -1334,11 +1317,7 @@ function! On_FileType_doc_define_mappings()
   nnoremap <silent><buffer>d <C-d>
   nnoremap <silent><buffer>q :q<CR>
 endfunction
-
-" incsearch
-" map /  <Plug>(incsearch-forward)
-" map ?  <Plug>(incsearch-backward)
-" map g/ <Plug>(incsearch-stay)
+Gautocmdft help,ref,man,qf,godoc,gedoc,quickrun,gita-blame-navi,dirvish call DocMappings()
 
 " tcomment
 nmap <silent> gcc <Plug>TComment_gcc

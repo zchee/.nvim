@@ -40,8 +40,10 @@ Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/neopairs.vim'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
+Plug 'honza/vim-snippets'
+
 " Go
-Plug 'zchee/deoplete-go'
+Plug 'zchee/deoplete-go', { 'for' : 'go' }
 " Python
 Plug 'davidhalter/jedi-vim'
 
@@ -105,6 +107,7 @@ Plug 'LeafCage/yankround.vim'
 Plug 'Raimondi/delimitMate'
 Plug 'tomtom/tcomment_vim'
 Plug 'tyru/open-browser.vim'
+Plug 'tyru/open-browser-github.vim'
 Plug 'vim-jp/vimdoc-ja'
 Plug 'zchee/neoutil.nvim'
 " Plug 'fmoralesc/nvimfs'
@@ -156,7 +159,8 @@ Plug 'tell-k/vim-autopep8', { 'for' : 'python' }
 Plug 'osyo-manga/vim-monster', { 'for' : 'ruby' }
 
 " Dockerfile
-Plug 'ekalinin/Dockerfile.vim', { 'for' : 'Dockerfile' }
+Plug 'docker/docker', { 'rtp' : '/contrib/syntax/vim', 'for' : 'Dockerfile' }
+Plug 'ekalinin/Dockerfile.vim'
 
 " Markdown
 Plug 'godlygeek/tabular', { 'for' : 'markdown' }
@@ -369,18 +373,30 @@ let g:terminal_color_foreground="#c5c8c6"
 " deoplete
 let ignoredeoplete = ['c', 'cpp', 'objc', 'objcpp', 'gitcommit']
 Gautocmd BufWinEnter * if index(ignoredeoplete, &filetype) == -1 | DeopleteEnable | endif
-let g:deoplete#auto_completion_start_length = 0
-let g:deoplete#file#enable_buffer_path = 0
+let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#file#enable_buffer_path = 1
 let g:deoplete#enable_refresh_always = 1
 let g:deoplete#enable_auto_pairs = 'true'
+let g:neopairs#enable = 1
+
+" customset: default
+call deoplete#custom#set('nsnip', 'rank', 50)
+
+" go
+let g:deoplete#sources#go = 'vim-go'
+" call deoplete#custom#set('go', 'min_pattern_length', 100)
+" call deoplete#custom#set('go', 'rank', 10000)
+
+" vim
+call deoplete#custom#set('vim', 'rank', 9999)
+
+" python
+let g:deoplete#ignore_sources = {}
+let g:deoplete#ignore_sources.python = ['omni']
+
+" ruby
 let g:deoplete#omni#input_patterns = {}
 let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*\|\h\w*::']
-" let g:deoplete#ignore_sources = {}
-" let g:deoplete#ignore_sources.python = ['omni']
-" Go deoplete source config
-let g:deoplete#sources#go = 'vim-go'
-call deoplete#custom#set('go', 'rank', 9999)
-call deoplete#custom#set('go', 'min_pattern_length', 0)
 
 
 " jedi for deoplete
@@ -396,6 +412,7 @@ let g:jedi#max_doc_height = 100
 
 " neosnippet
 let g:neosnippet#enable_completed_snippet = 1
+let g:neosnippet#enable_snipmate_compatibility = 1
 
 
 " vim-autopep8
@@ -583,7 +600,7 @@ let g:quickrun_config['_']['runner/vimproc/updatetime'] = 50
 let g:committia_hooks = {}
 function! g:committia_hooks.edit_open(info)
   " Additional settings
-  setlocal spell
+  " setlocal spell
   " If no commit message, start with insert mode
   if a:info.vcs ==# 'git' && getline(1) ==# ''
       startinsert
@@ -761,7 +778,6 @@ Gautocmdft tmux nnoremap <silent><buffer> K :call tmux#man()<CR>
 " Markdown:
 Gautocmd BufRead,BufNewFile *.md set filetype=markdown
 Gautocmd BufRead,BufNewFile *.md let g:deoplete#disable_auto_complete = 0
-Gautocmd InsertLeave *.md call vimproc#system("issw 'com.apple.keylayout.US' &")
 
 
 " Dockerfile:
@@ -976,7 +992,7 @@ nnoremap <silent> .p   gT
 " Split and focus new buffer
 nnoremap <silent> .s   :<C-u>split<CR><C-w>w
 " Create new tab
-nnoremap <silenT> .t   :<C-u>tabnew<CR>
+nnoremap <silent> .t   :<C-u>tabnew<CR>
 " Vsplit and focus new buffer
 nnoremap <silent> .v   :<C-w>vsplit<CR><C-w>w
 " CtrlP yankround
@@ -1293,9 +1309,11 @@ Gautocmd BufReadPost * if index(ignoredeoplete, &filetype) < 0
 
 
 " neosnippet
+imap <C-k>  <Plug>(neosnippet_expand_or_jump)
+smap <C-k>  <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>  <Plug>(neosnippet_expand_target)
 imap <C-s> <Plug>(neosnippet_expand_or_jump)
 smap <C-s> <Plug>(neosnippet_expand_or_jump)
-
 " vim-operator-user
 "  - operator-surround
 map <silent>sa <Plug>(operator-surround-append)

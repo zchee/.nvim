@@ -1,38 +1,45 @@
+# nvim --api-info | python -c 'import msgpack, sys, yaml; print yaml.dump(msgpack.unpackb(sys.stdin.read()))' > api.yaml
+
 error_types:
   Exception: {id: 0}
   Validation: {id: 1}
+
 functions:
-- can_fail: true
-  deferred: false
-  name: buffer_line_count
+- name: buffer_line_count
+  can_fail: true
+  async: false
   parameters:
   - [Buffer, buffer]
   return_type: Integer
-- can_fail: true
-  deferred: false
-  name: buffer_get_line
+
+- name: buffer_get_line
+  can_fail: true
+  async: false
   parameters:
   - [Buffer, buffer]
   - [Integer, index]
   return_type: String
-- can_fail: true
-  deferred: true
-  name: buffer_set_line
+
+- name: buffer_set_line
+  can_fail: true
+  async: false
   parameters:
   - [Buffer, buffer]
   - [Integer, index]
   - [String, line]
   return_type: void
-- can_fail: true
-  deferred: true
-  name: buffer_del_line
+
+- name: buffer_del_line
+  can_fail: true
+  async: false
   parameters:
   - [Buffer, buffer]
   - [Integer, index]
   return_type: void
-- can_fail: true
-  deferred: false
-  name: buffer_get_line_slice
+
+- name: buffer_get_line_slice
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   - [Integer, start]
@@ -40,9 +47,10 @@ functions:
   - [Boolean, include_start]
   - [Boolean, include_end]
   return_type: ArrayOf(String)
-- can_fail: true
-  deferred: true
-  name: buffer_set_line_slice
+
+- name: buffer_set_line_slice
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   - [Integer, start]
@@ -51,392 +59,457 @@ functions:
   - [Boolean, include_end]
   - [ArrayOf(String), replacement]
   return_type: void
-- can_fail: true
-  deferred: false
-  name: buffer_get_var
+
+- name: buffer_get_var
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   - [String, name]
   return_type: Object
-- can_fail: true
-  deferred: true
-  name: buffer_set_var
+
+- name: buffer_set_var
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   - [String, name]
   - [Object, value]
   return_type: Object
-- can_fail: true
-  deferred: false
-  name: buffer_get_option
+
+-name: buffer_get_option 
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   - [String, name]
   return_type: Object
-- can_fail: true
-  deferred: true
-  name: buffer_set_option
+
+- name: buffer_set_option
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   - [String, name]
   - [Object, value]
   return_type: void
-- can_fail: true
-  deferred: false
-  name: buffer_get_number
+
+- name: buffer_get_number
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   return_type: Integer
-- can_fail: true
-  deferred: false
-  name: buffer_get_name
+
+- name: buffer_get_name
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   return_type: String
-- can_fail: true
-  deferred: true
-  name: buffer_set_name
+
+- name: buffer_set_name
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   - [String, name]
   return_type: void
-- deferred: false
-  name: buffer_is_valid
+
+- name: buffer_is_valid
+  async: false
   parameters:
   - [Buffer, buffer]
   return_type: Boolean
-- can_fail: true
-  deferred: true
-  name: buffer_insert
+
+- name: buffer_insert
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   - [Integer, lnum]
   - [ArrayOf(String), lines]
   return_type: void
-- can_fail: true
-  deferred: false
-  name: buffer_get_mark
+
+- name: buffer_get_mark
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   - [String, name]
   return_type: ArrayOf(Integer, 2)
-- can_fail: true
-  deferred: false
-  name: tabpage_get_windows
+
+- name: tabpage_get_windows
+  async: false
+  can_fail: true
   parameters:
   - [Tabpage, tabpage]
   return_type: ArrayOf(Window)
-- can_fail: true
-  deferred: false
-  name: tabpage_get_var
+
+- name: tabpage_get_var
+  async: false
+  can_fail: true
   parameters:
   - [Tabpage, tabpage]
   - [String, name]
   return_type: Object
-- can_fail: true
-  deferred: true
-  name: tabpage_set_var
+
+- name: tabpage_set_var
+  async: false
+  can_fail: true
   parameters:
   - [Tabpage, tabpage]
   - [String, name]
   - [Object, value]
   return_type: Object
-- can_fail: true
-  deferred: false
-  name: tabpage_get_window
+
+- name: tabpage_get_window
+  async: false
+  can_fail: true
   parameters:
   - [Tabpage, tabpage]
   return_type: Window
-- deferred: false
-  name: tabpage_is_valid
+
+- name: tabpage_is_valid
+  async: false
   parameters:
   - [Tabpage, tabpage]
   return_type: Boolean
-- can_fail: true
-  deferred: true
-  name: vim_command
+
+- name: vim_command
+  async: false
+  can_fail: true
   parameters:
   - [String, str]
   return_type: void
-- deferred: true
-  name: vim_feedkeys
+
+- name: vim_feedkeys
+  async: false
   parameters:
   - [String, keys]
   - [String, mode]
   - [Boolean, escape_csi]
   return_type: void
-- deferred: false
-  name: vim_input
+
+- name: vim_input
+  async: true
   parameters:
   - [String, keys]
   return_type: Integer
-- deferred: false
-  name: vim_replace_termcodes
+
+- name: vim_replace_termcodes
+  async: false
   parameters:
   - [String, str]
   - [Boolean, from_part]
   - [Boolean, do_lt]
   - [Boolean, special]
   return_type: String
-- can_fail: true
-  deferred: false
-  name: vim_command_output
+
+- name: vim_command_output
+  async: false
+  can_fail: true
   parameters:
   - [String, str]
   return_type: String
-- can_fail: true
-  deferred: true
-  name: vim_eval
+
+- name: vim_eval
+  async: false
+  can_fail: true
   parameters:
   - [String, str]
   return_type: Object
-- can_fail: true
-  deferred: true
-  name: vim_call_function
+
+- name: vim_call_function
+  async: false
+  can_fail: true
   parameters:
   - [String, fname]
   - [Array, args]
   return_type: Object
-- can_fail: true
-  deferred: false
-  name: vim_strwidth
+
+- name: vim_strwidth
+  async: false
+  can_fail: true
   parameters:
   - [String, str]
   return_type: Integer
-- deferred: false
-  name: vim_list_runtime_paths
+
+- name: vim_list_runtime_paths
+  async: false
   parameters: []
   return_type: ArrayOf(String)
-- can_fail: true
-  deferred: false
-  name: vim_change_directory
+
+- name: vim_change_directory
+  async: false
+  can_fail: true
   parameters:
   - [String, dir]
   return_type: void
-- can_fail: true
-  deferred: false
-  name: vim_get_current_line
+
+- name: vim_get_current_line
+  async: false
+  can_fail: true
   parameters: []
   return_type: String
-- can_fail: true
-  deferred: true
-  name: vim_set_current_line
+
+- name: vim_set_current_line
+  async: false
+  can_fail: true
   parameters:
   - [String, line]
   return_type: void
-- can_fail: true
-  deferred: true
-  name: vim_del_current_line
+
+- name: vim_del_current_line
+  async: false
+  can_fail: true
   parameters: []
   return_type: void
-- can_fail: true
-  deferred: false
-  name: vim_get_var
+
+- name: vim_get_var
+  can_fail: true
+  async: false 
   parameters:
   - [String, name]
   return_type: Object
-- can_fail: true
-  deferred: true
-  name: vim_set_var
+
+- name: vim_set_var
+  async: false
+  can_fail: true
   parameters:
   - [String, name]
   - [Object, value]
   return_type: Object
-- can_fail: true
-  deferred: false
-  name: vim_get_vvar
+
+- name: vim_get_vvar
+  async: false
+  can_fail: true
   parameters:
   - [String, name]
   return_type: Object
-- can_fail: true
-  deferred: false
-  name: vim_get_option
+
+- name: vim_get_option
+  async: false
+  can_fail: true
   parameters:
   - [String, name]
   return_type: Object
-- can_fail: true
-  deferred: true
-  name: vim_set_option
+
+- name: vim_set_option
+  async: false
+  can_fail: true
   parameters:
   - [String, name]
   - [Object, value]
   return_type: void
-- deferred: true
-  name: vim_out_write
+
+- name: vim_out_write
+  async: false
   parameters:
   - [String, str]
   return_type: void
-- deferred: true
-  name: vim_err_write
+
+- name: vim_err_write
+  async: false
   parameters:
   - [String, str]
   return_type: void
-- deferred: true
-  name: vim_report_error
+
+- name: vim_report_error
+  async: false
   parameters:
   - [String, str]
   return_type: void
-- deferred: false
-  name: vim_get_buffers
+
+- name: vim_get_buffers
+  async: false
   parameters: []
   return_type: ArrayOf(Buffer)
-- deferred: false
-  name: vim_get_current_buffer
+
+- name: vim_get_current_buffer
+  async: false
   parameters: []
   return_type: Buffer
-- can_fail: true
-  deferred: true
-  name: vim_set_current_buffer
+
+- name: vim_set_current_buffer
+  async: false
+  can_fail: true
   parameters:
   - [Buffer, buffer]
   return_type: void
-- deferred: false
-  name: vim_get_windows
+
+- name: vim_get_windows
+  async: false
   parameters: []
   return_type: ArrayOf(Window)
-- deferred: false
-  name: vim_get_current_window
+
+- name: vim_get_current_window
+  async: false
   parameters: []
   return_type: Window
-- can_fail: true
-  deferred: true
-  name: vim_set_current_window
+
+- name: vim_set_current_window
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   return_type: void
-- deferred: false
-  name: vim_get_tabpages
+
+- name: vim_get_tabpages
+  async: false
   parameters: []
   return_type: ArrayOf(Tabpage)
-- deferred: false
-  name: vim_get_current_tabpage
+
+- name: vim_get_current_tabpage
+  async: false
   parameters: []
   return_type: Tabpage
-- can_fail: true
-  deferred: true
-  name: vim_set_current_tabpage
+
+- name: vim_set_current_tabpage
+  async: false
+  can_fail: true
   parameters:
   - [Tabpage, tabpage]
   return_type: void
-- deferred: false
-  name: vim_subscribe
+
+- name: vim_subscribe
+  async: false
   parameters:
   - [String, event]
   receives_channel_id: true
   return_type: void
-- deferred: false
-  name: vim_unsubscribe
+
+- name: vim_unsubscribe
+  async: false
   parameters:
   - [String, event]
   receives_channel_id: true
   return_type: void
-- deferred: false
-  name: vim_name_to_color
+
+- name: vim_name_to_color
+  async: false
   parameters:
   - [String, name]
   return_type: Integer
-- deferred: false
-  name: vim_get_color_map
+
+- name: vim_get_color_map
+  async: false
   parameters: []
   return_type: Dictionary
-- deferred: false
-  name: vim_get_api_info
+
+- name: vim_get_api_info
+  async: true
   parameters: []
   receives_channel_id: true
   return_type: Array
-- can_fail: true
-  deferred: false
-  name: window_get_buffer
+
+- name: window_get_buffer
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   return_type: Buffer
-- can_fail: true
-  deferred: false
-  name: window_get_cursor
+
+- name: window_get_cursor
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   return_type: ArrayOf(Integer, 2)
-- can_fail: true
-  deferred: true
-  name: window_set_cursor
+
+- name: window_set_cursor
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   - ['ArrayOf(Integer, 2)', pos]
   return_type: void
-- can_fail: true
-  deferred: false
-  name: window_get_height
+
+- name: window_get_height
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   return_type: Integer
-- can_fail: true
-  deferred: true
-  name: window_set_height
+
+- name: window_set_height
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   - [Integer, height]
   return_type: void
-- can_fail: true
-  deferred: false
-  name: window_get_width
+
+- name: window_get_width
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   return_type: Integer
-- can_fail: true
-  deferred: true
-  name: window_set_width
+
+- name: window_set_width
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   - [Integer, width]
   return_type: void
-- can_fail: true
-  deferred: false
-  name: window_get_var
+
+- name: window_get_var
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   - [String, name]
   return_type: Object
-- can_fail: true
-  deferred: true
-  name: window_set_var
+
+- name: window_set_var
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   - [String, name]
   - [Object, value]
   return_type: Object
-- can_fail: true
-  deferred: false
-  name: window_get_option
+
+- name: window_get_option
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   - [String, name]
   return_type: Object
-- can_fail: true
-  deferred: true
-  name: window_set_option
+
+- name: window_set_option
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   - [String, name]
   - [Object, value]
   return_type: void
-- can_fail: true
-  deferred: false
-  name: window_get_position
+
+- name: window_get_position
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   return_type: ArrayOf(Integer, 2)
-- can_fail: true
-  deferred: false
-  name: window_get_tabpage
+
+- name: window_get_tabpage
+  async: false
+  can_fail: true
   parameters:
   - [Window, window]
   return_type: Tabpage
-- deferred: false
-  name: window_is_valid
+
+- name: window_is_valid
+  async: false
   parameters:
   - [Window, window]
   return_type: Boolean
-types:
+
+ types:
   Buffer: {id: 0}
   Tabpage: {id: 2}
   Window: {id: 1}

@@ -39,17 +39,19 @@ Plug 'Shougo/neco-syntax'
 Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
-" Plug 'honza/vim-snippets'
 
 " Go
 Plug $XDG_CONFIG_HOME.'/nvim/plugged/deoplete-go', { 'for' : 'go' }
 " Python
 Plug 'zchee/deoplete-jedi', { 'for' : 'python' }
 Plug 'davidhalter/jedi-vim', { 'for' : 'python' }
+" c family
+" Plug 'Rip-Rip/clang_complete'
+" Plug 'justmao945/vim-clang'
 " vim
 Plug 'Shougo/neco-vim'
 Plug 'Konfekt/FastFold'
-" Code completion
+" ycm
 Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
 Plug 'rdnetto/YCM-Generator', { 'branch' : 'develop', 'on' : ['YcmGenerateConfig'] }
 
@@ -61,39 +63,25 @@ Plug 'thinca/vim-quickrun'
 " Async
 Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
 
-" Terminal
-" Plug 'kassio/neoterm'
-
 " Fuzzy
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'sgur/ctrlp-extensions.vim'
 Plug 'nixprime/cpsm'
 
-" Interface
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'justinmk/vim-dirvish'
-Plug 'majutsushi/tagbar', { 'on' : ['Tagbar', 'TagbarToggle'] }
-
 " Git
 Plug 'airblade/vim-gitgutter'
-" Plug 'zchee/gitgutter.nvim'
-Plug 'lambdalisue/vim-gista', { 'on' : ['Gista'] }
-Plug 'lambdalisue/vim-gita', { 'on' : ['Gita'] }
+Plug 'lambdalisue/vim-gista'
+Plug 'lambdalisue/vim-gita'
 Plug 'rhysd/committia.vim'
 
 " Formatter
 Plug 'rhysd/vim-clang-format', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
-Plug 'Chiel92/vim-autoformat'
 Plug $XDG_CONFIG_HOME.'/nvim/plugged/nvim-flake8'
 
-" References
-" Plug 'lambdalisue/vim-manpager'
-Plug 'thinca/vim-ref'
-Plug 'yuku-t/vim-ref-ri'
-
-" Template
-Plug 'mattn/sonictemplate-vim'
+" Interface
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'justinmk/vim-dirvish'
 
 " vim-operator-user
 Plug 'kana/vim-operator-user'
@@ -102,26 +90,24 @@ Plug 'rhysd/vim-operator-surround'
 " Plug 'emonkak/vim-operator-comment'
 " Plug 'emonkak/vim-operator-sort'
 
-" Color
+" References
+Plug 'thinca/vim-ref'
+Plug 'yuku-t/vim-ref-ri', { 'for' : 'ruby' }
+
+" Template
+Plug 'mattn/sonictemplate-vim'
 
 " Utility
 " Plug 'LeafCage/yankround.vim'
-" Plug 'Raimondi/delimitMate'
-Plug 'tomtom/tcomment_vim'
-Plug 'tyru/open-browser.vim'
-Plug 'tyru/open-browser-github.vim'
 Plug 'vim-jp/vimdoc-ja'
 Plug 'zchee/neoutil.nvim'
-" Plug 'cazador481/fakeclip.neovim'
-" Plug 'fmoralesc/nvimfs'
-" Plug 'jiangmiao/auto-pairs'
 
 " Debugging
 Plug 'critiqjo/lldb.nvim'
-Plug 'haya14busa/vim-debugger'
 
-" Misc
-Plug 'mattn/benchvimrc-vim', { 'on' : 'BenchVimrc' }
+Plug 'tomtom/tcomment_vim'
+" Plug 'Chiel92/vim-autoformat'
+" Plug 'jiangmiao/auto-pairs'
 
 " }}}
 
@@ -135,43 +121,20 @@ Plug 'zchee/vim-go-stdlib', { 'for' : 'go' }
 " Plug 'zchee/vim-goiferr', { 'for' : 'go' }
 Plug 'garyburd/vigor', { 'for' : 'unknown' }
 Plug $XDG_CONFIG_HOME.'/nvim/plugged/nvim-go'
-" Plug 'garyburd/go-explorer'
 
 " Python
 Plug 'tell-k/vim-autopep8', { 'for' : 'python' }
 Plug 'nvie/vim-flake8', { 'for' : 'python' }
 Plug 'hynek/vim-python-pep8-indent', { 'for' : 'python' }
-" Plug 'hdima/python-syntax', { 'for' : 'python' }
-" Plug 'bfredl/nvim-ipy'
-" Plug 'razvanc87/nvim-jupyter'
 
 " C family
 Plug 'vim-jp/vim-cpp', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
-" Plug 'Rip-Rip/clang_complete'
-" Plug 'justmao945/vim-clang'
-
-" TypeScript
-Plug 'leafgarland/typescript-vim', { 'for' : 'typescript' }
-Plug 'clausreinke/typescript-tools', { 'for' : 'typescript' }
-
-" Swift
-Plug 'zchee/vim-swift-syntax', { 'for' : 'swift' }
-
-" Ruby
-Plug 'osyo-manga/vim-monster', { 'for' : 'ruby' }
 
 " Dockerfile
 Plug 'docker/docker', { 'rtp' : '/contrib/syntax/vim/', 'for' : 'dockerfile' }
 
-" Markdown
-Plug 'godlygeek/tabular', { 'for' : 'markdown' }
-Plug 'plasticboy/vim-markdown', { 'for' : 'markdown' }
-
 " zsh
 Plug 'chrisbra/vim-zsh'
-
-" tmux
-Plug 'tmux-plugins/vim-tmux', { 'for' : 'tmux' }
 
 " ninja
 Plug 'martine/ninja', { 'rtp': '/misc', 'for' : [ 'ninja' ] }
@@ -186,25 +149,15 @@ filetype plugin indent on
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Environment variable
-" Global
-let $LANG = 'ja_JP.UTF-8'
-let $MANPATH = '/usr/local/share/man:/usr/share/man:/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/share/man'
-
 " Global settings "{{{
 
-" colorscheme
-" syntax sync minlines=100
 syntax on
 set background=dark
-
 colorscheme hybrid_reverse
 let g:hybrid_use_iTerm_colors = 1
 let g:enable_bold_font = 1
-" colorscheme base16-duotone-dark
 
 " set
-" set cindent
 set clipboard=unnamedplus
 set cmdheight=2
 set completeopt+=noinsert,noselect
@@ -252,10 +205,10 @@ set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.so,*.out,*.class,*.jpg,*.jpeg
 set wildignore+=*.swp,*.swo,*.swn
 set wrap
 
-set path=.,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include
-set path+=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include
-set path+=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1
-set path+=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.0.0/include
+set path=.,/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include
+set path+=/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include
+set path+=/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1
+set path+=/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.0.0/include
 set path+=/usr/local/include
 set path+=/usr/include,
 
@@ -275,7 +228,6 @@ set nowritebackup
 let g:loaded_gzip              = 1
 let g:loaded_man               = 1
 let g:loaded_matchit           = 1
-" let g:loaded_matchparen        = 1
 let g:loaded_netrwPlugin       = 1
 let g:loaded_rrhelper          = 1
 let g:loaded_spellfile_plugin  = 1
@@ -291,12 +243,11 @@ let g:loaded_zipPlugin         = 1
 
 " Color "{{{
 hi! SpecialKey                         gui=NONE    guifg='#25262c'    guibg=NONE
-
 hi! TermCursor                         gui=NONE    guifg='#000000'    guibg=NONE
 
 " Go
-Gautocmdft go highlight goStdlib       gui=bold guifg='#81a2be'
 let g:go_highlight_error = 1
+Gautocmdft go highlight goStdlib       gui=bold guifg='#81a2be'
 Gautocmdft go highlight goStdlibErr    gui=bold guifg='#ff005f'
 
 " C
@@ -307,9 +258,6 @@ Gautocmdft c,cpp,objc,objcpp highlight cCustomFunc gui=NONE guifg='#f0c674'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Neovim configuration "{{{
-
-" Environment variable
-let $TERM = 'xterm-256color'
 
 if has('mac')
   let g:python_host_prog   = '/usr/local/bin/python2'
@@ -322,64 +270,6 @@ endif
 let g:python_host_skip_check  = 1
 let g:python3_host_skip_check = 1
 
-" Allow terminal buffer size to be very large
-let g:terminal_scrollback_buffer_size = 100000
-
-" Set terminal colors
-let          g:terminal_color_0="#5a5a5a"
-let          g:terminal_color_1="#a54242"
-let          g:terminal_color_2="#9da45a"
-let          g:terminal_color_3="#f0c674"
-let          g:terminal_color_4="#5f819d"
-let          g:terminal_color_5="#85678f"
-let          g:terminal_color_6="#5e8d87"
-let          g:terminal_color_7="#c5c8c6"
-let          g:terminal_color_8="#373b41"
-let          g:terminal_color_9="#cc6666"
-let         g:terminal_color_10="#b5bd68"
-let         g:terminal_color_11="#f0c674"
-let         g:terminal_color_12="#81a2be"
-let         g:terminal_color_13="#b294bb"
-let         g:terminal_color_14="#8abeb7"
-let         g:terminal_color_15="#c5c8c6"
-let g:terminal_color_background="#101112"
-let g:terminal_color_foreground="#c5c8c6"
-
-" Disable all listchars on terminal mode
-if mode() == "t"
-  setlocal listchars=
-  setlocal nonumber
-endif
-
-
-" }}}
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Fix DECLRMM & DECSLRM
-" DECLRMM - Left Right Margin Mode - http://www.vt100.net/docs/vt510-rm/DECLRMM
-" DECSLRM - Set Left and Right Margins - http://www.vt100.net/docs/vt510-rm/DECSLRM
-" http://qiita.com/kefir_/items/c725731d33de4d8fb096
-" Use vsplit mode
-" if has('vertsplit')
-"   function! EnableVsplitMode()
-"     " enable origin mode and left/right margins
-"     let &t_CS = "y"
-"     let &t_ti = &t_ti . "\e[?6;69h"
-"     let &t_te = "\e[?6;69l\e[999H" . &t_te
-"     let &t_CV = "\e[%i%p1%d;%p2%ds"
-"     call writefile([ "\e[?6;69h" ], "/dev/tty", "a")
-"   endfunction
-"
-"   " old vim does not ignore CPR
-"   map <special> <Esc>[3;9R <Nop>
-"
-"   " new vim can't handle CPR with direct mapping
-"   " map <expr> ^[[3;3R EnableVsplitMode()
-"   set t_F9=[3;3R
-"   map <expr> <t_F9> EnableVsplitMode()
-"   let &t_RV .= "\e[?6;69h\e[1;3s\e[3;9H\e[6n\e[0;0s\e[?6;69l"
-" endif
 
 " }}}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -391,7 +281,6 @@ endif
 Gautocmdft go setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4
 
 " TODO: for nvim-go
-" Gautocmd BufWritePre *.go Gofmt
 let g:go#test#vars = 1
 let g:go#fmt_autosave = 1
 " vim-go
@@ -421,11 +310,6 @@ let g:go_asmfmt_autosave = 1
 let g:go_term_height = 30
 let g:go_term_width = 30
 let g:go_term_enabled = 1
-
-" Neomake
-" Gautocmd BufWritePost *.go Neomake!
-" let g:neomake_go_enabled_makers = ['golint', 'govet']
-
 " Lock golang/go source
 function! GoSrcSetting()
   set readonly nomodified
@@ -475,18 +359,9 @@ Gautocmd BufWritePost *.c,*.cpp,*.objc,*.objcpp call CtagsGitRoot()
 Gautocmd BufNewFile,BufRead /System/Library/Frameworks/* setlocal readonly nomodified
 Gautocmd BufNewFile,BufRead /Applications/Xcode.app/Contents/* setlocal readonly nomodified
 Gautocmd BufNewFile,BufRead /Applications/Xcode-beta.app/Contents/* setlocal readonly nomodified
-" Gautocmdft cpp setlocal matchpairs+=<:>
-" Gautocmdft c,cpp setlocal tags+=/usr/local/tags/c.tags
-" let c_no_curly_error = 1 " https://github.com/vim-jp/vim-cpp/issues/16
-" let c_no_bracket_error = 1
-" let cpp_no_cpp11 = 1
-" vim-autoformat
-" let g:formatdef_astyle_c = '"astyle --mode=c --style=google -pcH".(&expandtab ? "s".shiftwidth() : "t")'
-" let g:formatters_c = ['astyle_c']
 " Open cppreference.com
 function! s:open_online_cpp_doc()
   let l = getline('.')
-
   if l =~# '^\s*#\s*include\s\+<.\+>'
     let header = matchstr(l, '^\s*#\s*include\s\+<\zs.\+\ze>')
     if header =~# '^boost'
@@ -512,10 +387,6 @@ endfunction
 Gautocmdft cpp nnoremap <silent><buffer>X :<C-u>call <SID>open_online_cpp_doc()<CR>
 
 
-" TypeScript:
-let g:typescript_compiler_options = '-sourcemap'
-
-
 " Ruby:
 Gautocmdft ruby setlocal expandtab tabstop=2 softtabstop=2 shiftwidth=2
 " Gautocmd BufWritePost *.rb :Autoformat
@@ -527,10 +398,6 @@ Gautocmd BufReadPost .pryrc setlocal filetype=ruby
 Gautocmdft zsh,sh,bash setlocal tabstop=4 softtabstop=4 shiftwidth=4
 Gautocmd BufWritePost .zshenv,.zshrc,*.zsh call CtagsGitRoot()
 Gautocmd BufNewFile,BufRead ~/.zsh/* setlocal filetype=zsh
-
-
-" Tmux:
-Gautocmdft tmux nnoremap <silent><buffer> K :call tmux#man()<CR>
 
 
 " Markdown:
@@ -547,18 +414,6 @@ Gautocmdft dockerfile setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 
 Gautocmd BufWritePost $MYVIMRC nested silent! call vimproc#system("ctags -R --languages=Vim --sort=yes --fields=+l -f $HOME/.config/nvim/tags $HOME/.config/nvim &")
 Gautocmd BufWritePost $MYVIMRC,*.vim nested silent! source $MYVIMRC
 Gautocmdft vim setlocal tags=$HOME/.config/nvim/tags
-" Gautocmd BufRead,BufNewFile $MYVIMRC, init.vim setlocal tags=$MYVIMRC . '/tags'
-" Gautocmd BufWritePost $MYVIMRC cd ~/.nvim; call vimproc#system("ctags -R --fields=+l --sort=yes &")
-
-
-" Bash:
-" Enable bash syntax on /bin/sh shevang
-" http://tyru.hatenablog.com/entry/20101007/
-let g:is_bash = 1
-
-
-" Xcode:
-Gautocmd BufRead,BufNewFile *.xcconfig setlocal filetype=sh " TODO Dedicated syntax
 
 
 " Gitconfig:
@@ -567,16 +422,6 @@ Gautocmdft gitconfig setlocal softtabstop=4 shiftwidth=4 noexpandtab
 
 " Json:
 Gautocmd BufRead,BufNewFile .eslintrc set filetype=json " eslint
-
-
-" Vagrant:
-Gautocmd BufRead,BufNewFile Vagrantfile set filetype=ruby
-
-
-" Goslide:
-Gautocmd BufRead,BufNewFile *.slide set filetype=goslide
-Gautocmd BufRead,BufNewFile *.slide setlocal noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
-Gautocmd BufRead,BufNewFile *.slide let g:deoplete#disable_auto_complete = 1
 
 
 " Quickfix:
@@ -605,7 +450,6 @@ Gautocmdft qf call AdjustWindowHeight(3, 7)
 
 " Plugin settings "{{{
 
-"
 " deoplete
 "
 let ignoredeoplete = ['c', 'cpp', 'objc', 'objcpp', 'gitcommit']
@@ -655,14 +499,14 @@ let g:jedi#documentation_command = "K"
 let g:jedi#show_call_signatures = 0
 let g:jedi#smart_auto_mappings = 0
 
+" neosnippets
+call deoplete#custom#set('neosnippet', 'rank', 50)
+
 " vim
 call deoplete#custom#set('vim', 'rank', 10000)
 
 " ruby
 let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
-
-" neosnippets
-call deoplete#custom#set('neosnippet', 'rank', 50)
 
 
 " neopairs.vim
@@ -704,7 +548,7 @@ let g:ycm_complete_in_comments = 1
 let g:ycm_confirm_extra_conf = 1
 let g:ycm_extra_conf_globlist = ['./*','../*','../../*','../../../*','../../../../*','~/.nvim/*']
 let g:ycm_filepath_completion_use_working_dir = 1
-" let g:ycm_global_ycm_extra_conf = $HOME . '/.nvim/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = $HOME . '/.nvim/.ycm_extra_conf.py'
 let g:ycm_goto_buffer_command = 'same-buffer' " ['same-buffer', 'horizontal-split', 'vertical-split', 'new-tab', 'new-or-existing-tab']
 let g:ycm_key_list_select_completion = ['<Down>']
 let g:ycm_path_to_python_interpreter = '/usr/local/bin/python2'
@@ -741,26 +585,8 @@ let g:cpsm_highlight_mode = 'basic' " none, basic, detailed
 let g:cpsm_unicode = 1
 
 
-" clang-format
-" Ref: http://algo13.net/clang/clang-format-style-oputions.html
-" FIXME: Optios not works?
-let g:clang_format#code_style = 'google'
-let g:clang_format#detect_style_file = 1
-" let g:clang_format#auto_format = 1
-
-
-" Neomake
-let g:neomake_serialize = 1
-let g:neomake_error_sign = {
-      \ 'text': 'E>',
-      \ 'texthl': 'ErrorMsg',
-      \ }
-let g:neomake_airline = 1
-
-
 " vim-airline
 let g:airline_inactive_collapse=1
-" let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tagbar#enabled = 0
 let g:airline_powerline_fonts = 1
 " vim-airline theme
@@ -769,22 +595,7 @@ let g:airline_theme = 'hybridline'
 if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
-" let g:airline_left_sep = ''
-" let g:airline_left_alt_sep = ''
-" let g:airline_right_sep = ''
-" let g:airline_right_alt_sep = ''
-" let g:airline_symbols.branch = ''
-" let g:airline_symbols.readonly = ''
-" let g:airline_symbols.linenr = ''
-" let g:airline_section_a       (mode, crypt, paste, iminsert)
-" let g:airline_section_b       (hunks, branch)
 let g:airline_section_c = airline#section#create(['%<', 'readonly', ' ', 'path'])
-" let g:airline_section_gutter  (readonly, csv)
-" let g:airline_section_x       (tagbar, filetype, virtualenv)
-" let g:airline_section_y       (fileencoding, fileformat)
-" let g:airline_section_z       (percentage, line number, column number)
-" let g:airline_section_error   (ycm_error_count, syntastic, eclim)
-" let g:airline_section_warning (ycm_warning_count, whitespace)
 
 
 " gitgutter
@@ -841,42 +652,6 @@ let g:quickrun_config.go = {
       \ 'outputter/buffer/close_on_empty' : 1,
       \ }
 
-" C++
-let g:quickrun_config.c = {
-      \ 'command' : 'clang',
-      \ 'cmdopt' : '-O0',
-      \ 'outputter' : 'buffer',
-      \ 'outputter/buffer/split'   : ':vertical botright',
-      \ 'outputter/buffer/close_on_empty' : 1,
-      \ }
-let g:quickrun_config['c/llvm/error'] = {
-      \ 'type' : 'c/llvm/error',
-      \ 'command' : 'clang',
-      \ 'cmdopt' : '-Wall -Wextra -O2',
-      \ }
-let g:quickrun_config['c/llvm/run'] = {
-      \ 'type' : 'c/llvm/run',
-      \ 'command' : 'clang',
-      \ 'cmdopt' : '-Wall -Wextra -O2',
-      \ 'exec' : '%c %o -emit-llvm -S %s -o -',
-      \ }
-let g:quickrun_config['c/llvm'] = {
-      \ 'type' : 'c/clang',
-      \ 'command' : 'clang',
-      \ 'exec' : '%c %o -emit-llvm -S %s -o -',
-      \ }
-let g:quickrun_config.cpp = {
-      \ 'command' : 'clang++',
-      \ 'cmdopt' : '-stdlib=libc++ -std=c++1y -Wall -Wextra -O2',
-      \ }
-let g:quickrun_config['cpp/llvm'] = {
-      \ 'type' : 'cpp/clang++',
-      \ 'exec' : '%c %o -emit-llvm -S %s -o -',
-      \ }
-" outputter
-" Problem runner vimproc polling interval
-let g:quickrun_config['_']['runner/vimproc/updatetime'] = 50
-
 
 " vim-ref
 Gautocmdft ruby nnoremap K :<C-u>Ref ri <C-r><C-w><CR>
@@ -890,12 +665,6 @@ let g:ref_pydoc_complete_head = 1
 " committia.vim
 let g:committia_hooks = {}
 function! g:committia_hooks.edit_open(info)
-  " Additional settings
-  " setlocal spell
-  " If no commit message, start with insert mode
-  if a:info.vcs ==# 'git' && getline(1) ==# ''
-    startinsert
-  end
   " Scroll the diff window from insert mode
   " Map <C-n> and <C-p>
   imap <buffer><C-n> <Plug>(committia-scroll-diff-down-half)
@@ -904,6 +673,7 @@ endfunction
 
 
 " tcomment_vim
+let g:tcommentMaps = 0
 let g:tcommentMapLeader1 = 0
 
 
@@ -916,16 +686,8 @@ let g:sonictemplate_vim_vars = {
       \}
 
 
-" tcomment_vim:
-let g:tcommentMaps = 0
-
-
 " vim-gista
 let g:gista#update_on_write = 1
-
-
-" fakeclip.neovim
-" let g:vim_fakeclip_tmux_plus=1
 
 " }}}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -959,10 +721,6 @@ function! s:smart_help(args)
   endtry
 endfunction
 command! -nargs=* -complete=help SmartHelp call <SID>smart_help(<q-args>)
-
-
-" Show highlight group name under a cursor
-command! VimShowHlGroup echo synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
 
 
 " Display syntax infomation on under the current cursor
@@ -1005,13 +763,6 @@ endfunction
 command! SyntaxInfo call s:get_syn_info()
 
 
-function! Get_syn_name() abort
-  echo synIDattr(synIDtrans(synID(line("."), col("."), 1)), "name")
-  " echo len(getline('.')) < 200 ?
-  "       \ synIDattr(synIDtrans(synID(line('.'), mode() ==# 'i' ?
-  "       \          col('.')-1 : col('.'), 1)), 'name') : ''
-endfunction
-
 " Set parent git directory to current path
 " http://michaelheap.com/set-parent-git-directory-to-current-path-in-vim/
 function! CtagsGitRoot()
@@ -1028,24 +779,9 @@ endfunction
 command! -nargs=0 -bang -complete=command FormatJSON %!python -m json.tool
 
 
-" Unload plugin in runtimepath
-function! PlugUnload(name)
-  execute 'set rtp-=~/.config/nvim/plugged/' . a:name . '/'
-endfunction
-
-
 " Clear message logs
 command! ClearMessage for n in range(200) | echom "" | endfor
 
-
-" Change input source to US keylayout after focused of nvim
-" Tool : vovkasm/input-source-switcher
-" com.apple.keylayout.US:                 Apple English
-" com.apple.inputmethod.Kotoeri.Roman:    Kotoeri ASCII
-" com.apple.inputmethod.Kotoeri.Japanese: Kotoeri Hiragana
-" com.google.inputmethod.Japanese.Roman:  Google Japanese Input ASCII
-" com.google.inputmethod.Japanese.base:   Google Japanese Input Hiragana
-" Gautocmd FocusGained * call vimproc#system("issw 'com.apple.keylayout.US' &")
 
 " Binary edit mode
 " need open nvim with `-b` flag
@@ -1058,21 +794,6 @@ function! BinaryMode() abort
   execute '%!xxd'
 endfunction
 
-
-" Gautocmd VimEnter * call s:init_neovim_qt()
-" function! s:init_neovim_qt() abort "{{{
-"   " Neovim-qt Guifont command
-"   command -nargs=? Guifont call rpcnotify(0, 'Gui', 'SetFont', '<args>')
-"         \ | let g:Guifont = '<args>'
-"
-"   " Set the font
-"   Guifont Kibikaki 18 Pitch:h4
-"
-"   " Width of window.
-"   setglobal columns=170
-"   " Height of window.
-"   setglobal lines=40
-" endfunction"}}}
 
 " }}}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1136,7 +857,6 @@ let mapleader = "\<Space>"
 nnoremap <silent><Leader>h  :<C-u>SmartHelp<Space><C-l>
 nnoremap <silent><Leader>m  <C-w>w
 nnoremap <silent><Leader>n  :TagbarToggle<CR>
-" nnoremap <silent><Leader>t  :<C-u>tabnew \| :terminal<CR>
 nnoremap <silent><Leader>r  :<C-u>QuickRun<CR>
 nnoremap <silent><Leader>s  :%s///g<Left><Left><Left>
 nnoremap <silent><Leader>w  :<C-u>w<CR>
@@ -1247,23 +967,8 @@ vnoremap c  "_c
 " When type 'x' key(delete), do not add yank register
 vnoremap x  "_x
 vnoremap P  "_dP
-" If enable, can not multi-line replace
-" vnoremap p  "_dp
+vnoremap p  "_dp
 " vnoremap gp p
-
-" yankround
-" nmap p <Plug>(yankround-p)
-" xmap p <Plug>(yankround-p)
-" vmap p <Plug>(yankround-p)
-" nmap P <Plug>(yankround-P)
-"
-" nmap gp <Plug>(yankround-gp)
-" xmap gp <Plug>(yankround-gp)
-" vmap gp <Plug>(yankround-gp)
-" nmap gP <Plug>(yankround-gP)
-"
-" nmap <C-p> <Plug>(yankround-prev)
-" nmap <C-n> <Plug>(yankround-next)
 
 
 " sort alphabetically
@@ -1279,17 +984,6 @@ vnoremap V ^
 " Jump to match pair brackets
 vnoremap <Tab> %
 
-
-" What?
-" nnoremap y  "+y
-" nnoremap Y  "+Y
-" nnoremap dd "+Y dd
-" vnoremap y  "+y
-" vnoremap Y  "+Y
-" vnoremap d  "+y dp
-" nnoremap p  "+p
-" nnoremap P  "+P
-
 " }}}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -1299,23 +993,6 @@ vnoremap <Tab> %
 cmap w!!  :<C-u>w !sudo tee > /dev/null %
 " Misstype <Leader>w handle
 cnoremap  <silent> w<Space>  :<C-u>w<CR>
-
-" }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Terminal "{{{
-" Open new terminal tab (tmux: bindkey c)
-tmap <C-d>c <C-\><C-n>:tabnew \| :terminal<CR>
-" Switch tab (tmux: bindkey {n|p})
-tmap <C-d>n <C-\><C-n>:tabnext<CR>
-tmap <C-d>p <C-\><C-n>:tabprevious<CR>
-
-" jj to exit to terminal mode
-tnoremap <silent>jj  <C-\><C-n>
-tnoremap <silent>qq  <C-\><C-n>
-" ZZ to quit terminal tab
-tnoremap <silent>ZZ           <C-\><C-n>:quit!<CR>
-
 
 " }}}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1351,8 +1028,8 @@ Gautocmdft python nnoremap <silent>K              :<C-u>call jedi#show_documenta
 
 " Cfamily:
 Gautocmdft c,cpp,objc,objcpp nnoremap <buffer><silent><C-]>  :<C-u>YcmCompleter GoTo<CR>
-Gautocmdft c,cpp,objc,objcpp nnoremap <buffer><C-f>          :<C-u>pyfile /usr/local/src/llvm/tools/clang/tools/clang-format/clang-format.py<CR>
 Gautocmdft c,cpp,objc,objcpp map      <buffer><Leader>x      <Plug>(operator-clang-format)
+" Gautocmdft c,cpp,objc,objcpp nnoremap <buffer><C-f>          :<C-u>pyfile /usr/local/src/llvm/tools/clang/tools/clang-format/clang-format.py<CR>
 
 
 " JavaScript:
@@ -1435,12 +1112,3 @@ xmap <silent> gc  <Plug>TComment_gc
 
 " }}}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-if filereadable(expand("$XDG_CONFIG_HOME/nvim/init.local"))
-  source $XDG_CONFIG_HOME/nvim/local.vim
-endif
-
-
-" }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" vim: set ft=vim fdm=marker ff=unix fileencoding=utf-8:

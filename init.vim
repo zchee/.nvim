@@ -43,16 +43,20 @@ Plug 'Shougo/neosnippet-snippets'
 " Go
 Plug $XDG_CONFIG_HOME.'/nvim/plugged/deoplete-go', { 'for' : 'go' }
 " Python
-Plug 'zchee/deoplete-jedi', { 'for' : 'python' }
+Plug $XDG_CONFIG_HOME.'/nvim/plugged/deoplete-jedi', { 'for' : 'python' }
 Plug 'davidhalter/jedi-vim', { 'for' : 'python' }
 " c family
+Plug $XDG_CONFIG_HOME.'/nvim/plugged/deoplete-clang', { 'for' : ['c', 'cpp'] }
+Plug 'DarkDefender/clang_complete', { 'branch' : 'deo_clang_py3' }
 " Plug 'Rip-Rip/clang_complete'
 " Plug 'justmao945/vim-clang'
+" Plug 'osyo-manga/vim-marching'
 " vim
 Plug 'Shougo/neco-vim'
 Plug 'Konfekt/FastFold'
 " ycm
-Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
+" Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
+Plug 'Valloric/YouCompleteMe', { 'for' : 'unknown' }
 Plug 'rdnetto/YCM-Generator', { 'branch' : 'develop', 'on' : ['YcmGenerateConfig'] }
 
 " Build
@@ -163,6 +167,7 @@ set cmdheight=2
 set completeopt+=noinsert,noselect
 set completeopt-=preview
 set expandtab
+set foldlevel=0
 set foldmethod=marker
 set helplang=ja,en
 set hidden
@@ -203,6 +208,7 @@ set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
 set wildignore+=tags,*.tags
 set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.so,*.out,*.class,*.jpg,*.jpeg,*.bmp,*.gif,*.png
 set wildignore+=*.swp,*.swo,*.swn
+set wildmode=list:full
 set wrap
 
 set path=.,/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include
@@ -452,9 +458,8 @@ Gautocmdft qf call AdjustWindowHeight(3, 7)
 
 " deoplete
 "
-let ignoredeoplete = ['c', 'cpp', 'objc', 'objcpp', 'gitcommit']
-Gautocmd BufWinEnter * if index(ignoredeoplete, &filetype) == -1 | DeopleteEnable | endif
-" let g:deoplete#enable_at_startup = 1
+" Gautocmd BufWinEnter * if index(ignoredeoplete, &filetype) == -1 | DeopleteEnable | endif
+let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_completion_start_length = 1
 " let g:deoplete#enable_refresh_always = 1
 let g:deoplete#file#enable_buffer_path = 1
@@ -475,9 +480,11 @@ call deoplete#custom#set('file', 'mark', 'file')
 call deoplete#custom#set('member', 'mark', 'member')
 call deoplete#custom#set('omni', 'mark', 'omni')
 call deoplete#custom#set('tag', 'mark', 'tag')
-
+" C family
+let g:deoplete#ignore_sources.c = ['tag']
+let g:deoplete#ignore_sources.cpp = ['tag']
 " go
-let g:deoplete#ignore_sources.go = ['buffer', 'member', 'tag']
+let g:deoplete#ignore_sources.go = ['tag']
 call deoplete#custom#set('go', 'rank', 10000)
 let g:deoplete#sources#go#align_class = 1
 let g:deoplete#sources#go#data_directory = $HOME.'/.config/gocode/json'
@@ -598,6 +605,16 @@ endif
 let g:airline_section_c = airline#section#create(['%<', 'readonly', ' ', 'path'])
 
 
+" Neomake
+let g:neomake_open_list = 'loclist'
+let g:neomake_serialize = 1
+let g:neomake_error_sign = {
+      \ 'text': 'E>',
+      \ 'texthl': 'ErrorMsg',
+      \ }
+let g:neomake_airline = 1
+
+
 " gitgutter
 let g:gitgutter_enabled = 1
 let g:gitgutter_realtime = 0
@@ -665,6 +682,12 @@ let g:ref_pydoc_complete_head = 1
 " committia.vim
 let g:committia_hooks = {}
 function! g:committia_hooks.edit_open(info)
+  " Additional settings
+  " setlocal spell
+  " If no commit message, start with insert mode
+  if a:info.vcs ==# 'git' && getline(1) ==# ''
+    startinsert
+  end
   " Scroll the diff window from insert mode
   " Map <C-n> and <C-p>
   imap <buffer><C-n> <Plug>(committia-scroll-diff-down-half)
@@ -688,6 +711,7 @@ let g:sonictemplate_vim_vars = {
 
 " vim-gista
 let g:gista#update_on_write = 1
+
 
 " }}}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1000,14 +1024,16 @@ cnoremap  <silent> w<Space>  :<C-u>w<CR>
 " Language mappnigs "{{{
 
 " Go:
-Gautocmdft go nmap <silent><C-]>          :<C-u>Godef<CR>
+Gautocmdft go nmap <silent><C-]>          :<C-u>Godef jump<CR>
 " Gautocmdft go nmap <Leader>w              :<C-u>Gofmt<CR>
 " Gautocmdft go nmap <silent><buffer><C-]>  <Plug>(go-def)
 Gautocmdft go nmap <silent><Leader>]      :<C-u>tag <c-r>=expand("<cword>")<CR><CR>
 Gautocmdft go nmap <silent><Leader>b      <Plug>(go-build)
+Gautocmdft go nmap <silent><Leader>d      :<C-u>GoGuru describe<CR>
 Gautocmdft go nmap <silent>K              <Plug>(go-doc)
 Gautocmdft go nmap <silent><Leader>f      <Plug>(go-def-split)
-Gautocmdft go nmap <silent><Leader>gi     <Plug>(go-info)
+Gautocmdft go nmap <silent><Leader>i      :<C-u>Godef info<CR>
+" Gautocmdft go nmap <silent><Leader>gi     <Plug>(go-info)
 Gautocmdft go nmap <silent><Leader>gm     <Plug>(go-metalinter)
 Gautocmdft go nmap <silent><Leader>gr     <Plug>(go-rename)
 Gautocmdft go nmap <silent><Leader>gt     <Plug>(go-test)
@@ -1062,7 +1088,7 @@ Gautocmdft qf  nnoremap <Enter> <Enter>
 "
 " If not &filetype is ignoredeoplete, Enable deoplete
 " If &filetype is ignoredeoplete, Enable YouCompleteMe
-" Gautocmd BufReadPost *
+let ignoredeoplete = ['c', 'cpp', 'objc', 'objcpp', 'gitcommit']
 Gautocmd BufReadPost * if index(ignoredeoplete, &filetype) < 0
       \| inoremap <silent><expr><CR>     pumvisible() ? deoplete#mappings#close_popup() : "\<CR>"
       \| inoremap <silent><expr><BS>     pumvisible() ? deoplete#mappings#smart_close_popup()."\<BS>" : "\<BS>"
@@ -1074,8 +1100,8 @@ Gautocmd BufReadPost * if index(ignoredeoplete, &filetype) < 0
       \| inoremap <silent><expr><C-l>    pumvisible() ? deoplete#mappings#refresh() : "\<C-l>"
       \| inoremap <silent><expr><C-z>    deoplete#mappings#undo_completion()
       \ | else
-      \| inoremap <silent><expr><CR>    pumvisible() ? "\<C-y>" : "\<CR>"
-      \ | endif
+        \| inoremap <silent><expr><CR>    pumvisible() ? "\<C-y>" : "\<CR>"
+        \ | endif
 
 
 " neosnippet
@@ -1109,6 +1135,10 @@ Gautocmdft help,ref,man,qf,godoc,gedoc,quickrun,gita-blame-navi,dirvish,vim-plug
 nmap <silent> gc <Plug>TComment_gcc
 xmap <silent> gc  <Plug>TComment_gc
 
+" g:local="$XDG_CONFIG_HOME/nvim/local.vim"
+" if filereadable(expand(g:local))
+  source $XDG_CONFIG_HOME/nvim/local.vim
+" endif
 
 " }}}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

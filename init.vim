@@ -376,12 +376,12 @@ Gautocmd BufWritePost *.go call GotagsGitRoot()
 
 " Python:
 Gautocmdft python setlocal tabstop=8 shiftwidth=4 softtabstop=4 colorcolumn=80
-Gautocmd BufWritePost *.py Neomake!
-let g:neomake_python_enabled_makers = ['pep257', 'pep8', 'pyflakes', 'flake8']
-Gautocmd BufWinEnter .pythonrc set filetype=python
+" Gautocmd BufWritePost *.py Neomake!
+" let g:neomake_python_enabled_makers = ['pep257', 'pep8', 'pyflakes', 'flake8']
 " Gautocmd BufWritePost *.py silent Autopep8
 " Gautocmd BufWritePost *.py silent call Flake8()
 " Gautocmd BufWritePost *.py silent Autopep8 | silent call Flake8()
+Gautocmd BufWinEnter .pythonrc set filetype=python
 Gautocmd BufWritePost *.py call CtagsGitRoot()
 " vim-autopep8
 let g:autopep8_disable_show_diff= 1

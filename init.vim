@@ -473,17 +473,19 @@ call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
 " let g:deoplete#sources = {}
 let g:deoplete#ignore_sources = {}
 let g:deoplete#omni#input_patterns = {}
-" deoplete built-in sources settings
+" deoplete built-in
 call deoplete#custom#set('buffer', 'mark', 'buffer')
 call deoplete#custom#set('dictionary', 'mark', 'dictionary')
 call deoplete#custom#set('file', 'mark', 'file')
 call deoplete#custom#set('member', 'mark', 'member')
 call deoplete#custom#set('omni', 'mark', 'omni')
 call deoplete#custom#set('tag', 'mark', 'tag')
+
 " C family
 let g:deoplete#ignore_sources.c = ['tag']
 let g:deoplete#ignore_sources.cpp = ['tag']
-" go
+
+" Go
 let g:deoplete#ignore_sources.go = ['tag']
 call deoplete#custom#set('go', 'rank', 10000)
 let g:deoplete#sources#go#align_class = 1
@@ -495,7 +497,7 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 " python
 let g:deoplete#ignore_sources.python = ['buffer', 'omni', 'tag', 'neosnippet']
 call deoplete#custom#set('jedi', 'rank', 10000)
-" Disable all jedi-vim default settings
+" disable jedi-vim
 let g:jedi#auto_initialization = 0
 let g:jedi#auto_vim_configuration = 0
 let g:jedi#completions_enabled = 0

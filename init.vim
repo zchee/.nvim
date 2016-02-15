@@ -26,92 +26,96 @@ command! -nargs=* Gautocmdft autocmd GlobalAutoCmd FileType <args>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Plug settings "{{{
+let $XDG_CONFIG_HOME = $HOME . '/.config'
+let $XDG_CACHE_HOME = $HOME . '/.cache'
 
 " Init
-call plug#begin('$HOME/.config/nvim/plugged')
+set runtimepath+=$XDG_CONFIG_HOME/nvim/autoload/dein.vim
+call dein#begin(expand($XDG_CONFIG_HOME . '/nvim/dein'))
+" Plugin Manager
+call dein#add('Shougo/dein.vim', {'rtp': ''})
 
 " Code Completion Shougo ware
-Plug 'Shougo/deoplete.nvim'
-Plug 'Shougo/context_filetype.vim'
-Plug 'Shougo/echodoc.vim'
-Plug 'Shougo/neopairs.vim'
-Plug 'Shougo/neco-syntax'
-Plug 'Shougo/neoinclude.vim'
-Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/neosnippet-snippets'
-
+call dein#add('Shougo/deoplete.nvim')
+call dein#add('Shougo/context_filetype.vim', { 'on_i': 1} )
+call dein#add('Shougo/neopairs.vim', { 'on_i': 1 } )
+call dein#add('Shougo/neco-syntax', { 'on_i': 1 } )
+call dein#add('Shougo/neoinclude.vim', { 'on_i': 1 } )
+call dein#add('Shougo/neosnippet.vim', { 'on_i': 1 } )
+call dein#add('Shougo/neosnippet-snippets', { 'on_i': 1 } )
+call dein#add('zchee/deoplete-jedi', { 'on_ft': 'python', 'on_i': 1 } )
 " Go
-Plug $XDG_CONFIG_HOME.'/nvim/plugged/deoplete-go', { 'for' : 'go' }
-" Python
-Plug $XDG_CONFIG_HOME.'/nvim/plugged/deoplete-jedi', { 'for' : 'python' }
-Plug 'davidhalter/jedi-vim', { 'for' : 'python' }
-" c family
-Plug $XDG_CONFIG_HOME.'/nvim/plugged/deoplete-clang', { 'for' : ['c', 'cpp'] }
-Plug 'DarkDefender/clang_complete', { 'branch' : 'deo_clang_py3' }
-" Plug 'Rip-Rip/clang_complete'
-" Plug 'justmao945/vim-clang'
-" Plug 'osyo-manga/vim-marching'
+call dein#add($HOME.'/src/github.com/zchee/deoplete-go', { 'on_ft': 'go', 'on_i': 1 } )
+call dein#add('davidhalter/jedi-vim', { 'on_ft' : 'python' } )
+" C family
+call dein#add($XDG_CONFIG_HOME.'/nvim/plugged/deoplete-clang', { 'on_ft' : ['c', 'cpp'], 'on_i': 1 })
+call dein#add('DarkDefender/clang_complete', { 'branch' : 'deo_clang_py3', 'on_i': 1 })
+" call dein#add('Rip-Rip/clang_complete', { 'on_i': 1 } )
+" call dein#add('justmao945/vim-clang', { 'on_i': 1 } )
+" call dein#add('osyo-manga/vim-marching', { 'on_i': 1 } )
 " vim
-Plug 'Shougo/neco-vim'
-Plug 'Konfekt/FastFold'
+call dein#add('Shougo/neco-vim', { 'on_i': 1 } )
+call dein#add('Konfekt/FastFold', { 'on_i': 1 } )
+" Completion support
+call dein#add('Shougo/echodoc.vim')
+
 " ycm
-" Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
-Plug 'Valloric/YouCompleteMe', { 'for' : 'unknown' }
-Plug 'rdnetto/YCM-Generator', { 'branch' : 'develop', 'on' : ['YcmGenerateConfig'] }
+" call dein#add('Valloric/YouCompleteMe', { 'on_ft' : 'unknown', 'on_i': 1 } )
+" call dein#add('rdnetto/YCM-Generator', { 'branch' : 'develop', 'on' : ['YcmGenerateConfig'] })
 
 " Build
-Plug 'benekastah/neomake'
-Plug 'thinca/vim-quickrun'
-" Plug 'pgdouyon/vim-accio', { 'on' : 'Accio' }
+call dein#add('benekastah/neomake')
+call dein#add('thinca/vim-quickrun')
+" call dein#add('pgdouyon/vim-accio', { 'on' : 'Accio' }
 
 " Async
-Plug 'Shougo/vimproc.vim', { 'do' : 'make' }
+call dein#add('Shougo/vimproc.vim', { 'do' : 'make' })
 
 " Fuzzy
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'sgur/ctrlp-extensions.vim'
-Plug 'nixprime/cpsm'
+call dein#add('ctrlpvim/ctrlp.vim')
+call dein#add('sgur/ctrlp-extensions.vim')
+call dein#add('nixprime/cpsm')
 
 " Git
-Plug 'airblade/vim-gitgutter'
-Plug 'lambdalisue/vim-gista'
-Plug 'lambdalisue/vim-gita'
-Plug 'rhysd/committia.vim'
+call dein#add('airblade/vim-gitgutter')
+call dein#add('lambdalisue/vim-gista')
+call dein#add('lambdalisue/vim-gita')
+call dein#add('rhysd/committia.vim')
 
 " Formatter
-Plug 'rhysd/vim-clang-format', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
-Plug $XDG_CONFIG_HOME.'/nvim/plugged/nvim-flake8'
+call dein#add('rhysd/vim-clang-format', { 'on_ft' : ['c', 'cpp', 'objc', 'objcpp'], 'on_i': 1 })
+call dein#add($XDG_CONFIG_HOME.'/nvim/plugged/nvim-flake8')
 
 " Interface
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'justinmk/vim-dirvish'
+call dein#add('vim-airline/vim-airline')
+call dein#add('vim-airline/vim-airline-themes')
+call dein#add('justinmk/vim-dirvish')
 
 " vim-operator-user
-Plug 'kana/vim-operator-user'
-Plug 'rhysd/vim-operator-surround'
-" Plug 'kana/vim-operator-replace'
-" Plug 'emonkak/vim-operator-comment'
-" Plug 'emonkak/vim-operator-sort'
+call dein#add('kana/vim-operator-user')
+call dein#add('rhysd/vim-operator-surround')
+" call dein#add('kana/vim-operator-replace')
+" call dein#add('emonkak/vim-operator-comment')
+" call dein#add('emonkak/vim-operator-sort')
 
 " References
-Plug 'thinca/vim-ref'
-Plug 'yuku-t/vim-ref-ri', { 'for' : 'ruby' }
+call dein#add('thinca/vim-ref')
+call dein#add('yuku-t/vim-ref-ri', { 'on_ft' : 'ruby' })
 
 " Template
-Plug 'mattn/sonictemplate-vim'
+call dein#add('mattn/sonictemplate-vim')
 
 " Utility
-" Plug 'LeafCage/yankround.vim'
-Plug 'vim-jp/vimdoc-ja'
-Plug 'zchee/neoutil.nvim'
+" call dein#add('LeafCage/yankround.vim')
+call dein#add('vim-jp/vimdoc-ja')
+call dein#add('zchee/neoutil.nvim')
 
 " Debugging
-Plug 'critiqjo/lldb.nvim'
+call dein#add('critiqjo/lldb.nvim')
 
-Plug 'tomtom/tcomment_vim'
-" Plug 'Chiel92/vim-autoformat'
-" Plug 'jiangmiao/auto-pairs'
+call dein#add('tomtom/tcomment_vim')
+" call dein#add('Chiel92/vim-autoformat')
+" call dein#add('jiangmiao/auto-pairs')
 
 " }}}
 
@@ -120,34 +124,36 @@ Plug 'tomtom/tcomment_vim'
 " Language syntax plugins "{{{
 
 " Go
-Plug 'fatih/vim-go', { 'for' : 'go' }
-Plug 'zchee/vim-go-stdlib', { 'for' : 'go' }
-" Plug 'zchee/vim-goiferr', { 'for' : 'go' }
-Plug 'garyburd/vigor', { 'for' : 'unknown' }
-Plug $XDG_CONFIG_HOME.'/nvim/plugged/nvim-go'
+call dein#add('fatih/vim-go', { 'on_ft' : 'go' })
+call dein#add('zchee/vim-go-stdlib', { 'on_ft' : 'go' })
+" call dein#add('zchee/vim-goiferr', { 'on_ft' : 'go' }
+" call dein#add('garyburd/vigor', { 'on_ft' : 'unknown' })
+call dein#add($HOME.'/src/github.com/zchee/nvim-go')
 
 " Python
-Plug 'tell-k/vim-autopep8', { 'for' : 'python' }
-Plug 'nvie/vim-flake8', { 'for' : 'python' }
-Plug 'hynek/vim-python-pep8-indent', { 'for' : 'python' }
+call dein#add('tell-k/vim-autopep8', { 'on_ft' : 'python' })
+call dein#add('nvie/vim-flake8', { 'on_ft' : 'python' })
+call dein#add('hynek/vim-python-pep8-indent', { 'on_ft' : 'python' })
 
 " C family
-Plug 'vim-jp/vim-cpp', { 'for' : ['c', 'cpp', 'objc', 'objcpp'] }
+call dein#add('vim-jp/vim-cpp', { 'on_ft' : ['c', 'cpp', 'objc', 'objcpp'] })
 
 " Dockerfile
-Plug 'docker/docker', { 'rtp' : '/contrib/syntax/vim/', 'for' : 'dockerfile' }
+call dein#add('docker/docker', { 'rtp' : '/contrib/syntax/vim/', 'on_ft' : 'dockerfile' })
 
 " zsh
-Plug 'chrisbra/vim-zsh'
+call dein#add('chrisbra/vim-zsh')
 
 " ninja
-Plug 'martine/ninja', { 'rtp': '/misc', 'for' : [ 'ninja' ] }
+call dein#add('ninja-build/ninja', { 'rtp': '/misc', 'on_ft' : 'ninja' })
 
 " CMake
-Plug 'Kitware/CMake', { 'rtp' : '/Auxiliary', 'for' : 'cmake' }
+call dein#add('Kitware/CMake', { 'rtp' : '/Auxiliary', 'on_ft' : 'cmake' })
 
-call plug#end()
+call dein#end()
 filetype plugin indent on
+
+let g:dein#types#git#clone_depth = 1
 
 " }}}
 

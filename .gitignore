@@ -70,6 +70,9 @@ target/
 # Neovim
 ..nvimrc-rplugin~
 
+# dein.vim
+dein/
+
 # vim-plug
 plugged/
 

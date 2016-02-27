@@ -357,6 +357,8 @@ execute "colorscheme " . colors_name
   let s:gray       = "#585858"
   " let s:cyan       = "#81a2be"
   let s:cyan       = "#92a7b9"
+  let s:darkbar    = "#292d34"
+
 
 " else
 "   let s:vmode      = "cterm"
@@ -455,6 +457,7 @@ exe "let s:bg_darkred    = ' ".s:vmode."bg=".s:darkred   ."'"
 exe "let s:bg_darkpurple = ' ".s:vmode."bg=".s:darkpurple."'"
 exe "let s:bg_gray       = ' ".s:vmode."bg=".s:gray      ."'"
 exe "let s:bg_cyan       = ' ".s:vmode."bg=".s:cyan      ."'"
+exe "let s:bg_darkbar    = ' ".s:vmode."bg=".s:darkbar   ."'"
 
 exe "let s:fg_none       = ' ".s:vmode."fg=".s:none      ."'"
 exe "let s:fg_foreground = ' ".s:vmode."fg=".s:foreground."'"
@@ -481,6 +484,7 @@ exe "let s:fg_darkred    = ' ".s:vmode."fg=".s:darkred   ."'"
 exe "let s:fg_darkpurple = ' ".s:vmode."fg=".s:darkpurple."'"
 exe "let s:fg_gray       = ' ".s:vmode."fg=".s:gray      ."'"
 exe "let s:fg_cyan       = ' ".s:vmode."fg=".s:cyan      ."'"
+exe "let s:fg_darkbar    = ' ".s:vmode."fg=".s:darkbar   ."'"
 
 exe "let s:fmt_none      = ' ".s:vmode."=NONE".          " term=NONE"        ."'"
 exe "let s:fmt_bold      = ' ".s:vmode."=NONE".s:b.      " term=NONE".s:b    ."'"
@@ -634,7 +638,7 @@ exe "hi! ModeMsg"       .s:fg_green       .s:bg_none        .s:fmt_none
 exe "hi! MoreMsg"       .s:fg_green       .s:bg_none        .s:fmt_none
 exe "hi! NonText"       .s:fg_selection   .s:bg_none        .s:fmt_none
 exe "hi! Normal"        .s:fg_foreground  .s:bg_none        .s:fmt_none
-exe "hi! Pmenu"         .s:fg_foreground  .s:bg_selection   .s:fmt_none
+exe "hi! Pmenu"         .s:fg_foreground  .s:bg_darkbar     .s:fmt_none
 exe "hi! PmenuSel"      .s:fg_foreground  .s:bg_selection   .s:fmt_revr
 exe "hi! PmenuSbar"     .s:fg_background  .s:bg_gray        .s:fmt_none
 " exe "hi! PmenuThumb"    .s:fg_foreground  .s:bg_selection   .s:fmt_none

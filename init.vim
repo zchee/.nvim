@@ -213,7 +213,7 @@ set matchtime=0
 set number
 set pumheight=0
 set ruler
-set scrolljump=1
+set scrolljump=2
 set scrolloff=10
 set shiftround
 set shiftwidth=2

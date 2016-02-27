@@ -1,6 +1,7 @@
 " deoplete-clang
 let g:deoplete#sources#clang#libclang_path = "/opt/llvm/trunk/lib/libclang.dylib"
 let g:deoplete#sources#clang#clang_header = '/opt/llvm/trunk/lib/clang'
+" echo | clang -v -E -x c -
 let g:deoplete#sources#clang#flags = [
       \ "-x", "c",
       \ "-std=c11",

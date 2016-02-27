@@ -33,17 +33,15 @@ let $XDG_CACHE_HOME = $HOME . '/.cache'
 let $LD_LIBRARY_PATH='/opt/llvm/trunk/lib:/usr/local/lib:/usr/lib'
 
 " dein.vim
-let s:dein_dir = $XDG_CONFIG_HOME .'/nvim/dein.vim'
+let s:dein_dir = $XDG_CONFIG_HOME . '/nvim/dein.vim'
+
 if s:dein_dir != '' || &runtimepath !~ '/dein.vim'
   if s:dein_dir == '' && &runtimepath !~ '/dein.vim'
-    let s:dein_dir = expand('$XDG_CACHE_HOME/dein')
-          \. '/repos/repos/github.com/Shougo/dein.vim'
-
+    let s:dein_dir = expand('$XDG_CACHE_HOME/dein') . '/repos/repos/github.com/Shougo/dein.vim'
     if !isdirectory(s:dein_dir)
       execute '!git clone https://github.com/Shougo/dein.vim' s:dein_dir
     endif
   endif
-
   execute 'set runtimepath^=' . fnamemodify(s:dein_dir, ':p')
 endif
 

@@ -20,7 +20,6 @@ let g:deoplete#sources#clang#flags = [
       \ "-munwind-tables",
       \ "-target-cpu", "core2",
       \ "-target-linker-version", "264.3",
-      \ "-v",
       \ "-dwarf-column-info",
       \ "-debugger-tuning=lldb",
       \ "-coverage-file",

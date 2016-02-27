@@ -1,0 +1,732 @@
+[
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o libparse_a-thrifty.o thrifty.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/thrifty.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o libparse_a-thriftl.o thriftl.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/thriftl.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-main.o src/main.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/main.cc"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -o thrift-md5.o src/md5.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/md5.c"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_generator.o src/generate/t_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_typedef.o src/parse/t_typedef.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/parse/t_typedef.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-parse.o src/parse/parse.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/parse/parse.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_c_glib_generator.o src/generate/t_c_glib_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_c_glib_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_cpp_generator.o src/generate/t_cpp_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_cpp_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_java_generator.o src/generate/t_java_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_java_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_json_generator.o src/generate/t_json_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_json_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_as3_generator.o src/generate/t_as3_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_as3_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_csharp_generator.o src/generate/t_csharp_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_csharp_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_py_generator.o src/generate/t_py_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_py_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_rb_generator.o src/generate/t_rb_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_rb_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_perl_generator.o src/generate/t_perl_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_perl_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_php_generator.o src/generate/t_php_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_php_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_erl_generator.o src/generate/t_erl_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_erl_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_cocoa_generator.o src/generate/t_cocoa_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_cocoa_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_st_generator.o src/generate/t_st_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_st_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_ocaml_generator.o src/generate/t_ocaml_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_ocaml_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_hs_generator.o src/generate/t_hs_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_hs_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_xsd_generator.o src/generate/t_xsd_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_xsd_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_html_generator.o src/generate/t_html_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_html_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_js_generator.o src/generate/t_js_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_js_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_javame_generator.o src/generate/t_javame_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_javame_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_delphi_generator.o src/generate/t_delphi_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_delphi_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_go_generator.o src/generate/t_go_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_go_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_gv_generator.o src/generate/t_gv_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_gv_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_d_generator.o src/generate/t_d_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_d_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o thrift-t_lua_generator.o src/generate/t_lua_generator.cc", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/compiler/cpp/src/generate/t_lua_generator.cc"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/concurrency/.libs/BoostThreadFactory.o src/thrift/concurrency/BoostThreadFactory.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/BoostThreadFactory.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/concurrency/.libs/BoostMonitor.o src/thrift/concurrency/BoostMonitor.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/BoostMonitor.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/concurrency/.libs/BoostMutex.o src/thrift/concurrency/BoostMutex.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/BoostMutex.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/.libs/Thrift.o src/thrift/Thrift.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/Thrift.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/libthriftz_la-TZlibTransport.o src/thrift/transport/TZlibTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TZlibTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/.libs/VirtualProfiling.o src/thrift/VirtualProfiling.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/VirtualProfiling.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/concurrency/.libs/TimerManager.o src/thrift/concurrency/TimerManager.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/TimerManager.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/concurrency/.libs/ThreadManager.o src/thrift/concurrency/ThreadManager.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/ThreadManager.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/concurrency/BoostThreadFactory.o src/thrift/concurrency/BoostThreadFactory.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/BoostThreadFactory.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/.libs/TApplicationException.o src/thrift/TApplicationException.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/TApplicationException.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/concurrency/.libs/Util.o src/thrift/concurrency/Util.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/Util.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/VirtualProfiling.o src/thrift/VirtualProfiling.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/VirtualProfiling.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/TApplicationException.o src/thrift/TApplicationException.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/TApplicationException.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/concurrency/Util.o src/thrift/concurrency/Util.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/Util.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/protocol/.libs/TDebugProtocol.o src/thrift/protocol/TDebugProtocol.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TDebugProtocol.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/concurrency/TimerManager.o src/thrift/concurrency/TimerManager.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/TimerManager.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/protocol/.libs/TDenseProtocol.o src/thrift/protocol/TDenseProtocol.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TDenseProtocol.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/concurrency/ThreadManager.o src/thrift/concurrency/ThreadManager.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/ThreadManager.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/protocol/.libs/TJSONProtocol.o src/thrift/protocol/TJSONProtocol.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TJSONProtocol.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/Thrift.o src/thrift/Thrift.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/Thrift.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/protocol/TDenseProtocol.o src/thrift/protocol/TDenseProtocol.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TDenseProtocol.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/libthriftz_la-TZlibTransport.o src/thrift/transport/TZlibTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TZlibTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/protocol/.libs/TBase64Utils.o src/thrift/protocol/TBase64Utils.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TBase64Utils.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/protocol/.libs/TMultiplexedProtocol.o src/thrift/protocol/TMultiplexedProtocol.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TMultiplexedProtocol.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/protocol/TBase64Utils.o src/thrift/protocol/TBase64Utils.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TBase64Utils.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TTransportException.o src/thrift/transport/TTransportException.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TTransportException.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TFDTransport.o src/thrift/transport/TFDTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TFDTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/protocol/TMultiplexedProtocol.o src/thrift/protocol/TMultiplexedProtocol.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TMultiplexedProtocol.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/protocol/TDebugProtocol.o src/thrift/protocol/TDebugProtocol.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TDebugProtocol.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TFDTransport.o src/thrift/transport/TFDTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TFDTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/protocol/TJSONProtocol.o src/thrift/protocol/TJSONProtocol.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/protocol/TJSONProtocol.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TFileTransport.o src/thrift/transport/TFileTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TFileTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TSimpleFileTransport.o src/thrift/transport/TSimpleFileTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSimpleFileTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/THttpTransport.o src/thrift/transport/THttpTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/THttpTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/THttpClient.o src/thrift/transport/THttpClient.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/THttpClient.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/concurrency/BoostMutex.o src/thrift/concurrency/BoostMutex.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/BoostMutex.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/concurrency/BoostMonitor.o src/thrift/concurrency/BoostMonitor.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/concurrency/BoostMonitor.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TTransportException.o src/thrift/transport/TTransportException.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TTransportException.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TSimpleFileTransport.o src/thrift/transport/TSimpleFileTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSimpleFileTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/THttpTransport.o src/thrift/transport/THttpTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/THttpTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TFileTransport.o src/thrift/transport/TFileTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TFileTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/THttpServer.o src/thrift/transport/THttpServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/THttpServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TSocket.o src/thrift/transport/TSocket.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSocket.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TPipe.o src/thrift/transport/TPipe.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TPipe.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/THttpServer.o src/thrift/transport/THttpServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/THttpServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/THttpClient.o src/thrift/transport/THttpClient.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/THttpClient.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TPipeServer.o src/thrift/transport/TPipeServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TPipeServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TPipe.o src/thrift/transport/TPipe.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TPipe.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TSocketPool.o src/thrift/transport/TSocketPool.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSocketPool.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TSSLSocket.o src/thrift/transport/TSSLSocket.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSSLSocket.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TSocket.o src/thrift/transport/TSocket.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSocket.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TPipeServer.o src/thrift/transport/TPipeServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TPipeServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TServerSocket.o src/thrift/transport/TServerSocket.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TServerSocket.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TSSLServerSocket.o src/thrift/transport/TSSLServerSocket.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSSLServerSocket.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TSocketPool.o src/thrift/transport/TSocketPool.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSocketPool.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TTransportUtils.o src/thrift/transport/TTransportUtils.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TTransportUtils.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TServerSocket.o src/thrift/transport/TServerSocket.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TServerSocket.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TSSLServerSocket.o src/thrift/transport/TSSLServerSocket.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSSLServerSocket.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/transport/.libs/TBufferTransports.o src/thrift/transport/TBufferTransports.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TBufferTransports.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TTransportUtils.o src/thrift/transport/TTransportUtils.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TTransportUtils.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/server/.libs/TServer.o src/thrift/server/TServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/server/.libs/TSimpleServer.o src/thrift/server/TSimpleServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TSimpleServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/server/.libs/TThreadPoolServer.o src/thrift/server/TThreadPoolServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TThreadPoolServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/server/TServer.o src/thrift/server/TServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/server/.libs/TThreadedServer.o src/thrift/server/TThreadedServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TThreadedServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/async/.libs/TAsyncChannel.o src/thrift/async/TAsyncChannel.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/async/TAsyncChannel.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/processor/.libs/PeekProcessor.o src/thrift/processor/PeekProcessor.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/processor/PeekProcessor.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TBufferTransports.o src/thrift/transport/TBufferTransports.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TBufferTransports.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -I/usr/local/include -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/server/.libs/libthriftnb_la-TNonblockingServer.o src/thrift/server/TNonblockingServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TNonblockingServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/transport/TSSLSocket.o src/thrift/transport/TSSLSocket.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/transport/TSSLSocket.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/async/TAsyncChannel.o src/thrift/async/TAsyncChannel.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/async/TAsyncChannel.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -I/usr/local/include -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/async/.libs/libthriftnb_la-TAsyncProtocolProcessor.o src/thrift/async/TAsyncProtocolProcessor.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/async/TAsyncProtocolProcessor.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/server/TSimpleServer.o src/thrift/server/TSimpleServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TSimpleServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/server/TThreadPoolServer.o src/thrift/server/TThreadPoolServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TThreadPoolServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -I/usr/local/include -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/async/.libs/libthriftnb_la-TEvhttpServer.o src/thrift/async/TEvhttpServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/async/TEvhttpServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/processor/PeekProcessor.o src/thrift/processor/PeekProcessor.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/processor/PeekProcessor.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/server/TThreadedServer.o src/thrift/server/TThreadedServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TThreadedServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -I/usr/local/include -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/async/.libs/libthriftnb_la-TEvhttpClientChannel.o src/thrift/async/TEvhttpClientChannel.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/async/TEvhttpClientChannel.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -I/usr/local/include -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/async/libthriftnb_la-TAsyncProtocolProcessor.o src/thrift/async/TAsyncProtocolProcessor.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/async/TAsyncProtocolProcessor.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -I/usr/local/include -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/server/libthriftnb_la-TNonblockingServer.o src/thrift/server/TNonblockingServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/server/TNonblockingServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -DQT_SHARED -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtNetwork -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtCore -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/qt/.libs/libthriftqt_la-moc_TQTcpServer.o src/thrift/qt/moc_TQTcpServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/qt/moc_TQTcpServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -I/usr/local/include -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/async/libthriftnb_la-TEvhttpServer.o src/thrift/async/TEvhttpServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/async/TEvhttpServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -DQT_SHARED -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtNetwork -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtCore -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/qt/.libs/libthriftqt_la-TQIODeviceTransport.o src/thrift/qt/TQIODeviceTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/qt/TQIODeviceTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -I/usr/local/include -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/async/libthriftnb_la-TEvhttpClientChannel.o src/thrift/async/TEvhttpClientChannel.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/async/TEvhttpClientChannel.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -DQT_SHARED -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtNetwork -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtCore -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o src/thrift/qt/.libs/libthriftqt_la-TQTcpServer.o src/thrift/qt/TQTcpServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/qt/TQTcpServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -DQT_SHARED -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtNetwork -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtCore -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/qt/libthriftqt_la-moc_TQTcpServer.o src/thrift/qt/moc_TQTcpServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/qt/moc_TQTcpServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -DQT_SHARED -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtNetwork -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtCore -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/qt/libthriftqt_la-TQIODeviceTransport.o src/thrift/qt/TQIODeviceTransport.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/qt/TQIODeviceTransport.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I./src -DQT_SHARED -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtNetwork -I/usr/local/Cellar/qt/4.8.7/include -I/usr/local/Cellar/qt/4.8.7/include/QtCore -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o src/thrift/qt/libthriftqt_la-TQTcpServer.o src/thrift/qt/TQTcpServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/cpp/src/thrift/qt/TQTcpServer.cpp"
+    }, 
+    {
+        "command": "cc -c -DNDEBUG -g -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -arch x86_64 -I/usr/local/include -I/usr/local/opt/openssl/include -I/usr/local/opt/sqlite/include -I/usr/local/Cellar/python/2.7.10_2/Frameworks/Python.framework/Versions/2.7/include/python2.7 -o build/temp.macosx-10.11-x86_64-2.7/src/protocol/fastbinary.o src/protocol/fastbinary.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/py", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/py/src/protocol/fastbinary.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -fno-common -DPIC -o src/.libs/libluabpack_la-luabpack.o src/luabpack.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/luabpack.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -fno-common -DPIC -o src/.libs/liblualongnumber_la-longnumberutils.o src/longnumberutils.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/longnumberutils.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -fno-common -DPIC -o src/.libs/liblualongnumber_la-lualongnumber.o src/lualongnumber.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/lualongnumber.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -fno-common -DPIC -o src/.libs/libluabitwise_la-luabitwise.o src/luabitwise.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/luabitwise.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -fno-common -DPIC -o src/.libs/libluasocket_la-usocket.o src/usocket.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/usocket.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -fno-common -DPIC -o src/.libs/libluasocket_la-luasocket.o src/luasocket.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/luasocket.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -o src/libluabitwise_la-luabitwise.o src/luabitwise.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/luabitwise.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -o src/liblualongnumber_la-longnumberutils.o src/longnumberutils.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/longnumberutils.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -o src/libluabpack_la-luabpack.o src/luabpack.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/luabpack.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -o src/liblualongnumber_la-lualongnumber.o src/lualongnumber.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/lualongnumber.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -o src/libluasocket_la-usocket.o src/usocket.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/usocket.c"
+    }, 
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/include/lua5.2 -DLUA_COMPAT_MODULE -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -o src/libluasocket_la-luasocket.o src/luasocket.c", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/lib/lua", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/lib/lua/src/luasocket.c"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o CppServer.o CppServer.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/CppServer.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o CppClient.o CppClient.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/CppClient.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o gen-cpp/.libs/Calculator.o gen-cpp/Calculator.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/Calculator.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o gen-cpp/.libs/shared_types.o gen-cpp/shared_types.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/shared_types.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o gen-cpp/.libs/shared_constants.o gen-cpp/shared_constants.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/shared_constants.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o gen-cpp/.libs/SharedService.o gen-cpp/SharedService.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/SharedService.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o gen-cpp/.libs/tutorial_constants.o gen-cpp/tutorial_constants.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/tutorial_constants.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -fno-common -DPIC -o gen-cpp/.libs/tutorial_types.o gen-cpp/tutorial_types.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/tutorial_types.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o gen-cpp/shared_constants.o gen-cpp/shared_constants.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/shared_constants.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o gen-cpp/tutorial_constants.o gen-cpp/tutorial_constants.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/tutorial_constants.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o gen-cpp/SharedService.o gen-cpp/SharedService.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/SharedService.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o gen-cpp/Calculator.o gen-cpp/Calculator.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/Calculator.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o gen-cpp/shared_types.o gen-cpp/shared_types.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/shared_types.cpp"
+    }, 
+    {
+        "command": "c++ -c -DHAVE_CONFIG_H -I. -I../.. -I../../lib/cpp/src/thrift -I/usr/local/include -I/usr/local/include -I../../lib/cpp/src -Igen-cpp -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -pedantic -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk -std=c++11 -o gen-cpp/tutorial_types.o gen-cpp/tutorial_types.cpp", 
+        "directory": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp", 
+        "file": "/usr/local/src/thrift/thrift-0.9.2/tutorial/cpp/gen-cpp/tutorial_types.cpp"
+    }
+]

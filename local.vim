@@ -2,6 +2,8 @@
 let g:deoplete#sources#clang#libclang_path = "/opt/llvm/trunk/lib/libclang.dylib"
 let g:deoplete#sources#clang#clang_header = '/opt/llvm/trunk/lib/clang'
 let g:deoplete#sources#clang#flags = [
+      \ "-x", "c",
+      \ "-std=c11",
       \ "-cc1",
       \ "-triple",
       \ "x86_64-apple-macosx10.11.0",
@@ -32,8 +34,6 @@ let g:deoplete#sources#clang#flags = [
       \ "-fencode-extended-block-signature",
       \ "-fmax-type-align=16",
       \ "-fdiagnostics-show-option",
-      \ "-x", "c",
-      \ "-std=c11"
       \ ]
 " let g:deoplete#sources#clang#flags = ['-x', 'c', '-std=c11']
 " let g:deoplete#sources#clang#flags = ['-x', 'c++', '-std=c++11']

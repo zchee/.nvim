@@ -10,7 +10,7 @@
 " autocmd             is Gautocmd
 " autocmd FileType    is Gautocmdft
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " init user augroup "{{{
 
@@ -23,56 +23,66 @@ command! -nargs=* Gautocmdft autocmd GlobalAutoCmd FileType <args>
 
 " }}}
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Plug settings "{{{
 let $XDG_CONFIG_HOME = $HOME . '/.config'
 let $XDG_CACHE_HOME = $HOME . '/.cache'
 
-" Init
-set runtimepath+=$XDG_CONFIG_HOME/nvim/dein.vim
-" set runtimepath+=$XDG_CACHE_HOME.'/dein/repos/github.com/Shougo/dein.vim'
+" for llvm trunk
+let $LD_LIBRARY_PATH='/opt/llvm/trunk/lib:/usr/local/lib:/usr/lib'
+
+" dein.vim
+let s:dein_dir = $XDG_CONFIG_HOME .'/nvim/dein.vim'
+if s:dein_dir != '' || &runtimepath !~ '/dein.vim'
+  if s:dein_dir == '' && &runtimepath !~ '/dein.vim'
+    let s:dein_dir = expand('$XDG_CACHE_HOME/dein')
+          \. '/repos/repos/github.com/Shougo/dein.vim'
+
+    if !isdirectory(s:dein_dir)
+      execute '!git clone https://github.com/Shougo/dein.vim' s:dein_dir
+    endif
+  endif
+
+  execute 'set runtimepath^=' . fnamemodify(s:dein_dir, ':p')
+endif
+
 call dein#begin(expand($XDG_CACHE_HOME . '/dein'))
 
-" if dein#load_cache([expand('<sfile>'), s:toml_path, s:toml_lazy_path])
 if dein#load_cache([expand('<sfile>')])
 
   " Plugin Manager
   call dein#add('Shougo/dein.vim', {'rtp': ''})
 
-  " Code Completion Shougo ware
-  call dein#add('Shougo/deoplete.nvim')
+  " Dark powered asynchronous completion
+  call dein#local($HOME.'/src/github.com/Shougo', {'frozen': 1}, ['deoplete.nvim'])
+  " call dein#add('Shougo/deoplete.nvim')
+
+  " Local develop plugins
+  " call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1},
+  "   \ ['deoplete-clang', 'deoplete-jedi', 'deoplete-go', 'nvim-go', 'nvim-pystyle', 'treachery.nvim'])
+  call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1}, ['nvim-*', 'deoplete-*', '*.nvim'])
+
+  " Go
+  " call dein#add($HOME.'/src/github.com/zchee/deoplete-go', { 'on_ft': ['go'] })
+  " C family
+  " call dein#add($HOME.'/src/github.com/zchee/deoplete-clang', { 'on_ft': ['c', 'cpp', 'objc', 'objcpp'] })
+  " Python
+  " call dein#add($HOME.'/src/github.com/zchee/deoplete-jedi', { 'on_ft': ['python'] })
+  " vim
+  call dein#add('Shougo/neco-vim', { 'on_ft': ['vim'] })
+  " Completion support
   call dein#add('Shougo/context_filetype.vim', {'on_i': 1 })
   call dein#add('Shougo/neopairs.vim', {'on_i': 1 })
   call dein#add('Shougo/neco-syntax', {'on_i': 1 })
   call dein#add('Shougo/neoinclude.vim', {'on_i': 1 })
   call dein#add('Shougo/neosnippet.vim', {'on_i': 1 })
   call dein#add('Shougo/neosnippet-snippets', {'on_i': 1 })
-  call dein#add('Shougo/context_filetype.vim')
-  call dein#add('Shougo/neopairs.vim')
-  call dein#add('Shougo/neco-syntax')
-  call dein#add('Shougo/neoinclude.vim')
-  call dein#add('Shougo/neosnippet.vim')
-  call dein#add('Shougo/neosnippet-snippets')
-  " Go
-  call dein#add($HOME.'/src/github.com/zchee/deoplete-go', { 'on_ft': ['go'] })
-  " C family
-  " call dein#add($HOME.'/src/github.com/zchee/deoplete-clang', { 'on_ft' : ['c', 'cpp'] })
-  call dein#add('DarkDefender/clang_complete', { 'on_ft' : ['c', 'cpp'] })
-  " call dein#add('Rip-Rip/clang_complete', { 'on_i': 1 } )
-  " call dein#add('justmao945/vim-clang', { 'on_i': 1 } )
-  " call dein#add('osyo-manga/vim-marching', { 'on_i': 1 } )
-  " Python
-  call dein#add('zchee/deoplete-jedi', { 'on_ft': ['python'] })
-  " call dein#add('davidhalter/jedi-vim', { 'on_ft' : ['python'] } )
-  " vim
-  call dein#add('Shougo/neco-vim', { 'on_ft': ['vim'] })
-  " Completion support
   call dein#add('Shougo/echodoc.vim')
-  call dein#add('Konfekt/FastFold')
+  call dein#add('Konfekt/FastFold', {'on_i': 1 })
 
   " ycm
-  " call dein#add('Valloric/YouCompleteMe', { 'on_ft' : 'unknown', 'on_i': 1 } )
+  " call dein#add('Valloric/YouCompleteMe', {'on_i': 1 })
   " call dein#add('rdnetto/YCM-Generator', { 'branch' : 'develop', 'on' : ['YcmGenerateConfig'] })
 
   " Build
@@ -81,27 +91,26 @@ if dein#load_cache([expand('<sfile>')])
   " call dein#add('pgdouyon/vim-accio', { 'on' : 'Accio' }
 
   " Async
-  call dein#add('Shougo/vimproc.vim', { 'do' : 'make' })
+  call dein#add('Shougo/vimproc.vim')
 
   " Fuzzy
   call dein#add('ctrlpvim/ctrlp.vim')
   call dein#add('sgur/ctrlp-extensions.vim')
   call dein#add('nixprime/cpsm')
 
-  " Git
-  call dein#add('airblade/vim-gitgutter')
-  call dein#add('lambdalisue/vim-gista')
-  call dein#add('lambdalisue/vim-gita')
-  call dein#add('rhysd/committia.vim')
-
-  " Formatter
-  call dein#add('rhysd/vim-clang-format', { 'on_ft' : ['c', 'cpp', 'objc', 'objcpp'] })
-  call dein#add($HOME.'/src/github.com/zchee/nvim-flake8', { 'on_ft' : ['python'] } )
-
   " Interface
   call dein#add('vim-airline/vim-airline')
   call dein#add('vim-airline/vim-airline-themes')
   call dein#add('justinmk/vim-dirvish')
+
+  " Git
+  call dein#add('airblade/vim-gitgutter')
+  call dein#add('lambdalisue/vim-gista', { 'on_cmd' : ['Gista'] } )
+  call dein#add('lambdalisue/vim-gita', { 'on_cmd' : ['Gita'] } )
+  call dein#add('rhysd/committia.vim')
+
+  " Formatter
+  call dein#add('rhysd/vim-clang-format', { 'on_ft' : ['c', 'cpp', 'objc', 'objcpp'] })
 
   " vim-operator-user
   call dein#add('kana/vim-operator-user')
@@ -118,9 +127,10 @@ if dein#load_cache([expand('<sfile>')])
   call dein#add('mattn/sonictemplate-vim')
 
   " Utility
+  " call dein#local($HOME.'/src/github.com/zchee/', {}, ['nvim-profiler'])
   " call dein#add('LeafCage/yankround.vim')
   call dein#add('vim-jp/vimdoc-ja')
-  call dein#add('zchee/neoutil.nvim')
+  call dein#add('haya14busa/vim-asterisk')
 
   " Debugging
   call dein#add('critiqjo/lldb.nvim')
@@ -137,16 +147,17 @@ if dein#load_cache([expand('<sfile>')])
   " Language syntax plugins "{{{
 
   " Go
+  " call dein#add($HOME.'/src/github.com/zchee/nvim-go', { 'on_ft' : 'go' })
   call dein#add('fatih/vim-go', { 'on_ft' : 'go' })
   call dein#add('zchee/vim-go-stdlib', { 'on_ft' : 'go' })
   " call dein#add('zchee/vim-goiferr', { 'on_ft' : 'go' }
   " call dein#add('garyburd/vigor', { 'on_ft' : 'unknown' })
-  call dein#add($HOME.'/src/github.com/zchee/nvim-go')
 
   " Python
+  call dein#add('davidhalter/jedi-vim', { 'on_func' : ['jedi'] } )
   call dein#add('tell-k/vim-autopep8', { 'on_ft' : ['python'] })
   call dein#add('nvie/vim-flake8', { 'on_ft' : ['python'] })
-  " call dein#add('hynek/vim-python-pep8-indent', { 'on_ft' : ['python'] })
+  call dein#add('hynek/vim-python-pep8-indent', { 'on_ft' : ['python'] })
 
   " C family
   call dein#add('vim-jp/vim-cpp', { 'on_ft' : ['c', 'cpp', 'objc', 'objcpp'] })
@@ -173,11 +184,9 @@ endif
 
 filetype plugin indent on
 
-let g:dein#types#git#clone_depth = 1
-
 " }}}
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Global settings "{{{
 
@@ -237,12 +246,152 @@ set wildignore+=*.swp,*.swo,*.swn
 set wildmode=list:full
 set wrap
 
-set path=.,/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include
-set path+=/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include
-set path+=/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1
-set path+=/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/7.0.0/include
-set path+=/usr/local/include
-set path+=/usr/include,
+" define Xcode directory path
+let s:developer_dir  = '/Applications/Xcode-beta.app/Contents/Developer'
+let s:sdk_dir        = s:developer_dir . '/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk'
+let s:framework_dir  = s:sdk_dir . '/System/Library/Frameworks'
+let s:toolchains_dir = s:developer_dir . '/Toolchains/XcodeDefault.xctoolchain'
+
+" Xcode Frameworks headers
+execute 'set path=.,' . s:sdk_dir . '/usr/include'
+execute  'set path+=' . s:framework_dir . '/AGL.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AVFoundation.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AVKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Accelerate.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Accounts.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AddressBook.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AppKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AppKitScripting.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AppleScriptKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AppleScriptObjC.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ApplicationServices.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AudioToolbox.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AudioUnit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/AudioVideoBridging.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Automator.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CFNetwork.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CalendarStore.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Carbon.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CloudKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Cocoa.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Collaboration.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Contacts.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ContactsUI.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreAudio.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreAudioKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreBluetooth.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreData.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreFoundation.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreGraphics.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreImage.framework/Headers/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreLocation.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreMIDI.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreMIDIServer.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreMedia.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreMediaIO.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreServices.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreTelephony.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreText.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreVideo.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CoreWLAN.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/CryptoTokenKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/DVComponentGlue.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/DVDPlayback.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/DirectoryService.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/DiscRecording.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/DiscRecordingUI.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/DiskArbitration.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/DrawSprocket.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/EventKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ExceptionHandling.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/FWAUserLib.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/FinderSync.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ForceFeedback.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Foundation.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/GLKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/GLUT.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/GSS.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/GameController.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/GameKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/GameplayKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Hypervisor.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ICADevices.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/IMServicePlugIn.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/IOBluetooth.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/IOBluetoothUI.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/IOKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/IOSurface.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ImageCaptureCore.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ImageIO.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/InputMethodKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/InstallerPlugins.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/InstantMessage.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/JavaFrameEmbedding.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/JavaScriptCore.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/JavaVM.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Kerberos.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Kernel.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/LDAP.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/LatentSemanticMapping.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/LocalAuthentication.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/MapKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/MediaAccessibility.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/MediaLibrary.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/MediaToolbox.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Message.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Metal.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/MetalKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ModelIO.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/MultipeerConnectivity.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/NetFS.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/NetworkExtension.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/NotificationCenter.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/OSAKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/OpenAL.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/OpenCL.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/OpenDirectory.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/OpenGL.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/PCSC.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Photos.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/PhotosUI.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/PreferencePanes.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/PubSub.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Python.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/QTKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Quartz.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/QuartzCore.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/QuickLook.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/QuickTime.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Ruby.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/SceneKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ScreenSaver.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Scripting.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ScriptingBridge.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Security.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/SecurityFoundation.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/SecurityInterface.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/ServiceManagement.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Social.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/SpriteKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/StoreKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/SyncServices.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/System.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/SystemConfiguration.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/TWAIN.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Tcl.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/Tk.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/VideoDecodeAcceleration.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/VideoToolbox.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/WebKit.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/vecLib.framework/Headers'
+execute  'set path+=' . s:framework_dir . '/vmnet.framework/Headers'
+" Toolchains headers
+execute 'set path+=' . s:toolchains_dir . '/usr/include'
+execute 'set path+=' . s:toolchains_dir . '/usr/include/c++/v1'
+execute 'set path+=' . s:toolchains_dir . '/usr/lib/clang/7.3.0/include'
+" Users headers
+execute 'set path+=/usr/local/include'
+execute 'set path+=/usr/include'
 
 set noautoindent
 set nobackup
@@ -279,7 +428,7 @@ let g:loaded_zipPlugin         = 1
 
 "}}}
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Color "{{{
 hi! SpecialKey                         gui=NONE    guifg='#25262c'    guibg=NONE
@@ -295,7 +444,7 @@ Gautocmdft go highlight goStdlibErr    gui=bold guifg='#ff005f'
 Gautocmdft c,cpp,objc,objcpp highlight cCustomFunc gui=NONE guifg='#f0c674'
 
 "}}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Neovim configuration "{{{
 
@@ -312,7 +461,7 @@ let g:python3_host_skip_check = 1
 
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Filetype settings "{{{
 
@@ -364,79 +513,55 @@ function! GoSrcSetting()
 endfunction
 Gautocmd BufNewFile,BufRead /usr/local/go/* call GoSrcSetting()
 " Gautocmdft go syn include @CSource syntax/c.vim
-function! GotagsGitRoot()
+function! Gotags()
   let b:gitdir = system("git rev-parse --show-toplevel")
   if b:gitdir !~? "^fatal"
     cd `=b:gitdir`
-    call vimproc#system("gotags -fields +l -sort -f tags -R ./ &")
+    call vimproc#system("gotags -R -fields +l -sort -f tags &")
   endif
 endfunction
-Gautocmd BufWritePost *.go call GotagsGitRoot()
+Gautocmd BufWritePost *.go call Gotags()
 
 
 " Python:
-Gautocmdft python setlocal tabstop=8 shiftwidth=4 softtabstop=4 colorcolumn=80
-" Gautocmd BufWritePost *.py Neomake!
-" let g:neomake_python_enabled_makers = ['pep257', 'pep8', 'pyflakes', 'flake8']
-" Gautocmd BufWritePost *.py silent Autopep8
+Gautocmdft python setlocal tabstop=8 shiftwidth=4 softtabstop=4 colorcolumn=79
+" Gautocmd BufWritePre *.py silent Autopep8
 " Gautocmd BufWritePost *.py silent call Flake8()
 " Gautocmd BufWritePost *.py silent Autopep8 | silent call Flake8()
+" Gautocmd BufWritePost *.py Neomake!
+" let g:neomake_python_enabled_makers = ['pep257', 'pep8', 'pyflakes', 'flake8']
 Gautocmd BufWinEnter .pythonrc set filetype=python
-Gautocmd BufWritePost *.py call CtagsGitRoot()
+Gautocmd BufWritePost *.py call Ctags()
 " vim-autopep8
 let g:autopep8_disable_show_diff= 1
 " vim-flake8
-" Deplicated flake8 global setting in nvimrc
-" Global setting are $HOME/.config/flake8
+" flake8 global setting: $XDG_CONFIG_HOME/flake8
 let g:flake8_cmd="/usr/local/bin/flake8"
 let g:flake8_show_in_gutter = 1
 
 
-" Cfamily:
-Gautocmdft c,cpp,objc,objcpp setlocal tabstop=2 softtabstop=2 shiftwidth=2 noexpandtab
-Gautocmd BufWritePost *.c,*.cpp,*.objc,*.objcpp call CtagsGitRoot()
+" C CXX:
+Gautocmdft c,cpp setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+Gautocmd BufWritePost *.c,*.cpp call Ctags()
 " Protect header library
 Gautocmd BufNewFile,BufRead /System/Library/Frameworks/* setlocal readonly nomodified
-Gautocmd BufNewFile,BufRead /Applications/Xcode.app/Contents/* setlocal readonly nomodified
-Gautocmd BufNewFile,BufRead /Applications/Xcode-beta.app/Contents/* setlocal readonly nomodified
-" Open cppreference.com
-function! s:open_online_cpp_doc()
-  let l = getline('.')
-  if l =~# '^\s*#\s*include\s\+<.\+>'
-    let header = matchstr(l, '^\s*#\s*include\s\+<\zs.\+\ze>')
-    if header =~# '^boost'
-      execute 'OpenBrowser' 'http://www.google.com/cse?cx=011577717147771266991:jigzgqluebe&q='.matchstr(header, 'boost/\zs[^/>]\+\ze')
-    else
-      execute 'OpenBrowser' 'http://en.cppreference.com/mwiki/index.php?title=Special:Search&search='.matchstr(header, '\zs[^/>]\+\ze')
-    endif
-  else
-    let cword = expand('<cword>')
-    if cword ==# ''
-      return
-    endif
-    let line_head = getline('.')[:col('.')-1]
-    if line_head =~# 'boost::[[:alnum:]:]*$'
-      execute 'OpenBrowser' 'http://www.google.com/cse?cx=011577717147771266991:jigzgqluebe&q='.cword
-    elseif line_head =~# 'std::[[:alnum:]:]*$'
-      execute 'OpenBrowser' 'http://en.cppreference.com/mwiki/index.php?title=Special:Search&search='.cword
-    else
-      normal! K
-    endif
-  endif
-endfunction
+Gautocmd BufNewFile,BufRead /Applications/Xcode.app/* setlocal readonly nomodified
+Gautocmd BufNewFile,BufRead /Applications/Xcode-beta.app/* setlocal readonly nomodified
 Gautocmdft cpp nnoremap <silent><buffer>X :<C-u>call <SID>open_online_cpp_doc()<CR>
 
 
 " Ruby:
 Gautocmdft ruby setlocal expandtab tabstop=2 softtabstop=2 shiftwidth=2
 " Gautocmd BufWritePost *.rb :Autoformat
-Gautocmd BufWritePost *.rb call CtagsGitRoot()
+Gautocmd BufWritePost *.rb call Ctags()
 Gautocmd BufReadPost .pryrc setlocal filetype=ruby
 
 
-" Zsh, Sh, bash:
-Gautocmdft zsh,sh,bash setlocal tabstop=4 softtabstop=4 shiftwidth=4
-Gautocmd BufWritePost .zshenv,.zshrc,*.zsh call CtagsGitRoot()
+" Zsh_Sh_Bash:
+" http://tyru.hatenablog.com/entry/20101007/vim_syntax_sh
+let g:is_bash = 1
+Gautocmdft zsh,bash setlocal tabstop=2 softtabstop=2 shiftwidth=2
+Gautocmd BufWritePost .zshenv,.zshrc,*.zsh call Ctags()
 Gautocmd BufNewFile,BufRead ~/.zsh/* setlocal filetype=zsh
 
 
@@ -446,6 +571,7 @@ Gautocmd BufRead,BufNewFile *.md let g:deoplete#disable_auto_complete = 0
 
 
 " Dockerfile:
+Gautocmd BufRead,BufNewFile Dockerfile.* set filetype=dockerfile
 Gautocmdft dockerfile setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 nocindent
 
 
@@ -460,8 +586,8 @@ Gautocmdft vim setlocal tags=$HOME/.config/nvim/tags
 Gautocmdft gitconfig setlocal softtabstop=4 shiftwidth=4 noexpandtab
 
 
-" Json:
-Gautocmd BufRead,BufNewFile .eslintrc set filetype=json " eslint
+" JavaScript:
+Gautocmd BufRead,BufNewFile .eslintrc set filetype=json
 
 
 " Quickfix:
@@ -486,22 +612,28 @@ Gautocmdft qf call AdjustWindowHeight(3, 7)
 
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Plugin settings "{{{
 
 " deoplete
 "
 " Gautocmd BufWinEnter * if index(ignoredeoplete, &filetype) == -1 | DeopleteEnable | endif
-let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#enable_at_startup = 1
+" let g:deoplete#enable_camel_case = 1
 " let g:deoplete#enable_refresh_always = 1
-let g:deoplete#file#enable_buffer_path = 1
+" let g:deoplete#file#enable_buffer_path = 1
+
 " deoplete-filters settings
 " Support neopairs.vim
-call deoplete#custom#set('_', 'converters:', ['converter_auto_paren'])
+" call deoplete#custom#set('_', 'converters:', ['converter_auto_paren'])
 " YouCompleteMe likes full fuzzy matches
-call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
+" call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
+
+" debugging
+let g:deoplete#enable_debug = 1
+" let g:deoplete#enable_profile = 1
 
 " [buffer, dictionary, file, member, omni, tag]
 " let g:deoplete#sources = {}
@@ -516,12 +648,13 @@ call deoplete#custom#set('omni', 'mark', 'omni')
 call deoplete#custom#set('tag', 'mark', 'tag')
 
 " C family
-let g:deoplete#ignore_sources.c = ['tag']
-let g:deoplete#ignore_sources.cpp = ['tag']
+let g:deoplete#ignore_sources.c = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#ignore_sources.cpp = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
 
 " Go
-let g:deoplete#ignore_sources.go = ['tag']
+let g:deoplete#ignore_sources.go = ['tag', 'syntax']
 call deoplete#custom#set('go', 'rank', 10000)
+call deoplete#custom#set('go', 'disabled_syntaxes', ['Comment', 'String'])
 let g:deoplete#sources#go#align_class = 1
 let g:deoplete#sources#go#data_directory = $HOME.'/.config/gocode/json'
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
@@ -529,7 +662,7 @@ let g:deoplete#sources#go#package_dot = 1
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 
 " python
-let g:deoplete#ignore_sources.python = ['buffer', 'omni', 'tag', 'neosnippet']
+let g:deoplete#ignore_sources.python = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
 call deoplete#custom#set('jedi', 'rank', 10000)
 " disable jedi-vim
 let g:jedi#auto_initialization = 0
@@ -557,7 +690,7 @@ let g:neopairs#enable = 1
 
 
 " neosnippet
-let g:neosnippet#enable_completed_snippet = 1
+" let g:neosnippet#enable_completed_snippet = 1
 let g:neosnippet#enable_snipmate_compatibility = 1
 
 
@@ -574,7 +707,7 @@ let g:perl_fold = 1
 
 
 " YouCompleteMe
-let g:ycm_auto_trigger = 1
+let g:ycm_auto_trigger = 0
 let g:ycm_min_num_of_chars_for_completion = 1
 let g:ycm_filetype_blacklist = {
       \ 'tagbar' : 1,
@@ -685,7 +818,11 @@ let g:vim_markdown_folding_disabled = 1
 
 
 " QuickRun
-Gautocmd WinEnter * if winnr('$') == 1 && getbufvar(winbufnr(winnr()), "&filetype") == "quickrun" | q | endif
+Gautocmd WinEnter *
+      \ if winnr('$') == 1 &&
+      \   getbufvar(winbufnr(winnr()), "&filetype") == "quickrun" |
+      \ q |
+      \ endif
 let g:quickrun_config = get(g:, 'quickrun_config', {})
 let g:quickrun_config._ = {
       \ 'runner' : 'vimproc',
@@ -694,7 +831,6 @@ let g:quickrun_config._ = {
       \ 'outputter/quickfix/open_cmd' : 'copen 15',
       \ 'outputter/buffer/running_mark' : ''
       \ }
-
 " Go
 let g:quickrun_config.go = {
       \ 'command': 'go',
@@ -750,7 +886,7 @@ let g:gista#update_on_write = 1
 
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Temporary functions "{{{
 
@@ -825,7 +961,7 @@ command! SyntaxInfo call s:get_syn_info()
 
 " Set parent git directory to current path
 " http://michaelheap.com/set-parent-git-directory-to-current-path-in-vim/
-function! CtagsGitRoot()
+function! Ctags()
   let b:gitdir = vimproc#system("git rev-parse --show-toplevel")
   if b:gitdir !~? "^fatal"
     cd `=b:gitdir`
@@ -856,7 +992,7 @@ endfunction
 
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Keymap "{{{
 " - Swap semicolon and colon is move to Karabiner
@@ -886,7 +1022,7 @@ nnoremap <silent> .b   :<C-u>CtrlPBuffer<CR>
 " CtrlP commandline
 nnoremap <silent> .c   :<C-u>CtrlPCmdline<CR>
 " Launch Dirvish
-nnoremap <silent> .d   :<C-u>Dirvish<CR>
+nnoremap <silent> .d   :<C-u>tabnew Dirvish<CR>
 " Focus next buffer
 nnoremap <silent> .m   <C-w>w
 " Switch Next tab
@@ -896,7 +1032,7 @@ nnoremap <silent> .p   gT
 " witch next or previous tab
 nnoremap <silent> .s   :bNext<CR>
 " Create new tab
-nnoremap <silent> .t   :<C-u>tabnew<CR>
+nnoremap <silent> .t   :<C-u>tabnew<CR>:call feedkeys(':e<Space>')<CR>
 " Quick editing init.vim
 nnoremap <silent> .r   :<C-u>tabedit $MYVIMRC<CR>
 " Vsplit and focus new buffer
@@ -907,7 +1043,7 @@ nnoremap <silent> .y   :CtrlPYankRound<CR>
 nnoremap <silent> .z   :<C-u>split<CR><C-w>w
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Map Leader "{{{
 
@@ -922,7 +1058,7 @@ nnoremap <silent><Leader>s  :%s///g<Left><Left><Left>
 nnoremap <silent><Leader>w  :<C-u>w<CR>
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Normal "{{{
 
@@ -942,7 +1078,8 @@ nnoremap QQ      :<C-u>q!<CR>
 nnoremap ZZ      ZQ
 
 " Search current word, but not move next search word
-nnoremap *       *:call feedkeys("\<S-n>")<CR>
+map      *       <Plug>(asterisk-z*)
+" nnoremap *       *:call feedkeys("\<S-n>")<CR>
 " Go to home and end using capitalized directions
 " Switch @ and ^ for Dvorak pinky
 nnoremap @       ^
@@ -992,7 +1129,7 @@ nnoremap zo :call SwitchBuffer()<CR>
 
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Insert "{{{
 
@@ -1018,7 +1155,7 @@ inoremap <silent><C-y>L <Esc>ly$<Insert>
 
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Visual "{{{
 
@@ -1045,7 +1182,7 @@ vnoremap V ^
 vnoremap <Tab> %
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Command line "{{{
 
@@ -1055,7 +1192,23 @@ cmap w!!  :<C-u>w !sudo tee > /dev/null %
 cnoremap  <silent> w<Space>  :<C-u>w<CR>
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Terminal "{{{
+" Open new terminal tab (tmux: bindkey c)
+tmap <C-d>c <C-\><C-n>:tabnew \| :terminal<CR>
+" Switch tab (tmux: bindkey {n|p})
+tmap <C-d>n <C-\><C-n>:tabnext<CR>
+tmap <C-d>p <C-\><C-n>:tabprevious<CR>
+
+" jj to exit to terminal mode
+tnoremap <silent>jj  <C-\><C-n>
+tnoremap <silent>qq  <C-\><C-n>
+" ZZ to quit terminal tab
+tnoremap <silent>ZZ           <C-\><C-n>:quit!<CR>
+
+" }}}
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Language mappnigs "{{{
 
@@ -1085,7 +1238,9 @@ Gautocmdft go nmap <silent>.go            :<C-u>silent! tabnew<CR> \| :silent! D
 " Python:
 Gautocmdft python nnoremap <silent><buffer><C-]>  :<C-u>call jedi#goto()<CR>
 Gautocmdft python nnoremap <silent>K              :<C-u>call jedi#show_documentation()<CR>
-" Gautocmdft python nnoremap <buffer><silent><C-]>     :YcmCompleter GoTo<CR>
+Gautocmdft python nnoremap <silent><Leader>m      :<C-u>messages<CR>
+Gautocmdft python nnoremap <silent><Leader>ga     :<C-u>write<CR> :Autopep8<CR> :write<CR><Left><Left>
+Gautocmdft python nnoremap <silent><C-f>          :<C-u>call Flake8()<CR><C-w>w :call feedkeys("<Up>")<CR>
 
 
 " Cfamily:
@@ -1111,7 +1266,7 @@ Gautocmdft qt  nnoremap <Enter> <Enter>
 Gautocmdft qf  nnoremap <Enter> <Enter>
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Plugins mappings "{{{
 
@@ -1173,8 +1328,9 @@ xmap <silent> gc  <Plug>TComment_gc
 
 " g:local="$XDG_CONFIG_HOME/nvim/local.vim"
 " if filereadable(expand(g:local))
+  source $XDG_CONFIG_HOME/nvim/modules/functions.vim
   source $XDG_CONFIG_HOME/nvim/local.vim
 " endif
 
 " }}}
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

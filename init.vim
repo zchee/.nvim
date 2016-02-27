@@ -30,7 +30,7 @@ let $XDG_CONFIG_HOME = $HOME . '/.config'
 let $XDG_CACHE_HOME = $HOME . '/.cache'
 
 " for llvm trunk
-let $LD_LIBRARY_PATH='/opt/llvm/trunk/lib:/usr/local/lib:/usr/lib'
+let $LD_LIBRARY_PATH='/opt/llvm/lib:/usr/local/lib:/usr/lib'
 
 " dein.vim
 let s:dein_dir = $XDG_CONFIG_HOME . '/nvim/dein.vim'

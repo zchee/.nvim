@@ -1,6 +1,6 @@
 " deoplete-clang
-let g:deoplete#sources#clang#libclang_path = "/opt/llvm/trunk/lib/libclang.dylib"
-let g:deoplete#sources#clang#clang_header = '/opt/llvm/trunk/lib/clang'
+let g:deoplete#sources#clang#libclang_path = "/opt/llvm/lib/libclang.dylib"
+let g:deoplete#sources#clang#clang_header = '/opt/llvm/lib/clang'
 " echo | clang -v -E -x c -
 let g:deoplete#sources#clang#flags = [
       \ "-x", "c",
@@ -25,7 +25,7 @@ let g:deoplete#sources#clang#flags = [
       \ "-dwarf-column-info",
       \ "-debugger-tuning=lldb",
       \ "-coverage-file",
-      \ "-resource-dir", "/opt/llvm/trunk/lib/clang/3.9.0",
+      \ "-resource-dir", "/opt/llvm/lib/clang/3.9.0",
       \ "-isysroot", "/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk",
       \ "-ferror-limit", "19",
       \ "-fmessage-length", "213",

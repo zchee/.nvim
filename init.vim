@@ -84,7 +84,7 @@ if dein#load_cache([expand('<sfile>')])
 
   " ycm
   " call dein#add('Valloric/YouCompleteMe', {'on_i': 1 })
-  " call dein#add('rdnetto/YCM-Generator', { 'branch' : 'develop', 'on' : ['YcmGenerateConfig'] })
+  call dein#add('rdnetto/YCM-Generator', { 'branch' : 'develop', 'on' : ['YcmGenerateConfig'] })
 
   " Build
   call dein#add('benekastah/neomake')

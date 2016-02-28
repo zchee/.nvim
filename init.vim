@@ -148,11 +148,11 @@ if dein#load_cache([expand('<sfile>')])
   " call dein#add('Chiel92/vim-autoformat')
   " call dein#add('jiangmiao/auto-pairs')
 
-  " }}}
+" }}}
 
-  """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  " Language syntax plugins "{{{
+" Language syntax plugins "{{{
 
   " Go
   " call dein#add($HOME.'/src/github.com/zchee/nvim-go', { 'on_ft' : 'go' })
@@ -207,6 +207,7 @@ let g:enable_bold_font = 1
 " set
 set clipboard=unnamedplus
 set cmdheight=2
+set colorcolumn=99
 set completeopt+=noinsert,noselect
 set completeopt-=preview
 set expandtab

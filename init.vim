@@ -171,16 +171,16 @@ if dein#load_cache([expand('<sfile>')])
   call dein#add('vim-jp/vim-cpp', { 'on_ft' : ['c', 'cpp', 'objc', 'objcpp'] })
 
   " Dockerfile
-  call dein#add('docker/docker', { 'rtp' : '/contrib/syntax/vim/', 'on_ft' : ['dockerfile'] })
+  call dein#add('docker/docker', { 'rtp': 'contrib/syntax/vim/', 'on_ft' : ['dockerfile'] })
 
   " zsh
   call dein#add('chrisbra/vim-zsh', { 'on_ft' : ['zsh'] })
 
   " ninja
-  call dein#add('ninja-build/ninja', { 'rtp': '/misc', 'on_ft' : ['ninja'] })
+  call dein#add('ninja-build/ninja', { 'rtp': 'misc', 'on_ft' : ['ninja'] })
 
   " CMake
-  call dein#add('Kitware/CMake', { 'rtp' : '/Auxiliary', 'on_ft' : ['cmake'] })
+  call dein#add('Kitware/CMake', { 'rtp': 'Auxiliary', 'on_ft' : ['cmake'] })
 
   call dein#save_cache()
 endif

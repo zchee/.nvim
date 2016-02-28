@@ -47,6 +47,11 @@ endif
 
 call dein#begin(expand($XDG_CACHE_HOME . '/dein'))
 
+let g:dein#install_progress_type = 'statusline' " echo, statusline, tabline, title
+let g:dein#types#git#default_protocol = 'ssh'
+let g:dein#types#git#clone_depth = '0'
+let g:dein#types#git#pull_command = 'pull --ff --ff-only'
+
 if dein#load_cache([expand('<sfile>')])
 
   " Plugin Manager

@@ -58,20 +58,18 @@ if dein#load_cache([expand('<sfile>')])
   call dein#add('Shougo/dein.vim', {'rtp': ''})
 
   " Dark powered asynchronous completion
-  call dein#local($HOME.'/src/github.com/Shougo', {'frozen': 1}, ['deoplete.nvim'])
+  call dein#local($HOME.'/src/github.com/Shougo', {'frozen': 1 }, ['deoplete.nvim'])
   " call dein#add('Shougo/deoplete.nvim')
 
   " Local develop plugins
-  " call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1},
-  "   \ ['deoplete-clang', 'deoplete-jedi', 'deoplete-go', 'nvim-go', 'nvim-pystyle', 'treachery.nvim'])
-  call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1}, ['nvim-*', 'deoplete-*', '*.nvim'])
-
+  call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1 }, ['nvim-*', 'deoplete-*', '*.nvim'])
   " Go
   " call dein#add($HOME.'/src/github.com/zchee/deoplete-go', { 'on_ft': ['go'] })
   " C family
   " call dein#add($HOME.'/src/github.com/zchee/deoplete-clang', { 'on_ft': ['c', 'cpp', 'objc', 'objcpp'] })
   " Python
   " call dein#add($HOME.'/src/github.com/zchee/deoplete-jedi', { 'on_ft': ['python'] })
+
   " vim
   call dein#add('Shougo/neco-vim', { 'on_ft': ['vim'] })
   " Completion support
@@ -130,7 +128,6 @@ if dein#load_cache([expand('<sfile>')])
   call dein#add('mattn/sonictemplate-vim')
 
   " Utility
-  " call dein#local($HOME.'/src/github.com/zchee/', {}, ['nvim-profiler'])
   " call dein#add('LeafCage/yankround.vim')
   call dein#add('vim-jp/vimdoc-ja')
   call dein#add('haya14busa/vim-asterisk')

@@ -92,12 +92,20 @@ if dein#load_cache([expand('<sfile>')])
   " call dein#add('pgdouyon/vim-accio', { 'on' : 'Accio' }
 
   " Async
-  call dein#add('Shougo/vimproc.vim')
+  call dein#add('Shougo/vimproc.vim', {
+        \   'build': {
+        \     'windows': 'tools\\update-dll-mingw',
+        \     'cygwin': 'make -f make_cygwin.mak',
+        \     'mac': 'make -f make_mac.mak',
+        \     'linux': 'make',
+        \     'unix': 'gmake',
+        \   }
+        \ })
 
   " Fuzzy
   call dein#add('ctrlpvim/ctrlp.vim')
   call dein#add('sgur/ctrlp-extensions.vim')
-  call dein#add('nixprime/cpsm')
+  call dein#add('nixprime/cpsm', {'build': './install.sh'})
 
   " Interface
   call dein#add('vim-airline/vim-airline')

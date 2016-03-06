@@ -64,7 +64,7 @@ call dein#begin(expand($XDG_CACHE_HOME.'/nvim/dein'))
 if dein#load_cache([expand('<sfile>')])
 
   " Dark powered Vim/Neovim plugin manager
-  call dein#add('Shougo/dein.vim', { 'rtp': '', 'rev': '5615d50e937d7661c94fe7b4032ed612714b6e09' })
+  call dein#add('Shougo/dein.vim', { 'rtp': '', 'rev': '8fbb18cf759de329cc23918dc2231cfab9b4c51f' })
 
   " Local develop plugins
   " call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1 }, ['bufparser.nvim'])

@@ -215,8 +215,6 @@ if dein#check_install()
   call dein#install()
 endif
 
-filetype plugin indent on
-
 " }}}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -225,9 +223,11 @@ filetype plugin indent on
 
 let g:hybrid_use_iTerm_colors = 1
 let g:enable_bold_font = 1
-colorscheme hybrid_reverse
-" colorscheme candy256
-syntax enable
+silent! colorscheme hybrid_reverse
+if !exists('g:syntax_on')
+  syntax enable
+endif
+filetype plugin indent on
 
 set autoindent
 set clipboard=unnamedplus
@@ -244,10 +244,11 @@ set hidden
 set history=10000
 set ignorecase
 set laststatus=2
+set linebreak
 set list
 set listchars=tab:»-,extends:»,precedes:«,nbsp:%,eol:↲
-set matchtime=0
 set matchpairs+=<:>
+set matchtime=0
 set number
 set pumheight=0
 set ruler
@@ -261,28 +262,28 @@ set showmatch
 set showmode
 set showtabline=2
 set sidescrolloff=5
-set synmaxcol=300
 set smartcase
 set smartindent
 set softtabstop=2
+set switchbuf=usetab
+set synmaxcol=1000
 set tabstop=2
 set tags=./tags; " http://d.hatena.ne.jp/thinca/20090723/1248286959
 set textwidth=0
 set timeout " Mappnig timeout
 set timeoutlen=500
-set switchbuf=usetab
 set ttimeout " Keycode timeout
-set ttimeoutlen=10
+set ttimeoutlen=100
 set undodir=$XDG_DATA_HOME/nvim/undo
 set undofile
 set updatecount=0
 set updatetime=500
 set wildignore+=*.DS_Store
+set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.so,*.out,*.class,*.jpg,*.jpeg,*.bmp,*.gif,*.png
+set wildignore+=*.swp,*.swo,*.swn
 set wildignore+=*.ycm_extra_conf.py,*.ycm_extra_conf.pyc
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
 set wildignore+=tags,*.tags
-set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.so,*.out,*.class,*.jpg,*.jpeg,*.bmp,*.gif,*.png
-set wildignore+=*.swp,*.swo,*.swn
 set wildmode=longest,list:full " http://stackoverflow.com/a/526940/5228839
 set wrap
 
@@ -319,11 +320,13 @@ let g:loaded_zipPlugin         = 1
 let loaded_gzip                = 1
 let loaded_rrhelper            = 1
 let loaded_spellfile_plugin    = 1
+" https://github.com/justinmk/config/blob/master/.vimrc#L23
+let g:did_install_default_menus = 1  " avoid stupid menu.vim (saves ~100ms)
 
+" https://github.com/justinmk/config/blob/master/.vimrc#L325-L327
 " Load matchit.vim, but only if the user hasn't installed a newer version.
-if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
-  runtime! macros/matchit.vim
-endif
+" but runtime! macros/matchit.vim is empty.
+" See ':help pi_matchit.txt'.
 
 "}}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -357,6 +360,11 @@ Gautocmdft qf
 Gautocmdft python
       \ hi link pythonDelimiter    Special
 
+" syn
+" Python:
+Gautocmdft python
+      \ syn keyword pythonDecorator True None False self
+
 "}}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -372,6 +380,10 @@ endif
 " Skip neovim module check
 let g:python_host_skip_check  = 1
 let g:python3_host_skip_check = 1
+
+" https://github.com/justinmk/config/blob/master/.vimrc#L263-L264
+" https://github.com/neovim/neovim/issues/3463#issuecomment-148757691
+Gautocmd CursorHold,FocusGained,FocusLost * rshada|wshada
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -391,7 +403,7 @@ Gautocmdft zsh
       \ runtime! indent/sh.vim
 
 Gautocmdft go
-      \ setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4
+      \ setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 copyindent
 
 Gautocmd BufRead,BufNewFile *.asm  setlocal filetype=masm syntax=masm
 Gautocmd BufRead,BufNewFile *.inc  setlocal filetype=masm syntax=masm
@@ -419,10 +431,8 @@ Gautocmdft ipython
 " Gautocmdft c,cpp,java,php,js,python,twig,xml,yml
       " \ autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\\\s\\\\+$","","")'))
 
-
 Gautocmdft c,cpp,python,ruby,zsh
       \ autocmd BufWritePost <buffer> call Ctags()
-
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -952,8 +962,8 @@ function! Ctags()
   let b:gitdir = vimproc#system("git rev-parse --show-toplevel")
   if b:gitdir !~? "^fatal"
     cd `=b:gitdir`
-    let l:current_ft = &filetype
-    call vimproc#system("ctags -R --languages=" . l:current_ft . " --fields=+l --sort=yes &")
+    " call jobstart("ctags", 'ctags', ['-R', '--languages=' . l:current_ft, '--fields=+l', '--sort=yes', '.'])
+    call vimproc#system("ctags -R --languages=" . &filetype . " --fields=+l --sort=yes &")
   endif
 endfunction
 
@@ -1329,7 +1339,10 @@ xmap <silent>gc  <Plug>TComment_gc
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Command line "{{{
-" cnoremap
+
+" Move beginning of the command line
+" http://superuser.com/a/988874/483994
+cnoremap <C-A>    <Home>
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

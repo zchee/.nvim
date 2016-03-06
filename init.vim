@@ -707,6 +707,11 @@ let g:cpsm_highlight_mode = 'basic' " none, basic, detailed
 let g:cpsm_unicode = 1
 " CtrlP : ghq
 let g:ctrlp_ghq_cache_enabled = 1
+let g:ctrlp_ghq_default_action = 'e'
+let g:ctrlp_ghq_actions = [
+      \ {"label": "Open", "action": "e", "path": 1},
+      \ {"label": "Look", "action": "!ghq look", "path": 0},
+      \ ]
 
 
 " vim-airline
@@ -1197,7 +1202,12 @@ Gautocmdft qf  nnoremap <Enter> <Enter>
 
 
 " CtrlPghq:
-noremap <silent><C-g> :<c-u>CtrlPGhq<CR>
+function! CtrlPGhqFunc() abort
+  " Ignore custom repository
+  let $GIT_CONFIG = $XDG_CONFIG_HOME . '/ghq/.ctrlp'
+  CtrlPGhq
+endfunction
+noremap <C-g> :<C-u>call CtrlPGhqFunc()<CR>
 
 " Gita:
 Gautocmdft 'gita-blame-navi' nnoremap <buffer>q :<C-u>q<CR>:q<CR>

@@ -25,11 +25,11 @@ command! -nargs=* Gautocmdft autocmd GlobalAutoCmd FileType <args>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Environment variables "{{{
 
-let $XDG_CACHE_HOME = $HOME.'/.cache'
-let $XDG_CONFIG_DIRS = '/etc/xdg'
-let $XDG_CONFIG_HOME = $HOME.'/.config'
-let $XDG_DATA_DIRS = '/usr/local/share:/usr/share'
-let $XDG_DATA_HOME = $HOME.'/.local/share'
+let $XDG_CACHE_HOME = expand($HOME.'/.cache')
+let $XDG_CONFIG_DIRS = expand('/etc/xdg')
+let $XDG_CONFIG_HOME = expand($HOME.'/.config')
+let $XDG_DATA_DIRS = expand('/usr/local/share:/usr/share')
+let $XDG_DATA_HOME = expand($HOME.'/.local/share')
 
 " for llvm trunk
 let $LD_LIBRARY_PATH='/opt/llvm/lib:/usr/local/lib:/usr/lib'
@@ -39,7 +39,7 @@ let $LD_LIBRARY_PATH='/opt/llvm/lib:/usr/local/lib:/usr/lib'
 " dein.vim settings "{{{
 
 " let s:dein_dir = finddir('dein.vim', '.;')
-let s:dein_dir = expand('$XDG_CACHE_HOME/nvim/dein') . '/repos/github.com/Shougo/dein.vim'
+let s:dein_dir = expand('$XDG_CACHE_HOME/nvim/dein').'/repos/github.com/Shougo/dein.vim'
 
 if &runtimepath !~ '/dein.vim'
   if !isdirectory(s:dein_dir)
@@ -58,7 +58,7 @@ let g:dein#types#git#pull_command = 'pull --ff --ff-only'
 
 
 " Start dark powered asynchronous...
-call dein#begin(expand($XDG_CACHE_HOME . '/nvim/dein'))
+call dein#begin(expand($XDG_CACHE_HOME.'/nvim/dein'))
 
 " Load dein cache if exists cache file
 if dein#load_cache([expand('<sfile>')])
@@ -671,7 +671,7 @@ let g:ycm_collect_identifiers_from_comments_and_strings = 1
 let g:ycm_collect_identifiers_from_tags_files = 1
 let g:ycm_confirm_extra_conf = 1
 let g:ycm_extra_conf_globlist = ['./*','../*','../../*','../../../*','../../../../*','~/.nvim/*']
-let g:ycm_global_ycm_extra_conf = $HOME . '/.nvim/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = $HOME.'/.nvim/.ycm_extra_conf.py'
 let g:ycm_goto_buffer_command = 'same-buffer' " ['same-buffer', 'horizontal-split', 'vertical-split', 'new-tab', 'new-or-existing-tab']
 let g:ycm_path_to_python_interpreter = '/usr/local/bin/python2'
 let g:ycm_seed_identifiers_with_syntax = 1
@@ -680,7 +680,7 @@ let g:ycm_seed_identifiers_with_syntax = 1
 " CtrlP
 let g:ctrlp_by_filename = 0
 let g:ctrlp_reuse_window = 'netrw\|help\|quickfix\|dirvish'
-let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
+let g:ctrlp_cache_dir = $XDG_CACHE_HOME.'/nvim/ctrlp'
 let g:ctrlp_clear_cache_on_exit = 0
 " CtrlP default match_func
 let g:ctrlp_custom_ignore = {

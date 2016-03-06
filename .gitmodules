@@ -1,3 +1,6 @@
 [submodule "dein.vim"]
 	path = dein.vim
 	url = git@github.com:Shougo/dein.vim.git
+[submodule "test/mattn/benchvimrc-vim"]
+	path = test/mattn/benchvimrc-vim
+	url = https://github.com/mattn/benchvimrc-vim.git

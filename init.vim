@@ -1,5 +1,5 @@
 "                                                                                                  "
-"                                                                                                  "
+"                 __                                                                               "
 "                /\ \                                             __                               "
 "  ____      ___ \ \ \___       __      __         ___    __  __ /\_\     ___ ___    _ __   ___    "
 " /\_ ,`\   /'___\\ \  _ `\   /'__`\  /'__`\     /' _ `\ /\ \/\ \\/\ \  /' __` __`\ /\`'__\/'___\  "
@@ -25,20 +25,26 @@ command! -nargs=* Gautocmdft autocmd GlobalAutoCmd FileType <args>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Environment variables "{{{
 
+let $XDG_RUNTIME_DIR = expand('/run/user/zchee')
 let $XDG_CACHE_HOME = expand($HOME.'/.cache')
 let $XDG_CONFIG_DIRS = expand('/etc/xdg')
 let $XDG_CONFIG_HOME = expand($HOME.'/.config')
 let $XDG_DATA_DIRS = expand('/usr/local/share:/usr/share')
 let $XDG_DATA_HOME = expand($HOME.'/.local/share')
+let $XDG_LOG_HOME = expand($HOME.'/.log')
+let $NVIM_VERBOSE_LOG_FILE = expand($XDG_LOG_HOME.'/nvim/verbose.log')
 
-" for llvm trunk
+" for self-compile llvm
 let $LD_LIBRARY_PATH='/opt/llvm/lib:/usr/local/lib:/usr/lib'
+
+" for man
+let $LANG='en_US.UT-8'
+let $GROFF_NO_SGR=0
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " dein.vim settings "{{{
 
-" let s:dein_dir = finddir('dein.vim', '.;')
 let s:dein_dir = expand('$XDG_CACHE_HOME/nvim/dein').'/repos/github.com/Shougo/dein.vim'
 
 if &runtimepath !~ '/dein.vim'
@@ -46,25 +52,24 @@ if &runtimepath !~ '/dein.vim'
     call mkdir(expand($XDG_CACHE_HOME.'/nvim/dein/repos/github.com/Shougo'), 'p')
     execute '!git clone https://github.com/Shougo/dein.vim' s:dein_dir
   endif
+
   " Add dein_dir to &runtimepath
-  " echomsg s:dein_dir
   execute 'set runtimepath^=' . substitute(fnamemodify(s:dein_dir, ':p') , '/$', '', '')
 endif
 
 " Set dein.vim variables
 let g:dein#install_progress_type = 'statusline' " echo, statusline, tabline, title
-let g:dein#types#git#default_protocol = 'ssh'
+let g:dein#types#git#default_protocol = 'https'
 let g:dein#types#git#pull_command = 'pull --ff --ff-only'
 
-
-" Start dark powered asynchronous...
-call dein#begin(expand($XDG_CACHE_HOME.'/nvim/dein'))
-
 " Load dein cache if exists cache file
-if dein#load_cache([expand('<sfile>')])
+if dein#load_state(expand('<sfile>'))
+
+  " Start dark powered asynchronous...
+  call dein#begin(expand($XDG_CACHE_HOME.'/nvim/dein'))
 
   " Dark powered Vim/Neovim plugin manager
-  call dein#add('Shougo/dein.vim', { 'rtp': '', 'rev': '8fbb18cf759de329cc23918dc2231cfab9b4c51f' })
+  call dein#add('Shougo/dein.vim', { 'rtp': ''})
 
   " Local develop plugins
   " call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1 }, ['bufparser.nvim'])
@@ -75,45 +80,37 @@ if dein#load_cache([expand('<sfile>')])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['c', 'cpp', 'objc', 'objcpp'] }, ['deoplete-clang'])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['go'] }, ['deoplete-go'])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['python'] }, ['deoplete-jedi'])
+  call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['zsh'] }, ['deoplete-zsh'])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['python'] }, ['nvim-pep8'])
 
   " Dark powered asynchronous completion
-  call dein#add('Shougo/deoplete.nvim')
-  " deoplete.nvim sources
+  call dein#local($HOME.'/src/github.com/Shougo', {'frozen': 1 }, ['deoplete.nvim'])
   " Swift:
-  call dein#add('landaire/deoplete-swift')
+  call dein#add('landaire/deoplete-swift', { 'on_ft': ['swift'] })
   " Vim:
   call dein#add('Shougo/neco-vim', { 'on_ft': ['vim'] })
-  " deoplete.nvim completion support
-  call dein#add('Shougo/context_filetype.vim')
+  " JavaScript:
+  call dein#add('carlitux/deoplete-ternjs', { 'on_ft': ['javascript', 'jsx', 'javascript.jsx'], 'build': 'npm install -g tern' })
+  " Support:
   call dein#add('Shougo/neopairs.vim')
-  call dein#add('Shougo/neco-syntax')
-  call dein#add('Shougo/neoinclude.vim')
   call dein#add('Shougo/echodoc.vim')
   call dein#add('Konfekt/FastFold')
-  call dein#add('Shougo/neosnippet.vim')
-  call dein#add('Shougo/neosnippet-snippets')
-  call dein#add('honza/vim-snippets')
-  " call dein#add('SirVer/ultisnips')
+  call dein#add('Shougo/context_filetype.vim')
+  call dein#add('Shougo/neco-syntax', {'on_ft': ['vim'] })
+  call dein#add('Shougo/neoinclude.vim', {'on_ft': ['vim'] })
+  call dein#add('Shougo/neosnippet.vim', {'on_ft': ['go'] })
+  call dein#add('Shougo/neosnippet-snippets', {'on_ft': ['go'] })
+  call dein#add('honza/vim-snippets', {'on_ft': ['go'] })
 
   " YCM:
-  call dein#local($HOME.'/src/github.com/Valloric/YouCompleteMe', {
-        \   'frozen': 1,
-        \   'on_ft': ['c', 'cpp', 'objc', 'objcpp'],
-        \   'on_cmd': [
-        \     'YcmGenerateConfig',
-        \     'YcmShowDetailedDiagnostic',
-        \     'YcmDebugInfo',
-        \     'YcmToggleLogs',
-        \     'YcmCompleter',
-        \     'YcmForceCompileAndDiagnostics',
-        \     'YcmDiags'
-        \   ]
-        \ })
+  " call dein#local($HOME.'/src/github.com/Valloric', {
+  "       \   'frozen': 1,
+  "       \   'on_ft': ['c', 'cpp', 'objc', 'objcpp'] },
+  "       \   ['YouCompleteMe'])
   call dein#add('rdnetto/YCM-Generator', { 'on_cmd' : ['YcmGenerateConfig'] })
 
   " Build:
-  call dein#add('benekastah/neomake')
+  " call dein#add('benekastah/neomake')
   call dein#add('thinca/vim-quickrun')
 
   " Asynchronous:
@@ -131,7 +128,8 @@ if dein#load_cache([expand('<sfile>')])
   call dein#add('ctrlpvim/ctrlp.vim')
   call dein#add('sgur/ctrlp-extensions.vim')
   call dein#add('nixprime/cpsm', {'build': './install.sh'})
-  call dein#add('mattn/ctrlp-ghq', { 'on_cmd': ['CtrlPGhq'] } )
+  call dein#add('mattn/ctrlp-ghq', { 'on_cmd': ['CtrlPGhq'] })
+  call dein#add('mhinz/vim-grepper', { 'on_cmd': ['Grepper'] })
 
   " Interface:
   call dein#add('vim-airline/vim-airline')
@@ -140,22 +138,19 @@ if dein#load_cache([expand('<sfile>')])
 
   " Git:
   call dein#add('airblade/vim-gitgutter')
-  call dein#add('lambdalisue/vim-gista', { 'on_cmd': ['Gista'] } )
-  call dein#add('lambdalisue/vim-gita', { 'on_cmd': ['Gita'] } )
+  " call dein#add('lambdalisue/vim-gista', { 'on_cmd': ['Gista'] } )
+  " call dein#add('lambdalisue/vim-gita', { 'on_cmd': ['Gita'] } )
   call dein#add('rhysd/committia.vim')
 
   " Formatter:
   call dein#add('rhysd/vim-clang-format', { 'on_ft': ['c', 'cpp', 'objc', 'objcpp'] })
-
-  " Linter:
-  call dein#add('syngan/vim-vimlint', { 'on_ft': ['vim'] })
-  call dein#add('ynkdir/vim-vimlparser', { 'on_ft': ['vim'] })
 
   " Operator:
   call dein#add('kana/vim-operator-user')
   call dein#add('rhysd/vim-operator-surround')
 
   " References:
+  call dein#add('nhooyr/neoman.vim', {'rev': 'rewrite'})
   call dein#add('thinca/vim-ref')
   call dein#add('yuku-t/vim-ref-ri')
 
@@ -163,16 +158,15 @@ if dein#load_cache([expand('<sfile>')])
   call dein#add('mattn/sonictemplate-vim')
 
   " Utility:
+  " call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1 }, ['nvimfs'])
   call dein#add('bfredl/nvim-miniyank')
   call dein#add('haya14busa/vim-asterisk')
   call dein#add('vim-jp/vimdoc-ja')
+  call dein#add('thinca/vim-prettyprint')
+  call dein#add('tyru/caw.vim', {'rev': 'refactoring'})
 
   " Debugging:
-  call dein#add('critiqjo/lldb.nvim')
-
-  " TODO: rewriting
-  call dein#add('tomtom/tcomment_vim')
-  call dein#add('jiangmiao/auto-pairs')
+  call dein#local($HOME.'/src/github.com/critiqjo', {'frozen': 1 }, ['lldb.nvim'])
 
 
   " FileType Plugins:
@@ -186,19 +180,23 @@ if dein#load_cache([expand('<sfile>')])
   call dein#add('davidhalter/jedi-vim', { 'on_func' : ['jedi'] } )
   call dein#add('tell-k/vim-autopep8')
   call dein#add('nvie/vim-flake8')
+  call dein#add('mitsuhiko/vim-python-combined', {'rtp': 'syntax'})
   call dein#add('hynek/vim-python-pep8-indent')
 
   " C Family:
-  call dein#add('vim-jp/vim-cpp')
+  " call dein#add('vim-jp/vim-cpp')
 
   " Bison Flex:
   call dein#add('justinmk/vim-syntax-extra')
 
   " Dockerfile:
-  call dein#add('docker/docker', { 'rtp': 'contrib/syntax/vim/' })
+  " call dein#add('docker/docker', { 'rtp': 'contrib/syntax/vim' })
 
   " Zsh:
   call dein#add('chrisbra/vim-zsh')
+
+  " Sh:
+  call dein#add('chrisbra/vim-sh-indent')
 
   " Ninja:
   call dein#add('zchee/ninja-misc')
@@ -206,8 +204,13 @@ if dein#load_cache([expand('<sfile>')])
   " CMake:
   call dein#add('zchee/vim-cmake')
 
+  " Tmux:
+  call dein#add('tmux-plugins/vim-tmux')
 
-  call dein#save_cache()
+
+  call dein#save_state()
+else
+  echo "Rebuilding cache..."
 endif
 call dein#end()
 
@@ -221,32 +224,24 @@ endif
 
 " Global settings "{{{
 
-let g:hybrid_use_iTerm_colors = 1
-let g:enable_bold_font = 1
-silent! colorscheme hybrid_reverse
-if !exists('g:syntax_on')
-  syntax enable
-endif
-filetype plugin indent on
-
 set autoindent
 set clipboard=unnamedplus
 set cmdheight=2
-set colorcolumn=119
+set colorcolumn=99
 set completeopt=menuone,noinsert,noselect
 set expandtab
-set fillchars+=diff:⣿,vert:│
+set fillchars="diff:⣿,fold: ,vert:│"
+set foldcolumn=0
 set foldlevel=0
-set foldmethod=marker
-set foldnestmax=10 " maximum fold depth
+set foldmethod=indent
+set foldnestmax=1 " maximum fold depth
 set helplang=ja,en
 set hidden
 set history=10000
 set ignorecase
 set laststatus=2
 set linebreak
-set list
-set listchars=tab:»-,extends:»,precedes:«,nbsp:%,eol:↲
+set list listchars=eol:↲,extends:»,nbsp:%,precedes:«,tab:»-,trail:.
 set matchpairs+=<:>
 set matchtime=0
 set number
@@ -254,10 +249,11 @@ set pumheight=0
 set ruler
 set scrolljump=1
 set scrolloff=10
+set secure
 set shiftround
 set shiftwidth=2
 set shortmess+=c
-set showcmd
+set showfulltag
 set showmatch
 set showmode
 set showtabline=2
@@ -268,16 +264,16 @@ set softtabstop=2
 set switchbuf=usetab
 set synmaxcol=1000
 set tabstop=2
-set tags=./tags; " http://d.hatena.ne.jp/thinca/20090723/1248286959
 set textwidth=0
 set timeout " Mappnig timeout
-set timeoutlen=500
+set timeoutlen=400
 set ttimeout " Keycode timeout
-set ttimeoutlen=100
+set ttimeoutlen=10
 set undodir=$XDG_DATA_HOME/nvim/undo
 set undofile
 set updatecount=0
 set updatetime=500
+set verbosefile=$NVIM_VERBOSE_LOG_FILE
 set wildignore+=*.DS_Store
 set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.so,*.out,*.class,*.jpg,*.jpeg,*.bmp,*.gif,*.png
 set wildignore+=*.swp,*.swo,*.swn
@@ -287,11 +283,18 @@ set wildignore+=tags,*.tags
 set wildmode=longest,list:full " http://stackoverflow.com/a/526940/5228839
 set wrap
 
+if executable('ag')
+  set grepprg=ag\ --nogroup\ --nocolor
+endif
+
+
 set nobackup
 set noerrorbells
 set nofoldenable
+set nojoinspaces
 set nolazyredraw
 set noshiftround
+set nostartofline
 set noswapfile
 set notitle
 set novisualbell
@@ -299,29 +302,54 @@ set nowrapscan
 set nowritebackup
 
 
+
+" Set colorscheme and config
+let g:hybrid_use_iTerm_colors = 1
+let g:enable_bold_font = 1
+colorscheme hybrid_reverse
+
+if !exists('g:syntax_on')
+  syntax on
+endif
+filetype plugin indent on
+
+
+
 " Ignore default plugins
 " http://lambdalisue.hatenablog.com/entry/2015/12/25/000046
-let g:loaded_2html_plugin      = 1
-let g:loaded_getscript         = 1
-let g:loaded_getscriptPlugin   = 1
-let g:loaded_man               = 1
-let g:loaded_netrw             = 1
-let g:loaded_netrwFileHandlers = 1
-let g:loaded_netrwPlugin       = 1
-let g:loaded_netrwSettings     = 1
-let g:loaded_tar               = 1
-let g:loaded_tarPlugin         = 1
-let g:loaded_tutor_mode_plugin = 1
-let g:loaded_vimball           = 1
-let g:loaded_vimballPlugin     = 1
-let g:loaded_zip               = 1
-let g:loaded_zipPlugin         = 1
-" let g:loaded_matchparen        = 1
-let loaded_gzip                = 1
-let loaded_rrhelper            = 1
-let loaded_spellfile_plugin    = 1
+
+" ruttime root
+let did_menu_trans = 1
 " https://github.com/justinmk/config/blob/master/.vimrc#L23
-let g:did_install_default_menus = 1  " avoid stupid menu.vim (saves ~100ms)
+" avoid stupid menu.vim (saves ~100ms)
+let did_install_default_menus = 1 " $VIMRUNTIME/menu.vim
+" autoload
+let g:loaded_netrw             = 1 " $VIMRUNTIME/autoload/netrw.vim
+let g:loaded_netrwFileHandlers = 1 " $VIMRUNTIME/autoload/netrwFileHandlers.vim
+let g:loaded_netrwSettings     = 1 " $VIMRUNTIME/autoload/netrwSettings.vim
+let g:loaded_sql_completion    = 1 " $VIMRUNTIME/autoload/sqlcomplete.vim
+let g:loaded_syntax_completion = 1 " $VIMRUNTIME/autoload/syntaxcomplete.vim
+let g:loaded_tar               = 1 " $VIMRUNTIME/autoload/tar.vim
+let g:loaded_vimball           = 1 " $VIMRUNTIME/autoload/vimball.vim
+let g:loaded_zip               = 1 " $VIMRUNTIME/autoload/zip.vim
+" plugin
+let g:loaded_2html_plugin      = 1 " $VIMRUNTIME/plugin/tohtml.vim
+let g:loaded_man               = 1 " $VIMRUNTIME/plugin/netrw.vim
+" let g:loaded_matchparen        = 1 " $VIMRUNTIME/plugin/matchparen.vim
+let g:loaded_netrwPlugin       = 1 " $VIMRUNTIME/plugin/netrwPlugin.vim
+let g:loaded_tarPlugin         = 1 " $VIMRUNTIME/plugin/tarPlugin.vim
+let g:loaded_tutor_mode_plugin = 1 " $VIMRUNTIME/plugin/tutor.vim
+let g:loaded_vimballPlugin     = 1 " $VIMRUNTIME/plugin/vimballPlugin
+let g:loaded_zipPlugin         = 1 " $VIMRUNTIME/plugin/zipPlugin.vim
+let loaded_gzip                = 1 " $VIMRUNTIME/plugin/gzip.vim
+let loaded_matchit             = 1 " $VIMRUNTIME/plugin/matchit.vim
+let loaded_rrhelper            = 1 " $VIMRUNTIME/plugin/rrhelper.vim
+let loaded_spellfile_plugin    = 1 " $VIMRUNTIME/plugin/spellfile.vim
+let myscriptsfile              = 1 " $VIMRUNTIME/scripts.vim
+" Other
+" let loaded_less = 1 " $VIMRUNTIME/macros/less.vim
+
+
 
 " https://github.com/justinmk/config/blob/master/.vimrc#L325-L327
 " Load matchit.vim, but only if the user hasn't installed a newer version.
@@ -332,38 +360,28 @@ let g:did_install_default_menus = 1  " avoid stupid menu.vim (saves ~100ms)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Color "{{{
-hi! SpecialKey    gui=NONE    guifg=#25262c    guibg=NONE
-hi! TermCursor    gui=NONE    guifg=#FFFFFF    guibg=NONE
+" Global:
+hi SpecialKey    gui=NONE    guifg=#25262c    guibg=NONE
+hi TermCursor    gui=NONE    guifg=#FFFFFF    guibg=NONE
+" Python:
+" hi pythonSelf        gui=None    guifg=#8abeb7    guibg=None
+" hi pythonNone        gui=None    guifg=#f0c674    guibg=None
+hi link pythonDelimiter    Special
+syn keyword pythonDecorator True False
+hi link pythonNone    pythonFunction
+hi link pythonSelf    pythonOperator
 
 " Go:
-" highlight
 let g:go_highlight_error = 1
-Gautocmdft go
-      \ hi goStdlib                gui=bold    guifg=#81A2BE    guibg=NONE
-Gautocmdft go
-      \ hi goStdlibErr             gui=bold    guifg=#FF005F    guibg=NONE
+hi goStdlib        gui=bold    guifg=#81A2BE    guibg=NONE
+hi goStdlibErr     gui=bold    guifg=#FF005F    guibg=NONE
 
 " C:
-Gautocmdft c,cpp,objc,objcpp
-      \ hi cCustomFunc             gui=bold    guifg=#F0C674    guibg=NONE
-
-" Python:
-Gautocmdft python
-      \ hi pythonSelf              gui=None    guifg=#8abeb7    guibg=None
+hi cCustomFunc     gui=bold    guifg=#F0C674    guibg=NONE
 
 " Quickfix:
 Gautocmdft qf
       \ hi Search                  gui=None guifg=None  guibg=#373b41
-
-" link
-" Python:
-Gautocmdft python
-      \ hi link pythonDelimiter    Special
-
-" syn
-" Python:
-Gautocmdft python
-      \ syn keyword pythonDecorator True None False self
 
 "}}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -397,21 +415,16 @@ Gautocmdft c,cpp
       \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab commentstring=//%s
 
 Gautocmdft sh,bash,zsh
-      \ setlocal noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
+      \ setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
 Gautocmdft zsh
       \ runtime! indent/sh.vim
 
 Gautocmdft go
-      \ setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 copyindent
-
-Gautocmd BufRead,BufNewFile *.asm  setlocal filetype=masm syntax=masm
-Gautocmd BufRead,BufNewFile *.inc  setlocal filetype=masm syntax=masm
-Gautocmd BufRead,BufNewFile *.[sS] setlocal filetype=gas  syntax=gas
-Gautocmd BufRead,BufNewFile *.hla  setlocal filetype=hla  syntax=hla
+      \ setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 copyindent colorcolumn=119
 
 Gautocmdft python
-      \ setlocal tabstop=8 shiftwidth=4 smarttab softtabstop=4 colorcolumn=79 textwidth=80 nosmartindent
+      \ setlocal tabstop=8 shiftwidth=4 smarttab softtabstop=4 colorcolumn=79 " nosmartindent
 
 Gautocmdft dockerfile
       \ setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 nocindent
@@ -428,11 +441,27 @@ Gautocmdft dirvish
 Gautocmdft ipython
       \  let g:treachery#enable_autochdir = 0
 
-" Gautocmdft c,cpp,java,php,js,python,twig,xml,yml
-      " \ autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\\\s\\\\+$","","")'))
-
 Gautocmdft c,cpp,python,ruby,zsh
       \ autocmd BufWritePost <buffer> call Ctags()
+Gautocmdft tmux
+      \ nnoremap <silent><buffer> K :call tmux#man()<CR>
+
+Gautocmd BufRead,BufNewFile *.asm  setlocal filetype=masm syntax=masm
+Gautocmd BufRead,BufNewFile *.inc  setlocal filetype=masm syntax=masm
+Gautocmd BufRead,BufNewFile *.[sS] setlocal filetype=gas  syntax=gas
+Gautocmd BufRead,BufNewFile *.hla  setlocal filetype=hla  syntax=hla
+
+" http://d.hatena.ne.jp/thinca/20090723/1248286959
+function! SetTags() abort
+  let s:cft = eval(&filetype)
+  echomsg s:cft
+  exec "set tags=" . s:cft . ".tags,./tags;"
+endfunction
+" Gautocmd BufWinEnter * call SetTags()
+
+" To switch to terminal mode automatically
+" neovim/neovim: #4401
+Gautocmd BufEnter term://* startinsert
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -506,16 +535,19 @@ endfunction
 " Gautocmd BufWritePost *.py Neomake!
 " let g:neomake_python_enabled_makers = ['pep257', 'pep8', 'pyflakes', 'flake8']
 Gautocmd BufWinEnter .pythonrc set filetype=python
+let python_highlight_all = 1
+
 " vim-autopep8
 let g:autopep8_disable_show_diff= 1
 " vim-flake8
 " flake8 global setting: $XDG_CONFIG_HOME/flake8
 let g:flake8_cmd="/usr/local/bin/flake8"
 let g:flake8_show_in_gutter = 1
+Gautocmdft python setlocal omnifunc=RopeCompleteFunc
 
 
 " C CXX:
-Gautocmd BufNewFile,BufRead *.c,*.cpp set omnifunc=
+" Gautocmd BufNewFile,BufRead *.c,*.cpp set omnifunc=
 " Protect header library
 Gautocmd BufNewFile,BufRead /System/Library/Frameworks/* setlocal readonly nomodified
 Gautocmd BufNewFile,BufRead /Applications/Xcode.app/* setlocal readonly nomodified
@@ -545,13 +577,13 @@ Gautocmd BufRead,BufNewFile *.[Dd]ockerfile set filetype=dockerfile
 
 " Vim:
 " develop nvimrc helper
+Gautocmd BufWritePost $MYVIMRC,*.vim nested silent! source $MYVIMRC
+" Gautocmd BufWritePost $MYVIMRC,*.vim nested
+"       \ call dein#clear_cache()
+"       \ | silent! source $MYVIMRC
+"       \ | call dein#save_cache()
 Gautocmd BufWritePost $MYVIMRC nested
       \ silent! call vimproc#system("ctags -R --languages=Vim --sort=yes --fields=+l -f $HOME/.config/nvim/tags $HOME/.config/nvim &")
-
-Gautocmd BufWritePost $MYVIMRC,*.vim nested
-      \ call dein#clear_cache()
-      \ | silent! source $MYVIMRC
-      \ | call dein#save_cache()
 
 
 " JavaScript:
@@ -575,7 +607,7 @@ function! AdjustWindowHeight(minheight, maxheight)
   endw
   exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
 endfunction
-Gautocmdft qf call AdjustWindowHeight(3, 7)
+Gautocmdft qf call AdjustWindowHeight(5, 15)
 
 
 " }}}
@@ -584,56 +616,109 @@ Gautocmdft qf call AdjustWindowHeight(3, 7)
 " Plugin settings "{{{
 
 " Deoplete:
-let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#auto_complete_delay = 0
+let g:deoplete#auto_complete_start_length = 1
 let g:deoplete#enable_at_startup = 1
+" let g:deoplete#disable_auto_complete = 1
 let g:deoplete#enable_camel_case = 1
-let g:deoplete#enable_refresh_always = 1
+" let g:deoplete#enable_refresh_always = 1
 let g:deoplete#file#enable_buffer_path = 1
-" deoplete-filters
-" call deoplete#custom#set('_', 'converters:', ['converter_auto_paren'])
-" call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
-" deoplete-debugging
+let g:deoplete#max_list = 500
+" DeopleteFilters:
+call deoplete#custom#set('_', 'converters', ['converter_auto_paren', 'converter_remove_overlap'])
+call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
+" DeopleteDebugging:
 let g:deoplete#enable_debug = 1
 " let g:deoplete#enable_profile = 1
-" deoplete-builtin:
-" available values ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag']
+let g:deoplete#debug_log = $HOME.'/.log/nvim/python/deoplete.log'
+" DeopleteBuiltin:
+"   - available values ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag']
 " let g:deoplete#sources = {}
 let g:deoplete#ignore_sources = {}
-" let g:deoplete#ignore_sources._ = ['neosnippet']
 let g:deoplete#omni#input_patterns = {}
+
 " C Family:
-" let g:deoplete#ignore_sources.c = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
-" let g:deoplete#ignore_sources.cpp = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
-" Swift:
-let g:deoplete#sources#swift#daemon_autostart = 1
+call deoplete#custom#set('clang', 'rank', 10000)
+let g:deoplete#ignore_sources.c = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#ignore_sources.cpp = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#ignore_sources.objc = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#ignore_sources.objcpp = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#sources#clang#libclang_path = "/opt/llvm/lib/libclang.dylib"
+let g:deoplete#sources#clang#clang_header = '/opt/llvm/lib/clang'
+" clang default include flags
+"   - echo | clang -v -E -x c -
+let g:deoplete#sources#clang#flags = [
+      \ "-cc1",
+      \ "-triple", "x86_64-apple-macosx10.11.0",
+      \ "-emit-obj",
+      \ "-mrelax-all",
+      \ "-disable-free",
+      \ "-disable-llvm-verifier",
+      \ "-mrelocation-model", "pic",
+      \ "-pic-level", "2",
+      \ "-mthread-model", "posix",
+      \ "-mdisable-fp-elim",
+      \ "-munwind-tables",
+      \ "-target-cpu", "core2",
+      \ "-target-linker-version", "264.3",
+      \ "-dwarf-column-info",
+      \ "-debugger-tuning=lldb",
+      \ "-resource-dir", "/opt/llvm/lib/clang/3.9.0",
+      \ "-isysroot", "/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk",
+      \ "-ferror-limit", "19",
+      \ "-fmessage-length", "213",
+      \ "-stack-protector", "1",
+      \ "-fblocks",
+      \ "-fobjc-runtime=macosx-10.11.0",
+      \ "-fencode-extended-block-signature",
+      \ "-fmax-type-align=16",
+      \ ]
+let g:deoplete#sources#clang#sort_algo = 'priority'
+let g:deoplete#sources#clang#clang_complete_database = '/Users/zchee/src/github.com/neovim/neovim/build'
+let g:deoplete#sources#clang#debug#log_file = '~/.log/nvim/python/deoplete-clang.log'
+
 " Go:
-" let g:deoplete#ignore_sources.go = ['buffer', 'tag', 'syntax']
-" call deoplete#custom#set('go', 'rank', 10000)
-" call deoplete#custom#set('go', 'disabled_syntaxes', ['Comment', 'String'])
+let g:deoplete#ignore_sources.go = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax']
+call deoplete#custom#set('go', 'rank', 10000)
+" call deoplete#custom#set('go', 'disabled_syntaxes', ['Function'])
 let g:deoplete#sources#go#align_class = 1
 let g:deoplete#sources#go#data_directory = $HOME.'/.config/gocode/json'
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 let g:deoplete#sources#go#package_dot = 1
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+let deoplete#sources#go#debug#log_file = '~/.log/nvim/python/deoplete-go.log'
+
 " Python:
-" let g:deoplete#ignore_sources.python = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
-" call deoplete#custom#set('jedi', 'rank', 10000)
+call deoplete#custom#set('jedi', 'rank', 10000)
+let g:deoplete#ignore_sources.python = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
+let g:deoplete#sources#jedi#statement_length = 50
+let g:deoplete#sources#jedi#enable_cache = 1
+let g:deoplete#sources#jedi#debug_enabled = 1
+let g:deoplete#sources#jedi#debug#log_file = '~/.log/nvim/python/deoplete-jedi.log'
 " disable jedi-vim
 let g:jedi#auto_initialization = 0
 let g:jedi#auto_vim_configuration = 0
 let g:jedi#completions_enabled = 0
 let g:jedi#documentation_command = "K"
 let g:jedi#force_py_version = 3
-let g:jedi#max_doc_height = 100
+let g:jedi#max_doc_height = 150
 let g:jedi#popup_select_first = 0
 let g:jedi#show_call_signatures = 0
 let g:jedi#smart_auto_mappings = 0
 
+" Zsh:
+let g:deoplete#ignore_sources.zsh = ['buffer', 'syntax', 'neosnippet']
+
+" Swift:
+let g:deoplete#sources#swift#daemon_autostart = 1
+
 " neosnippets
 call deoplete#custom#set('neosnippet', 'rank', 50)
 
-" vim
+" Vim:
 call deoplete#custom#set('vim', 'rank', 10000)
+" let g:deoplete#ignore_sources.vim = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
 
 " ruby
 let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::']
@@ -666,13 +751,6 @@ let g:treachery#enable_keylayout = 1
 let g:treachery#debug = 1
 
 
-" nvim-ipy
-let g:ipy_set_ft = 1
-let g:ipy_shortprompt = 1
-let g:ipy_truncate_input = 1
-let g:nvim_ipy_perform_mappings = 0
-
-
 " YouCompleteMe
 let g:ycm_auto_trigger = 0
 let g:ycm_min_num_of_chars_for_completion = 99
@@ -689,6 +767,7 @@ let g:ycm_seed_identifiers_with_syntax = 1
 
 " CtrlP
 let g:ctrlp_by_filename = 0
+let g:ctrlp_buftag_ctags_bin = '/usr/local/bin/ctags'
 let g:ctrlp_reuse_window = 'netrw\|help\|quickfix\|dirvish'
 let g:ctrlp_cache_dir = $XDG_CACHE_HOME.'/nvim/ctrlp'
 let g:ctrlp_clear_cache_on_exit = 0
@@ -707,8 +786,27 @@ let g:ctrlp_mruf_default_order = 1
 let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*'
 let g:ctrlp_path_nolim = 1
 let g:ctrlp_show_hidden = 1
-let g:ctrlp_use_caching = 1
-let g:ctrlp_user_command = 'files -A %s'
+let g:ctrlp_use_caching = 0
+" let g:ctrlp_user_command = 'files -A %s'
+let g:ctrlp_user_command = 'ag %s -l --vimgrep
+      \ --ignore .git
+      \ --ignore .svn
+      \ --ignore .hg
+      \ --ignore .a
+      \ --ignore .exe
+      \ --ignore .so
+      \ --ignore .dll
+      \ --ignore tags
+      \ --ignore "__pycache__"
+      \ --ignore "**/*.pyc"
+      \ --ignore vendor
+      \ -g ""'
+" let g:ctrlp_user_command = 'sift -i --no-conf --no-color --no-group --targets
+"       \ --exclude-dirs=".git"
+"       \ --exclude-ext="min.js,dat,exe,gif,png,jpeg,jpg,ico"
+"       \ %s'
+let g:ctrlp_working_path_mode = 'r'
+
 " CtrlP : extensions
 let g:ctrlp_yankring_disable = 1
 " CtrlP : cpsm
@@ -725,7 +823,7 @@ let g:ctrlp_ghq_actions = [
 
 
 " vim-airline
-let g:airline_inactive_collapse=1
+let g:airline_inactive_collapse = 1
 let g:airline#extensions#tagbar#enabled = 0
 let g:airline_powerline_fonts = 1
 " vim-airline theme
@@ -749,10 +847,10 @@ let g:neomake_airline = 1
 
 " gitgutter
 let g:gitgutter_enabled = 1
-let g:gitgutter_realtime = 0
-let g:gitgutter_sign_column_always = 1
-let g:gitgutter_max_signs = 1000
+let g:gitgutter_highlight_lines = 0
 let g:gitgutter_map_keys = 0
+let g:gitgutter_max_signs = 10000
+let g:gitgutter_realtime = 0
 
 
 " vim-dirvish
@@ -780,19 +878,20 @@ Gautocmdft dirvish call DirvishIgnore()
 
 
 " nvim-ipy
+let g:ipy_set_ft = 1
+let g:ipy_shortprompt = 1
+let g:ipy_truncate_input = 1
+let g:nvim_ipy_perform_mappings = 0
+
 " TODO: More elegant way
 function! FuncIPython(...) abort
   tab IPython
-  wincmd w
-  " bunload
-
+  wincmd w " bunload
   " Specific settings
   let g:treachery#enable_autochdir = 0
   let g:gitgutter_enabled = 0
-
   " Automatically run if leaved insert
   autocmd InsertLeave <buffer> call IPyRun(getline('.'))
-
   " Cleanup IPython buffer
   nmap <silent>q         :<C-u>call IPyTerminate()<CR> :bwipeout<CR>
   " Default mappings
@@ -882,6 +981,25 @@ let g:gista#update_on_write = 1
 let g:miniyank_filename = $XDG_CACHE_HOME."/nvim/miniyank/.miniyank.mpack"
 
 
+" ag.vim
+let g:ag_working_path_mode="r"
+
+
+" vim-grepper
+let g:grepper = {
+      \ 'tools': ['ag', 'pt', 'git'],
+      \ 'open':  1,
+      \ 'jump':  0,
+      \ }
+" :h grepper-autocmd
+" autocmd User Grepper <execute any normal commands here>
+
+" neoman.vim
+" command! -bang -complete=customlist,nEoman#Complete -nargs=* Man call
+"       \ neoman#get_page(<bang>0, 'tab', split(<q-args>, ' '))
+" let g:no_plugin_maps = 0
+
+
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -959,17 +1077,23 @@ command! SyntaxInfo call s:get_syn_info()
 " Set parent git directory to current path
 " http://michaelheap.com/set-parent-git-directory-to-current-path-in-vim/
 function! Ctags()
-  let b:gitdir = vimproc#system("git rev-parse --show-toplevel")
-  if b:gitdir !~? "^fatal"
-    cd `=b:gitdir`
-    " call jobstart("ctags", 'ctags', ['-R', '--languages=' . l:current_ft, '--fields=+l', '--sort=yes', '.'])
-    call vimproc#system("ctags -R --languages=" . &filetype . " --fields=+l --sort=yes &")
-  endif
+  try
+    let b:gitdir = vimproc#system("git rev-parse --show-toplevel")
+    try
+      lcd `=b:gitdir`
+      call vimproc#system("ctags -R --languages=" . &filetype . " --fields=+l --sort=yes &")
+      " call jobstart("ctags", 'ctags', ['-R', '--languages=' . l:current_ft, '--fields=+l', '--sort=yes', '.'])
+    catch
+      return
+    endtry
+  catch
+    return
+  endtry
 endfunction
 
 
 " Json Format
-command! -nargs=0 -bang -complete=command FormatJSON %!python -m json.tool
+command! -nargs=0 -bang -complete=command JSONFormat %!python -m json.tool
 
 
 " Clear message logs
@@ -1007,6 +1131,24 @@ endfunction
 " REPL integration {{{
 command! -range=% REPLSendSelection call REPLSend(s:GetVisual())
 command! REPLSendLine call REPLSend([getline('.')])
+
+
+" Neoman
+function! Jman(...) abort
+  let save_lang = $LANG
+  let $LANG = 'ja_JP.UTF-8'
+  if a:0 == 2
+    let sect = a:000[0]
+    let page = a:000[1]
+    call neoman#get_page(0, (tabpagenr()-1).'tabnew', sect, page)
+  else
+    let page = a:000[0]
+    call neoman#get_page(0, (tabpagenr()-1).'tabnew', page)
+  endif
+  let $LANG = save_lang
+endfunction
+command! -bang -complete=customlist,neoman#Complete -nargs=* Jman call
+      \ Jman(<f-args>)
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1054,7 +1196,9 @@ nnoremap <silent> .s   :bNext<CR>
 " Create new tab
 nnoremap <silent> .t   :<C-u>tabnew<CR>:call feedkeys(':e<Space>')<CR>
 " Quick editing init.vim
-nnoremap <silent> .r   :<C-u>tabedit $MYVIMRC<CR>
+" nnoremap <silent> .r   :<C-u>tabedit $MYVIMRC<CR>
+" Swap top/bottom or left right buffer and cursor
+nnoremap <silent> .r   <C-w>r<C-w>w
 " Vsplit and focus new buffer
 nnoremap <silent> .v   :<C-w>vsplit<CR><C-w>w
 " CtrlP yankround
@@ -1068,7 +1212,7 @@ nnoremap <silent> .z   :<C-u>split<CR><C-w>w
 " Map Leader "{{{
 
 let mapleader = "\<Space>"
-" let maplocalleader = "\<Enter>"
+let maplocalleader = "\<Enter>"
 
 nnoremap <silent><Leader>h  :<C-u>SmartHelp<Space><C-l>
 nnoremap <silent><Leader>m  <C-w>w
@@ -1138,9 +1282,9 @@ function! DocMappings()
   nnoremap <silent><buffer>u <C-u>
   nnoremap <silent><buffer>d <C-d>
   nnoremap <silent><buffer>q :q<CR>
-  nnoremap <silent><buffer><C-]> <C-]>
+  " nnoremap <silent><buffer><C-]> <C-]>
 endfunction
-Gautocmdft help,ref,man,qf,godoc,gedoc,quickrun,gita-blame-navi,rst
+Gautocmdft help,ref,man,qf,godoc,gedoc,quickrun,gita-blame-navi,rst,neoman
       \ call DocMappings()
 
 " tmux like switch the next to each other of the buffer
@@ -1163,8 +1307,6 @@ nnoremap zo :call SwitchBuffer()<CR>
 
 
 " Go:
-Gautocmdft go nnoremap "                      '
-Gautocmdft go nnoremap '                      "
 Gautocmdft go nnoremap <silent><buffer><C-]>  :<C-u>Godef<CR>
 Gautocmdft go nnoremap <silent><Leader>]      :<C-u>tag <c-r>=expand("<cword>")<CR><CR>
 Gautocmdft go nnoremap <silent><Leader>b      :<C-u>Gobuild<CR>
@@ -1181,33 +1323,24 @@ Gautocmdft go nnoremap <silent><Leader>ggs    :<C-u>GoGuru callstack<CR>
 Gautocmdft go nnoremap <silent><Leader>ggd    :<C-u>GoGuru describe<CR>
 Gautocmdft go nnoremap <silent><Leader>ggf    :<C-u>GoGuru referrers<CR>
 " Open the GOROOT/src use dirvish
-Gautocmdft go nnoremap <silent>.go            :<C-u>silent! tabnew<CR> \| :silent! Dirvish /usr/local/go/src<CR>
+Gautocmdft go nnoremap <silent>.go            :<C-u>silent! tabnew<CR> :silent! Dirvish /usr/local/go/src<CR>
 
 " Python:
 Gautocmdft python nnoremap <silent><buffer><C-]>  :<C-u>call jedi#goto()<CR>
 Gautocmdft python nnoremap <silent>K              :<C-u>call jedi#show_documentation()<CR>
 Gautocmdft python nnoremap <silent><Leader>m      :<C-u>messages<CR>
-Gautocmdft python nnoremap <silent><Leader>a     :<C-u>write<CR> :Autopep8<CR> :write<CR><Left><Left>
+Gautocmdft python nnoremap <silent><Leader>a      :<C-u>write<CR> :Autopep8<CR> :write<CR><Left><Left>
 Gautocmdft python nnoremap <silent><C-f>          :<C-u>call Flake8()<CR><C-w>w :call feedkeys("<Up>")<CR>
 
 " Cfamily:
 Gautocmdft c,cpp,objc,objcpp nnoremap <buffer><silent><C-]>  :<C-u>YcmCompleter GoTo<CR>
-Gautocmdft c,cpp,objc,objcpp nmap      <buffer><Leader>x      <Plug>(operator-clang-format)
-
-" JavaScript:
-Gautocmdft javascript nnoremap <silent> <leader>es :Esformatter<CR>
-
-" TypeScript:
-Gautocmdft typescript nnoremap <silent><buffer><C-]>  :<C-u>YcmCompleter GoTo<CR>
+Gautocmdft c,cpp,objc,objcpp nmap     <buffer><Leader>x      <Plug>(operator-clang-format)
 
 " Vim:
-" <C-u>: http://d.hatena.ne.jp/e_v_e/20150101/1420067539
 Gautocmdft vim nnoremap <silent>K :<C-u>SmartHelp<Space><C-r><C-w><CR>
 
-" Dirvish:
-" Gautocmdft dirvish  nmap d -
-
 " Ouickfix:
+" Re enable <Enter> in quickfix and locationlist
 Gautocmdft qf  nnoremap <Enter> <Enter>
 
 
@@ -1219,6 +1352,24 @@ function! CtrlPGhqFunc() abort
 endfunction
 noremap <C-g> :<C-u>call CtrlPGhqFunc()<CR>
 
+" Miniyank:
+nmap p <Plug>(miniyank-autoput)
+nmap P <Plug>(miniyank-autoPut)
+" nmap <leader>p <Plug>(miniyank-startput)
+" nmap <leader>P <Plug>(miniyank-startPut)
+map <leader>n <Plug>(miniyank-cycle)
+" map <Leader>c <Plug>(miniyank-tochar)
+" map <Leader>l <Plug>(miniyank-toline)
+" map <Leader>b <Plug>(miniyank-toblock)
+
+" Ag:
+nmap     <silent><Leader>* :Ag <c-r>=expand("<cword>")<cr><cr>
+nnoremap <silent><Leader>/ :Ag
+
+" Grepper:
+nnoremap <Leader>g :Grepper -tool ag<CR>
+nnoremap <Leader>* :Grepper -tool ag -cword -noprompt<cr>
+
 " Gita:
 Gautocmdft 'gita-blame-navi' nnoremap <buffer>q :<C-u>q<CR>:q<CR>
 
@@ -1228,18 +1379,8 @@ nmap <silent>sa <Plug>(operator-surround-append)
 nmap <silent>sd <Plug>(operator-surround-delete)
 nmap <silent>sr <Plug>(operator-surround-replace)
 
-" Tcomment:
-nmap <silent> gc  <Plug>TComment_gcc
-
-" Miniyank:
-nmap p <Plug>(miniyank-autoput)
-nmap P <Plug>(miniyank-autoPut)
-" nmap <leader>p <Plug>(miniyank-startput)
-" nmap <leader>P <Plug>(miniyank-startPut)
-" map <leader>n <Plug>(miniyank-cycle)
-" map <Leader>c <Plug>(miniyank-tochar)
-" map <Leader>l <Plug>(miniyank-toline)
-" map <Leader>b <Plug>(miniyank-toblock)
+" Caw:
+nmap <silent>gc  <Plug>(caw:I:toggle)
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1263,10 +1404,6 @@ inoremap <silent><C-y>H <Esc>ly0<Insert>
 inoremap <silent><C-y>L <Esc>ly$<Insert>
 
 
-Gautocmdft go inoremap "                      '
-Gautocmdft go inoremap '                      "
-
-
 " deoplete.nvim
 " deoplete#mappings#cancel_popup():      Not insert seletion popupmenu word and close popup
 " deoplete#mappings#close_popup():       Insert word on completion popup, and close popup
@@ -1274,18 +1411,33 @@ Gautocmdft go inoremap '                      "
 " deoplete#mappings#refresh():           Refresh completion word list
 " deoplete#mappings#smart_close_popup(): Insert candidate and re-generate popup menu for deoplete
 " deoplete#mappings#undo_completion():   Undo insert use deoplete completion
-inoremap <silent><expr><CR>     pumvisible() ? deoplete#mappings#close_popup() : "\<CR>"
-inoremap <silent><expr><BS>     pumvisible() ? deoplete#mappings#smart_close_popup()."\<BS>" : "\<BS>"
-inoremap <silent><expr><Left>   pumvisible() ? deoplete#mappings#cancel_popup()."\<Left>"  : "\<Left>"
-inoremap <silent><expr><Right>  pumvisible() ? deoplete#mappings#cancel_popup()."\<Right>" : "\<Right>"
-inoremap <silent><expr><C-Up>   pumvisible() ? deoplete#mappings#cancel_popup()."\<Up>" : "\<C-Up>"
-inoremap <silent><expr><C-Down> pumvisible() ? deoplete#mappings#cancel_popup()."\<Down>" : "\<C-Down>"
-inoremap <silent><expr><S-Tab>  pumvisible() ? "\<S-Tab>" : deoplete#mappings#manual_complete()
-inoremap <silent><expr><C-l>    pumvisible() ? deoplete#mappings#refresh() : "\<C-l>"
-inoremap <silent><expr><C-z>    deoplete#mappings#undo_completion()
+inoremap <silent><expr><CR>      pumvisible() ? deoplete#mappings#close_popup() : "\<CR>"
+inoremap <silent><expr><BS>      pumvisible() ? deoplete#mappings#smart_close_popup()."\<BS>" : "\<BS>"
+inoremap <silent><expr><Left>    pumvisible() ? deoplete#mappings#cancel_popup()."\<Left>"  : "\<Left>"
+inoremap <silent><expr><Right>   pumvisible() ? deoplete#mappings#cancel_popup()."\<Right>" : "\<Right>"
+inoremap <silent><expr><C-Up>    pumvisible() ? deoplete#mappings#cancel_popup()."\<Up>" : "\<C-Up>"
+inoremap <silent><expr><C-Down>  pumvisible() ? deoplete#mappings#cancel_popup()."\<Down>" : "\<C-Down>"
+inoremap <silent><expr><C-l>     pumvisible() ? deoplete#mappings#refresh() : "\<C-l>"
+" inoremap <silent><expr><Tab>     pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+
+" inoremap <silent><expr><C-z>     deoplete#mappings#undo_completion()
+" inoremap <silent><expr> <Tab> pumvisible() ? "\<c-n>" : (<SID>is_whitespace() ? "\<Tab>" : deoplete#mappings#manual_complete())
+" inoremap <silent><expr> <S-Tab>  pumvisible() ? "\<c-p>" : "\<c-h>"
+" function! s:is_whitespace()
+"   let l:col = col('.') - 1
+"   return !l:col || getline('.')[l:col - 1]  =~? '\s'
+" endfunction
+
+" inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
+" inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : deoplete#mappings#manual_complete()
 
 " neosnippet
 imap <expr><C-S> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<C-S>"
+
+
+Gautocmdft go,zsh inoremap "                      '
+Gautocmdft go,zsh inoremap '                      "
+
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1312,7 +1464,6 @@ vnoremap V ^
 " Jump to match pair brackets
 vnoremap <Tab> %
 
-" Cfamily:
 Gautocmdft c,cpp,objc,objcpp vmap      <buffer><Leader>x      <Plug>(operator-clang-format)
 
 " neosnippet
@@ -1328,13 +1479,16 @@ vmap <silent>sr <Plug>(operator-surround-replace)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual "{{{
 
-" tcomment
-xmap <silent>gc  <Plug>TComment_gc
+" Caw:
+xmap <silent>gc  <Plug>(caw:I:toggle)
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Select "{{{
 " smap, snoremap
+
+Gautocmdft go,zsh snoremap "                      '
+Gautocmdft go,zsh snoremap '                      "
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1343,6 +1497,7 @@ xmap <silent>gc  <Plug>TComment_gc
 " Move beginning of the command line
 " http://superuser.com/a/988874/483994
 cnoremap <C-A>    <Home>
+cnoremap <C-D>    <Del>
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -1366,7 +1521,10 @@ tnoremap <silent>ZZ           <C-\><C-n>:quit!<CR>
 
 source $XDG_CONFIG_HOME/nvim/modules/osx_header.vim
 source $XDG_CONFIG_HOME/nvim/modules/functions.vim
-source $XDG_CONFIG_HOME/nvim/local.vim
+if exists('g:nyaovim_version')
+  set runtimepath+=$XDG_CONFIG_HOME/nyaovim/nyaovim-markdown-preview
+  set runtimepath+=$XDG_CONFIG_HOME/nyaovim/nyaovim-mini-browser
+endif
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

@@ -2,7 +2,7 @@
 " Temporary functions
 "
 
-" C_Cpp_Objc_Objcpp:
+" C Cpp Objc ObjCpp:
 " Open cppreference.com
 function! s:open_online_cpp_doc()
   let l = getline('.')
@@ -29,3 +29,14 @@ function! s:open_online_cpp_doc()
   endif
 endfunction
 
+
+function! ProfilingSyntax() abort
+  " Initial and cleanup syntime
+  redraw!
+  syntime clear
+
+  " Profiling syntax regexp
+  syntime on
+  redraw!
+  syntime report
+endfunction

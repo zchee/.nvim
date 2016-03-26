@@ -1,13 +1,22 @@
-language: viml
-
 sudo: false
 
 os:
-    - osx
+  - osx
 osx_image: xcode7.3
 
+env:
+  - BREW_PACKAGE=python3
+
+before_install:
+  - brew update
+  - brew install $BREW_PACKAGE
+
 before_script:
-    - pip3 install git+https://github.com/Kuniwak/vint.git
+  - pip3 install --upgrade pip setuptools
+  - pip3 install git+https://github.com/Kuniwak/vint.git
 
 script:
-    - vint ./init.vim ./after/**/*.vim
+  - vint ./init.vim ./after/**/*.vim ./plugin/*.vim
+
+notifications:
+  email: false

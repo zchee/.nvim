@@ -91,10 +91,10 @@ if has("nvim") || ($NVIM_TUI_ENABLE_TRUE_COLOR && has("nvim"))
   let s:vmode      = "gui"
   let s:background = "#101010"
   " let s:foreground = "#c5c8c6"
-  let s:foreground = "#b3b5b4"
+  let s:foreground = "#c7c8c8"
   let s:selection  = "#343941"
   let s:line       = "#282a2e"
-  let s:comment    = "#707880"
+  let s:comment    = "#79828a"
 
   let s:white      = "#FFFFFF"
   let s:black      = "#000000"

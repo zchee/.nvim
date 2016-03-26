@@ -33,10 +33,11 @@ let $XDG_DATA_DIRS = expand('/usr/local/share:/usr/share')
 let $XDG_DATA_HOME = expand($HOME.'/.local/share')
 let $XDG_LOG_HOME = expand($HOME.'/.log')
 let $NVIM_VERBOSE_LOG_FILE = expand($XDG_LOG_HOME.'/nvim/verbose.log')
+let $DEIN_DIR = expand($HOME . '/.cache/nvim/dein/repos/github.com')
 
 " for self-compile llvm
 let $LD_LIBRARY_PATH = '/opt/llvm/lib:' . '/usr/local/cuda/lib:' . '/usr/local/lib:'
-      \ . '/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/lib:'
+      \ . $DEVELOPER_DIR . '/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/lib:'
       \ . '/usr/lib'
 let $CGO_LDFLAGS = "-L/opt/llvm/lib"
 let $GODEBUG = "cgocheck=0"
@@ -90,23 +91,25 @@ if dein#load_state(expand('<sfile>'))
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['python'] }, ['nvim-pep8'])
 
   " Dark powered asynchronous completion
-  call dein#local($HOME.'/src/github.com/Shougo', {'frozen': 0 }, ['deoplete.nvim', 'denite.nvim'])
+  call dein#local($HOME.'/src/github.com/Shougo', {'frozen': 1 }, ['deoplete.nvim', 'denite.nvim'])
   " Swift:
   call dein#add('landaire/deoplete-swift', { 'on_ft': ['swift'] })
   " Vim:
   call dein#add('Shougo/neco-vim', { 'on_ft': ['vim'] })
   " JavaScript:
-  call dein#add('carlitux/deoplete-ternjs', { 'on_ft': ['javascript', 'jsx', 'javascript.jsx'], 'build': 'npm install -g tern' })
+  call dein#add('carlitux/deoplete-ternjs',
+        \ { 'on_ft': ['javascript', 'jsx', 'javascript.jsx'], 'build': 'npm install -g tern' })
   " Support:
   call dein#add('Shougo/echodoc.vim')
   call dein#add('Shougo/neopairs.vim', { 'on_i': 1 })
   call dein#add('Konfekt/FastFold', { 'on_i': 1 })
   call dein#add('Shougo/context_filetype.vim', { 'on_i': 1 })
   call dein#add('Shougo/neco-syntax', { 'on_i': 1, 'on_ft': ['vim'] })
-  call dein#add('Shougo/neoinclude.vim', { 'on_i': 1, 'on_ft': ['vim'] })
-  call dein#add('Shougo/neosnippet.vim', { 'on_i': 1, 'on_ft': ['go'] })
-  call dein#add('Shougo/neosnippet-snippets', { 'on_i': 1, 'on_ft': ['go'] })
-  call dein#add('honza/vim-snippets', { 'on_i': 1, 'on_ft': ['go'] })
+  call dein#add('Shougo/neoinclude.vim', { 'on_i': 1 })
+  call dein#add('Shougo/neosnippet.vim', { 'on_i': 1, 'on_ft': ['vim'] })
+  call dein#add('Shougo/neosnippet-snippets', { 'on_i': 1, 'on_ft': ['vim'] })
+  " call dein#add('honza/vim-snippets')
+  " call dein#add('sirver/ultisnips')
 
   " YCM:
   call dein#local($HOME.'/src/github.com/Valloric', {
@@ -197,7 +200,7 @@ if dein#load_state(expand('<sfile>'))
   call dein#add('justinmk/vim-syntax-extra')
 
   " Dockerfile:
-  call dein#add('docker/docker', { 'rtp': 'contrib/syntax/vim' })
+  " call dein#add('docker/docker', { 'rtp': 'contrib/syntax/vim' })
 
   " Zsh:
   call dein#add('chrisbra/vim-zsh')
@@ -288,9 +291,15 @@ set wildmode=longest,list:full " http://stackoverflow.com/a/526940/5228839
 set wrap
 
 if executable('ag')
-  set grepprg=ag\ --vimgrep
+  set grepprg=ag\ --vimgrep\ $*
+  set grepformat=%f:%l:%c:%m
 endif
 
+" http://vim.wikia.com/wiki/Auto-detect_number_of_cores_for_parallel_build
+if !empty(&makeprg)
+  let s:cpus = system('sysctl -n hw.ncpu')
+  let &makeprg = 'make -j' . (s:cpus+1)
+endif
 
 set nobackup
 set noerrorbells
@@ -434,8 +443,10 @@ Gautocmdft dockerfile
 Gautocmdft ruby
       \ setlocal expandtab tabstop=2 softtabstop=2 shiftwidth=2
 
-Gautocmdft gitconfig
+Gautocmdft gitcommit,gitconfig
       \ setlocal softtabstop=4 shiftwidth=4 noexpandtab
+Gautocmdft gitcommit,gitconfig
+      \ let g:deoplete#disable_auto_complete = 1
 
 Gautocmdft dirvish
       \ let g:treachery#enable_autochdir = 0
@@ -628,16 +639,20 @@ let g:deoplete#auto_complete_start_length = 1
 let g:deoplete#enable_at_startup = 1
 " let g:deoplete#disable_auto_complete = 1
 let g:deoplete#enable_camel_case = 1
-" let g:deoplete#enable_refresh_always = 1
+let g:deoplete#enable_refresh_always = 1
 let g:deoplete#file#enable_buffer_path = 1
 let g:deoplete#max_list = 500
 " DeopleteFilters:
-call deoplete#custom#set('_', 'converters', ['converter_auto_paren', 'converter_remove_overlap'])
+call deoplete#custom#set('_', 'converters',
+      \ ['converter_auto_delimiter'])
+      " \ ['converter_auto_paren', 'converter_auto_delimiter', 'converter_remove_overlap'])
 call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
 " DeopleteDebugging:
-let g:deoplete#enable_debug = 1
+" let g:deoplete#enable_debug = 1
 " let g:deoplete#enable_profile = 1
-let g:deoplete#debug_log = $HOME.'/.log/nvim/python/deoplete.log'
+let g:deoplete#sources#clang#debug#log_file = '~/.log/nvim/python/deoplete-clang.log'
+let g:deoplete#sources#go#debug#log_file = '~/.log/nvim/python/deoplete-go.log'
+let g:deoplete#sources#jedi#debug#log_file = '~/.log/nvim/python/deoplete-jedi.log'
 " DeopleteBuiltin:
 "   - available values ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag']
 " let g:deoplete#sources = {}
@@ -646,10 +661,15 @@ let g:deoplete#omni#input_patterns = {}
 
 " C Family:
 call deoplete#custom#set('clang', 'rank', 10000)
-let g:deoplete#ignore_sources.c = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
-let g:deoplete#ignore_sources.cpp = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
-let g:deoplete#ignore_sources.objc = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
-let g:deoplete#ignore_sources.objcpp = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#ignore_sources.c =
+      \ ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#ignore_sources.cpp =
+      \ ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#ignore_sources.objc =
+      \ ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#ignore_sources.objcpp =
+      \ ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+
 let g:deoplete#sources#clang#libclang_path = "/opt/llvm/lib/libclang.dylib"
 let g:deoplete#sources#clang#clang_header = '/opt/llvm/lib/clang'
 " clang default include flags
@@ -671,7 +691,7 @@ let g:deoplete#sources#clang#flags = [
       \ "-dwarf-column-info",
       \ "-debugger-tuning=lldb",
       \ "-resource-dir", "/opt/llvm/lib/clang/3.9.0",
-      \ "-isysroot", "/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk",
+      \ "-isysroot", $DEVELOPER_DIR . "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk",
       \ "-ferror-limit", "19",
       \ "-fmessage-length", "213",
       \ "-stack-protector", "1",
@@ -680,12 +700,13 @@ let g:deoplete#sources#clang#flags = [
       \ "-fencode-extended-block-signature",
       \ "-fmax-type-align=16",
       \ ]
-let g:deoplete#sources#clang#sort_algo = 'priority'
-" let g:deoplete#sources#clang#clang_complete_database = '/Users/zchee/src/github.com/neovim/neovim/build'
-let g:deoplete#sources#clang#debug#log_file = '~/.log/nvim/python/deoplete-clang.log'
+" let g:deoplete#sources#clang#sort_algo = 'priority'
+" let g:deoplete#sources#clang#clang_complete_database =
+"       \ '/Users/zchee/src/github.com/neovim/neovim/build'
 
 " Go:
-let g:deoplete#ignore_sources.go = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax']
+let g:deoplete#ignore_sources.go =
+      \ ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax']
 call deoplete#custom#set('go', 'rank', 10000)
 " call deoplete#custom#set('go', 'disabled_syntaxes', ['Function'])
 let g:deoplete#sources#go#align_class = 1
@@ -693,18 +714,19 @@ let g:deoplete#sources#go#data_directory = $HOME.'/.config/gocode/json'
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 let g:deoplete#sources#go#package_dot = 1
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-let deoplete#sources#go#debug#log_file = '~/.log/nvim/python/deoplete-go.log'
 
 " Python:
 call deoplete#custom#set('jedi', 'rank', 10000)
-let g:deoplete#ignore_sources.python = ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
+let g:deoplete#ignore_sources.python =
+      \ ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
 call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
 let g:deoplete#sources#jedi#statement_length = 50
 let g:deoplete#sources#jedi#enable_cache = 1
 let g:deoplete#sources#jedi#debug_enabled = 1
-let g:deoplete#sources#jedi#debug#log_file = '~/.log/nvim/python/deoplete-jedi.log'
+let g:deoplete#sources#jedi#short_types = 0
 " disable jedi-vim
 let g:jedi#auto_initialization = 0
+let g:jedi#use_splits_not_buffers = 'top'
 let g:jedi#auto_vim_configuration = 0
 let g:jedi#completions_enabled = 0
 let g:jedi#documentation_command = "K"
@@ -788,7 +810,7 @@ let $FILES_IGNORE_PATTERN = "(\.git|\.hg|\.svn|_darcs|\.bzr|__pycache__|\.DS_Sto
 let g:ctrlp_follow_symlinks = 1
 let g:ctrlp_match_current_file = 0
 let g:ctrlp_match_func = {'match': 'cpsm#CtrlPMatch'}
-let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:15'
+let g:ctrlp_match_window = 'bottom,order:btt,min:1'
 let g:ctrlp_mruf_default_order = 1
 let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*'
 let g:ctrlp_path_nolim = 1
@@ -857,7 +879,7 @@ let g:gitgutter_enabled = 1
 let g:gitgutter_highlight_lines = 0
 let g:gitgutter_map_keys = 0
 let g:gitgutter_max_signs = 10000
-let g:gitgutter_realtime = 1
+let g:gitgutter_realtime = 0
 
 
 " vim-dirvish
@@ -1156,6 +1178,18 @@ endfunction
 command! -bang -complete=customlist,neoman#Complete -nargs=* Jman call
       \ Jman(<f-args>)
 
+
+function! ProfilingSyntax() abort
+  " Initial and cleanup syntime
+  redraw!
+  syntime clear
+
+  " Profiling syntax regexp
+  syntime on
+  redraw!
+  syntime report
+endfunction
+
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -1217,8 +1251,8 @@ nnoremap <silent> .z   :<C-u>split<CR><C-w>w
 
 " Map Leader "{{{
 
-let mapleader = "\<Space>"
-let maplocalleader = "\<CR>"
+let g:mapleader = "\<Space>"
+let g:maplocalleader = "\<CR>"
 
 nnoremap <silent><Leader>h  :<C-u>SmartHelp<Space><C-l>
 nnoremap <silent><Leader>m  <C-w>w
@@ -1367,8 +1401,8 @@ endfunction
 noremap <C-g> :<C-u>call CtrlPGhqFunc()<CR>
 
 " Miniyank:
-nmap p <Plug>(miniyank-autoput)
-nmap P <Plug>(miniyank-autoPut)
+" nmap p <Plug>(miniyank-autoput)
+" nmap P <Plug>(miniyank-autoPut)
 " nmap <leader>p <Plug>(miniyank-startput)
 " nmap <leader>P <Plug>(miniyank-startPut)
 " map <leader>n <Plug>(miniyank-cycle)
@@ -1515,10 +1549,10 @@ cnoremap <C-D>    <Del>
 " Terminal "{{{
 
 " Open new terminal tab (tmux: bindkey c)
-tmap <C-d>c <C-\><C-n>:tabnew \| :terminal<CR>
+tnoremap <C-d>c <C-\><C-n>:tabnew \| :terminal<CR>
 " Switch tab (tmux: bindkey {n|p})
-tmap <C-d>n <C-\><C-n>:tabnext<CR>
-tmap <C-d>p <C-\><C-n>:tabprevious<CR>
+tnoremap <C-d>n <C-\><C-n>:tabnext<CR>
+tnoremap <C-d>p <C-\><C-n>:tabprevious<CR>
 
 " jj to exit to terminal mode
 tnoremap <silent>jj  <C-\><C-n>
@@ -1530,8 +1564,6 @@ tnoremap <silent>ZZ           <C-\><C-n>:quit!<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Load external nvim settings "{{{
 
-source $XDG_CONFIG_HOME/nvim/modules/osx_header.vim
-source $XDG_CONFIG_HOME/nvim/modules/functions.vim
 if exists('g:nyaovim_version')
   set runtimepath+=$XDG_CONFIG_HOME/nyaovim/nyaovim-markdown-preview
   set runtimepath+=$XDG_CONFIG_HOME/nyaovim/nyaovim-mini-browser

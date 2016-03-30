@@ -1,0 +1,100 @@
+# Golang style License
+snippet Golang BSD
+abbr Golang style BSD(short)
+	// Copyright 2016 ${1:#:`g:snips_author != 'yourname' ? g:snips_author : "The Go Authors"`}. All rights reserved.
+	// Use of this source code is governed by a BSD-style
+	// license that can be found in the LICENSE file.
+
+
+# flag packages
+snippet flag.BoolVar
+# alias finv
+abbr flag.BoolVar( ... )
+  flag.BoolVar(&${1:#:*bool}, "${2:#:name string}", ${3:#:value bool}, "${4:#:usage string}")
+
+snippet flag.Bool
+# alias fbol
+abbr flag.Bool( ... )
+  flag.Bool("${1:#:name string}", ${2:#:value bool}, "${3:#:usage string}")
+
+snippet flag.IntVar
+# alias finv
+abbr flag.IntVar( ... )
+  flag.IntVar(&${1:#:*int}, "${2:#:name string}", ${3:#:value int}, "${4:#:usage string}")
+
+snippet flag.Int
+# alias fin
+abbr flag.Int( ... )
+  flag.Int("${1:#:name string}", ${2:#:value int}, "${3:#:usage string}")
+
+snippet flag.Int64Var
+# alias fin64v
+abbr flag.Int64Var( ... )
+  flag.Int64Var(&${1:#:*int64}, "${2:#:name string}", ${3:#:value int64}, "${4:#:usage string}")
+
+snippet flag.Int64
+# alias fin64
+abbr flag.Int64( ... )
+  flag.Int64("${1:#:name string}", ${2:#:value int64}, "${3:#:usage string}")
+
+snippet flag.UintVar
+# alias fuin
+abbr flag.UintVar( ... )
+  flag.UintVar(&${1:#:*uint}, "${2:#:name string}", ${3:#:value uint}, "${4:#:usage string}")
+
+snippet flag.Uint
+# alias fuin
+abbr flag.Uint( ... )
+  flag.Uint("${1:#:name string}", ${2:#:value uint}, "${3:#:usage string}")
+
+snippet flag.Uint64Var
+# alias fuin64v
+abbr flag.Uint64Var( ... )
+  flag.Uint64Var(&${1:#:*uint64}, "${2:#:name string}", ${3:#:value uint64}, "${4:#:usage string}")
+
+snippet flag.Uint64
+# alias fuin64
+abbr flag.Uint64( ... )
+  flag.Uint64("${1:#:name string}", ${2:#:value uint64}, "${3:#:usage string}")
+
+snippet flagStringVar
+# alias fstv
+abbr flag.StringVar( ... )
+  flag.StringVar(&${1:#:*bool}, "${2:#:name string}", "${3:#:value bool}", "${4:#:usage string}")
+
+snippet flagString
+# alias fst
+abbr flag.String( ... )
+  flag.String("${1:#:name string}", "${2:#:value string}", "${3:#:usage string}")
+
+snippet flag.Float64Var
+# alias fuin64v
+abbr flag.Float64Var( ... )
+  flag.Float64Var(&${1:#:*float64}, "${2:#:name string}", ${3:#:value float64}, "${4:#:usage string}")
+
+snippet flag.Float64
+# alias fflt64
+abbr flag.Float64( ... )
+  flag.Float64("${1:#:name string}", ${2:#:value float64}, "${3:#:usage string}")
+
+snippet flag.DurationVar
+# alias fdrv
+abbr flag.DurationVar( ... )
+  flag.DurationVar(&${1:#:*time.Duration}, "${2:#:name string}", ${3:#:value time.Duration}, "${4:#:usage string}")
+
+snippet flag.Duration
+# alias fdr
+abbr flag.Duration( ... )
+  flag.Duration(${1:#:name string}, ${2:#:value time.Duration}, "${3:#:usage string}")
+
+snippet flag.Var
+# alias fvar
+abbr flag.Var( ... )
+  flag.Var(${1:#:value Value}, "${2:#:name string}", "${3:#:usage string}")
+
+
+# Error Handling
+snippet err_:=
+alias er
+abbr err := func()
+	err := ${1:#:func()}

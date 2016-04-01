@@ -27,11 +27,9 @@ let $DEIN_DIR = expand($HOME . '/.cache/nvim/dein/repos/github.com')
 " let $LD_LIBRARY_PATH = '/opt/llvm/lib:' . '/usr/local/cuda/lib:' . '/usr/local/lib:'
 "       \ . $DEVELOPER_DIR . '/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/lib:'
 "       \ . '/usr/lib'
-" let $CGO_LDFLAGS = "-L/opt/llvm/lib"
-" let $GODEBUG = "cgocheck=0"
 
 " for man
-let $LANG = 'en_US.UT-8'
+" let $LANG = 'en_US.UT-8'
 let $GROFF_NO_SGR = 0
 
 " }}}
@@ -84,8 +82,8 @@ if dein#load_state(expand('<sfile>'))
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1 }, ['nvim-go'])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1 }, ['treachery.nvim'])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['c', 'cpp', 'objc', 'objcpp'] }, ['deoplete-clang'])
-  call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_idle': 1, 'on_ft': ['go'] }, ['deoplete-go'])
-  call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_idle': 1, 'on_ft': ['python'] }, ['deoplete-jedi'])
+  call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['go'] }, ['deoplete-go'])
+  call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['python'] }, ['deoplete-jedi'])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['zsh'] }, ['deoplete-zsh'])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_ft': ['python'] }, ['nvim-pep8'])
 
@@ -169,7 +167,9 @@ if dein#load_state(expand('<sfile>'))
   call dein#add('vim-jp/vimdoc-ja')
   call dein#add('tyru/caw.vim')
   call dein#add('sjl/gundo.vim')
-  call dein#add('cohama/lexima.vim')
+  " call dein#add('cohama/lexima.vim')
+  call dein#add('itchyny/vim-parenmatch')
+  " call dein#add('itchyny/vim-cursorword')
   " call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1 }, ['nvimfs'])
 
   " Debugging:
@@ -197,7 +197,7 @@ if dein#load_state(expand('<sfile>'))
   call dein#add('cespare/vim-toml')
 
   " Bison Flex:
-  call dein#add('justinmk/vim-syntax-extra')
+  " call dein#add('justinmk/vim-syntax-extra')
 
   " Zsh:
   call dein#add('chrisbra/vim-zsh')
@@ -233,6 +233,7 @@ set clipboard=unnamedplus
 set cmdheight=2
 set colorcolumn=99
 set completeopt=menu,noinsert,noselect
+" set completeopt+=preview
 set conceallevel=2 concealcursor=niv " neosnippets
 set expandtab
 set fillchars="diff:⣿,fold: ,vert:│"
@@ -247,6 +248,7 @@ set ignorecase
 set laststatus=2
 set linebreak
 set list listchars=eol:↲,extends:»,nbsp:%,precedes:«,tab:»-,trail:_
+" set nolist
 set matchpairs+=<:>
 set matchtime=0
 set number
@@ -312,6 +314,9 @@ set novisualbell
 set nowrapscan
 set nowritebackup
 
+if has('mac')
+  source $XDG_CONFIG_HOME/nvim/osx_header.vim
+endif
 
 " Ignore default plugins
 " http://lambdalisue.hatenablog.com/entry/2015/12/25/000046
@@ -322,6 +327,7 @@ let g:did_menu_trans = 1
 " avoid stupid menu.vim (saves ~100ms)
 let did_load_filetypes          = 1 " $VIMRUNTIME/filetype.vim
 let g:did_install_default_menus = 1 " $VIMRUNTIME/menu.vim
+let g:syntax_manual = 1
 " autoload
 let g:loaded_netrw              = 1 " $VIMRUNTIME/autoload/netrw.vim
 let g:loaded_netrwFileHandlers  = 1 " $VIMRUNTIME/autoload/netrwFileHandlers.vim
@@ -334,10 +340,10 @@ let g:loaded_zip                = 1 " $VIMRUNTIME/autoload/zip.vim
 " plugin
 let g:loaded_2html_plugin       = 1 " $VIMRUNTIME/plugin/tohtml.vim
 let g:loaded_man                = 1 " $VIMRUNTIME/plugin/netrw.vim
-" let g:loaded_matchparen         = 1 " $VIMRUNTIME/plugin/matchparen.vim
+let g:loaded_matchparen         = 1 " $VIMRUNTIME/plugin/matchparen.vim
 let g:loaded_netrwPlugin        = 1 " $VIMRUNTIME/plugin/netrwPlugin.vim
 let g:loaded_tarPlugin          = 1 " $VIMRUNTIME/plugin/tarPlugin.vim
-let g:loaded_tutor_mode_plugin  = 1 " $VIMRUNTIME/plugin/tutor.vim
+" let g:loaded_tutor_mode_plugin  = 1 " $VIMRUNTIME/plugin/tutor.vim
 let g:loaded_vimballPlugin      = 1 " $VIMRUNTIME/plugin/vimballPlugin
 let g:loaded_zipPlugin          = 1 " $VIMRUNTIME/plugin/zipPlugin.vim
 let g:loaded_gzip               = 1 " $VIMRUNTIME/plugin/gzip.vim
@@ -365,15 +371,16 @@ filetype plugin indent on
 " https://github.com/justinmk/config/blob/master/.vimrc#L325-L327
 " Load matchit.vim, but only if the user hasn't installed a newer version.
 " See also ':help pi_matchit.txt'.
-Gautocmd WinEnter * if !getbufvar(winbufnr(winnr()), "&filetype") == "quickrun" | runtime! macros/matchit.vim | endif
+" Gautocmd WinEnter * if !getbufvar(winbufnr(winnr()), "&filetype") == "quickrun" | runtime! macros/matchit.vim | endif
 
 "}}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Color "{{{
 " Global:
-hi SpecialKey    gui=NONE    guifg=#25262c    guibg=NONE
-hi TermCursor    gui=NONE    guifg=#FFFFFF    guibg=NONE
+hi SpecialKey    gui=NONE      guifg=#25262c    guibg=NONE
+hi TermCursor    gui=NONE      guifg=#FFFFFF    guibg=NONE
+hi ParenMatch    gui=underline guifg=NONE       guibg=#343941
 
 " Python:
 hi link pythonDelimiter    Special
@@ -388,6 +395,7 @@ hi! goStdlibErr     gui=bold    guifg=#FF005F    guibg=NONE
 
 " C:
 hi cCustomFunc     gui=bold    guifg=#F0C674    guibg=NONE
+let g:c_ansi_typedefs = 1
 
 " Quickfix:
 Gautocmdft qf
@@ -398,13 +406,26 @@ Gautocmdft qf
 
 " Neovim configuration "{{{
 
-if has('mac')
-  let g:python_host_prog   = '/usr/local/bin/python2'
-  let g:python3_host_prog  = '/usr/local/bin/python3'
-elseif has('unix')
-  let g:python_host_prog   = '/usr/bin/python2'
-  let g:python3_host_prog  = '/usr/bin/python3'
+" if isdirectory('/opt/intel/intelpython27')
+"   let g:python_host_prog   = '/opt/intel/intelpython27/bin/python2'
+" else
+  if has('mac')
+    let g:python2_host_prog  = '/usr/local/bin/python2'
+  elseif has('unix')
+    let g:python_host_prog   = '/usr/bin/python2'
+  endif
+" endif
+
+if isdirectory('/opt/intel/intelpython35')
+  let g:python3_host_prog  = '/opt/intel/intelpython35/bin/python3'
+else
+  if has('mac')
+    let g:python3_host_prog  = '/usr/local/bin/python3'
+  elseif has('unix')
+    let g:python3_host_prog  = '/usr/bin/python3'
+  endif
 endif
+
 " Skip neovim module check
 let g:python_host_skip_check  = 1
 let g:python3_host_skip_check = 1
@@ -480,7 +501,7 @@ Gautocmd BufNewFile,BufReadPost /Applications/Xcode.app/* setlocal readonly nomo
 Gautocmd BufNewFile,BufReadPost /Applications/Xcode-beta.app/* setlocal readonly nomodified
 Gautocmd BufNewFile,BufReadPost .pythonrc set filetype=python
 Gautocmd BufNewFile,BufReadPost .pryrc setlocal filetype=ruby
-Gautocmd BufNewFile,BufReadPost ~/.zsh/* setlocal filetype=zsh
+Gautocmd BufNewFile,BufReadPost $HOME/src/github.com/zchee/dotfiles/.zsh/* setlocal filetype=zsh
 Gautocmd BufNewFile,BufReadPost *.md set filetype=markdown
 Gautocmd BufNewFile,BufReadPost *.md let g:deoplete#disable_auto_complete = 0
 Gautocmd BufNewFile,BufReadPost .eslintrc set filetype=json
@@ -551,7 +572,7 @@ let g:go_asmfmt_autosave = 1
 let g:go_term_height = 30
 let g:go_term_width = 30
 let g:go_term_enabled = 1
-Gautocmdft go syn include @CSource syntax/c.vim
+" Gautocmdft go syn include @CSource syntax/c.vim
 function! Gotags()
   let b:gitdir = system("git rev-parse --show-toplevel")
   if b:gitdir !~? "^fatal"
@@ -641,15 +662,21 @@ let g:deoplete#omni#input_patterns = {}
 let g:deoplete#ignore_sources.go =
       \ ['member', 'omni', 'tag', 'syntax']
 "       \ ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax']
-call deoplete#custom#set('go', 'rank', 500)
+call deoplete#custom#set('go', 'rank', 1000)
 " call deoplete#custom#set('go', 'disabled_syntaxes', ['Function'])
 let g:deoplete#sources#go#align_class = 1
 let g:deoplete#sources#go#data_directory = $HOME.'/.config/gocode/json'
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 let g:deoplete#sources#go#package_dot = 1
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+let g:deoeplete#sources#go#debug = 1
+let g:deoplete#sources#go#cgo = 1
+let g:deoplete#sources#go#cgo#libclang_path = "/opt/llvm/lib/libclang.dylib"
+let g:deoplete#sources#go#cgo#clang_header = '/opt/llvm/lib/clang'
 
 " C Family:
+" let g:deoplete#omni_input_patterns = {}
+" let g:deoplete#omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
 call deoplete#custom#set('clang', 'rank', 500)
 let g:deoplete#ignore_sources.c =
       \ ['buffer', 'dictionary', 'file', 'member', 'omni', 'tag', 'syntax', 'neosnippet']
@@ -692,6 +719,9 @@ let g:deoplete#sources#clang#flags = [
 " let g:deoplete#sources#clang#sort_algo = 'priority'
 " let g:deoplete#sources#clang#clang_complete_database =
 "       \ '/Users/zchee/src/github.com/neovim/neovim/build'
+let g:deoplete#sources#clang#debug = 1
+set path+=$HOME/src/github.com/zchee/deoplete-clang/tests/foobar
+" call deoplete#enable_logging('DEBUG', '/Users/zchee/.log/nvim/python/deoplete.log')
 
 " Python:
 call deoplete#custom#set('jedi', 'rank', 500)
@@ -700,8 +730,9 @@ let g:deoplete#ignore_sources.python =
 call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
 let g:deoplete#sources#jedi#statement_length = 0
 let g:deoplete#sources#jedi#enable_cache = 0
-let g:deoplete#sources#jedi#debug_enabled = 1
 let g:deoplete#sources#jedi#short_types = 0
+let g:deoplete#sources#jedi#show_docstring = 0
+let g:deoplete#sources#jedi#debug_enabled = 1
 " disable jedi-vim
 let g:jedi#auto_initialization = 0
 let g:jedi#use_splits_not_buffers = 'top'
@@ -1023,6 +1054,14 @@ command! -nargs=* -complete=file GG Grepper -tool ag -noprompt -grepprg ag --vim
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Functions "{{{
+
+" Command output capture
+" http://qiita.com/sgur/items/9e243f13caa4ff294fa8
+command! -nargs=+ -complete=command Capture QuickRun -type vim -src <q-args>
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" }}}
+
 
 " Temporary functions "{{{
 
@@ -1388,7 +1427,7 @@ Gautocmdft help,ref,man,qf,godoc,gedoc,quickrun,gita-blame-navi,rst,neoman
 
 
 " Go:
-Gautocmdft go nnoremap <silent><buffer><C-]>  :<C-u>GoDef<CR>
+Gautocmdft go nnoremap <silent><buffer><C-]>  :<C-u>GoGoto<CR>
 Gautocmdft go nnoremap <silent><Leader>]      :<C-u>tag <c-r>=expand("<cword>")<CR><CR>
 Gautocmdft go nnoremap <silent><Leader>b      :<C-u>Gobuild<CR>
 Gautocmdft go nnoremap <silent>K              <Plug>(go-doc)
@@ -1463,7 +1502,7 @@ nmap <silent>sd <Plug>(operator-surround-delete)
 nmap <silent>sr <Plug>(operator-surround-replace)
 
 " Caw:
-nmap <silent>gc  <Plug>(caw:tildepos:toggle)
+nmap <silent>gc  <Plug>(caw:hatpos:toggle)
 
 
 " }}}
@@ -1557,7 +1596,7 @@ vmap <silent>sr <Plug>(operator-surround-replace)
 " Visual "{{{
 
 " Caw:
-xmap <silent>gc  <Plug>(caw:tildepos:toggle)
+xmap <silent>gc  <Plug>(caw:hatpos:toggle)
 
 " }}}
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

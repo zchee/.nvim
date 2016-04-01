@@ -34,7 +34,8 @@ au BufNewFile,BufRead *.asm,*.[sS],*.[aA],*.mac,*.lst	call s:FTasm()
 au BufNewFile,BufRead [mM]akefile.am,GNUmakefile.am	setf automake
 
 " C or lpc
-au BufNewFile,BufRead *.c			call s:FTlpc()
+" au BufNewFile,BufRead *.c			call s:FTlpc()
+au BufNewFile,BufRead *.c			setf c
 
 func! s:FTlpc()
   if exists("g:lpc_syntax_for_c")
@@ -185,6 +186,9 @@ au BufNewFile,BufRead *.rockspec		setf lua
 " M4
 au BufNewFile,BufRead *.m4
 	\ if expand("<afile>") !~? 'html.m4$\|fvwm2rc' | setf m4 | endif
+
+" Makefile
+au BufNewFile,BufRead *[mM]akefile,*.mk,*.mak,*.dsp setf make
 
 " Man config
 au BufNewFile,BufRead */etc/man.conf,man.config	setf manconf

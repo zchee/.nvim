@@ -465,41 +465,14 @@ Gautocmd BufNewFile,BufReadPost $HOME/src/github.com/zchee/dotfiles/.zsh/* setlo
 Gautocmd BufNewFile,BufReadPost *.md set filetype=markdown
 Gautocmd BufNewFile,BufReadPost .eslintrc set filetype=json
 
-Gautocmdft vim
-      \ setlocal foldmethod=marker tags=$HOME/.config/nvim/tags iskeyword+=:,#
-
-Gautocmdft c,cpp
-      \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab commentstring=//%s
-
-Gautocmdft sh,bash,zsh
-      \ setlocal tabstop=2 softtabstop=2 shiftwidth=2
-
-Gautocmdft zsh
-      \ runtime! indent/sh.vim
-
-Gautocmdft go
-      \ setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 copyindent colorcolumn=119
-
-Gautocmdft python
-      \ setlocal tabstop=8 shiftwidth=4 smarttab softtabstop=4 colorcolumn=79
-
 Gautocmdft neosnippet
-      \ setlocal noexpandtab
-      \| call dein#source('neosnippet.vim')
-
-Gautocmdft dockerfile
-      \ setlocal noexpandtab tabstop=4 softtabstop=4 shiftwidth=4 nocindent
-
-Gautocmdft ruby
-      \ setlocal expandtab tabstop=2 softtabstop=2 shiftwidth=2
+      \ call dein#source('neosnippet.vim')
 
 Gautocmdft gitcommit,gitconfig
-      \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 noexpandtab
-      \| let g:deoplete#disable_auto_complete = 1
+      \ let g:deoplete#disable_auto_complete = 1
 
 Gautocmdft quickrun
       \ let g:loaded_matchparen = 1
-      \| setlocal wrap
 
 Gautocmdft dirvish
       \ let g:treachery#enable_autochdir = 0

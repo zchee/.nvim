@@ -24,7 +24,7 @@ let $XDG_LOG_HOME = expand($HOME.'/.log')
 let $NVIM_VERBOSE_LOG_FILE = expand($XDG_LOG_HOME.'/nvim/verbose.log')
 
 " man
-let $LANG = 'en_US.UT-8'
+" let $LANG = 'en_US.UT-8'
 let $GROFF_NO_SGR = 0
 
 " }}}
@@ -91,7 +91,7 @@ if dein#load_state(expand('<sfile>'))
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_i': 1, 'on_ft': ['c', 'cpp', 'objc', 'objcpp'] }, ['deoplete-clang'])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_i': 1, 'on_ft': ['go'] }, ['deoplete-go'])
   call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_i': 1, 'on_ft': ['python'] }, ['deoplete-jedi'])
-  call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_i': 1, 'on_ft': ['zsh'] }, ['deoplete-zsh'])
+  " call dein#local($HOME.'/src/github.com/zchee', {'frozen': 1, 'on_i': 1, 'on_ft': ['zsh'] }, ['deoplete-zsh'])
   " Swift:
   call dein#add('landaire/deoplete-swift', { 'on_i': 1, 'on_ft': ['swift'] })
   " Vim:
@@ -105,7 +105,7 @@ if dein#load_state(expand('<sfile>'))
   call dein#add('Konfekt/FastFold', { 'on_i': 1 })
   call dein#add('Shougo/context_filetype.vim')
   call dein#add('Shougo/neco-syntax', { 'on_i': 1})
-  call dein#add('Shougo/neoinclude.vim', { 'on_i': 1 })
+  " call dein#add('Shougo/neoinclude.vim', { 'on_i': 1 })
   call dein#add('Shougo/neosnippet.vim', { 'on_i': 1 })
   call dein#add('Shougo/neosnippet-snippets')
   call dein#add('honza/vim-snippets', { 'on_i': 1 })
@@ -118,7 +118,7 @@ if dein#load_state(expand('<sfile>'))
   call dein#add('rdnetto/YCM-Generator', { 'on_cmd' : ['YcmGenerateConfig'] })
   
   " Build:
-  call dein#add('benekastah/neomake', { 'on_cmd' : ['YcmGenerateConfig'] })
+  call dein#add('benekastah/neomake', { 'on_cmd' : ['Neomake', 'NeomakeSh', 'NeomakeListJobs', 'NeomakeCancelJob'] })
   call dein#add('thinca/vim-quickrun')
   
   " Asynchronous:
@@ -150,7 +150,8 @@ if dein#load_state(expand('<sfile>'))
   " References:
   call dein#add('nhooyr/neoman.vim')
   call dein#add('thinca/vim-ref')
-  call dein#add('yuku-t/vim-ref-ri', { 'on_ft': 'ruby' })
+  call dein#add('yuku-t/vim-ref-ri', { 'on_ft': ['ruby'] })
+  call dein#add('tweekmonster/helpful.vim', { 'build': 'make' })
   
   " Template:
   call dein#add('mattn/sonictemplate-vim')
@@ -170,12 +171,12 @@ if dein#load_state(expand('<sfile>'))
   " Go:
   call dein#add('fatih/vim-go', { 'on_ft' : ['go'] })
   call dein#add('zchee/vim-go-stdlib')
-  call dein#local($HOME.'/src/github.com/garyburd', {'frozen': 1 }, ['vigor'])
+  " call dein#local($HOME.'/src/github.com/garyburd', {'frozen': 1 }, ['vigor'])
   
   " Python:
-  " call dein#add('/bfredl/nvim-ipy')
-  call dein#add('davidhalter/jedi-vim', { 'on_func' : ['jedi'] } )
-  call dein#add('tell-k/vim-autopep8', { 'on_cmd' : ['Autopep'] } )
+  call dein#add('bfredl/nvim-ipy')
+  call dein#add('davidhalter/jedi-vim', { 'on_ft' : ['python'] } )
+  call dein#add('tell-k/vim-autopep8')
   call dein#add('nvie/vim-flake8')
   call dein#add('hynek/vim-python-pep8-indent', {'rtp': 'indent'})
   call dein#add('hdima/python-syntax', {'rtp': 'syntax'})
@@ -193,7 +194,7 @@ if dein#load_state(expand('<sfile>'))
   call dein#add('chrisbra/vim-sh-indent')
   
   " Markdown:
-  " call dein#add('godlygeek/tabular')
+  call dein#add('godlygeek/tabular')
   call dein#add('plasticboy/vim-markdown')
   " call dein#add('joker1007/vim-markdown-quote-syntax')
 
@@ -406,27 +407,28 @@ Gautocmdft qf
 
 " Neovim configuration "{{{
 
+let g:python2_host_prog = $HOME . '/.pyenv/versions/neovim2/bin/python2'
+let g:python3_host_prog = $HOME . '/.pyenv/versions/neovim3/bin/python3'
+
 " if isdirectory('/opt/intel/intelpython27')
 "   let g:python_host_prog   = '/opt/intel/intelpython27/bin/python2'
 " else
-  if has('mac')
-    let g:python2_host_prog = $HOME . '/.pyenv/versions/neovim2/bin/python2'
-    " let g:python2_host_prog = '/usr/local/bin/python2'
-  elseif has('unix')
-    let g:python_host_prog   = '/usr/bin/python2'
-  endif
+" if has('mac')
+"   let g:python2_host_prog = '/usr/local/bin/python2'
+" elseif has('unix')
+"   let g:python_host_prog   = '/usr/bin/python2'
+" endif
 " endif
 
-if isdirectory('/opt/intel/intelpython35')
-  let g:python3_host_prog  = '/opt/intel/intelpython35/bin/python3'
-else
-  if has('mac')
-    let g:python3_host_prog = $HOME . '/.pyenv/versions/neovim3/bin/python3'
-    " let g:python3_host_prog  = '/usr/local/bin/python3'
-  elseif has('unix')
-    let g:python3_host_prog  = '/usr/bin/python3'
-  endif
-endif
+" if isdirectory('/opt/intel/intelpython35')
+"   let g:python3_host_prog  = '/opt/intel/intelpython35/bin/python3'
+" else
+"   if has('mac')
+"     let g:python3_host_prog  = '/usr/local/bin/python3'
+"   elseif has('unix')
+"     let g:python3_host_prog  = '/usr/bin/python3'
+"   endif
+" endif
 
 " Skip neovim module check
 let g:python_host_skip_check  = 1
@@ -551,14 +553,17 @@ endfunction
 
 " Go:
 " TODO: for nvim-go
-let g:go#debuf = 0
+let g:go#build#autobuild = 1
+let g:go#debug = 1
+" let g:go#debug#pprof = 1
 let g:go#def#debug = 0
 let g:go#def#filer = 'Dirvish'
 let g:go#def#filer_mode = 'tab split'
-let g:go#fmt#async = 1
+let g:go#fmt#async = 0
 let g:go#guru#keep_cursor = 1
 let g:go#guru#reflection = 1
 let g:go#rename#prefill = 1
+let go#clang#nomodifiable = 1
 " Duplicate workaround
 command! -nargs=* -range GoDefs :call go#def#Jump(<f-args>)
 
@@ -612,15 +617,14 @@ endfunction
 
 " Python:
 " Gautocmd BufWritePost *.py Neomake!
-" let g:neomake_python_enabled_makers = ['pep257', 'pep8', 'pyflakes', 'flake8']
+let g:neomake_python_enabled_makers = ['pep8', 'pyflakes', 'flake8']
 let g:python_highlight_all = 1
 " vim-autopep8
 let g:autopep8_disable_show_diff= 1
 " vim-flake8
 " flake8 global setting: $XDG_CONFIG_HOME/flake8
-let g:flake8_cmd="/usr/local/bin/flake8"
+let g:flake8_cmd = $HOME . "/bin/flake8"
 let g:flake8_show_in_gutter = 1
-" Gautocmdft python setlocal omnifunc=RopeCompleteFunc
 
 
 " Zsh Sh Bash:
@@ -691,25 +695,24 @@ let g:deoplete#ignore_sources.objcpp = g:deoplete#ignore_sources.c
 
 " Go:
 " call deoplete#custom#set('go', 'disabled_syntaxes', ['Function'])
-" let g:deoplete#sources#go#align_class = 1
-let g:deoplete#sources#go#data_directory = $HOME.'/.config/gocode/json'
+let g:deoplete#sources#go#align_class = 1
+" let g:deoplete#sources#go#data_directory = $HOME.'/.config/gocode/json'
 let g:deoplete#sources#go#package_dot = 1
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 let g:deoplete#sources#go#use_cache = 1
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 let g:deoplete#sources#go#cgo = 1
 let g:deoplete#sources#go#cgo#libclang_path = "/opt/llvm/lib/libclang.dylib"
-" let g:deoplete#sources#go#debug = 1
+" let g:deoplete#sources#go#debug_enabled = 1
 
 " Python:
 let g:deoplete#ignore_sources.python =
       \ ['buffer', 'dictionary', 'tag', 'syntax', 'neosnippet']
-let g:deoplete#sources#jedi#statement_length = 0
-let g:deoplete#sources#jedi#enable_cache = 0
-let g:deoplete#sources#jedi#short_types = 0
-let g:deoplete#sources#jedi#show_docstring = 0
-" let g:deoplete#sources#jedi#debug_enabled = 1
-" let g:deoplete#sources#jedi#debug = 1
+" let g:deoplete#sources#jedi#statement_length = 1
+" let g:deoplete#sources#jedi#enable_cache = 1
+" let g:deoplete#sources#jedi#short_types = 1
+" let g:deoplete#sources#jedi#show_docstring = 0
+let g:deoplete#sources#jedi#debug_enabled = 1
 
 " C Family:
 let g:deoplete#sources#clang#libclang_path = "/usr/local/lib/libclang.dylib"
@@ -794,7 +797,6 @@ let g:perl_fold = 1
 " treachey
 let g:treachery#enable_autochdir = 1
 let g:treachery#enable_keylayout = 1
-let g:treachery#debug = 1
 
 
 " YouCompleteMe

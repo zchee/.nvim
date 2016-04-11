@@ -681,11 +681,11 @@ let g:deoplete#sources#go#cgo#libclang_path = "/opt/llvm/lib/libclang.dylib"
 " Python:
 let g:deoplete#ignore_sources.python =
       \ ['buffer', 'dictionary', 'tag', 'syntax', 'neosnippet']
-" let g:deoplete#sources#jedi#statement_length = 1
-" let g:deoplete#sources#jedi#enable_cache = 1
-" let g:deoplete#sources#jedi#short_types = 1
-" let g:deoplete#sources#jedi#show_docstring = 0
-let g:deoplete#sources#jedi#debug_enabled = 1
+let g:deoplete#sources#jedi#statement_length = 0
+let g:deoplete#sources#jedi#enable_cache = 1
+let g:deoplete#sources#jedi#short_types = 1
+let g:deoplete#sources#jedi#show_docstring = 0
+let g:deoplete#sources#jedi#debug_enabled = 0
 
 " C Family:
 let g:deoplete#sources#clang#libclang_path = "/usr/local/lib/libclang.dylib"

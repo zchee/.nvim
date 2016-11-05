@@ -1,0 +1,188 @@
+# include separate snip for go packages
+include go/flag.snip
+include go/vim-go.snip
+include go/func.snip
+
+# ------------------------------------------------------------------
+# Built-in
+
+# nil --------------------------------------------------------------
+# return nil shorthand
+snippet     retnil
+alias       rn
+abbr        return nil
+	return nil${0}
+# nil shorthand
+snippet     nil
+alias       ni
+abbr        nil
+	nil ${0}
+
+# add token.EQL operator
+snippet     is
+alias       is
+abbr        is
+	== ${0}
+
+# add token.NEQ operator
+snippet     not
+alias       no
+abbr        not
+	!= ${0}
+
+# add token.EQL operator nad nil
+snippet     isnil
+abbr        isni
+	== nil {
+		${0}
+	}
+
+# add token.NEQ operator nad nil
+snippet     notnil
+abbr        noni
+	!= nil {
+		${0}
+	}
+
+snippet     er
+abbr        error
+	error${0}
+
+
+# for loop ---------------------------------------------------------
+snippet for
+abbr for ... { ... }
+	for ${1} {
+		${0}
+	}
+# for integer loop
+snippet fori
+abbr for 0..N-1 { ... }
+	for ${1:i} := 0; $1 < ${2:N}; $1++ {
+		${0}
+	}
+# for range loop with blank
+snippet forn
+abbr for _, v := range items { ... }
+	for _, ${2:v} := range ${1} {
+		${0}
+	}
+# for range loop
+snippet forr
+abbr for k, v := range items { ... }
+	for ${2:k}, ${3:v} := range ${1} {
+		${0}
+	}
+
+
+# Pretty Print ---------------------------------------------------------------
+# use "github.com/davecgh/go-spew/spew"
+snippet     fs
+abbr        Spew.Fdump(...)
+	log.Printf("$1:\n%+v\n", spew.Sdump(${1}))${0}
+snippet     fd
+abbr        Spew.Fdump(...)
+	log.Printf("\x1b[34;40m$1\x1b[0m:\n%+v\n", dump.Sdump(${1}))${0}
+snippet     fp
+abbr        pdebug.Printf(...)
+	pdebug.Printf("\x1b[34;40m$1\x1b[0m:\n%+v\n", ${1})${0}
+# use "github.com/k0kubun/pp"
+snippet     fpp
+abbr        pp.Fprintln(...)
+	log.Printf("$1\n: %+v\n", pp.Sprintln(${1}))${0}
+
+
+# Print debug ----------------------------------------------------------------
+# fmt print debug
+snippet     ff
+abbr        fmt.Printf(...)
+	fmt.Printf("$1: %+v\n", ${1})
+snippet     fn
+abbr        fmt.Println(...)
+	fmt.Println(${1})
+
+# log print debug
+snippet     lf
+abbr        log.Printf("%+v", ...)
+	log.Printf("$1: %+v\n", ${1})
+snippet     ln
+abbr        log.Println(...)
+	log.Println(${1})
+
+# Output log and return
+snippet     lr
+abbr        log.Printf("%+v", ...); return nil
+	log.Printf("$1: %+v\n", ${1})
+	return nil${0}
+
+# test println
+snippet     test
+abbr        log.Print("test")
+	log.Print("test")${0}
+
+
+# Error Handling -------------------------------------------------------------
+# error handling for 'nil' with define the 'err' internally.
+# (if) (e)rror != (n)il
+snippet ifen
+abbr if err != nil
+	if err != nil {
+		${1:return err}
+	}${0}
+
+# error handling for any function result with define the 'err' internally.
+# (if) (e)rror != (f)n()
+snippet ifef
+abbr if err := fn(...); err != (...)
+	if err := ${1:#:func}; err != ${2:nil} {
+		${3:return err}
+	}${0}
+
+# error handling after the internal definition of 'err'.
+# (e)rror != (f)n() (a)fter
+snippet efa
+abbr err != nil {return err}
+	; err != nil {
+		${1:return err}
+	}${0}
+
+# error handling for void(no return value) function.
+# (e)rr := (f)n()
+snippet ef
+abbr err := fn(...)
+	err := ${1:#:func}
+	if err != ${2:nil} {
+		${3:return err}
+	}${0}
+
+
+# go/parser
+# fset
+snippet fset
+abbr fset := token.NewFileSet()
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, ${1:#:"fake.go"}, ${2:buf}, {3:parser.Mode(0)})
+	if err != nil {
+		return err
+	}${0}
+
+
+# os.TempDir()
+snippet tempfile
+abbr filepath.Join(os.TempDir(), ...)
+	filepath.Join(os.TempDir(), "${1:#:prefix string}")
+
+
+# neovim-go/msgpack tag
+snippet msgpacktag
+abbr msgpack:",..."
+	   \`msgpack:",${1:array}"\`${0}
+
+
+# Port from vim-go -----------------------------------------------------------
+# package
+snippet package
+abbr package ...
+	package `expand('%:p:h:t')`${0}
+
+# vim:foldenable:foldmethod=marker

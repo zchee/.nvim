@@ -1,0 +1,15 @@
+snippet     ENV
+abbr        ENV ${1}=${2}
+	ENV ${1:#:env}=${2:#:value}
+	${0}
+
+snippet     ARG
+abbr        ARG ${1} ENV ${1}=${2:-${1}}
+	ARG ${1:#:env}
+	ENV $1=${$$1:-${2:#:value}}
+	${0}
+
+snippet CMD
+	CMD ["${1:#:command}"]
+
+# vim:ft=neosnippet

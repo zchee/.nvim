@@ -1,0 +1,11 @@
+# ------------------------------------------------------------------
+# functions
+
+snippet IsExist
+abbr IsExist
+	// IsExist returns whether the filename is exists.
+	func IsExist(filename string) bool {
+		_, err := os.Stat(filename)
+		return err == nil
+	}
+	${0}

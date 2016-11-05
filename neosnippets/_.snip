@@ -1,0 +1,27 @@
+# ------------------------------------------------------------------
+# LICENSE 
+
+snippet BSD_Owner
+abbr BSD Owner
+	// Copyright `strftime("%Y")` ${1:`get(g:, 'snips_author', 0) != 'yourname' ? g:snips_author : "The Go Authors"`}. All rights reserved.
+	// Use of this source code is governed by a BSD-style
+	// license that can be found in the LICENSE file.
+	${0}
+
+snippet BSD_GoAuthors
+abbr BSD Go Authors
+	// Copyright `strftime("%Y")` The Go Authors. All rights reserved.
+	// Use of this source code is governed by a BSD-style
+	// license that can be found in the LICENSE file.
+	${0}
+
+# ------------------------------------------------------------------
+# TODO, WIP
+
+snippet     todo
+options     word
+	// TODO(`get(g:, 'neosnippet_username', 'owner')`): ${0}
+
+snippet     wip
+options     word
+	// TODO(`get(g:, 'neosnippet_username', 'owner')`): WIP${0}

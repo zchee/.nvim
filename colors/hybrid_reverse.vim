@@ -61,15 +61,13 @@ if !exists("g:enable_bold_font")
     let g:enable_bold_font = 0
 endif
 
-set background=dark
+set bg=dark
 hi clear
-
-if exists("g:syntax_on")
+if exists("syntax_on")
   syntax reset
 endif
 
 let colors_name = "hybrid_reverse"
-exe "colorscheme " . colors_name
 
 "}}}
 " GUI And Cterm Palettes:"{{{
@@ -288,7 +286,7 @@ exe "hi! Comment"       .s:fg_comment     .s:bg_none        .s:fmt_none       .s
 exe "hi! Constant"      .s:fg_purple      .s:bg_none        .s:fmt_none       .s:cterm_none
 exe "hi! String"        .s:fg_green       .s:bg_none        .s:fmt_none       .s:cterm_none
 "		Character"
-exe "hi! Boolean"       .s:fg_boolean     .s:bg_none        .s:fmt_none       .s:cterm_none
+" exe "hi! Boolean"       .s:fg_boolean     .s:bg_none        .s:fmt_none       .s:cterm_none
 exe "hi! Number"        .s:fg_purple      .s:bg_none        .s:fmt_none       .s:cterm_none
 exe "hi! Float"         .s:fg_purple      .s:bg_none        .s:fmt_none       .s:cterm_none
 

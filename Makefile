@@ -1,4 +1,4 @@
-SRC := $(shell find . \( -path './tmp' -o -path './test' \) -prune -o -type f -name '*.vim' -print)
+SRC := $(shell find . \( -path './tmp' -o -path './test' -o -path './colors' \) -prune -o -type f -name '*.vim' -print)
 
 test: test/vint
 	vint $(SRC)

@@ -407,7 +407,7 @@ let g:is_bash = 1
 Gautocmdft ia64 let b:caw_oneline_comment = '//' | let b:caw_wrap_oneline_comment = ['/*', '*/']
 
 " Python Cython:
-" Gautocmd BufWritePre *.py Neomake
+Gautocmd BufWritePre *.py Neomake
 
 " C Family:
 
@@ -874,8 +874,8 @@ let g:quickrun_config.go = {
 
 
 " Neomake:
-let g:neomake_open_list = 1
-let g:neomake_python_enabled_makers = ['pep8', 'pyflakes', 'flake8']
+let g:neomake_open_list = 2
+let g:neomake_python_enabled_makers = ['pyflakes', 'flake8']
 
 " Jedivim:
 let g:jedi#auto_initialization = 0

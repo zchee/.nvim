@@ -4,74 +4,74 @@ function! s:cursor_adjust() abort
     return
   endif
 
-  let cmax = col('$')
-  let cpos = col('.')
-  let level = &conceallevel
-  let lnum = line('.')
-  let lastid = 0
-  let i = 0
+  let l:cmax = col('$')
+  let l:cpos = col('.')
+  let l:level = &conceallevel
+  let l:lnum = line('.')
+  let l:lastid = 0
+  let l:i = 0
 
-  while i < cpos && cpos < cmax
-    let i += 1
-    let conceal = synconcealed(lnum, i)
+  while l:i < l:cpos && l:cpos < l:cmax
+    let l:i += 1
+    let l:conceal = synconcealed(l:lnum, l:i)
 
-    if conceal[0]
-      let consecutive = conceal[2] == lastid
-      if level == 1
-        let cpos += !consecutive ? 0 : 1
-      elseif level == 2
-        let cpos += conceal[1] == '' ? 1 :
-              \ !consecutive ? 0 : 1
-      elseif level == 3
-        let cpos += 1
+    if l:conceal[0]
+      let l:consecutive = l:conceal[2] == l:lastid
+      if l:level == 1
+        let l:cpos += !l:consecutive ? 0 : 1
+      elseif l:level ==# 2
+        let l:cpos += l:conceal[1] ==# '' ? 1 :
+              \ !l:consecutive ? 0 : 1
+      elseif l:level == 3
+        let l:cpos += 1
       endif
     endif
 
-    let lastid = conceal[2]
+    let l:lastid = l:conceal[2]
   endwhile
 
-  if cpos != col('.')
-    call cursor(lnum, cpos)
+  if l:cpos != col('.')
+    call cursor(l:lnum, l:cpos)
   endif
 endfunction
 nnoremap <silent> <LeftMouse> <LeftMouse>:<c-u>call <sid>cursor_adjust()<cr> 
 
 function! s:adjust_cursor(...) abort
-  let pos = getpos('.')[1:2]
+  let l:pos = getpos('.')[1:2]
   if mode() ==? 'v' || !exists('b:prev_pos')
-    let b:prev_pos = pos
+    let b:prev_pos = l:pos
     return
   endif
 
-  let line = getline(pos[0])
-  let b1 = line2byte(pos[0]) + pos[1]
-  let b2 = line2byte(b:prev_pos[0]) + b:prev_pos[1]
+  let l:line = getline(l:pos[0])
+  let l:b1 = line2byte(l:pos[0]) + l:pos[1]
+  let l:b2 = line2byte(b:prev_pos[0]) + b:prev_pos[1]
   let b:prev_pos = getpos('.')[1:2]
-  let delta = b1 - b2
-  if b1 == b2
+  let l:delta = l:b1 - l:b2
+  if l:b1 == l:b2
     return
   endif
-  let conceal = synconcealed(pos[0], pos[1])
+  let l:conceal = synconcealed(l:pos[0], l:pos[1])
 
-  if &conceallevel && conceal[0]
-    if !a:0 && abs(delta) == 1
-      if delta < 0
+  if &conceallevel && l:conceal[0]
+    if !a:0 && abs(l:delta) == 1
+      if l:delta < 0
         normal! h
-      elseif delta > 0
+      elseif l:delta > 0
         normal! l
       endif
     else
-      if b1 < b2
-        let c = match(line, '\S\zs\s*\%'.pos[1].'c')
-        if c != -1
-          call cursor(pos[0], c)
+      if l:b1 < l:b2
+        let l:c = match(l:line, '\S\zs\s*\%'.l:pos[1].'c')
+        if l:c != -1
+          call cursor(l:pos[0], l:c)
         else
           normal! ge
         endif
-      elseif b1 > b2
-        let c = matchend(line, '\%>'.pos[1].'c\s*\S')
-        if c != -1
-          call cursor(pos[0], c)
+      elseif l:b1 > l:b2
+        let l:c = matchend(l:line, '\%>'.l:pos[1].'c\s*\S')
+        if l:c != -1
+          call cursor(l:pos[0], l:c)
         else
           normal! w
         endif

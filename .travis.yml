@@ -14,10 +14,10 @@ install:
   - true
 
 before_script:
-  - pip3 install git+https://github.com/Kuniwak/vint.git
+  - make test/vint
 
 script:
-  - vint ./init.vim ./after/**/*.vim
+  - make test
 
 
 notifications:

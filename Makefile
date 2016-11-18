@@ -5,7 +5,7 @@ test: test/vint
 
 test/vint:
 	git clone --recursive https://github.com/Kuniwak/vint.git test/vint
-	cd test/vint; python setup.py install --user
+	cd test/vint; python setup.py install $(PIP_FLAGS)
 
 debug:
 	@echo $(SRC)

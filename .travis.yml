@@ -1,18 +1,24 @@
 os: osx
 osx_image: xcode8.2
 
+
 env:
   - HOMEBREW_NO_AUTO_UPDATE=1
 
+
 before_install:
   - brew install https://github.com/Homebrew/homebrew-core/raw/master/Formula/python3.rb
+  - pip3 install --upgrade pip setuptools
+
+install:
+  - true
 
 before_script:
-  - pip3 install --upgrade pip setuptools
   - pip3 install git+https://github.com/Kuniwak/vint.git
 
 script:
-  - vint ./init.vim ./after/**/*.vim ./plugin/*.vim
+  - vint ./init.vim ./after/**/*.vim
+
 
 notifications:
   email: false

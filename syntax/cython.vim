@@ -1,8 +1,7 @@
 " Vim syntax file
 " Language:	Pyrex
-" Maintainer:	Marco Barisione <marco.bari@people.it>
-" URL:		http://marcobari.altervista.org/pyrex_vim.html
-" Last Change:	2009 Nov 09
+" Maintainer:	John Tyree
+" Last Change:	2012 Nov 06
 
 " For version 5.x: Clear all syntax items
 " For version 6.x: Quit when a syntax file was already loaded
@@ -21,8 +20,13 @@ else
 endif
 
 " Pyrex extentions
-syn keyword pyrexStatement      cdef typedef ctypedef sizeof
-syn keyword pyrexType		int long short float double char object void
+syn keyword pyrexStatement	nogil inline typedef ctypedef sizeof
+syn keyword pyrexType		Py_ssize_t int long short float double char object void
+" Here we want slightly different behavior depending on whether we're declaring
+" variables or functions. c[p]def should work on the top level as a keyword, but
+" should ALSO work to identify functions and classes.
+syn match   pyrexStatement      "\<cp\?def\>"
+syn match   pyrexStatement      "\<cp\?def\>[^=]*(\@=" contains=pythonStatement,pyrexStatement,pythonFunction,pyrexType skipwhite
 syn keyword pyrexType		signed unsigned
 syn keyword pyrexStructure	struct union enum
 syn keyword pyrexInclude	include cimport
@@ -37,11 +41,11 @@ endif
 " match with lower priority than pyrexForFrom
 syn clear   pythonInclude
 syn keyword pythonInclude     import
-syn match   pythonInclude     "from"
+syn match   pythonInclude     "\<from\>"
 
 " With "for[^:]*\zsfrom" VIM does not match "for" anymore, so
 " I used the slower "\@<=" form
-syn match   pyrexForFrom        "\(for[^:]*\)\@<=from"
+syn match   pyrexForFrom        "\(\<for\>[^:]*\)\@<=\<from\>"
 
 " Default highlighting
 if version >= 508 || !exists("did_pyrex_syntax_inits")

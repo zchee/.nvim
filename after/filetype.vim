@@ -16,10 +16,10 @@
 "  $XDG_CONFIG_HOME/nvim/after/filetype.vim
 "
 
-if exists("did_load_filetypes_userafter")
+if exists('did_load_filetypes_userafter')
   finish
 endif
-let did_load_filetypes_userafter = 1
+let g:did_load_filetypes_userafter = 1
 
 augroup filetypedetect
   autocmd! BufNewFile,BufRead,BufWinEnter *.asm           setlocal filetype=masm syntax=masm

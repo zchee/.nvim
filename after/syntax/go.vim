@@ -1,14 +1,14 @@
-if get(g:, "go_highlight_error", 0)
+if get(g:, 'go_highlight_error', 0)
   syn keyword   goStdlibErr       err
   hi def link   goStdlibErr       Error
 endif
 
-if get(g:, "go_highlight_return", 0)
+if get(g:, 'go_highlight_return', 0)
   syn keyword   goStdlibReturn    return
   hi def link   goStdlibReturn    PreProc
 endif
 
-if get(g:, "go_highlight_nil", 0)
+if get(g:, 'go_highlight_nil', 0)
   syn keyword     goNil           nil
   hi def link     goNil           Constant
 endif
@@ -42,7 +42,7 @@ endif
 " /* */
 " import "C" blocks
 
-if get(g:, "go#highlight#cgo", 0)
+if get(g:, 'go#highlight#cgo', 0)
 
   syn include @CSource syntax/c.vim
 
@@ -84,12 +84,12 @@ if get(g:, "go#highlight#cgo", 0)
   syn keyword cgoType                 static void
   syn keyword	cgoType                 int long short char void
   syn keyword	cgoType                 signed unsigned float double
-  if !exists("c_no_ansi") || exists("c_ansi_typedefs")
+  if !exists('c_no_ansi') || exists('c_ansi_typedefs')
     syn keyword   cgoType             size_t ssize_t off_t wchar_t ptrdiff_t sig_atomic_t fpos_t
     syn keyword   cgoType             clock_t time_t va_list jmp_buf FILE DIR div_t ldiv_t
     syn keyword   cgoType             mbstate_t wctrans_t wint_t wctype_t
   endif
-  if !exists("c_no_c99") " ISO C99
+  if !exists('c_no_c99') " ISO C99
     syn keyword	cgoType               _Bool bool _Complex complex _Imaginary imaginary
     syn keyword	cgoType               int8_t int16_t int32_t int64_t
     syn keyword	cgoType               uint8_t uint16_t uint32_t uint64_t
@@ -109,20 +109,20 @@ if get(g:, "go#highlight#cgo", 0)
   " syn match   cgoStorageClass         display contained "/\<\v(static|register|auto|volatile|extern)\ze\(/" contains=cgoMultiline
 
 
-  if exists("c_gnu")
+  if exists('c_gnu')
     syn keyword	cgoType               __label__ __complex__ __volatile__
   endif
-  if exists("c_gnu")
+  if exists('c_gnu')
     syn keyword	cgoStatement          __asm__
     syn keyword	cOperator             typeof __real__ __imag__
   endif
-  if exists("c_gnu")
+  if exists('c_gnu')
     syn keyword	cgoStorageClass       inline __attribute__
   endif
-  if !exists("c_no_c99")
+  if !exists('c_no_c99')
     syn keyword	cgoStorageClass       inline restrict
   endif
-  if !exists("c_no_c11")
+  if !exists('c_no_c11')
     syn keyword cgoType               char16_t char32_t
     syn keyword	cgoStorageClass       _Alignas alignas
     syn keyword	cgoStorageClass       _Atomic

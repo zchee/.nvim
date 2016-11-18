@@ -403,12 +403,11 @@ let g:is_bash = 1
 " Gautocmd: {{{
 
 " Go:
-" Gautocmd BufEnter *.go nested call tagbar#autoopen(0)
 " plan9 assembly
 Gautocmdft ia64 let b:caw_oneline_comment = '//' | let b:caw_wrap_oneline_comment = ['/*', '*/']
 
 " Python Cython:
-" Gautocmd BufWritePre *.py Neomake | wincmd w
+" Gautocmd BufWritePre *.py Neomake
 
 " C Family:
 
@@ -435,6 +434,7 @@ Gautocmd BufEnter COMMIT_EDITMSG startinsert
 Gautocmdft dirvish let g:treachery#enable_autochdir = 0
 
 
+" automatically close window
 " http://stackoverflow.com/questions/7476126/how-to-automatically-close-the-quick-fix-window-when-leaving-a-file
 function! AutoClose()
   let s:ft = getbufvar(winbufnr(winnr()), "&filetype")
@@ -445,7 +445,7 @@ function! AutoClose()
 endfunction
 Gautocmd WinEnter * call AutoClose()
 
-" macOS library file Protection
+" macOS Frameworks and system header protection
 Gautocmd BufNewFile,BufReadPost
       \ /System/Library/*,/Applications/Xcode*,/usr/include*,/usr/lib*
       \ setlocal readonly nomodified
@@ -454,6 +454,8 @@ Gautocmd BufNewFile,BufReadPost
 " less like keymappnig
 Gautocmdft help,ref,man,qf,godoc,gedoc,quickrun,gita\-status,gita\-blame\-navi,neoman
       \ call LessMap()
+
+Gautocmd TermOpen * set sidescrolloff=0 scrolloff=0
 
 " }}}
 " -------------------------------------------------------------------------------------------------
@@ -1090,7 +1092,7 @@ function! s:MarkdownRefreshGoSyntax()
 endfunction
 
 " Trailing whitespace
-function StripTrailingWhitespace()
+function! StripTrailingWhitespace()
   if !&binary && &filetype != 'diff' && &filetype != 'markdown'
     normal mz
     normal Hmy

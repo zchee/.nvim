@@ -1,15 +1,11 @@
-sudo: false
-
-os:
-  - osx
-osx_image: xcode7.3
+os: osx
+osx_image: xcode8.2
 
 env:
-  - BREW_PACKAGE=python3
+  - HOMEBREW_NO_AUTO_UPDATE=1
 
 before_install:
-  - brew update
-  - brew install $BREW_PACKAGE
+  - brew install https://github.com/Homebrew/homebrew-core/raw/master/Formula/python3.rb
 
 before_script:
   - pip3 install --upgrade pip setuptools

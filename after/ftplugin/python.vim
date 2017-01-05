@@ -1,7 +1,7 @@
 setlocal autoindent
 setlocal cindent
 setlocal cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-setlocal colorcolumn=79
+setlocal colorcolumn=99
 setlocal copyindent
 setlocal expandtab
 setlocal expandtab

@@ -1,5 +1,5 @@
 " setlocal autoindent
-setlocal colorcolumn=0
+setlocal colorcolumn=99
 setlocal linebreak
 setlocal noexpandtab
 setlocal shiftwidth=4

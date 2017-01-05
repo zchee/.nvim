@@ -73,11 +73,11 @@ let g:colors_name = 'hybrid_reverse'
 " GUI And Cterm Palettes:"{{{
 " ----------------------------------------------------------------------------
 let s:vmode      = 'gui'
-let s:background = '#101112'
+let s:background = '#101112' " #232c31
 let s:foreground = '#c7c8c8'
-let s:selection  = '#343941'
-let s:line       = '#282a2e'
-let s:comment    = '#79828a'
+let s:selection  = '#343941' " #425059
+let s:line       = '#282a2e' " #2d3c46
+let s:comment    = '#79828a' " #6c7a80
 let s:nontext    = '#202122'
 
 let s:white      = '#ffffff'

@@ -129,10 +129,23 @@ abbr if err != nil { return }
 	}
 	${0}
 
+# error snippet with panic
+snippet errp
+abbr if err != nil { ... }
+	if err != nil {
+		panic(${1})
+	}
+	${0}
+
 # json snippet
 snippet json
 abbr \`json:key\`
 	\`json:"${1:keyName}"\`
+
+# yaml snippet
+snippet yaml
+abbr \`yaml:key\`
+	\`yaml:"${1:keyName}"\`
 
 # fallthrough
 snippet ft
@@ -162,6 +175,23 @@ abbr func function(...) [error] { ... }
 	func ${1:function}(${2}) ${3:error }{
 		${0}
 	}
+# Fmt Printf debug
+snippet ff
+abbr fmt.Printf(...)
+	fmt.Printf("${1} = %+v\n", $1)
+	${0}
+# Fmt Println debug
+snippet fn
+abbr fmt.Println(...)
+	fmt.Println("${1}")
+# log printf
+snippet lf
+abbr log.Printf(...)
+	log.Printf("${1} = %+v\n", $1)
+# log println
+snippet ln
+abbr log.Println(...)
+	log.Println("${1}")
 # make
 snippet make
 abbr make(Type, size)
@@ -190,6 +220,12 @@ abbr if !ok { ... }
 	if !ok {
 		${0}
 	}
+# package
+snippet package
+abbr package ...
+	// Package $1 provides ${2:...}
+	package ${1:main}
+	${0}
 # panic
 snippet panic
 alias pn
@@ -262,6 +298,19 @@ abbr if err != nil { t.Fatalf(...) }
   if err != nil {
     t.Fatalf("${1}")
   }
+# test example
+snippet example
+	func Example${1:Method}() {
+		${0}
+		// Output:
+	}
+# test benchmark
+snippet benchmark
+	func Benchmark${1:Method}(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			${0}
+		}
+	}
 # variable declaration
 snippet var
 abbr var x Type [= ...]
@@ -283,12 +332,12 @@ abbr equals: test two identifiers with DeepEqual
 
 snippet hf
 abbr http.HandlerFunc
-  func ${1:handler}(w ResponseWriter, r *Request) {
+  func ${1:handler}(w http.ResponseWriter, r *http.Request) {
     ${0:fmt.Fprintf(w, "hello world")}
   }
 
 snippet hhf
 abbr mux.HandleFunc(...)
-  ${1:http}.HandleFunc("${2:/}", func(w ResponseWriter, r *Request) {
+  ${1:http}.HandleFunc("${2:/}", func(w http.ResponseWriter, r *http.Request) {
     ${0:fmt.Fprintf(w, "hello world")}
   })

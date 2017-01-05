@@ -1,18 +1,22 @@
 # ------------------------------------------------------------------
 # LICENSE 
 
-snippet BSD_Owner
+# BSD Owner
+snippet BSDOwner
 abbr BSD Owner
-	// Copyright `strftime("%Y")` ${1:`get(g:, 'snips_author', 0) != 'yourname' ? g:snips_author : "The Go Authors"`}. All rights reserved.
-	// Use of this source code is governed by a BSD-style
-	// license that can be found in the LICENSE file.
+	`substitute(&commentstring, '%s', '', 'g')`Copyright `strftime("%Y")` ${1:`get(g:, 'snips_author', 0) != 'yourname' ? g:snips_author : "The Go Authors"`}. All rights reserved.
+	`substitute(&commentstring, '%s', '', 'g')`Use of this source code is governed by a BSD-style
+	`substitute(&commentstring, '%s', '', 'g')`license that can be found in the LICENSE file.
+
 	${0}
 
-snippet BSD_GoAuthors
+# BSD Go Authors
+snippet BSDGoAuthors
 abbr BSD Go Authors
-	// Copyright `strftime("%Y")` The Go Authors. All rights reserved.
-	// Use of this source code is governed by a BSD-style
-	// license that can be found in the LICENSE file.
+	`substitute(&commentstring, '%s', '', 'g')`Copyright `strftime("%Y")` The Go Authors. All rights reserved.
+	`substitute(&commentstring, '%s', '', 'g')`Use of this source code is governed by a BSD-style
+	`substitute(&commentstring, '%s', '', 'g')`license that can be found in the LICENSE file.
+
 	${0}
 
 # ------------------------------------------------------------------
@@ -20,8 +24,8 @@ abbr BSD Go Authors
 
 snippet     todo
 options     word
-	// TODO(`get(g:, 'neosnippet_username', 'owner')`): ${0}
+	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): ${0}
 
 snippet     wip
 options     word
-	// TODO(`get(g:, 'neosnippet_username', 'owner')`): WIP${0}
+	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): WIP${0}

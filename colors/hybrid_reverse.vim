@@ -1,11 +1,5 @@
-" File:       hybrid_reverse.vim
-" Maintainer: Kristijan Husak (kristijanhusak)
-" URL:        https://github.com/w0ng/vim-hybrid-material
-" BASED ON:   https://github.com/w0ng/vim-hybrid
-" Modified:   24 June 2015 by Kristijan Husak (kristijanhusak) <husakkristijan@gmail.com>
-" License:    MIT
 " ----------------------------------------------------------------------------
-" Description:"{{{
+" Description:
 
 " The RGB colour palette is taken from Tomorrow-Night.vim:
 " https://github.com/chriskempson/vim-tomorrow-theme
@@ -15,21 +9,9 @@
 "
 " The code taken from solarized.vim
 " https://github.com/altercation/vim-colors-solarized
-
-"}}}
+"
 " ----------------------------------------------------------------------------
-" Requirements And Recommendations:"{{{
-
-" This colourscheme is intended for use on:
-"   - gVim 7.3 for Linux, Mac and Windows.
-"   - Vim 7.3 for Linux, using a 256 colour enabled terminal.
-"
-" By default, Vim will use the closest matching cterm equivalent of the RGB
-" colours.
-"
-" However, Due to the limited 256 palette, colours in Vim and gVim will still
-" be noticeably different. In order to get a uniform appearance and the way
-" that this colourscheme was intended, it is HIGHLY recommended that you:
+" Requirements And Recommendations:
 "
 " 1.  Add these colours to ~/.Xresources:
 "
@@ -50,13 +32,9 @@
 "       let g:hybrid_use_iTerm_colors = 1
 "       colorscheme hybrid
 "
-
-"}}}
-
-
-
-" Initialisation:"{{{
 " ----------------------------------------------------------------------------
+" Init:
+
 if !exists('g:enable_bold_font')
     let g:enable_bold_font = 0
 endif
@@ -69,11 +47,11 @@ endif
 
 let g:colors_name = 'hybrid_reverse'
 
-"}}}
-" GUI And Cterm Palettes:"{{{
 " ----------------------------------------------------------------------------
+" GUI And Cterm Palettes:"{{{
+
 let s:vmode      = 'gui'
-let s:background = '#101112' " #232c31
+let s:background = '#0d1210' " #232c31
 let s:foreground = '#c7c8c8'
 let s:selection  = '#343941' " #425059
 let s:line       = '#282a2e' " #2d3c46
@@ -106,10 +84,9 @@ let s:darkgray   = '#282a2e'
 
 let s:boolean    = '#6690c3' " #96CED7
 
-
-"}}}
-" Formatting Options:'{{{
 " ----------------------------------------------------------------------------
+" Formatting Options:'{{{
+
 let s:none   = 'NONE'
 let s:t_none = 'NONE'
 let s:n      = 'NONE'
@@ -120,9 +97,9 @@ let s:b      = ',bold'
 let s:u      = ',underline'
 let s:i      = ',italic'
 
-"}}}
-" Background Highlighting Primitives:"{{{
 " ----------------------------------------------------------------------------
+" Background Highlighting Primitives:
+
 exe 'let s:bg_none       = " '.s:vmode.'bg='.s:none      .'"'
 exe 'let s:bg_foreground = " '.s:vmode.'bg='.s:foreground.'"'
 exe 'let s:bg_background = " '.s:vmode.'bg='.s:background.'"'
@@ -157,8 +134,9 @@ exe 'let s:bg_darkcolumn = " '.s:vmode.'bg='.s:darkcolumn.'"'
 exe 'let s:bg_window     = " '.s:vmode.'bg='.s:window    .'"'
 
 
-" Foreground Highlighting Primitives:"{{{
 " ----------------------------------------------------------------------------
+" Foreground Highlighting Primitives:
+
 exe 'let s:fg_none       = " '.s:vmode.'fg='.s:none      .'"'
 exe 'let s:fg_foreground = " '.s:vmode.'fg='.s:foreground.'"'
 exe 'let s:fg_background = " '.s:vmode.'fg='.s:background.'"'
@@ -195,9 +173,8 @@ exe 'let s:fg_darkbar    = " '.s:vmode.'fg='.s:darkbar   .'"'
 exe 'let s:fg_darkcolumn = " '.s:vmode.'fg='.s:darkcolumn.'"'
 exe 'let s:fg_window     = " '.s:vmode.'fg='.s:window    .'"'
 
-
-" Formatting Options Primitives:"{{{
 " ----------------------------------------------------------------------------
+" Formatting Options Primitives:
 
 exe 'let s:fmt_none             = " '.s:vmode.'=NONE'.          '"'
 exe 'let s:fmt_bold             = " '.s:vmode.'=NONE'.s:b.      '"'
@@ -211,27 +188,27 @@ exe 'let s:fmt_standout         = " '.s:vmode.'=NONE'.s:s.      '"'
 exe 'let s:fmt_reverse          = " '.s:vmode.'=NONE'.s:r.      '"'
 exe 'let s:fmt_reverse_bold     = " '.s:vmode.'=NONE'.s:r.s:b.  '"'
 
-
-" Set bold font depending on options
 " ----------------------------------------------------------------------------
+" Set bold font depending on options:
+
 if g:enable_bold_font == 1
   let s:fg_bold = s:fmt_bold
 else
   let s:fg_bold = s:fmt_none
 endif
-"}}}
 
 " Reset cterm color
 exe 'let s:cterm_none      = " ctermfg=NONE ctermbg=NONE cterm=NONE"'
 
-" Set highlighting
 " ----------------------------------------------------------------------------
-exe 'hi! ColorColumn'   .s:fg_none        .s:bg_black      .s:fmt_none       .s:cterm_none
-" exe 'hi! Conceal'       .s:fg_none        .s:bg_line        .s:fmt_none       .s:cterm_none
-" exe 'hi! Cursor'        .s:fg_none        .s:bg_red        .s:fmt_none       .s:cterm_none
-" exe 'hi! lCursor'        .s:fg_none        .s:bg_red        .s:fmt_none       .s:cterm_none
-exe 'hi! CursorIM'      .s:fg_none        .s:bg_line        .s:fmt_none       .s:cterm_none
-exe 'hi! CursorColumn'  .s:fg_none        .s:bg_line        .s:fmt_none       .s:cterm_none
+" Set Highlighting:
+
+exe 'hi! ColorColumn'   .s:fg_white       .s:bg_black       .s:fmt_none       .s:cterm_none
+exe 'hi! Conceal'       .s:fg_none        .s:bg_line        .s:fmt_none       .s:cterm_none
+exe 'hi! Cursor'        .s:fg_white       .s:bg_red         .s:fmt_none       .s:cterm_none
+exe 'hi! lCursor'       .s:fg_white       .s:bg_red         .s:fmt_none       .s:cterm_none
+exe 'hi! CursorIM'      .s:fg_white       .s:bg_line        .s:fmt_none       .s:cterm_none
+exe 'hi! CursorColumn'  .s:fg_white       .s:bg_line        .s:fmt_none       .s:cterm_none
 exe 'hi! CursorLine'    .s:fg_none        .s:bg_nontext     .s:fmt_none       .s:cterm_none
 exe 'hi! Directory'     .s:fg_blue        .s:bg_none        .s:fmt_none       .s:cterm_none
 exe 'hi! DiffAdd'       .s:fg_addfg       .s:bg_addbg       .s:fmt_none       .s:cterm_none
@@ -274,12 +251,12 @@ exe 'hi! WildMenu'      .s:fg_yellow      .s:bg_selection   .s:fmt_none       .s
 exe 'hi! EndOfBuffer'   .s:fg_nontext     .s:bg_none        .s:fmt_none       .s:cterm_none
 exe 'hi! TermCursor'    .s:fg_orange      .s:bg_blue        .s:fmt_none       .s:cterm_none
 exe 'hi! TermCursorNC'  .s:fg_yellow      .s:bg_black       .s:fmt_none       .s:cterm_none
-"}}}
 
-" Generic Syntax Highlighting: (see :help group-name)"{{{
 " ----------------------------------------------------------------------------
-exe 'hi! Normal'        .s:fg_foreground  .s:bg_none        .s:fmt_none       .s:cterm_none
-exe 'hi! NonText'       .s:fg_nontext     .s:bg_none        .s:fmt_none       .s:cterm_none
+" Generic Syntax Highlighting: (see :help group-name)
+
+exe 'hi! Normal'        .s:fg_foreground  .s:bg_background  .s:fmt_none       .s:cterm_none
+exe 'hi! NonText'       .s:fg_nontext     .s:bg_background  .s:fmt_none       .s:cterm_none
 
 exe 'hi! Comment'       .s:fg_comment     .s:bg_none        .s:fmt_none       .s:cterm_none
 
@@ -312,15 +289,15 @@ exe 'hi! Type'          .s:fg_orange      .s:bg_none        .s:fg_bold        .s
 exe 'hi! Structure'     .s:fg_aqua        .s:bg_none        .s:fmt_none       .s:cterm_none
 "		Typedef"
 
-exe 'hi! Special'       .s:fg_green       .s:bg_none        .s:fmt_none       .s:cterm_none
-exe 'hi! SpecialKey'    .s:fg_nontext     .s:bg_none        .s:fmt_none       .s:cterm_none
-exe 'hi! SpecialChar'   .s:fg_green       .s:bg_none        .s:fmt_none       .s:cterm_none
+exe 'hi! Special'       .s:fg_green       .s:bg_background        .s:fmt_none       .s:cterm_none
+exe 'hi! SpecialKey'    .s:fg_nontext     .s:bg_background        .s:fmt_none       .s:cterm_none
+exe 'hi! SpecialChar'   .s:fg_green       .s:bg_background        .s:fmt_none       .s:cterm_none
 "		SpecialChar"
 "		Tag"
 "		Delimiter"
 "		SpecialComment"
 "		Debug"
-"
+
 exe 'hi! Underlined'    .s:fg_blue        .s:bg_none        .s:fmt_none       .s:cterm_none
 
 exe 'hi! Ignore'        .s:fg_none        .s:bg_none        .s:fmt_none       .s:cterm_none
@@ -334,9 +311,7 @@ exe 'hi! qfLineNr'      .s:fg_yellow      .s:bg_none        .s:fmt_none       .s
 "   qfLineNr"
 "   qfError"
 
-"}}}
-
-" Diff Syntax Highlighting:"{{{
+" Diff Syntax Highlighting:
 " ----------------------------------------------------------------------------
 " Diff
 "		diffOldFile
@@ -356,10 +331,7 @@ hi! link diffAdded Special
 "		diffSubname
 "		diffComment
 
-"}}}
-
-
-" Vim Highlighting: (see :help highlight-groups)"{{{
+" Vim Highlighting: (see :help highlight-groups)
 " ----------------------------------------------------------------------------
 " ColorColumn
 " Conceal

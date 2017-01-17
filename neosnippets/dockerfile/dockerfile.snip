@@ -12,4 +12,25 @@ abbr        ARG ${1} ENV ${1}=${2:-${1}}
 snippet CMD
 	CMD ["${1:#:command}"]
 
+snippet apt-get
+	set -eux \
+		&& apt-get update \
+		&& apt-get install -y --no-install-recommends \
+			${0} \
+		&& rm -rf /var/lib/apt/lists/*
+
+snippet  no-install-recommends
+	--no-install-recommends ${0}
+
+snippet  no-install-suggests
+	--no-install-suggests ${0}
+
+snippet APT::Get::Install-Recommends=false
+	APT::Get::Install-Recommends "false"; >> /etc/apt/apt.conf \
+		&& ${0}
+
+snippet APT::Get::Install-Suggests=false
+	APT::Get::Install-Suggests "false"; >> /etc/apt/apt.conf \
+		&& ${0}
+
 # vim:ft=neosnippet

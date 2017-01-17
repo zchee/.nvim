@@ -306,6 +306,7 @@ if dein#load_state(s:dein_cache)
   call dein#add('Shougo/deoplete.nvim', {'hook_add': "call NewDeoplete()"})
   "" Deopleet Suorces:
   call dein#add('mhartington/deoplete-typescript', {'on_i': 1, 'on_ft': ['typescript', 'tsx', 'typescript.tsx']})
+  call dein#add('mitsuse/autocomplete-swift')
   call dein#add('Shougo/neco-vim', {'on_i': 1, 'on_ft': 'vim', 'on_source': ['deoplete.nvim']})
   call dein#add('Shougo/neopairs.vim', {'on_event': 'InsertCharPre', 'hook_add': 'let g:neopairs#enable = 1'})
   call dein#add('Shougo/neoinclude.vim', {'on_i': 1, 'on_ft': ['c', 'cpp', 'objc', 'objcpp']})
@@ -1554,6 +1555,9 @@ imap <expr><C-k> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expan
 "" Go:
 Gautocmdft go inoremap <buffer> "    '
 Gautocmdft go inoremap <buffer> '    "
+
+"" Swift:
+Gautocmdft swift imap <buffer><C-k>  <Plug>(autocomplete_swift_jump_to_placeholder)
 
 " -------------------------------------------------------------------------------------------------
 " Visual Select: (v)

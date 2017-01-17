@@ -22,6 +22,7 @@ let g:did_load_filetypes_userafter = 1
 
 augroup filetypedetect
   autocmd! BufNewFile,BufRead *.asm                      setlocal filetype=masm syntax=masm
+  autocmd! BufNewFile,BufRead *.clang-format             setlocal filetype=yaml
   autocmd! BufNewFile,BufRead *.conf                     setlocal filetype=conf
   autocmd! BufNewFile,BufRead *[Dd]ockerfile\(.vim\)\@!* setlocal filetype=dockerfile
   autocmd! BufNewFile,BufRead *[Dd]oxyfile\(.vim\)\@!*   setlocal filetype=doxyfile
@@ -36,7 +37,7 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead *.slide                    setlocal filetype=slide
   autocmd! BufNewFile,BufRead *.[sS]                     setlocal filetype=gas  syntax=ia64
   autocmd! BufNewFile,BufRead *.swig                     setlocal filetype=swig
-  autocmd! BufNewFile,BufRead *.swigxx                   setlocal filetype=swig
+  autocmd! BufNewFile,BufRead *.swigcxx                  setlocal filetype=swig
 
   autocmd! BufNewFile,BufRead **/c++/**/* setlocal filetype=cpp
   autocmd! BufNewFile,BufRead **/zsh/**/* setlocal filetype=zsh

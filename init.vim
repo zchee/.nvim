@@ -335,8 +335,9 @@ if dein#load_state(s:dein_cache)
 
   " Git:
   call dein#add('airblade/vim-gitgutter')
+  call dein#add('lambdalisue/vim-gita', {'on_cmd': 'Gita'})
   call dein#add('lambdalisue/gina.vim', {'on_cmd': 'Gina'})
-  " call dein#add('rhysd/committia.vim', {'on_ft': 'gitcommit'})
+  call dein#add('rhysd/committia.vim')
 
 
   " References:

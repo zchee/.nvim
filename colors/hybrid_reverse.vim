@@ -256,7 +256,7 @@ exe 'hi! TermCursorNC'  .s:fg_yellow      .s:bg_black       .s:fmt_none       .s
 " Generic Syntax Highlighting: (see :help group-name)
 
 exe 'hi! Normal'        .s:fg_foreground  .s:bg_background  .s:fmt_none       .s:cterm_none
-exe 'hi! NonText'       .s:fg_nontext     .s:bg_background  .s:fmt_none       .s:cterm_none
+exe 'hi! NonText'       .s:fg_nontext     .s:bg_none        .s:fmt_none       .s:cterm_none
 
 exe 'hi! Comment'       .s:fg_comment     .s:bg_none        .s:fmt_none       .s:cterm_none
 

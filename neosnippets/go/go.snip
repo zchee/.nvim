@@ -54,18 +54,21 @@ abbr for ... { ... }
 	for ${1} {
 		${0}
 	}
+
 # for integer loop
 snippet fori
 abbr for 0..N-1 { ... }
 	for ${1:i} := 0; $1 < ${2:N}; $1++ {
 		${0}
 	}
+
 # for range loop with blank
 snippet forn
 abbr for _, v := range items { ... }
 	for _, ${2:v} := range ${1} {
 		${0}
 	}
+
 # for range loop
 snippet forr
 abbr for k, v := range items { ... }
@@ -73,21 +76,21 @@ abbr for k, v := range items { ... }
 		${0}
 	}
 
+# runtime.Callers -------------------------------------------------------------
+snippet caller
+abbr log.Println(runtime.Caller(...))
+	log.Println(runtime.Caller(${1:1}))${0}
+
 
 # Pretty Print ---------------------------------------------------------------
-# use "github.com/davecgh/go-spew/spew"
+# Use "github.com/davecgh/go-spew/spew"
 snippet     fs
-abbr        Spew.Fdump(...)
+abbr        log.Printf("$1: %+v", spew.Sdump(...))
 	log.Printf("$1:\n%+v\n", spew.Sdump(${1}))${0}
-snippet     fd
-abbr        Spew.Fdump(...)
-	log.Printf("\x1b[34;40m$1\x1b[0m:\n%+v\n", dump.Sdump(${1}))${0}
+
+# Use "github.com/k0kubun/pp"
 snippet     fp
-abbr        pdebug.Printf(...)
-	pdebug.Printf("\x1b[34;40m$1\x1b[0m:\n%+v\n", ${1})${0}
-# use "github.com/k0kubun/pp"
-snippet     fpp
-abbr        pp.Fprintln(...)
+abbr        log.Printf("$1: %+v", pp.Sprintln(...))
 	log.Printf("$1\n: %+v\n", pp.Sprintln(${1}))${0}
 
 
@@ -96,28 +99,30 @@ abbr        pp.Fprintln(...)
 snippet     ff
 abbr        fmt.Printf(...)
 	fmt.Printf("$1: %+v\n", ${1})
+
 snippet     fn
 abbr        fmt.Println(...)
 	fmt.Println(${1})
 
 # log print debug
 snippet     lf
-abbr        log.Printf("%+v", ...)
-	log.Printf("$1: %+v\n", ${1})
+abbr        log.Printf("$1: %T, %+v", ..., $1)
+	log.Printf("$1: %T => %+v\n", ${1}, $1)${0}
+
 snippet     ln
 abbr        log.Println(...)
 	log.Println(${1})
 
 # Output log and return
 snippet     lr
-abbr        log.Printf("%+v", ...); return nil
-	log.Printf("$1: %+v\n", ${1})
+abbr        log.Printf("$1: %T, %+v", ..., $1); return nil
+	log.Printf("$1: %T => %+v\n", ${1}, $1)
 	return nil${0}
 
 # test println
 snippet     test
-abbr        log.Print("test")
-	log.Print("test")${0}
+abbr        log.Println("========== test ==========")${0}
+	log.Println("========== test ==========")
 
 
 # Error Handling -------------------------------------------------------------
@@ -166,7 +171,7 @@ abbr fset := token.NewFileSet()
 	}${0}
 
 
-# os.TempDir()
+# os.TempDir() and ioutil.TempFile
 snippet tempfile
 abbr filepath.Join(os.TempDir(), ...)
 	filepath.Join(os.TempDir(), "${1:#:prefix string}")

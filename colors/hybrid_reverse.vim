@@ -203,7 +203,7 @@ exe 'let s:cterm_none      = " ctermfg=NONE ctermbg=NONE cterm=NONE"'
 " ----------------------------------------------------------------------------
 " Set Highlighting:
 
-exe 'hi! ColorColumn'   .s:fg_white       .s:bg_black       .s:fmt_none       .s:cterm_none
+exe 'hi! ColorColumn'   .s:fg_none        .s:bg_black       .s:fmt_none       .s:cterm_none
 exe 'hi! Conceal'       .s:fg_none        .s:bg_line        .s:fmt_none       .s:cterm_none
 exe 'hi! Cursor'        .s:fg_white       .s:bg_red         .s:fmt_none       .s:cterm_none
 exe 'hi! lCursor'       .s:fg_white       .s:bg_red         .s:fmt_none       .s:cterm_none
@@ -289,10 +289,9 @@ exe 'hi! Type'          .s:fg_orange      .s:bg_none        .s:fg_bold        .s
 exe 'hi! Structure'     .s:fg_aqua        .s:bg_none        .s:fmt_none       .s:cterm_none
 "		Typedef"
 
-exe 'hi! Special'       .s:fg_green       .s:bg_background        .s:fmt_none       .s:cterm_none
-exe 'hi! SpecialKey'    .s:fg_nontext     .s:bg_background        .s:fmt_none       .s:cterm_none
-exe 'hi! SpecialChar'   .s:fg_green       .s:bg_background        .s:fmt_none       .s:cterm_none
-"		SpecialChar"
+exe 'hi! Special'       .s:fg_green       .s:bg_none        .s:fmt_none       .s:cterm_none
+exe 'hi! SpecialKey'    .s:fg_nontext     .s:bg_none        .s:fmt_none       .s:cterm_none
+exe 'hi! SpecialChar'   .s:fg_green       .s:bg_none        .s:fmt_none       .s:cterm_none
 "		Tag"
 "		Delimiter"
 "		SpecialComment"

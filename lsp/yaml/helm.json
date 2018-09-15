@@ -1,0 +1,29 @@
+{
+    "http": {
+        "proxyStrictSSL": true
+    },
+    "yaml": {
+        "format": {
+            "enable": false
+        },
+        "schemas": {
+            "file:///Users/zchee/.config/nvim/lsp/yaml/schema/swagger-2.0.json": [
+                "*swagger.yaml",
+                "*swagger.yml"
+            ],
+            "http://json.schemastore.org/swagger-2.0": [
+                "*swagger.yaml",
+                "*swagger.yml"
+            ],
+            "http://json.schemastore.org/travis": [
+                ".travis.yml"
+            ],
+            "https://gist.githubusercontent.com/JPinkney/23789bcb0463bf04498014ad30743013/raw/742ca9e63415ddc2e77832ae353738dae37d0ffa/circleci.json": [
+                "circleci.yml"
+            ],
+            "kubernetes": "globPattern",
+            "url": "globPattern"
+        },
+        "validate": true
+    }
+}

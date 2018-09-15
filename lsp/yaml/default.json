@@ -1,0 +1,14 @@
+{
+    "http": {
+        "proxyStrictSSL": true
+    },
+    "yaml": {
+        "format": {
+            "enable": true
+        },
+        "schemas": {
+            "url": "globPattern"
+        },
+        "validate": true
+    }
+}

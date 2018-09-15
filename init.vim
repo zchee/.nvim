@@ -332,7 +332,6 @@ if dein#load_state(s:dein_cache_dir)
   
   "" Go:
   call dein#add('fatih/vim-go', { 'lazy': 1 })
-  " call dein#add('fatih/vim-go', { 'on_ft': ['go'] })
   call dein#add('tweekmonster/hl-goimport.vim', { 'on_ft': ['go'] })
   call dein#add('zchee/vim-go-slide')
   call dein#add('rhysd/vim-goyacc')
@@ -399,6 +398,10 @@ if dein#load_state(s:dein_cache_dir)
   
   "" Json:
   call dein#add('elzr/vim-json')
+
+  "" JsonSchema:
+  call dein#add('Quramy/vison')
+  call dein#add('Quramy/vim-json-schema-nav')
 
   "" GraphQL:
   call dein#add('jparise/vim-graphql')
@@ -1146,6 +1149,11 @@ let g:caw_operator_keymappings = 0
 
 " Airline:
 let g:airline#extensions#ale#enabled = 1
+let g:airline#extensions#ale#error_symbol = 'E:'
+let g:airline#extensions#ale#warning_symbol = 'W:'
+let g:airline#extensions#ale#show_line_numbers = 1
+let g:airline#extensions#ale#open_lnum_symbol = '(L'
+let g:airline#extensions#ale#close_lnum_symbol = ')'
 let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#branch#custom_head = 'gina#component#repo#branch'
 let g:airline#extensions#hunks#enabled = 0
@@ -1165,6 +1173,12 @@ let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
 let g:airline#extensions#tabline#tab_nr_type = 2
 let g:airline#extensions#tabline#tabs_label = 't'
 let g:airline#extensions#tagbar#enabled = 0
+let g:airline#extensions#languageclient#enabled = 1
+" let g:airline#extensions#languageclient#error_symbol = 'E:'
+" let g:airline#extensions#languageclient#warning_symbol = 'W:'
+" let g:airline#extensions#languageclient#show_line_numbers = 1
+" let g:airline#extensions#languageclient#open_lnum_symbol = '(L'
+" let g:airline#extensions#languageclient#close_lnum_symbol = ')'
 let g:airline#extensions#whitespace#mixed_indent_algo = 2
 let g:airline#extensions#wordcount#enabled = 0
 let g:airline_exclude_filetypes = ['fzf']
@@ -1173,8 +1187,9 @@ let g:airline_inactive_collapse = 0
 let g:airline_powerline_fonts = 1
 let g:airline_skip_empty_sections = 1
 let g:airline_theme = 'hybridline'
-let g:airline_section_c = airline#section#create(['%<', 'readonly', 'path'])
-
+if dein#source('vim-airline')
+  let g:airline_section_c = airline#section#create(['%<', 'readonly', 'path'])
+endif
 
 " GitGutter:
 let g:gitgutter_async = 1

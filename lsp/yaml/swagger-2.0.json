@@ -7,7 +7,7 @@
             "enable": true
         },
         "schemas": {
-            "file:///Users/zchee/.config/nvim/lsp/yaml/schema/swagger-2.0.json": "/*"
+            "file:///Users/zchee/.config/nvim/lsp/yaml/schema/swagger-2.0.jsonschema": "/*"
         },
         "validate": true
     }

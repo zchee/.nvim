@@ -7,7 +7,7 @@
             "enable": false
         },
         "schemas": {
-            "file:///Users/zchee/.config/nvim/lsp/yaml/schema/swagger-2.0.json": [
+            "file:///Users/zchee/.config/nvim/lsp/yaml/schema/swagger-2.0.jsonschema": [
                 "*swagger.yaml",
                 "*swagger.yml"
             ],
@@ -18,7 +18,7 @@
             "http://json.schemastore.org/travis": [
                 ".travis.yml"
             ],
-            "https://gist.githubusercontent.com/JPinkney/23789bcb0463bf04498014ad30743013/raw/742ca9e63415ddc2e77832ae353738dae37d0ffa/circleci.json": [
+            "https://gist.githubusercontent.com/JPinkney/23789bcb0463bf04498014ad30743013/raw/742ca9e63415ddc2e77832ae353738dae37d0ffa/circleci.jsonschema": [
                 "circleci.yml"
             ],
             "kubernetes": "globPattern",

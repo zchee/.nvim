@@ -7,7 +7,7 @@
             "enable": true
         },
         "schemas": {
-            "file:///Users/zchee/.config/nvim/lsp/yaml/schem/travis.json": "/*"
+            "file:///Users/zchee/.config/nvim/lsp/yaml/schem/travis.jsonschema": "/*"
         },
         "validate": true
     }

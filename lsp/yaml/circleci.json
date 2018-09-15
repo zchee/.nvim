@@ -7,7 +7,7 @@
             "enable": true
         },
         "schemas": {
-            "file:///Users/zchee/.config/nvim/lsp/yaml/schema/circleciconfig.json": "/*"
+            "file:///Users/zchee/.config/nvim/lsp/yaml/schema/circleciconfig.jsonschema": "/*"
         },
         "validate": true
     }

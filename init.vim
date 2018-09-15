@@ -401,7 +401,6 @@ if dein#load_state(s:dein_cache_dir)
 
   "" JsonSchema:
   call dein#add('Quramy/vison')
-  call dein#add('Quramy/vim-json-schema-nav')
 
   "" GraphQL:
   call dein#add('jparise/vim-graphql')

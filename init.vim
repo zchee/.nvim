@@ -315,7 +315,6 @@ if dein#load_state(s:dein_cache_dir)
   call dein#add('haya14busa/dein-command.vim', { 'on_cmd': ['Dein'] })
   call dein#add('haya14busa/vim-asterisk', { 'on_map': ['<Plug>'] })
   call dein#add('itchyny/vim-parenmatch')
-  call dein#add('jsfaint/gen_tags.vim', { 'on_cmd': ['GenCtags', 'EditExt', 'ClearCtags', 'GenGTAGS', 'ClearGTAGS'] })
   call dein#add('junegunn/vim-easy-align', {'on_map': '<Plug>'})
   call dein#add('mattn/benchvimrc-vim', { 'on_cmd': ['BenchVimrc'] })
   call dein#add('mattn/sonictemplate-vim', { 'on_cmd': ['Template'] })
@@ -324,7 +323,6 @@ if dein#load_state(s:dein_cache_dir)
   call dein#add('tyru/caw.vim', { 'on_map': ['<Plug>'] })
   call dein#add('tyru/open-browser-github.vim', { 'on_cmd': ['OpenGithubFile', 'OpenGithubIssue', 'OpenGithubPullReq'], 'depends': 'open-browser.vim' })
   call dein#add('tyru/open-browser.vim')
-  call dein#add('tpope/vim-obsession')
 
   " Lifelog:
   call dein#add('wakatime/vim-wakatime')
@@ -392,8 +390,9 @@ if dein#load_state(s:dein_cache_dir)
   
   "" Shell:
   call dein#add('chrisbra/vim-sh-indent')
-  
-  "" Ansible:
+
+  "" Yaml:
+  call dein#add('stephpy/vim-yaml')
   
   "" Toml:
   call dein#add('cespare/vim-toml')
@@ -411,6 +410,7 @@ if dein#load_state(s:dein_cache_dir)
   call dein#add('hashivim/vim-terraform')
 
   "" Protobuf:
+  call dein#add('uarun/vim-protobuf')
   call dein#add('uber/prototool', {'rtp': 'vim/prototool'} )
   
   "" TinyScheme:  for macOS sandbox-exec profile *.sb tinyscheme filetype
@@ -424,16 +424,15 @@ if dein#load_state(s:dein_cache_dir)
   " call dein#add('xolox/vim-lua-ftplugin', { 'on_ft': ['lua'] })
   " call dein#add('racer-rust/vim-racer')
   " call dein#add('rhysd/rust-doc.vim', { 'on_ft': ['rust'] })
-  " call dein#add('moorereason/vim-markdownfmt', { 'on_ft': ['markdown'] })
   " call dein#add('b4b4r07/vim-ansible-vault')
   " call dein#add('rhysd/vim-gfm-syntax', { 'on_ft': ['markdown'] })
   " call dein#add('juliosueiras/vim-terraform-completion')
   " call dein#local(s:srcpath, { 'frozen': 1, 'merged': 0, 'on_ft': ['c', 'cpp', 'objc', 'objcpp', 'typescript'] }, ['Valloric/YouCompleteMe'])
   " call dein#add('b4b4r07/vim-crowi', {'on_cmd': 'CrowiCreate'})
   " call dein#add('cocopon/pgmnt.vim', { 'on_cmd': ['PgmntDevInspect'] })
-  " call dein#add('machakann/vim-vimhelplint', { 'on_cmd': ['Neomake'] })
   " call dein#add('sbdchd/neoformat')
   " call dein#add('leafgarland/typescript-vim')
+  " call dein#add('jsfaint/gen_tags.vim', { 'on_cmd': ['GenCtags', 'EditExt', 'ClearCtags', 'GenGTAGS', 'ClearGTAGS'] })
 
   call dein#end()
   call dein#save_state()

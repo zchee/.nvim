@@ -1,6 +1,3 @@
-" setlocal commentstring=\ \"%s
-" setlocal commentstring="\ %s
-setlocal foldmethod=marker
+setlocal colorcolumn=120
 setlocal iskeyword+=:,#
-setlocal tags=$HOME/.config/nvim/tags
-setlocal colorcolumn=99
+setlocal tags+=$HOME/.config/nvim/tags

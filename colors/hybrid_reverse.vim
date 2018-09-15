@@ -35,9 +35,7 @@
 " ----------------------------------------------------------------------------
 " Init:
 
-if !exists('g:enable_bold_font')
-    let g:enable_bold_font = 0
-endif
+let g:enable_bold_font = get(g:, 'enable_bold_font', 0)
 
 set background=dark
 hi clear
@@ -51,15 +49,15 @@ let g:colors_name = 'hybrid_reverse'
 " GUI And Cterm Palettes:"{{{
 
 let s:vmode      = 'gui'
-let s:background = '#0d1210' " #232c31
+let s:background = '#0d1310' " #0d1210, #232c31
 let s:foreground = '#c7c8c8'
 let s:selection  = '#343941' " #425059
 let s:line       = '#282a2e' " #2d3c46
-let s:comment    = '#79828a' " #6c7a80
+let s:comment    = '#878f96' " #79828a #6c7a80
 let s:nontext    = '#202122'
 
 let s:white      = '#ffffff'
-let s:black      = '#141516'
+let s:black      = '#27282b'
 let s:red        = '#cc6666'
 let s:orange     = '#de935f'
 let s:yellow     = '#f0c674'
@@ -161,7 +159,6 @@ exe 'let s:fg_darkpurple = " '.s:vmode.'fg='.s:darkpurple.'"'
 exe 'let s:fg_gray       = " '.s:vmode.'fg='.s:gray      .'"'
 exe 'let s:fg_cyan       = " '.s:vmode.'fg='.s:cyan      .'"'
 exe 'let s:fg_darkgray   = " '.s:vmode.'fg='.s:darkgray  .'"'
-exe 'let s:fg_darkgray   = " '.s:vmode.'fg='.s:darkgray  .'"'
 
 exe 'let s:fg_boolean    = " '.s:vmode.'fg='.s:boolean   .'"'
 
@@ -215,13 +212,13 @@ exe 'hi! DiffAdd'       .s:fg_addfg       .s:bg_addbg       .s:fmt_none       .s
 exe 'hi! DiffChange'    .s:fg_changefg    .s:bg_changebg    .s:fmt_none       .s:cterm_none
 exe 'hi! DiffDelete'    .s:fg_background  .s:bg_red         .s:fmt_none       .s:cterm_none
 exe 'hi! DiffText'      .s:fg_background  .s:bg_blue        .s:fmt_none       .s:cterm_none
-exe 'hi! ErrorMsg'      .s:fg_background  .s:bg_red         .s:fmt_standout   .s:cterm_none
+exe 'hi! ErrorMsg'      .s:fg_red         .s:bg_background  .s:fmt_standout   .s:cterm_none
 exe 'hi! VertSplit'     .s:fg_window      .s:bg_window      .s:fmt_none       .s:cterm_none
 exe 'hi! Folded'        .s:fg_comment     .s:bg_darkcolumn  .s:fmt_none       .s:cterm_none
 exe 'hi! FoldColumn'    .s:fg_none        .s:bg_background  .s:fmt_none       .s:cterm_none
 exe 'hi! SignColumn'    .s:fg_none        .s:bg_darkcolumn  .s:fmt_none       .s:cterm_none
 exe 'hi! Incsearch'     .s:fg_none        .s:yellow         .s:fmt_none       .s:cterm_none
-exe 'hi! LineNr'        .s:fg_selection   .s:bg_none        .s:fmt_none       .s:cterm_none
+exe 'hi! LineNr'        .s:fg_gray        .s:bg_none        .s:fmt_none       .s:cterm_none
 exe 'hi! CursorLineNr'  .s:fg_yellow      .s:bg_none        .s:fmt_bold       .s:cterm_none
 exe 'hi! MatchParen'    .s:fg_background  .s:bg_changebg    .s:fmt_none       .s:cterm_none
 exe 'hi! ModeMsg'       .s:fg_green       .s:bg_none        .s:fmt_none       .s:cterm_none

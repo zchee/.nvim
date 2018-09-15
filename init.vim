@@ -897,7 +897,7 @@ let g:deoplete#sources#clang#flags = [
       \ '-I/usr/include',
       \ '-F/System/Library/Frameworks',
       \ '-F/Library/Frameworks',
-      \ '-isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk',
+      \ '-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk',
       \ ] " echo | clang -v -E -x c -
 let g:deoplete#sources#clang#libclang_path = s:llvm_library_path . '/libclang.dylib'
 "" jedi

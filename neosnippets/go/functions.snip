@@ -9,3 +9,59 @@ abbr IsExist
 		return err == nil
 	}
 	${0}
+
+snippet Handler
+abbr http.Handler(http.HandlerFunc(...))
+	http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		${1:w.WriteHeader(http.StatusOK)}
+	}))
+	${0}
+
+snippet HandlerFunc
+abbr http.HandlerFunc(...)
+	http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		${1:w.WriteHeader(http.StatusOK)}
+	})
+	${0}
+
+# ------------------------------------------------------------------
+# runtime.Callers
+
+snippet     caller
+abbr        log.Println(runtime.Caller(...))
+	log.Println(runtime.Caller(${1:1}))${0}
+
+# ------------------------------------------------------------------
+# go/parser
+
+## fset
+snippet     fset
+abbr        fset := token.NewFileSet()
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, ${1:#:"fake.go"}, ${2:buf}, {3:parser.Mode(0)})
+	if err != nil {
+		return err
+	}${0}
+
+# ------------------------------------------------------------------
+# os
+
+## create tempfile
+snippet     tempfile
+abbr        filepath.Join(os.TempDir(), ...)
+	filepath.Join(os.TempDir(), "${1:#:prefix string}")
+
+# ------------------------------------------------------------------
+# cgo
+
+snippet     cfree
+abbr        defer C.free(unsafe.Pointer(...))
+	defer C.free(unsafe.Pointer(${1}))
+
+# ------------------------------------------------------------------
+# miscellaneous
+
+## tabwriter
+snippet     tw
+abbr        tw := tabwriter.NewWriter(...)
+	tw := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', tabwriter.TabIndent)${0}

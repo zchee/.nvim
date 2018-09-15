@@ -7,7 +7,6 @@ abbr BSD Owner
 	`substitute(&commentstring, '%s', '', 'g')`Copyright `strftime("%Y")` ${1:`get(g:, 'snips_author', 0) != 'yourname' ? g:snips_author : "The Go Authors"`}. All rights reserved.
 	`substitute(&commentstring, '%s', '', 'g')`Use of this source code is governed by a BSD-style
 	`substitute(&commentstring, '%s', '', 'g')`license that can be found in the LICENSE file.
-
 	${0}
 
 # BSD Go Authors
@@ -16,16 +15,17 @@ abbr BSD Go Authors
 	`substitute(&commentstring, '%s', '', 'g')`Copyright `strftime("%Y")` The Go Authors. All rights reserved.
 	`substitute(&commentstring, '%s', '', 'g')`Use of this source code is governed by a BSD-style
 	`substitute(&commentstring, '%s', '', 'g')`license that can be found in the LICENSE file.
-
 	${0}
 
 # ------------------------------------------------------------------
 # TODO, WIP
 
 snippet     todo
+abbr				TODO($USER): ...
 options     word
 	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): ${0}
 
 snippet     wip
+abbr				WIP($USER): ...
 options     word
 	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): WIP${0}

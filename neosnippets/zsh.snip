@@ -1,0 +1,83 @@
+# ----------------------------------------------------------------------------
+# general
+
+snippet     devnull
+abbr        > /dev/null 2>&1
+	> /dev/null 2>&1${0}
+
+snippet     commands
+abbr        (( $+commands[...] ))
+	(( $+commands[${1:#:command}] )) ${0}
+
+# ----------------------------------------------------------------------------
+# compdef
+
+snippet     compdef-function
+abbr        function _${1}() {...}
+	function _${1:#:command}() {
+		local context curcontext=$curcontext state line ret=1
+		declare -A opt_args
+
+		${0}
+	}
+
+snippet     compdef-local
+abbr        local -a ...
+	local -a ${1:#:command}
+	$1=(
+	'${2:#:sub-command}:${3:#:description}'
+	)
+
+snippet     compdef-arguments-C
+abbr        _arguments -C ...
+	_arguments -C \
+		"1: :{_describe '${1:#:command} command' commands}" \
+		'*:: :->args' \
+		&& ret=0
+		${0}
+
+snippet     compdef-arguments
+abbr        _arguments ...
+	_arguments \
+		'${1}[${2}]' \
+		${0}
+
+snippet     compdef-command
+abbr        ${1}) _arguments ...
+	${1})
+				_arguments \
+					'${2}'
+				;;${0}
+
+snippet     compdef-case-words
+abbr        case $word[1] in ... esac
+  case $words[1] in
+		${0}
+  esac
+
+snippet     compdef-go-packages
+abbr        _go_packages() {...}
+	_go_packages() {
+		local gopaths
+		declare -a gopaths
+		gopaths=("${(s/:/)$(go env GOPATH)}")
+		for p in $gopaths; do
+			_alternative ':go packages:_path_files -W "$p/src" -/'
+		done
+	}${0}
+
+snippet     compdef-return
+abbr        return ret
+	return ret${0}
+
+snippet     compdef-comment
+abbr        # comment
+	#
+	${1:#:help}
+	#
+	# -----------------------------------------------------------------------------
+
+snippet if
+	if ${1:#:condition}
+	  ${2:TARGET}
+	endif

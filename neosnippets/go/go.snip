@@ -5,188 +5,237 @@ include go/vim-go.snip
 # ------------------------------------------------------------------
 # Built-in
 
-# nil --------------------------------------------------------------
-# return nil shorthand
+## package
+snippet     package
+abbr        package ...
+	package `expand('%:p:h:t')`${0}
+
+## struct
+snippet     struct
+abbr        struct {...}
+	struct {
+		${0}
+	}
+
+## return nil shorthand
 snippet     retnil
 alias       rn
 abbr        return nil
 	return nil${0}
-# nil shorthand
+
+## nil shorthand
 snippet     nil
 alias       ni
 abbr        nil
 	nil ${0}
 
-# add token.EQL operator
+## add token.EQL operator
 snippet     is
 alias       is
 abbr        is
 	== ${0}
 
-# add token.NEQ operator
+## add token.NEQ operator
 snippet     not
 alias       no
 abbr        not
 	!= ${0}
 
-# add token.EQL operator nad nil
+## add token.EQL operator nad nil
 snippet     isnil
 abbr        isni
 	== nil {
 		${0}
 	}
 
-# add token.NEQ operator nad nil
+## add token.NEQ operator nad nil
 snippet     notnil
 abbr        noni
 	!= nil {
 		${0}
 	}
 
-snippet     er
-abbr        error
-	error${0}
+# ------------------------------------------------------------------
+# for loop
 
-
-# for loop ---------------------------------------------------------
-snippet for
-abbr for ... { ... }
+snippet     for
+abbr        for ... { ... }
 	for ${1} {
 		${0}
 	}
 
 # for integer loop
-snippet fori
-abbr for 0..N-1 { ... }
+snippet     fori
+abbr        for 0..N-1 { ... }
 	for ${1:i} := 0; $1 < ${2:N}; $1++ {
 		${0}
 	}
 
 # for range loop with blank
-snippet forn
-abbr for _, v := range items { ... }
+snippet     forn
+abbr        for _, v := range items { ... }
 	for _, ${2:v} := range ${1} {
 		${0}
 	}
 
 # for range loop
-snippet forr
-abbr for k, v := range items { ... }
+snippet     forr
+abbr        for k, v := range items { ... }
 	for ${2:k}, ${3:v} := range ${1} {
 		${0}
 	}
 
-# runtime.Callers -------------------------------------------------------------
-snippet caller
-abbr log.Println(runtime.Caller(...))
-	log.Println(runtime.Caller(${1:1}))${0}
+# ------------------------------------------------------------------
+# fmt
 
+snippet     ff
+abbr        fmt.Printf(...)
+	fmt.Printf("$1: %#v\n", ${1})${0}
 
-# Pretty Print ---------------------------------------------------------------
+snippet     fl
+abbr        fmt.Println(...)
+	fmt.Println(${1})${0}
+
+snippet     ft
+abbr        fmt.Printf("$1: %T = %v\n", $1)
+	fmt.Printf("$1: %T = %#v\n", ${1}, $1)${0}
+
 # Use "github.com/davecgh/go-spew/spew"
-snippet     fs
-abbr        log.Printf("$1: %+v", spew.Sdump(...))
-	log.Printf("$1:\n%+v\n", spew.Sdump(${1}))${0}
+snippet     fd
+abbr        fmt.Printf("$1: %+s", spew.Sdump(...))
+	fmt.Printf("$1: %+s\n", spew.Sdump(${1}))${0}
 
 # Use "github.com/k0kubun/pp"
 snippet     fp
-abbr        log.Printf("$1: %+v", pp.Sprintln(...))
-	log.Printf("$1\n: %+v\n", pp.Sprintln(${1}))${0}
+abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
+	fmt.Printf("$1: %+s\n", pp.Sprintln(${1}))${0}
 
+snippet     fdiff
+abbr        cmp.Diff; fmt.Printf("(-got, +want)\n%s\n", diff)
+	if diff := cmp.Diff(${1}, ${2}); diff != "" {
+		fmt.Printf("(-got, +want)\n%s\n", diff)
+	}
 
-# Print debug ----------------------------------------------------------------
-# fmt print debug
-snippet     ff
-abbr        fmt.Printf(...)
-	fmt.Printf("$1: %+v\n", ${1})
+# ------------------------------------------------------------------
+# testing
 
-snippet     fn
-abbr        fmt.Println(...)
-	fmt.Println(${1})
+snippet     tf
+abbr        t.Logf(...)
+	t.Logf("$1: %v", ${1})${0}
 
-# log print debug
+snippet     tl
+abbr        t.Log
+	t.Log(${1})${0}
+
+snippet     tt
+abbr        t.Logf("%T = %v", ...)
+	t.Logf("$1: %T = %v", ${1}, $1)${0}
+
+# Use "github.com/davecgh/go-spew/spew"
+snippet     td
+abbr        t.Logf("$1: %+s", spew.Sdump(...))
+	t.Logf("$1: %+s", spew.Sdump(${1}))${0}
+
+# Use "github.com/k0kubun/pp"
+snippet     tp
+abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
+	t.Logf("$1: %+s\n", pp.Sprintln(${1}))${0}
+
+snippet     tgotwant
+abbr        t.Fatalf("got %v, want %v", ...)
+	if got, want := ${1}, ${2}; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	${0}
+
+snippet     tdiff
+abbr        cmp.Diff; t.Fatalf("(-got, +want)\n%s\n", diff)
+	if diff := cmp.Diff(${1}, ${2}); diff != "" {
+		t.Fatalf("(-got, +want)\n%s\n", diff)
+	}
+
+# ------------------------------------------------------------------
+# log
+
+# printf
 snippet     lf
-abbr        log.Printf("$1: %T, %+v", ..., $1)
-	log.Printf("$1: %T => %+v\n", ${1}, $1)${0}
+abbr        log.Printf("$1: %T, %v", $1)
+	log.Printf("$1: %T => %v\n", ${1}, $1)${0}
 
-snippet     ln
+# println
+snippet     ll
 abbr        log.Println(...)
 	log.Println(${1})
 
-# Output log and return
-snippet     lr
-abbr        log.Printf("$1: %T, %+v", ..., $1); return nil
-	log.Printf("$1: %T => %+v\n", ${1}, $1)
-	return nil${0}
+# Use "github.com/davecgh/go-spew/spew"
+snippet     ld
+abbr        log.Printf("$1: %v", spew.Sdump(...))
+	log.Printf("$1: %v\n", spew.Sdump(${1}))${0}
 
-# test println
+# debuf debug
+snippet     ldf
+abbr        log.Debugf("$1: %T, %v", $1)
+	log.Debugf("$1: %T => %v\n", ${1}, $1)${0}
+
+# log.Println 'test'
 snippet     test
-abbr        log.Println("========== test ==========")${0}
-	log.Println("========== test ==========")
+abbr        log.Println("test")${0}
+	log.Println("test")
 
+# ------------------------------------------------------------------
+# log/appengine
 
-# Error Handling -------------------------------------------------------------
+## log for appengine on info
+snippet     lai
+abbr        log.Info(ctx, "$1: %T, %v", $1)
+	log.Info(ctx, "$1: %T => %v\n", ${1}, spew.Sdump($1))${0}
+
+snippet     lad
+abbr        log.Debugf(ctx, "$1: %T, %v", $1)
+	log.Debugf(ctx, "$1: %T => %v\n", ${1}, $1)${0}
+
+## log for appengine on debug with spew.Sdump
+snippet     ladump
+abbr        log.Debugf(ctx, "$1: %T, %v", $1)
+	log.Debugf(ctx, "$1: %T => %v\n", ${1}, spew.Sdump($1))${0}
+
+# ------------------------------------------------------------------
+# error handling
+
 # error handling for 'nil' with define the 'err' internally.
 # (if) (e)rror != (n)il
-snippet ifen
-abbr if err != nil
+snippet     ifen
+abbr        if err != nil
 	if err != nil {
 		${1:return err}
 	}${0}
 
 # error handling for any function result with define the 'err' internally.
 # (if) (e)rror != (f)n()
-snippet ifef
-abbr if err := fn(...); err != (...)
+snippet     ifef
+abbr        if err := fn(...); err != (...)
 	if err := ${1:#:func}; err != ${2:nil} {
 		${3:return err}
 	}${0}
 
 # error handling after the internal definition of 'err'.
 # (e)rror != (f)n() (a)fter
-snippet efa
-abbr err != nil {return err}
+snippet     efa
+abbr        err != nil {return err}
 	; err != nil {
 		${1:return err}
 	}${0}
 
 # error handling for void(no return value) function.
 # (e)rr := (f)n()
-snippet ef
-abbr err := fn(...)
+snippet     ef
+abbr        err := fn(...)
 	err := ${1:#:func}
 	if err != ${2:nil} {
 		${3:return err}
 	}${0}
 
-
-# go/parser
-# fset
-snippet fset
-abbr fset := token.NewFileSet()
-	fset := token.NewFileSet()
-	f, err := parser.ParseFile(fset, ${1:#:"fake.go"}, ${2:buf}, {3:parser.Mode(0)})
-	if err != nil {
-		return err
-	}${0}
-
-
-# os.TempDir() and ioutil.TempFile
-snippet tempfile
-abbr filepath.Join(os.TempDir(), ...)
-	filepath.Join(os.TempDir(), "${1:#:prefix string}")
-
-
-# neovim-go/msgpack tag
-snippet msgpacktag
-abbr msgpack:",..."
-	   \`msgpack:",${1:array}"\`${0}
-
-
-# Port from vim-go -----------------------------------------------------------
-# package
-snippet package
-abbr package ...
-	package `expand('%:p:h:t')`${0}
-
-# vim:foldenable:foldmethod=marker
+## todo
+snippet     todoimplements
+abbr        TODO(...) implements...
+	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): implements${0}

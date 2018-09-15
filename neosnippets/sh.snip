@@ -1,4 +1,26 @@
-snippet     2>/dev/null
-abbr        2>/dev/null
-alias       devnull
-	2>/dev/null
+snippet     strict
+abbr        strict
+	set -euo pipefail
+	IFS=$'\n\t'${0}
+
+snippet     devnull
+abbr        > /dev/null 2>&1
+	> /dev/null 2>&1${0}
+
+snippet     env
+abbr        #!/usr/bin/env ${...}
+	#!/usr/bin/env ${1}
+	${0}
+
+snippet     env-bash
+abbr        #!/usr/bin/env bash
+	#!/usr/bin/env bash
+	${0}
+
+snippet     check-command
+abbr        command -v ${1} && echo '...'
+	command -v ${1} >/dev/null 2>&1 || { echo "[ERROR] $1 command not installed"; exit 1; }
+
+snippet     err
+abbr        echo '[ERROR] ...'
+	|| { echo "[ERROR] ${1}"; exit 1; }

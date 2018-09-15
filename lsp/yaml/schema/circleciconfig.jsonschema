@@ -1,7 +1,6 @@
 {
     "title": "JSON schema for CircleCI configuration files",
     "$schema": "http://json-schema.org/draft-04/schema#",
-
     "definitions": {
         "runStep": {
             "oneOf": [
@@ -99,7 +98,6 @@
             }
         }
     },
-
     "type": "object",
     "required": ["version"],
     "properties": {

@@ -35,25 +35,23 @@
 " ----------------------------------------------------------------------------
 " Init:
 
-let g:enable_bold_font = get(g:, 'enable_bold_font', 0)
-
-set background=dark
+" set background=dark
 hi clear
 if exists('syntax_on')
   syntax reset
 endif
 
-let g:colors_name = 'hybrid_reverse'
+let g:colors_name = 'hybrid'
 
 " ----------------------------------------------------------------------------
 " GUI And Cterm Palettes:"{{{
 
 let s:vmode      = 'gui'
-let s:background = '#0d1310' " #0d1210, #232c31
+let s:background = '#0a0a0a'  " #0d1210, #232c31
 let s:foreground = '#c7c8c8'
-let s:selection  = '#343941' " #425059
-let s:line       = '#282a2e' " #2d3c46
-let s:comment    = '#878f96' " #79828a #6c7a80
+let s:selection  = '#343941'  " #425059
+let s:line       = '#282a2e'  " #2d3c46
+let s:comment    = '#878f96'  " #79828a, #6c7a80
 let s:nontext    = '#202122'
 
 let s:white      = '#ffffff'
@@ -188,13 +186,14 @@ exe 'let s:fmt_reverse_bold     = " '.s:vmode.'=NONE'.s:r.s:b.  '"'
 " ----------------------------------------------------------------------------
 " Set bold font depending on options:
 
-if g:enable_bold_font == 1
-  let s:fg_bold = s:fmt_bold
-else
-  let s:fg_bold = s:fmt_none
-endif
+" if g:enable_bold_font == 1
+"   let s:fg_bold = s:fmt_bold
+" else
+"   let s:fg_bold = s:fmt_none
+" endif
+let s:fg_bold = s:fmt_bold
 
-" Reset cterm color
+" reset cterm color
 exe 'let s:cterm_none      = " ctermfg=NONE ctermbg=NONE cterm=NONE"'
 
 " ----------------------------------------------------------------------------

@@ -35,7 +35,7 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead *.hla                     setlocal filetype=hla  syntax=header_standard_Vim_script_file_header
   autocmd! BufNewFile,BufRead *.i                       setlocal filetype=swig
   autocmd! BufNewFile,BufRead *.inc                     setlocal filetype=masm syntax=masm
-  autocmd! BufNewFile,BufRead *.jsonschema              setlocal filetype=json
+  autocmd! BufNewFile,BufRead *.jsonschema              setlocal filetype=jsonc shiftwidth=2 softtabstop=2 tabstop=2
   autocmd! BufNewFile,BufRead *.mm                      setlocal filetype=objcpp
   autocmd! BufNewFile,BufRead *.pbtxt                   setlocal filetype=proto
   autocmd! BufNewFile,BufRead *.py[xd]                  setlocal filetype=cython
@@ -43,27 +43,42 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead *.slide                   setlocal filetype=goslide
   autocmd! BufNewFile,BufRead *.tfstate                 setlocal filetype=teraterm
   autocmd! BufNewFile,BufRead *.ts                      setlocal filetype=typescript
+  autocmd! BufNewFile,BufRead *.vmoptions               setlocal filetype=conf
 
   " directories
   autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/gcloud/configurations/*          setlocal filetype=dosini
   autocmd! BufNewFile,BufRead s:srcpath . '/github.com/envoyproxy/envoy/**/*.h' setlocal filetype=cpp
 
   " filenames
-  autocmd! BufNewFile,BufRead **/.\(hal\|kube\)/config     setlocal filetype=yaml
-  autocmd! BufNewFile,BufRead [Dd]ockerfile,[Dd]ockerfile\(.vim\)\@!.*,*.[Dd]ockerfile setlocal filetype=dockerfile
-  autocmd! BufNewFile,BufRead *[Dd]ockerfile\(.vim\)\@!*   setlocal filetype=dockerfile
-  " autocmd! BufNewFile,BufRead *[Dd]oxyfile\(.vim\)\@!*     setlocal filetype=doxyfile
-  autocmd! BufNewFile,BufRead .bash_profile,bash_profile   setlocal filetype=sh
-  autocmd! BufNewFile,BufRead .clang-format                setlocal filetype=yaml
-  autocmd! BufNewFile,BufRead .yamllint                    setlocal filetype=yaml
-  autocmd! BufNewFile,BufRead .envrc                       setlocal filetype=sh
-  autocmd! BufNewFile,BufRead .pythonrc                    setlocal filetype=python
-  autocmd! BufNewFile,BufRead .tern-config                 setlocal filetype=json
-  autocmd! BufNewFile,BufRead gdbinit                      setlocal filetype=gdb
-  autocmd! BufNewFile,BufRead glide.lock                   setlocal filetype=yaml
-  autocmd! BufNewFile,BufRead go.\(mod\|sum\)              setlocal filetype=vgo
-  autocmd! BufNewFile,BufRead Gopkg.lock                   setlocal filetype=toml
-  autocmd! BufNewFile,BufRead manifest                     setlocal filetype=json
-  autocmd! BufNewFile,BufRead osquery.conf                 setlocal filetype=json
-  autocmd! BufNewFile,BufRead helmfile.yaml                setlocal filetype=yaml.helmfile
+  autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/gcloud/configurations/*   setlocal filetype=cfg
+  autocmd! BufNewFile,BufRead **/.\(hal\|kube\)/config                   setlocal filetype=yaml
+  autocmd! BufNewFile,BufRead **/google-cloud-sdk/properties             setlocal filetype=cfg
+  autocmd! BufNewFile,BufRead **/startup-log.txt                         setlocal foldlevel=1
+
+  " autocmd! BufNewFile,BufRead [Dd]ockerfile setlocal filetype=dockerfile
+  " autocmd! BufNewFile,BufRead [Dd]ockerfile\(\.|-\).* setlocal filetype=dockerfile
+  " autocmd! BufNewFile,BufRead *[Dd]ockerfile setlocal filetype=dockerfile
+  " autocmd! BufNewFile,BufRead *[Dd]ockerfile\(.vim\|*.yaml\)\@!.*,[Dd]ockerfile,*.[Dd]ockerfile setlocal filetype=dockerfile
+  " autocmd! BufNewFile,BufRead *[Dd]ockerfile\(.vim\)\@!*                 setlocal filetype=dockerfile
+
+  autocmd! BufNewFile,BufRead [Dd]ockerfile,.*\=[Dd]ockerfile\(\.|-\).*\(.vim\)\@!* setlocal filetype=dockerfile
+
+  autocmd! BufNewFile,BufRead *[Dd]oxyfile\(.vim\)\@!*                   setlocal filetype=doxyfile
+  autocmd! BufNewFile,BufRead .bash_profile,bash_profile                 setlocal filetype=sh
+  autocmd! BufNewFile,BufRead .clang-format                              setlocal filetype=yaml
+  autocmd! BufNewFile,BufRead .envrc                                     setlocal filetype=sh
+  autocmd! BufNewFile,BufRead .markdownlintrc                            setlocal filetype=json
+  autocmd! BufNewFile,BufRead .pythonrc                                  setlocal filetype=python
+  autocmd! BufNewFile,BufRead .tern-config                               setlocal filetype=json
+  autocmd! BufNewFile,BufRead .yamllint                                  setlocal filetype=yaml
+  autocmd! BufNewFile,BufRead boto,.boto                                 setlocal filetype=cfg
+  autocmd! BufNewFile,BufRead gdbinit                                    setlocal filetype=gdb
+  autocmd! BufNewFile,BufRead glide.lock                                 setlocal filetype=yaml
+  autocmd! BufNewFile,BufRead go.\(mod\|sum\)                            setlocal filetype=vgo
+  autocmd! BufNewFile,BufRead Gopkg.lock                                 setlocal filetype=toml
+  autocmd! BufNewFile,BufRead helmfile.yaml                              setlocal filetype=yaml.helmfile
+  autocmd! BufNewFile,BufRead manifest                                   setlocal filetype=json
+  autocmd! BufNewFile,BufRead osquery.conf                               setlocal filetype=json
+  autocmd! BufNewFile,BufRead proto.lock                                 setlocal filetype=json
+  autocmd! BufNewFile,BufRead .firebaserc                                setlocal filetype=json
 augroup END

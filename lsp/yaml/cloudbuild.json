@@ -10,7 +10,7 @@
         "hover": true,
         "completion": true,
         "schemas": {
-            "file:///Users/zchee/.config/nvim/lsp/yaml/schema/kubernetes.jsonschema": "/*"
+            "file:///Users/zchee/.config/nvim/lsp/yaml/schema/cloudbuild.jsonschema": "/*"
         }
     }
 }

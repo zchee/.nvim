@@ -1,14 +1,16 @@
 {
-    "http": {
-        "proxyStrictSSL": true
-    },
     "yaml": {
         "format": {
-            "enable": true
+            "enable": true,
+            "singleQuote": false,
+            "bracketSpacing": true,
+            "proseWrap": true
         },
+        "validate": true,
+        "hover": true,
+        "completion": true,
         "schemas": {
             "file:///Users/zchee/.config/nvim/lsp/yaml/schema/circleci.jsonschema": "/*"
-        },
-        "validate": true
+        }
     }
 }

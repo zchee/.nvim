@@ -1,0 +1,8 @@
+{
+    "completion": {
+        "completionItem": {
+            "deprecatedSupport": true,
+            "snippetSupport": false
+        }
+    }
+}

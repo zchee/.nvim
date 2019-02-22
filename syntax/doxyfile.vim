@@ -2,7 +2,6 @@ if exists('b:current_syntax')
   finish
 endif
 
-
 " syntax match DoxyfileVariableStart "/\v\=/" nextgroup=DoxyfileVariableContext
 syntax region DoxyfileVariableContext start="/\= "rs=e+2 end="\s*$" oneline
 " syntax region DoxyfileVariable start=/\v"\s*/ skip=/\v\\./ end=/\v"/

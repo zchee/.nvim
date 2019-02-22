@@ -1,6 +1,109 @@
 # include separate snip for go packages
 include go/functions.snip
-include go/vim-go.snip
+# include go/vim-go.snip
+
+# ------------------------------------------------------------------
+# Go pragmas
+
+## cmd/compile/internal/gc/lex.go
+
+snippet     pragma:go:nointerface
+abbr        //go:nointerface
+	//go:nointerface
+
+snippet     pragma:go:noescape
+abbr        //go:noescape
+	//go:noescape
+
+snippet     pragma:go:norace
+abbr        //go:norace
+	//go:norace
+
+snippet     pragma:go:nosplit
+abbr        //go:nosplit
+	//go:nosplit
+
+snippet     pragma:go:noinline
+abbr        //go:noinline
+	//go:noinline
+
+snippet     pragma:go:systemstack
+abbr        //go:systemstack
+	//go:systemstack
+
+snippet     pragma:go:nowritebarrier
+abbr        //go:nowritebarrier
+	//go:nowritebarrier
+
+snippet     pragma:go:nowritebarrierrec
+abbr        //go:nowritebarrierrec
+	//go:nowritebarrierrec
+
+snippet     pragma:go:yeswritebarrierrec
+abbr        //go:yeswritebarrierrec
+	//go:yeswritebarrierrec
+
+snippet     pragma:go:cgo_unsafe_args
+abbr        //go:cgo_unsafe_args
+	//go:cgo_unsafe_args
+
+snippet     pragma:go:uintptrescapes
+abbr        //go:uintptrescapes
+	//go:uintptrescapes
+
+snippet     pragma:go:notinheap
+abbr        //go:notinheap
+	//go:notinheap
+
+## src/cmd/compile/internal/gc/noder.go
+
+snippet     pragma:go:cgo_export_static
+abbr        //go:cgo_export_static
+	//go:cgo_export_static
+
+snippet     pragma:go:cgo_export_dynamic
+abbr        //go:cgo_export_dynamic
+	//go:cgo_export_dynamic
+
+snippet     pragma:go:cgo_import_static
+abbr        //go:cgo_import_static
+	//go:cgo_import_static
+
+snippet     pragma:go:cgo_import_dynamic
+abbr        //go:cgo_import_dynamic
+	//go:cgo_import_dynamic
+
+snippet     pragma:go:cgo_ldflag
+abbr        //go:cgo_ldflag
+	//go:cgo_ldflag
+
+snippet     pragma:go:cgo_dynamic_linker
+abbr        //go:cgo_dynamic_linker
+	//go:cgo_dynamic_linker
+
+snippet     pragma:go:generate
+abbr        //go:generate
+	//go:generate
+
+# ------------------------------------------------------------------
+# Go compiler time pragmas
+
+snippet     pragma:interface
+abbr        //pragma: compiler time checks ...
+	//pragma: compiler time checks whether the $2 implemented $1 interface.
+	var _ ${1:base} = (*${2:type})(nil)
+
+snippet     pragma:stringer
+abbr        // String implements fmt.Stringer.
+	// String implements fmt.Stringer.
+	func(i ${1}) String() string {
+		switch i {
+		case ${2}:
+			return "$2"
+		default:
+			return "$1(" + strconv.FormatInt(int64(i), 10) + ")"
+		}
+	}
 
 # ------------------------------------------------------------------
 # Built-in
@@ -94,21 +197,21 @@ abbr        fmt.Printf(...)
 
 snippet     fl
 abbr        fmt.Println(...)
-	fmt.Println(${1})${0}
+	fmt.Println(${1})
 
 snippet     ft
 abbr        fmt.Printf("$1: %T = %v\n", $1)
-	fmt.Printf("$1: %T = %#v\n", ${1}, $1)${0}
+	fmt.Printf("$1: %T = %#v\n", ${1}, $1)
 
 # Use "github.com/davecgh/go-spew/spew"
 snippet     fd
 abbr        fmt.Printf("$1: %+s", spew.Sdump(...))
-	fmt.Printf("$1: %+s\n", spew.Sdump(${1}))${0}
+	fmt.Printf("$1: %s\n", spew.Sdump(${1}))
 
 # Use "github.com/k0kubun/pp"
 snippet     fp
 abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
-	fmt.Printf("$1: %+s\n", pp.Sprintln(${1}))${0}
+	fmt.Printf("$1: %s\n", pp.Sprintln(${1}))
 
 snippet     fdiff
 abbr        cmp.Diff; fmt.Printf("(-got, +want)\n%s\n", diff)
@@ -117,50 +220,16 @@ abbr        cmp.Diff; fmt.Printf("(-got, +want)\n%s\n", diff)
 	}
 
 # ------------------------------------------------------------------
-# testing
-
-snippet     tf
-abbr        t.Logf(...)
-	t.Logf("$1: %v", ${1})${0}
-
-snippet     tl
-abbr        t.Log
-	t.Log(${1})${0}
-
-snippet     tt
-abbr        t.Logf("%T = %v", ...)
-	t.Logf("$1: %T = %v", ${1}, $1)${0}
-
-# Use "github.com/davecgh/go-spew/spew"
-snippet     td
-abbr        t.Logf("$1: %+s", spew.Sdump(...))
-	t.Logf("$1: %+s", spew.Sdump(${1}))${0}
-
-# Use "github.com/k0kubun/pp"
-snippet     tp
-abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
-	t.Logf("$1: %+s\n", pp.Sprintln(${1}))${0}
-
-snippet     tgotwant
-abbr        t.Fatalf("got %v, want %v", ...)
-	if got, want := ${1}, ${2}; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-	${0}
-
-snippet     tdiff
-abbr        cmp.Diff; t.Fatalf("(-got, +want)\n%s\n", diff)
-	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		t.Fatalf("(-got, +want)\n%s\n", diff)
-	}
-
-# ------------------------------------------------------------------
 # log
 
 # printf
 snippet     lf
+abbr        log.Printf(...)
+	log.Printf("$1: %#v\n", ${1})
+
+snippet     lt
 abbr        log.Printf("$1: %T, %v", $1)
-	log.Printf("$1: %T => %v\n", ${1}, $1)${0}
+	log.Printf("$1: %T => %v\n", ${1}, $1)
 
 # println
 snippet     ll
@@ -170,12 +239,18 @@ abbr        log.Println(...)
 # Use "github.com/davecgh/go-spew/spew"
 snippet     ld
 abbr        log.Printf("$1: %v", spew.Sdump(...))
-	log.Printf("$1: %v\n", spew.Sdump(${1}))${0}
+	log.Printf("$1: %s\n", spew.Sdump(${1}))
 
-# debuf debug
+snippet     ldiff
+abbr        cmp.Diff; log.Printf("(-got, +want)\n%s\n", diff)
+	if diff := cmp.Diff(${1}, ${2}); diff != "" {
+		log.Printf("(-got, )\n%s\n", diff)
+	}
+
+# debug
 snippet     ldf
 abbr        log.Debugf("$1: %T, %v", $1)
-	log.Debugf("$1: %T => %v\n", ${1}, $1)${0}
+	log.Debugf("$1: %T => %v\n", ${1}, $1)
 
 # log.Println 'test'
 snippet     test
@@ -183,12 +258,56 @@ abbr        log.Println("test")${0}
 	log.Println("test")
 
 # ------------------------------------------------------------------
+# testing
+
+snippet     tf
+abbr        t.Logf(...)
+	t.Logf("$1: %v", ${1})
+
+snippet     tl
+abbr        t.Log
+	t.Log(${1})
+
+snippet     tt
+abbr        t.Logf("%T = %v", ...)
+	t.Logf("$1: %T = %v", ${1}, $1)
+
+# Use "github.com/davecgh/go-spew/spew"
+snippet     td
+abbr        t.Logf("$1: %+s", spew.Sdump(...))
+	t.Logf("$1: %s", spew.Sdump(${1}))
+
+# Use "github.com/k0kubun/pp"
+snippet     tp
+abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
+	t.Logf("$1: %+s\n", pp.Sprintln(${1}))
+
+snippet     tgotwant
+abbr        t.Errorf("got %v, want %v", ...)
+	if got, want := ${1}, ${2}; got != want {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+# snippet     tdiff
+# abbr        cmp.Diff; t.Errorf("(-got, +want)\n%s\n", diff)
+# 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
+# 		t.Errorf("(-got, +want)\n%s\n", diff)
+# 	}
+
+snippet     tdiff
+abbr        cmp.Diff; t.Errorf("(-got, +want)\n%s\n", diff)
+	if diff := cmp.Diff(${1}, ${2}); diff != "" {
+		t.Errorf("%s: (-got, +want)\n%s\n", tt.name, diff)
+		return
+	}
+
+# ------------------------------------------------------------------
 # log/appengine
 
 ## log for appengine on info
 snippet     lai
 abbr        log.Info(ctx, "$1: %T, %v", $1)
-	log.Info(ctx, "$1: %T => %v\n", ${1}, spew.Sdump($1))${0}
+	log.Info(ctx, "$1: %T => %s\n", ${1}, spew.Sdump($1))${0}
 
 snippet     lad
 abbr        log.Debugf(ctx, "$1: %T, %v", $1)
@@ -197,7 +316,7 @@ abbr        log.Debugf(ctx, "$1: %T, %v", $1)
 ## log for appengine on debug with spew.Sdump
 snippet     ladump
 abbr        log.Debugf(ctx, "$1: %T, %v", $1)
-	log.Debugf(ctx, "$1: %T => %v\n", ${1}, spew.Sdump($1))${0}
+	log.Debugf(ctx, "$1: %T => %s\n", ${1}, spew.Sdump($1))${0}
 
 # ------------------------------------------------------------------
 # error handling
@@ -236,6 +355,6 @@ abbr        err := fn(...)
 	}${0}
 
 ## todo
-snippet     todoimplements
+snippet     todo-implements
 abbr        TODO(...) implements...
 	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): implements${0}

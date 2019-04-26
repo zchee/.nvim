@@ -24,7 +24,7 @@ for d in $(dirname "$(find "$XCODE_PATH/Contents/Developer/Platforms/MacOSX.plat
 
   if [[ -d "$d/ApplicationServices.framework/Versions/A/Frameworks" ]]; then
     for dd in $(find "$d/ApplicationServices.framework/Versions/A/Frameworks" -maxdepth 4 -type d -name 'Headers'); do
-      if [[ -d "$dd" ]]; then
+      if [[ ! -d "$DST_DIR/$(basename $(echo $dd | awk -F. '{print $5}'))" ]] && [[ -d "$dd" ]]; then
         command ln -fs "$dd" "$DST_DIR/$(basename $(echo $dd | awk -F. '{print $5}'))"
       fi
     done
@@ -32,7 +32,7 @@ for d in $(dirname "$(find "$XCODE_PATH/Contents/Developer/Platforms/MacOSX.plat
 
   if [[ -d "$d/CoreServices.framework/Versions/A/Frameworks" ]]; then
     for dd in $(find "$d/CoreServices.framework/Versions/A/Frameworks" -maxdepth 4 -type d -name 'Headers'); do
-      if [[ -d "$dd" ]]; then
+      if [[ ! -d "$DST_DIR/$(basename $(echo $dd | awk -F. '{print $5}'))" ]] && [[ -d "$dd" ]]; then
         command ln -fs "$dd" "$DST_DIR/$(basename $(echo $dd | awk -F. '{print $5}'))"
       fi
     done
@@ -40,26 +40,11 @@ for d in $(dirname "$(find "$XCODE_PATH/Contents/Developer/Platforms/MacOSX.plat
 
   if [[ -d "$d/Carbon.framework/Versions/A/Frameworks" ]]; then
     for dd in $(find "$d/ApplicationServicesCarbon.framework/Versions/A/Frameworks" -maxdepth 4 -type d -name 'Headers'); do
-      if [[ -d "$dd" ]]; then
+      if [[ ! -d "$DST_DIR/$(basename $(echo $dd | awk -F. '{print $5}'))" ]] && [[ -d "$dd" ]]; then
         command ln -fs "$dd" "$DST_DIR/$(basename $(echo $dd | awk -F. '{print $5}'))"
       fi
     done
   fi
-
-  # if [[ -d "$d/CoreServices.framework/Versions/A/Frameworks" ]]; then
-  #   for dd in $(find "$d/CoreServices.framework/Versions/A/Frameworks" -maxdepth 1 -type d -or -type l); do
-  #     if [[ -d "$dd/Headers" ]]; then
-  #       command ln -fs "$dd/Headers" "$DST_DIR/$(printf $(basename $dd) | awk -F. '{print $1}')"
-  #     fi
-  #   done
-  # fi
-  # if [[ -d "$d/Carbon.framework/Versions/A/Frameworks" ]]; then
-  #   for dd in $(find "$d/Carbon.framework/Versions/A/Frameworks" -maxdepth 1 -type d -or -type l); do
-  #     if [[ -d "$dd/Headers" ]]; then
-  #       command ln -fs "$dd/Headers" "$DST_DIR/$(printf $(basename $dd) | awk -F. '{print $1}')"
-  #     fi
-  #   done
-  # fi
 done
 
 for d in $(find "$XCODE_PATH/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/PrivateFrameworks" -maxdepth 1 -type d -or -type l); do

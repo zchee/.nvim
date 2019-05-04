@@ -1,2 +1,2 @@
-setlocal nonumber
 setlocal nolist
+setlocal nonumber

@@ -1,4 +1,3 @@
-" setlocal formatoptions+=o
 setlocal iskeyword+="
 setlocal noexpandtab
 setlocal shiftwidth=4

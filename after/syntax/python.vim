@@ -1,3 +1,6 @@
+"" Python:
+syn keyword pythonDecorator True False
+
 syn match pythonOperator    "\(+\|=\|-\|\^\|\*\)"
 syn match pythonDelimiter   "\(,\|\.\|:\)"
 

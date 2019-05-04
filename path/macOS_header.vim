@@ -14,7 +14,7 @@ let s:toolchains_dir = s:developer_dir . '/Toolchains/XcodeDefault.xctoolchain'
 " Xcode Frameworks headers
 " set path=.,/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk
 
-let s:osx_frameworks = 
+let s:macos_frameworks =
       \ expand($HOME) . '/.local/include'
       \ . ',/usr/local/include'
       \ . ',' . s:toolchains_dir . '/usr/lib/clang/10.0.1/include'
@@ -24,4 +24,4 @@ let s:osx_frameworks =
       \ . ',' . s:toolchains_dir . '/usr/include/c++/v1'
       "\ . ',' . s:sdk_dir . '/usr/include'
 
-execute 'set path+=' . s:osx_frameworks
+execute 'set path+=' . s:macos_frameworks

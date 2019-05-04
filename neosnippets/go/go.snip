@@ -1,109 +1,23 @@
 # include separate snip for go packages
 include go/functions.snip
 # include go/vim-go.snip
+include go/pragma.snip
 
 # ------------------------------------------------------------------
-# Go pragmas
+# doc
 
-## cmd/compile/internal/gc/lex.go
-
-snippet     pragma:go:nointerface
-abbr        //go:nointerface
-	//go:nointerface
-
-snippet     pragma:go:noescape
-abbr        //go:noescape
-	//go:noescape
-
-snippet     pragma:go:norace
-abbr        //go:norace
-	//go:norace
-
-snippet     pragma:go:nosplit
-abbr        //go:nosplit
-	//go:nosplit
-
-snippet     pragma:go:noinline
-abbr        //go:noinline
-	//go:noinline
-
-snippet     pragma:go:systemstack
-abbr        //go:systemstack
-	//go:systemstack
-
-snippet     pragma:go:nowritebarrier
-abbr        //go:nowritebarrier
-	//go:nowritebarrier
-
-snippet     pragma:go:nowritebarrierrec
-abbr        //go:nowritebarrierrec
-	//go:nowritebarrierrec
-
-snippet     pragma:go:yeswritebarrierrec
-abbr        //go:yeswritebarrierrec
-	//go:yeswritebarrierrec
-
-snippet     pragma:go:cgo_unsafe_args
-abbr        //go:cgo_unsafe_args
-	//go:cgo_unsafe_args
-
-snippet     pragma:go:uintptrescapes
-abbr        //go:uintptrescapes
-	//go:uintptrescapes
-
-snippet     pragma:go:notinheap
-abbr        //go:notinheap
-	//go:notinheap
-
-## src/cmd/compile/internal/gc/noder.go
-
-snippet     pragma:go:cgo_export_static
-abbr        //go:cgo_export_static
-	//go:cgo_export_static
-
-snippet     pragma:go:cgo_export_dynamic
-abbr        //go:cgo_export_dynamic
-	//go:cgo_export_dynamic
-
-snippet     pragma:go:cgo_import_static
-abbr        //go:cgo_import_static
-	//go:cgo_import_static
-
-snippet     pragma:go:cgo_import_dynamic
-abbr        //go:cgo_import_dynamic
-	//go:cgo_import_dynamic
-
-snippet     pragma:go:cgo_ldflag
-abbr        //go:cgo_ldflag
-	//go:cgo_ldflag
-
-snippet     pragma:go:cgo_dynamic_linker
-abbr        //go:cgo_dynamic_linker
-	//go:cgo_dynamic_linker
-
-snippet     pragma:go:generate
-abbr        //go:generate
-	//go:generate
-
-# ------------------------------------------------------------------
-# Go compiler time pragmas
-
-snippet     pragma:interface
-abbr        //pragma: compiler time checks ...
-	//pragma: compiler time checks whether the $2 implemented $1 interface.
+snippet     dco:compiler time check
+abbr        //pragma: compiler time check whether the $2 implements $1 interface.
+	// compiler time check whether ${2:#:interface} implements ${1:#:type} interface.
 	var _ ${1:base} = (*${2:type})(nil)
 
-snippet     pragma:stringer
+snippet     doc:interface
+abbr        // $1 implements $2.
+	// ${1:#:func} implements ${2:#:interface}.${0}
+
+snippet     doc:stringer
 abbr        // String implements fmt.Stringer.
-	// String implements fmt.Stringer.
-	func(i ${1}) String() string {
-		switch i {
-		case ${2}:
-			return "$2"
-		default:
-			return "$1(" + strconv.FormatInt(int64(i), 10) + ")"
-		}
-	}
+	// String implements fmt.Stringer.${0}
 
 # ------------------------------------------------------------------
 # Built-in
@@ -288,18 +202,13 @@ abbr        t.Errorf("got %v, want %v", ...)
 		t.Errorf("got %v, want %v", got, want)
 	}
 
-# snippet     tdiff
-# abbr        cmp.Diff; t.Errorf("(-got, +want)\n%s\n", diff)
-# 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-# 		t.Errorf("(-got, +want)\n%s\n", diff)
-# 	}
-
 snippet     tdiff
 abbr        cmp.Diff; t.Errorf("(-got, +want)\n%s\n", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		t.Errorf("%s: (-got, +want)\n%s\n", tt.name, diff)
+		t.Errorf("%s: (-got, +want)\n%s", tt.name, diff)
 		return
 	}
+	${0}
 
 # ------------------------------------------------------------------
 # log/appengine

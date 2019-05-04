@@ -29,6 +29,7 @@ snippet     strict
 abbr        strict
 	set -euo pipefail
 	IFS=$'\n\t'
+	${0}
 
 snippet     devnull
 abbr        > /dev/null 2>&1
@@ -38,6 +39,7 @@ snippet     check-command
 alias       command-v
 abbr        command -v ${1} && { ERROR '...' }
 	command -v ${1} >/dev/null 2>&1 || { ERROR "command not found: $1"; exit 1; }
+	${0}
 
 snippet     func-info
 alias       info
@@ -54,16 +56,21 @@ abbr        prinf '[WARN] ...'
 snippet     func-error
 alias       error
 abbr        prinf '[ERROR] ...'
-	error() { printf "\\x1b[1;34m[error]\\x1b[0m %s\\\n" "\$1"; }
+	error() { printf "\\x1b[1;34m[ERROR]\\x1b[0m %s\\\n" "\$1"; exit 1; }
 	${0}
 
 snippet     func-fatal
 alias       fatal
 abbr        prinf '[FATAL] ...'
-	fatal() { printf "\\x1b[1;34m[FATAL]\\x1b[0m %s\\\n" "\$1"; }
+	fatal() { printf "\\x1b[1;34m[FATAL]\\x1b[0m %s\\\n" "\$1"; exit 1; }
 	${0}
 
 snippet     echo-var
 alias       var
 abbr        echo "var: $var"
-	echo "$1: \$${1}"
+	echo "$1: \$${1}"${0}
+
+snippet     check-arg
+alias       arg
+abbr        if [ \$# -eq \${1} ]; then [FATAL] ...
+	if [ $# -eq ${1:#:arg length} ]; then printf "\\x1b[1;34m[FATAL]\\x1b[0m %s\\\n" "${2:#:msg}"; exit 1; fi

@@ -35,35 +35,30 @@ snippet     devnull
 abbr        > /dev/null 2>&1
 	> /dev/null 2>&1${0}
 
-snippet     check-command
-alias       command-v
-abbr        command -v ${1} && { ERROR '...' }
-	command -v ${1} >/dev/null 2>&1 || { ERROR "command not found: $1"; exit 1; }
-	${0}
-
-snippet     func-info
-alias       info
-abbr        prinf '[INFO] ...'
+snippet     info
+abbr        [INFO] ...
 	info() { printf "\\x1b[1;34m[INFO]\\x1b[0m %s\\\n" "\$1"; }
 	${0}
 
-snippet     func-warn
-alias       warn
-abbr        prinf '[WARN] ...'
+snippet     warn
+abbr        [WARN] ...
 	warn() { printf "\\x1b[1;33m[WARN]\\x1b[0m %s\\\n" "\$1"; }
 	${0}
 
-snippet     func-error
-alias       error
-abbr        prinf '[ERROR] ...'
-	error() { printf "\\x1b[1;34m[ERROR]\\x1b[0m %s\\\n" "\$1"; exit 1; }
+snippet     error
+abbr        [ERROR] ...
+	error() { printf "\\x1b[1;31m[ERROR]\\x1b[0m %s\\\n" "\$1"; exit 1; }
 	${0}
 
-snippet     func-fatal
-alias       fatal
-abbr        prinf '[FATAL] ...'
-	fatal() { printf "\\x1b[1;34m[FATAL]\\x1b[0m %s\\\n" "\$1"; exit 1; }
+snippet     fatal
+abbr        [FATAL] ...
+	fatal() { printf "\\x1b[1;31m[FATAL]\\x1b[0m %s\\\n" "\$1"; exit 1; }
 	${0}
+
+snippet     command-v
+alias       command-v
+abbr        command -v ${1} && { error '...' }
+	command -v ${1:#:command name} >/dev/null 2>&1 || { error "command not found: $1"; }${0}
 
 snippet     echo-var
 alias       var

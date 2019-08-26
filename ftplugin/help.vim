@@ -34,7 +34,7 @@ function! s:cursor_adjust() abort
     call cursor(l:lnum, l:cpos)
   endif
 endfunction
-nnoremap <silent> <LeftMouse> <LeftMouse>:<c-u>call <sid>cursor_adjust()<cr> 
+nnoremap <silent> <LeftMouse> <LeftMouse>:<c-u>call <sid>cursor_adjust()<cr>
 
 function! s:adjust_cursor(...) abort
   let l:pos = getpos('.')[1:2]
@@ -84,5 +84,5 @@ endfunction
 
 augroup vimrc_help
   autocmd! * <buffer>
-  autocmd BufEnter,CursorMoved <buffer> call s:adjust_cursor()
+  autocmd! BufEnter,CursorMoved <buffer> call s:adjust_cursor()
 augroup END

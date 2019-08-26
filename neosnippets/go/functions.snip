@@ -35,8 +35,8 @@ abbr        log.Println(runtime.Caller(...))
 # go/parser
 
 ## fset
-snippet     fset
-abbr        fset := token.NewFileSet()
+snippet     parser
+abbr        parser.ParseFile(...)
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, ${1:#:"fake.go"}, ${2:buf}, {3:parser.Mode(0)})
 	if err != nil {

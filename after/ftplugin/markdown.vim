@@ -5,4 +5,4 @@ setlocal softtabstop=2
 setlocal tabstop=2
 setlocal wrap
 
-let b:sh_noisk=1
+let g:sh_noisk=1

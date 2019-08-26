@@ -1,15 +1,14 @@
 # include separate snip for go packages
 include go/functions.snip
-# include go/vim-go.snip
 include go/pragma.snip
 
 # ------------------------------------------------------------------
 # doc
 
 snippet     dco:compiler time check
-abbr        //pragma: compiler time check whether the $2 implements $1 interface.
-	// compiler time check whether ${2:#:interface} implements ${1:#:type} interface.
-	var _ ${1:base} = (*${2:type})(nil)
+abbr        // compile time check
+	// compile time check whether the ${1:#:type} implements ${2:#:interface} interface.
+	var _ $2 = (*$1)(nil)
 
 snippet     doc:interface
 abbr        // $1 implements $2.
@@ -18,6 +17,14 @@ abbr        // $1 implements $2.
 snippet     doc:stringer
 abbr        // String implements fmt.Stringer.
 	// String implements fmt.Stringer.${0}
+
+snippet     doc:json.Marshaler
+abbr        // MarshalJSON implements json.Marshaler.
+	// MarshalJSON implements json.Marshaler.${0}
+
+snippet     doc:json.Unmarshaler
+abbr        // UnmarshalJSON implements json.Unmarshaler.
+	// UnmarshalJSON implements json.Unmarshaler.${0}
 
 # ------------------------------------------------------------------
 # Built-in
@@ -107,7 +114,7 @@ abbr        for k, v := range items { ... }
 
 snippet     ff
 abbr        fmt.Printf(...)
-	fmt.Printf("$1: %#v\n", ${1})${0}
+	fmt.Printf("$1: %#v\n", ${1})
 
 snippet     fl
 abbr        fmt.Println(...)
@@ -128,9 +135,9 @@ abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
 	fmt.Printf("$1: %s\n", pp.Sprintln(${1}))
 
 snippet     fdiff
-abbr        cmp.Diff; fmt.Printf("(-got, +want)\n%s\n", diff)
+abbr        cmp.Diff(1, 2); fmt.Printf("(+want, -got)", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		fmt.Printf("(-got, +want)\n%s\n", diff)
+		fmt.Printf("(+want, -got)\n%s\n", diff)
 	}
 
 # ------------------------------------------------------------------
@@ -156,9 +163,9 @@ abbr        log.Printf("$1: %v", spew.Sdump(...))
 	log.Printf("$1: %s\n", spew.Sdump(${1}))
 
 snippet     ldiff
-abbr        cmp.Diff; log.Printf("(-got, +want)\n%s\n", diff)
+abbr        cmp.Diff(1, 2); log.Printf("(+want, -got)", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		log.Printf("(-got, )\n%s\n", diff)
+		log.Printf("(+want, -got)\n%s\n", diff)
 	}
 
 # debug
@@ -203,9 +210,9 @@ abbr        t.Errorf("got %v, want %v", ...)
 	}
 
 snippet     tdiff
-abbr        cmp.Diff; t.Errorf("(-got, +want)\n%s\n", diff)
+abbr        cmp.Diff(1, 2); t.Errorf("(+want, -got)", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		t.Errorf("%s: (-got, +want)\n%s", tt.name, diff)
+		t.Errorf("(+want, -got)\n%s", diff)
 		return
 	}
 	${0}
@@ -226,6 +233,44 @@ abbr        log.Debugf(ctx, "$1: %T, %v", $1)
 snippet     ladump
 abbr        log.Debugf(ctx, "$1: %T, %v", $1)
 	log.Debugf(ctx, "$1: %T => %s\n", ${1}, spew.Sdump($1))${0}
+
+# ------------------------------------------------------------------
+# go-spew
+
+snippet     spew-conf
+abbr        spewer = &spew.ConfigState{...}
+	var spewer = &spew.ConfigState{
+		Indent:                  "  ",
+		SortKeys:                true, // maps should be spewed in a deterministic order
+		DisablePointerAddresses: true, // don't spew the addresses of pointers
+		DisableCapacities:       true, // don't spew capacities of collections
+		SpewKeys:                true, // if unable to sort map keys then spew keys to strings and sort those
+		MaxDepth:                1,
+	}
+	${0}
+
+# ------------------------------------------------------------------
+# benchmark
+
+snippet     bench
+abbr        Benchmark...(b *testing.B) {...}
+	func Benchmark${1}(b *testing.B) {
+		${0}
+		for i := 0; i < b.N; i++ {
+			
+		}
+	}
+
+snippet     benchrun
+abbr        Benchmark...(b *testing.B) { b.Run(...) )
+	func Benchmark${1}(b *testing.B) {
+		${0}
+		b.Run("", func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				
+			}
+		})
+	}
 
 # ------------------------------------------------------------------
 # error handling

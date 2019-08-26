@@ -18,25 +18,26 @@ let $NVIM_LOG_FILE   = expand($HOME.'/.local/share/nvim/log')
 
 "" Terminal:
 let $LC_MESSAGES     = "en_US.UTF-8"
-let $TERM            = 'screen-256color'
+" let $TERM            = 'vte-direct'
 
 " -------------------------------------------------------------------------------------------------
 " Neovim Configs:
 
 "" Remote Plugins:
-" let g:python_host_prog          = '/usr/local/opt/pypy/bin/pypy'
 let g:python_host_prog          = '/usr/local/opt/python2/bin/python2'
-let g:loaded_python_provider    = 1
-" let g:python3_host_prog         = '/usr/local/opt/pypy3/bin/pypy3'
-" let g:python3_host_prog         = '/usr/local/opt/pypy3-release/bin/pypy3'
+let g:loaded_python_provider    = 0
 let g:python3_host_prog         = '/usr/local/opt/python3/bin/python3'
 " let g:loaded_python3_provider = 1
 
-let g:loaded_ruby_provider      = 1
-let g:loaded_node_provider      = 1
+let g:loaded_ruby_provider      = 0
+let g:loaded_node_provider      = 0
 
 " -------------------------------------------------------------------------------------------------
 " Ignore Plugins:
+
+"" from https://github.com/justinmk/config/blob/master/.config/nvim/init.vim
+let g:loaded_rrhelper = 1
+let g:did_install_default_menus = 1  " avoid stupid menu.vim (saves ~100ms)
 
 let g:loaded_netrw                         = v:true              " $VIMRUNTIME/autoload/netrw.vim
 let g:loaded_netrwFileHandlers             = v:true              " $VIMRUNTIME/autoload/netrwFileHandlers.vim
@@ -50,7 +51,7 @@ let loaded_less                            = v:true              " $VIMRUNTIME/m
 let loaded_gzip                            = v:true              " $VIMRUNTIME/plugin/gzip.vim
 let loaded_matchit                         = v:true              " $VIMRUNTIME/plugin/matchit.vim
 let g:loaded_matchparen                    = v:true              " $VIMRUNTIME/plugin/matchparen.vim
-let g:loaded_netrwPlugin                   = "156"         " $VIMRUNTIME/plugin/netrwPlugin.vim
+let g:loaded_netrwPlugin                   = "156"               " $VIMRUNTIME/plugin/netrwPlugin.vim
 let loaded_rrhelper                        = v:true              " $VIMRUNTIME/plugin/rrhelper.vim
 let loaded_spellfile_plugin                = v:true              " $VIMRUNTIME/plugin/spellfile.vim
 let g:loaded_tarPlugin                     = "v29"               " $VIMRUNTIME/plugin/tarPlugin.vim

@@ -1,0 +1,194 @@
+{
+    "docker": {
+        "languageserver": {
+            "diagnostics": {
+                "deprecatedMaintainer": "error",
+                "directiveCasing": "warning",
+                "emptyContinuationLine": "warning",
+                "instructionCasing": "warning",
+                "instructionCmdMultiple": "warning",
+                "instructionEntrypointMultiple": "warning",
+                "instructionHealthcheckMultiple": "warning",
+                "instructionJSONInSingleQuotes": "warning"
+            }
+        }
+    },
+    "gopls": {
+        "caseSensitiveCompletion": false,
+        "completeUnimported": false,
+        "completionDocumentation": true,
+        "deepCompletion": true,
+        "fuzzyMatching": true,
+        "hoverKind": "FullDocumentation",
+        "noIncrementalSync": false,
+        "usePlaceholders": true,
+        "watchFileChanges": false,
+        "verboseOutput": true,
+        "staticcheck": false,
+        "go-diff": true
+    },
+    "http": {
+        "proxy": "",
+        "proxyStrictSSL": true
+    },
+    "json": {
+        "format": {
+            "enable": true
+        },
+        "schemas": [
+            {
+                "fileMatch": [
+                    "openrpc.json"
+                ],
+                "schema": {
+                    "type": "array"
+                },
+                "url": "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema"
+            },
+            {
+                "fileMatch": [
+                    "swagger.json"
+                ],
+                "schema": {
+                    "type": "array"
+                },
+                "url": "file:///Users/zchee/.config/nvim/lsp/schema/swagger-2.0.jsonschema"
+            },
+            {
+                "fileMatch": [
+                    "openapi.json"
+                ],
+                "schema": {
+                    "type": "array"
+                },
+                "url": "file:///Users/zchee/.config/nvim/lsp/schema/openapi.jsonschema"
+            },
+            {
+                "fileMatch": [
+                    "*.jsonschema"
+                ],
+                "schema": {
+                    "type": "array"
+                },
+                "url": "file:///Users/zchee/.config/nvim/lsp/schema/jsonschema-draft-07.jsonschema"
+            },
+            {
+                "fileMatch": [
+                    "package.json"
+                ],
+                "schema": {
+                    "type": "array"
+                },
+                "url": "http://json.schemastore.org/package"
+            },
+            {
+                "fileMatch": [
+                    "manifest.json"
+                ],
+                "schema": {
+                    "type": "array"
+                },
+                "url": "http://json.schemastore.org/chrome-manifest"
+            },
+            {
+                "fileMatch": [
+                    "tsconfig.json"
+                ],
+                "schema": {
+                    "type": "array"
+                },
+                "url": "http://json.schemastore.org/tsconfig"
+            }
+        ]
+    },
+    "pyls": {
+        "configurationSources": "flake8",
+        "plugins": {
+            "flake8": {
+                "enabled": true
+            },
+            "jedi_completion": {
+                "enabled": true,
+                "include_params": true
+            },
+            "jedi_definition": {
+                "enabled": true,
+                "follow_builtin_imports": true,
+                "follow_imports": true
+            },
+            "jedi_hover": {
+                "enabled": true
+            },
+            "jedi_references": {
+                "enabled": true
+            },
+            "jedi_signature_help": {
+                "enabled": true
+            },
+            "jedi_symbols": {
+                "all_scopes": true,
+                "enabled": true
+            }
+        }
+    },
+    "rust": {
+        "all_features": true,
+        "all_targets": false,
+        "build_lib": true,
+        "build_on_save": false,
+        "clippy_preference": "opt-in",
+        "full_docs": true,
+        "show_hover_context": true,
+        "target": "x86_64-apple-darwin",
+        "unstable_features": true
+    },
+    "vim": {
+        "diagnostic": {
+            "enable": true
+        },
+        "indexes": {
+            "count": 3,
+            "gap": 100,
+            "runtimepath": true
+        },
+        "iskeyword": "@,48-57,_,192-255,#,:,#",
+        "runtimepath": "/Users/zchee/.cache/nvim/dein/.cache/init.vim/.dein",
+        "suggest": {
+            "fromRuntimepath": true,
+            "fromVimruntime": true
+        },
+        "vimruntime": "/usr/local/share/nvim/runtime"
+    },
+    "yaml": {
+        "completion": true,
+        "format": {
+            "bracketSpacing": true,
+            "enable": true,
+            "proseWrap": true,
+            "singleQuote": false
+        },
+        "hover": true,
+        "schemas": {
+            "file:///Users/zchee/.config/nvim/lsp/schema/appengine-app.jsonschema": "**/app.yaml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/appveyor.jsonschema": "*appveyor.yml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/azure-pipelines.jsonschema": "azure-pipelines.yml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/circleci.jsonschema": "'.circleci/config.yml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/cloudbuild.jsonschema": "**/*cloudbuild.yaml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/codecov.jsonschema": "*codecov.yml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/docker-compose.jsonschema": "**/*docker-compose*.yaml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/kubernetes.jsonschema": [
+                "**/kubernetes/*.yaml",
+                "**/kubectl-edit-*.yaml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/mkdocs.jsonschema": "**/mkdocs.yml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema": "**/openrpc.yaml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/openapi.jsonschema": "**/openapi.yaml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/swagger-2.0.jsonschema": "**/*swagger.yaml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/travis.jsonschema": ".travis.yml",
+            "http://json.schemastore.org/kustomization": "**/kustomization.yaml",
+            "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json": "**/.github/**/*.yml",
+            "url": "globPattern"
+        },
+        "validate": true
+    }
+}

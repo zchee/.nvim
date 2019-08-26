@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------
-# LICENSE 
+# LICENSE
 
 # BSD Owner
 snippet BSDOwner
@@ -22,10 +22,8 @@ abbr BSD Go Authors
 
 snippet     todo
 abbr				TODO($USER): ...
-options     word
 	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): ${0}
 
 snippet     wip
 abbr				WIP($USER): ...
-options     word
-	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): WIP${0}
+	`substitute(&commentstring, '%s', '', 'g')`WIP(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): WIP${0}

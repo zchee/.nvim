@@ -22,33 +22,33 @@ let g:did_load_filetypes_userafter = 1
 
 augroup filetypedetect
   " extension
-  autocmd! BufNewFile,BufRead *.S                                               setlocal filetype=gas  syntax=gas
   autocmd! BufNewFile,BufRead *.\(swig\|swigcxx\)                               setlocal filetype=swig " TODO(zchee): 'cxx' prefix only
   autocmd! BufNewFile,BufRead *.asm                                             setlocal filetype=nasm syntax=nasm
   autocmd! BufNewFile,BufRead *.conf                                            setlocal filetype=conf
+  autocmd! BufNewFile,BufRead *.dockerignore                                    setlocal filetype=gitignore
   autocmd! BufNewFile,BufRead *.editorconfig                                    setlocal filetype=dosini
   autocmd! BufNewFile,BufRead *.es6                                             setlocal filetype=javascript
+  autocmd! BufNewFile,BufRead *.gcloudignore                                    setlocal filetype=gitignore
   autocmd! BufNewFile,BufRead *.go.y                                            setlocal filetype=goyacc
   autocmd! BufNewFile,BufRead *.hla                                             setlocal filetype=hla  syntax=header_standard_Vim_script_file_header
   autocmd! BufNewFile,BufRead *.i                                               setlocal filetype=swig
   autocmd! BufNewFile,BufRead *.inc                                             setlocal filetype=masm syntax=masm
   autocmd! BufNewFile,BufRead *.jsonc                                           setlocal filetype=jsonc
-  autocmd! BufNewFile,BufRead *.jsonschema                                      setlocal filetype=json
+  autocmd! BufNewFile,BufRead *.jsonschema                                      setlocal filetype=jsonschema
   autocmd! BufNewFile,BufRead *.mm                                              setlocal filetype=objcpp
   autocmd! BufNewFile,BufRead *.pbtxt                                           setlocal filetype=proto
   autocmd! BufNewFile,BufRead *.py[xd]                                          setlocal filetype=cython
+  autocmd! BufNewFile,BufRead *.S                                               setlocal filetype=gas  syntax=gas
   autocmd! BufNewFile,BufRead *.sb                                              setlocal filetype=scheme
   autocmd! BufNewFile,BufRead *.slide                                           setlocal filetype=goslide
   autocmd! BufNewFile,BufRead *.tfstate                                         setlocal filetype=teraterm
   autocmd! BufNewFile,BufRead *.ts                                              setlocal filetype=typescript
   autocmd! BufNewFile,BufRead *.vfj                                             setlocal filetype=jsonc
   autocmd! BufNewFile,BufRead *.vmoptions                                       setlocal filetype=conf
-  autocmd! BufNewFile,BufRead *.dockerignore                                    setlocal filetype=gitignore
-  autocmd! BufNewFile,BufRead *.gcloudignore                                    setlocal filetype=gitignore
 
   " directory
   autocmd! BufNewFile,BufRead **/c++/**/*                                       setlocal filetype=cpp  " cpp stdlib
-  autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/gcloud/configurations/*          setlocal filetype=dosini
+  autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/gcloud/configurations/*          setlocal filetype=cfg  " dosini
 
   " filename
   autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/go/env                           setlocal filetype=sh

@@ -5,98 +5,79 @@
 
 snippet     pragma:go:nointerface
 abbr        //go:nointerface (method parameters don't implements interface)
-	//go:nointerface
-	${0}
+	//go:nointerface${0}
 
 snippet     pragma:go:noescape
 abbr        //go:noescape (func parameters don't escape)
-	//go:noescape
-	${0}
+	//go:noescape${0}
 
 snippet     pragma:go:norace
 abbr        //go:norace (func parameters don't escape)
-	//go:norace
-	${0}
+	//go:norace${0}
 
 snippet     pragma:go:nosplit
 abbr        //go:nosplit (func should not execute on separate stack)
-	//go:nosplit
-	${0}
+	//go:nosplit${0}
 
 snippet     pragma:go:noinline
 abbr        //go:noinline (func should not be inlined)
-	//go:noinline
-	${0}
+	//go:noinline${0}
 
 snippet     pragma:go:cgo_unsafe_args
 abbr        //go:cgo_unsafe_args (func treat a pointer to one arg as a pointer to them all)
-	//go:cgo_unsafe_args
-	${0}
+	//go:cgo_unsafe_args${0}
 
 snippet     pragma:go:uintptrescapes
 abbr        //go:uintptrescapes (func pointers converted to uintptr escape)
-	//go:uintptrescapes
-	${0}
+	//go:uintptrescapes${0}
 
 snippet     pragma:go:systemstack
 abbr        //go:systemstack (func must run on system stack. runtime-only)
-	//go:systemstack
-	${0}
+	//go:systemstack${0}
 
 snippet     pragma:go:nowritebarrier
 abbr        //go:nowritebarrier (func emit compiler error instead of write barrier. runtime-only)
-	//go:nowritebarrier
-	${0}
+	//go:nowritebarrier${0}
 
 snippet     pragma:go:nowritebarrierrec
 abbr        //go:nowritebarrierrec (func error on write barrier in this or recursive callees. runtime-only)
-	//go:nowritebarrierrec
-	${0}
+	//go:nowritebarrierrec${0}
 
 snippet     pragma:go:yeswritebarrierrec
 abbr        //go:yeswritebarrierrec (func cancels Nowritebarrierrec in this function and callees. runtime-only)
-	//go:yeswritebarrierrec
-	${0}
+	//go:yeswritebarrierrec${0}
 
 snippet     pragma:go:notinheap
 abbr        //go:notinheap (type values of this type must not be heap allocated. runtime-only)
-	//go:notinheap
-	${0}
+	//go:notinheap${0}
 
 ## https://github.com/golang/go/tree/master/src/cmd/compile/internal/gc/noder.go
 ## https://github.com/golang/go/blob/master/src/cmd/cgo/doc.go
 
 snippet     pragma:go:cgo_import_dynamic
 abbr        //go:cgo_import_dynamic (allow an unresolved dynamic library symbol reference)
-	//go:cgo_import_dynamic ${1:local} ${2:#:remote} ${3:#:library}
-	${0}
+	//go:cgo_import_dynamic ${1:local} ${2:#:remote} ${3:#:library}${0}
 
 snippet     pragma:go:cgo_dynamic_linker
 abbr        //go:cgo_dynamic_linker (use path as the dynamic linker in the final binary)
-	//go:cgo_dynamic_linker ${1:linker path}
-	${0}
+	//go:cgo_dynamic_linker ${1:linker path}${0}
 
 snippet     pragma:go:cgo_export_dynamic
 abbr        //go:cgo_export_dynamic (put the Go symbol named <local> into the program's exported symbol table as <remote>)
-	//go:cgo_export_dynamic ${1:local} ${2:remote}
-	${0}
+	//go:cgo_export_dynamic ${1:local} ${2:remote}${0}
 
 snippet     pragma:go:cgo_import_static
 abbr        //go:cgo_import_static (allow unresolved references to <local> in the go.o object file prepared for the host linker)
-	//go:cgo_import_static ${1:local}
-	${0}
+	//go:cgo_import_static ${1:local}${0}
 
 snippet     pragma:go:cgo_export_static
 abbr        //go:cgo_export_static (put the Go symbol named <local> into the program's exported symbol table as <remote>)
-	//go:cgo_export_static ${1:local} ${2:remote}
-	${0}
+	//go:cgo_export_static ${1:local} ${2:remote}${0}
 
 snippet     pragma:go:cgo_ldflag
 abbr        //go:cgo_ldflag (invoke the host linker with "<arg>")
-	//go:cgo_ldflag ${1:arg}
-	${0}
+	//go:cgo_ldflag ${1:arg}${0}
 
 snippet     pragma:go:generate
 abbr        //go:generate
-	//go:generate
-	${0}
+	//go:generate${0}

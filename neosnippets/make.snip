@@ -22,6 +22,12 @@ abbr           $target|...
 snippet     target-help
 alias       help
 abbr        help
+	##@ help
+
 	.PHONY: help
-	help:  ## Show help
-		@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {sub("\\\\\\\\n",sprintf("\n%22c"," "), $\$2);printf "\033[36m%-${1:15}s\033[0m %s\n", $\$1, $\$2}' \$(MAKEFILE_LIST)${0}
+	help:  ## Show make target help.
+		@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[33m<target>\033[0m\n"} /^[a-zA-Z_0-9\/_-]+:.*?##/ { printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)${0}
+
+snippet     devnull
+abbr        > /dev/null 2>&1
+	> /dev/null 2>&1

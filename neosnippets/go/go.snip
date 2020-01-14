@@ -137,7 +137,7 @@ abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
 snippet     fdiff
 abbr        cmp.Diff(1, 2); fmt.Printf("(+want, -got)", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		fmt.Printf("(+want, -got)\n%s\n", diff)
+		fmt.Printf("(-got, +want)\n%s\n", diff)
 	}
 
 # ------------------------------------------------------------------
@@ -165,7 +165,7 @@ abbr        log.Printf("$1: %v", spew.Sdump(...))
 snippet     ldiff
 abbr        cmp.Diff(1, 2); log.Printf("(+want, -got)", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		log.Printf("(+want, -got)\n%s\n", diff)
+		log.Printf("(-got, +want)\n%s\n", diff)
 	}
 
 # debug
@@ -212,7 +212,7 @@ abbr        t.Errorf("got %v, want %v", ...)
 snippet     tdiff
 abbr        cmp.Diff(1, 2); t.Errorf("(+want, -got)", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		t.Errorf("(+want, -got)\n%s", diff)
+		t.Errorf("(-got, +want)\n%s", diff)
 		return
 	}
 	${0}

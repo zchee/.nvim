@@ -22,8 +22,15 @@ abbr BSD Go Authors
 
 snippet     todo
 abbr				TODO($USER): ...
-	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): ${0}
+	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username')`): ${0}
 
 snippet     wip
 abbr				WIP($USER): ...
-	`substitute(&commentstring, '%s', '', 'g')`WIP(`get(g:, 'neosnippet_username', system('git config --get github.user --quite'))`): WIP${0}
+	`substitute(&commentstring, '%s', '', 'g')`WIP(`get(g:, 'neosnippet_username')`): ${0}
+
+# ------------------------------------------------------------------
+# foo, bar ...
+
+snippet     foobar
+abbr        foo, bar, baz ...
+	foo bar baz qux quux quuz corge grault garply waldo fred plugh xyzzy thud${0}

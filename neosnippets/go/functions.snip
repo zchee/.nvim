@@ -10,14 +10,14 @@ abbr IsExist
 	}
 	${0}
 
-snippet Handler
+snippet http-Handler
 abbr http.Handler(http.HandlerFunc(...))
 	http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		${1:w.WriteHeader(http.StatusOK)}
 	}))
 	${0}
 
-snippet HandlerFunc
+snippet http-HandlerFunc
 abbr http.HandlerFunc(...)
 	http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		${1:w.WriteHeader(http.StatusOK)}

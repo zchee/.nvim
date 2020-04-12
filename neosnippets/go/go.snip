@@ -8,15 +8,15 @@ include go/pragma.snip
 snippet     dco:compiler time check
 abbr        // compile time check
 	// compile time check whether the ${1:#:type} implements ${2:#:interface} interface.
-	var _ $2 = (*$1)(nil)
+	var _ $2 = (*$1)(nil)${0}
 
 snippet     doc:interface
 abbr        // $1 implements $2.
 	// ${1:#:func} implements ${2:#:interface}.${0}
 
-snippet     doc:stringer
-abbr        // String implements fmt.Stringer.
-	// String implements fmt.Stringer.${0}
+snippet     doc:string
+abbr        // String returns a string representation of the $1.
+	// String returns a string representation of the ${1:#:type}.
 
 snippet     doc:json.Marshaler
 abbr        // MarshalJSON implements json.Marshaler.
@@ -212,7 +212,7 @@ abbr        t.Errorf("got %v, want %v", ...)
 snippet     tdiff
 abbr        cmp.Diff(1, 2); t.Errorf("(+want, -got)", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		t.Errorf("(-got, +want)\n%s", diff)
+		t.Errorf("(+want, -got)\n%s", diff)
 		return
 	}
 	${0}

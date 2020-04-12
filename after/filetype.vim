@@ -52,8 +52,8 @@ augroup filetypedetect
 
   " filename
   autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/go/env                           setlocal filetype=sh
-  autocmd! BufNewFile,BufRead **/*kube/config                                   setlocal filetype=yaml
   autocmd! BufNewFile,BufRead **/*hal/config                                    setlocal filetype=yaml
+  autocmd! BufNewFile,BufRead **/*kube/config                                   setlocal filetype=yaml
   autocmd! BufNewFile,BufRead **/google-cloud-sdk/properties                    setlocal filetype=cfg
   autocmd! BufNewFile,BufRead *.gunk                                            setlocal filetype=gunk.go
   autocmd! BufNewFile,BufRead *[Dd]ockerfile\(\.|-\).*\(.vim\)\@!*              setlocal filetype=dockerfile
@@ -73,6 +73,7 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead Gopkg.lock                                        setlocal filetype=toml
   autocmd! BufNewFile,BufRead manifest                                          setlocal filetype=json
   autocmd! BufNewFile,BufRead osquery.conf                                      setlocal filetype=json
+  autocmd! BufNewFile,BufRead poetry.lock                                        setlocal filetype=toml
   autocmd! BufNewFile,BufRead proto.lock                                        setlocal filetype=json
 augroup END
 

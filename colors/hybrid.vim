@@ -268,7 +268,7 @@ execute 'hi! Folded'                       .s:fg_comment         .s:bg_darkcolum
 execute 'hi! FoldColumn'                   .s:fg_none            .s:bg_background     .s:fmt_none
 execute 'hi! SignColumn'                   .s:fg_none            .s:bg_darkcolumn     .s:fmt_none
 execute 'hi! Incsearch'                    .s:fg_none            .s:bg_selection      .s:fmt_none
-execute 'hi! LineNr'                       .s:fg_gray            .s:bg_none           .s:fmt_none
+execute 'hi! LineNr'                       .s:fg_gray            .s:bg_none           .s:fmt_bold
 execute 'hi! CursorLineNr'                 .s:fg_yellow          .s:bg_none           .s:fmt_bold
 execute 'hi! MatchParen'                   .s:fg_background      .s:bg_changebg       .s:fmt_none
 execute 'hi! ModeMsg'                      .s:fg_green           .s:bg_none           .s:fmt_none

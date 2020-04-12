@@ -14,15 +14,16 @@
         }
     },
     "gopls": {
-        "completionDocumentation": true,
-        "usePlaceholders": true,
-        "deepCompletion": true,
         "completeUnimported": false,
-        "matcher": "fuzzy",
+        "completionBudget": "0",
+        "completionDocumentation": true,
+        "deepCompletion": true,
         "hoverKind": "FullDocumentation",
+        "matcher": "fuzzy",
         "staticcheck": false,
-        "verboseOutput": true,
-        "tempModfile": false
+        "tempModfile": true,
+        "usePlaceholders": true,
+        "verboseOutput": true
     },
     "http": {
         "proxy": "",
@@ -35,66 +36,53 @@
         "schemas": [
             {
                 "fileMatch": [
-                    "swagger.json"
+                    "swagger.json",
+                    "**/swagger-spec/*.json"
                 ],
-                "schema": {
-                    "type": "array"
-                },
-                "url": "file:///Users/zchee/.config/nvim/lsp/schema/swagger-2.0.jsonschema"
+                "url": "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json"
             },
             {
                 "fileMatch": [
-                    "openapi.json"
+                    "openapi.json",
+                    "**/openapi-spec/*.json"
                 ],
-                "schema": {
-                    "type": "array"
-                },
-                "url": "file:///Users/zchee/.config/nvim/lsp/schema/openapi.jsonschema"
+                "url": "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json"
             },
             {
                 "fileMatch": [
                     "*.jsonschema"
                 ],
-                "schema": {
-                    "type": "object"
-                },
                 "url": "file:///Users/zchee/.config/nvim/lsp/schema/jsonschema-draft-07.jsonschema"
             },
             {
                 "fileMatch": [
                     "openrpc.json"
                 ],
-                "schema": {
-                    "type": "array"
-                },
                 "url": "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema"
             },
             {
                 "fileMatch": [
                     "package.json"
                 ],
-                "schema": {
-                    "type": "array"
-                },
                 "url": "http://json.schemastore.org/package"
             },
             {
                 "fileMatch": [
                     "tsconfig.json"
                 ],
-                "schema": {
-                    "type": "array"
-                },
                 "url": "http://json.schemastore.org/tsconfig"
             },
             {
                 "fileMatch": [
                     "manifest.json"
                 ],
-                "schema": {
-                    "type": "array"
-                },
                 "url": "http://json.schemastore.org/chrome-manifest"
+            },
+            {
+                "fileMatch": [
+                    "*discovery.json"
+                ],
+                "url": "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json"
             }
         ]
     },
@@ -129,37 +117,58 @@
         }
     },
     "rust": {
-        "all_features": true,
+        "all_features": false,
         "all_targets": false,
-        "build_lib": true,
+        "build_lib": false,
         "build_on_save": false,
         "clippy_preference": "opt-in",
         "full_docs": true,
         "show_hover_context": true,
-        "target": "x86_64-apple-darwin",
+        "sysroot": "",
+        "target": "",
         "unstable_features": true
+    },
+    "vimls": {
+        "diagnostic": {
+            "enable": true
+        },
+        "indexes": {
+            "count": 3,
+            "gap": 100,
+            "projectRootPatterns": [
+                ".git",
+                "autoload",
+                "plugin"
+            ],
+            "runtimepath": true
+        },
+        "iskeyword": "@,48-57,_,192-255,-#",
+        "runtimepath": "",
+        "suggest": {
+            "fromRuntimepath": false,
+            "fromVimruntime": true
+        },
+        "vimruntime": ""
     },
     "yaml": {
         "completion": true,
         "format": {
             "bracketSpacing": true,
             "enable": true,
-            "proseWrap": true,
             "singleQuote": false
         },
         "hover": true,
-        "validate": true,
         "schemas": {
-            "file:///Users/zchee/.config/nvim/lsp/schema/appengine-app.jsonschema": "**/app*.yaml",
-            "file:///Users/zchee/.config/nvim/lsp/schema/appveyor.jsonschema": "**/*appveyor.yml",
-            "file:///Users/zchee/.config/nvim/lsp/schema/azure-pipelines.jsonschema": "**/azure-pipelines.yml",
-            "file:///Users/zchee/.config/nvim/lsp/schema/circleci.jsonschema": "**/.circleci/config.yml",
-            "file:///Users/zchee/.config/nvim/lsp/schema/cloudbuild.jsonschema": "**/*cloudbuild.yaml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/appengine-app.jsonschema": [ "**/app*.yaml"] ,
+            "file:///Users/zchee/.config/nvim/lsp/schema/azure-pipelines.jsonschema": [ "**/azure-pipelines.yml" ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/circleci.jsonschema": [ ".circleci/config.yml" ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/cloudbuild.jsonschema": [ "**/*cloudbuild.yaml" ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/codecov.jsonschema": [ "*codecov.yml" ],
             "file:///Users/zchee/.config/nvim/lsp/schema/docker-compose.jsonschema": [
                 "**/*docker-compose*.yaml",
                 "**/*docker-compose*.yml"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/kaitai-struct-compiler.jsonschema": "**/*.ksy",
+            "file:///Users/zchee/.config/nvim/lsp/schema/kaitai-struct-compiler.jsonschema": [ "**/*.ksy" ],
             "file:///Users/zchee/.config/nvim/lsp/schema/kubernetes.jsonschema": [
                 "**/kubernetes/*.yaml",
                 "**/spinnaker/**/*.yaml",
@@ -167,13 +176,23 @@
                 "**/config/*.yaml",
                 "**/kind/**/*.yaml"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/mkdocs.jsonschema": "**/mkdocs.yml",
-            "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema": "**/openrpc.yaml",
-            "file:///Users/zchee/.config/nvim/lsp/schema/openapi.jsonschema": "**/openapi.yaml",
-            "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/master/docs/content/en/schemas/v2alpha3.json": "**/*skaffold.yaml",
-            "file:///Users/zchee/.config/nvim/lsp/schema/swagger-2.0.jsonschema": "**/*swagger.yaml",
-            "file:///Users/zchee/.config/nvim/lsp/schema/travis.jsonschema": "**/.travis.yml",
-            "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/codecov.json": "**/*codecov.yml",
+            "file:///Users/zchee/.config/nvim/lsp/schema/mkdocs.jsonschema": [ "**/mkdocs.yml" ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema": [ "**/openrpc.yaml" ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
+                "**/openapi.yaml",
+                "openapi-spec/*.yaml"
+            ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json": [
+                "**/*swagger.yaml",
+                "swagger-spec/*.yaml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/travis.jsonschema": [ "**/.travis.yml" ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/appveyor.json": [ "**/*appveyor.yml" ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/compile-commands.json": [ "compile_commands.json" ],
+            "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json": [
+                "**/*discovery.yaml"
+            ],
+            "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/master/docs/content/en/schemas/v2alpha3.json": [ "**/*skaffold.yaml" ],
             "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json": [
                 "**/action.yaml",
                 "**/action.yml"
@@ -187,6 +206,7 @@
                 "**/kustomizeconfig.yaml"
             ],
             "url": "globPattern"
-        }
+        },
+        "validate": true
     }
 }

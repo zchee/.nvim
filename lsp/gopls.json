@@ -1,0 +1,14 @@
+{
+    "gopls": {
+        "completeUnimported": false,
+        "completionBudget": "0",
+        "completionDocumentation": true,
+        "deepCompletion": true,
+        "hoverKind": "FullDocumentation",
+        "matcher": "fuzzy",
+        "staticcheck": false,
+        "tempModfile": true,
+        "usePlaceholders": true,
+        "verboseOutput": true
+    }
+}

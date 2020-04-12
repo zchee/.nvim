@@ -2,15 +2,15 @@
     "yaml": {
         "completion": true,
         "format": {
-            "bracketSpacing": true,
             "enable": true,
+            "bracketSpacing": true,
             "proseWrap": true,
             "singleQuote": false
         },
         "hover": true,
-        "validate": true,
+        "validate": false,
         "schemas": {
-            "file:///Users/zchee/.config/nvim/lsp/schema/kubernetes.jsonschema": ["/*"]
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/kubernetes.jsonschema": ["/*"]
         }
     }
 }

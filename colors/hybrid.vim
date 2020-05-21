@@ -248,59 +248,6 @@ execute "let s:fmt_reverse_bold     = ' gui=NONE".s:r.s:b.s:indexed ."'"
 " execute "let s:sp_darkbar           = ' guisp=". s:palette.darkbar . s:indexed    ."'"
 
 " ----------------------------------------------------------------------------
-" Highlighting:
-
-execute 'hi! ColorColumn'                  .s:fg_none            .s:bg_black          .s:fmt_none
-execute 'hi! Conceal'                      .s:fg_none            .s:bg_line           .s:fmt_none
-execute 'hi! Cursor'                       .s:fg_white           .s:bg_red            .s:fmt_none
-execute 'hi! lCursor'                      .s:fg_white           .s:bg_red            .s:fmt_none
-execute 'hi! CursorIM'                     .s:fg_white           .s:bg_line           .s:fmt_none
-execute 'hi! CursorColumn'                 .s:fg_white           .s:bg_line           .s:fmt_none
-execute 'hi! CursorLine'                   .s:fg_none            .s:bg_nontext        .s:fmt_none
-execute 'hi! Directory'                    .s:fg_blue            .s:bg_none           .s:fmt_none
-execute 'hi! DiffAdd'                      .s:fg_addfg           .s:bg_addbg          .s:fmt_none
-execute 'hi! DiffChange'                   .s:fg_changefg        .s:bg_changebg       .s:fmt_none
-execute 'hi! DiffDelete'                   .s:fg_background      .s:bg_red            .s:fmt_none
-execute 'hi! DiffText'                     .s:fg_background      .s:bg_blue           .s:fmt_none
-execute 'hi! ErrorMsg'                     .s:fg_red             .s:bg_background     .s:fmt_standout
-execute 'hi! VertSplit'                    .s:fg_window          .s:bg_window         .s:fmt_none
-execute 'hi! Folded'                       .s:fg_comment         .s:bg_darkcolumn     .s:fmt_none
-execute 'hi! FoldColumn'                   .s:fg_none            .s:bg_background     .s:fmt_none
-execute 'hi! SignColumn'                   .s:fg_none            .s:bg_darkcolumn     .s:fmt_none
-execute 'hi! Incsearch'                    .s:fg_none            .s:bg_selection      .s:fmt_none
-execute 'hi! LineNr'                       .s:fg_gray            .s:bg_none           .s:fmt_bold
-execute 'hi! CursorLineNr'                 .s:fg_yellow          .s:bg_none           .s:fmt_bold
-execute 'hi! MatchParen'                   .s:fg_background      .s:bg_changebg       .s:fmt_none
-execute 'hi! ModeMsg'                      .s:fg_green           .s:bg_none           .s:fmt_none
-execute 'hi! MoreMsg'                      .s:fg_green           .s:bg_none           .s:fmt_none
-execute 'hi! Pmenu'                        .s:fg_foreground      .s:bg_darkbar        .s:fmt_none
-execute 'hi! PmenuSel'                     .s:fg_foreground      .s:bg_selection      .s:fmt_reverse
-execute 'hi! PmenuSbar'                    .s:fg_background      .s:bg_gray           .s:fmt_none
-execute 'hi! PmenuThumb'                   .s:fg_background      .s:bg_foreground     .s:fmt_none
-execute 'hi! Question'                     .s:fg_green           .s:bg_none           .s:fmt_none
-execute 'hi! Search'                       .s:fg_none            .s:bg_selection      .s:fmt_none
-execute 'hi! SpecialKey'                   .s:fg_selection       .s:bg_none           .s:fmt_none
-execute 'hi! SpellBad'                     .s:fg_red             .s:bg_darkred        .s:fmt_underline
-execute 'hi! SpellCap'                     .s:fg_blue            .s:bg_darkblue       .s:fmt_underline
-execute 'hi! SpellLocal'                   .s:fg_aqua            .s:bg_darkcyan       .s:fmt_underline
-execute 'hi! SpellRare'                    .s:fg_purple          .s:bg_darkpurple     .s:fmt_underline
-execute 'hi! StatusLine'                   .s:fg_darkgray        .s:bg_foreground     .s:fmt_reverse
-execute 'hi! StatusLineNC'                 .s:fg_window          .s:bg_comment        .s:fmt_reverse
-execute 'hi! TabLine'                      .s:fg_foreground      .s:bg_line           .s:fmt_none
-execute 'hi! TabLineFill'                  .s:fg_line            .s:bg_window         .s:fmt_none
-execute 'hi! TabLineSel'                   .s:fg_foreground      .s:bg_gray           .s:fmt_none
-execute 'hi! Title'                        .s:fg_yellow          .s:bg_none           .s:fmt_none
-execute 'hi! Visual'                       .s:fg_none            .s:bg_selection      .s:fmt_none
-execute 'hi! VisualNos'                    .s:fg_none            .s:bg_selection      .s:fmt_none
-execute 'hi! WarningMsg'                   .s:fg_red             .s:bg_none           .s:fmt_none
-execute 'hi! LongLineWarning'              .s:fg_none            .s:bg_longlinewarn   .s:fmt_underline
-execute 'hi! WildMenu'                     .s:fg_yellow          .s:bg_selection      .s:fmt_none
-" {Nvim}
-execute 'hi! EndOfBuffer'                  .s:fg_nontext         .s:bg_none           .s:fmt_none
-execute 'hi! TermCursor'                   .s:fg_orange          .s:bg_blue           .s:fmt_none
-execute 'hi! TermCursorNC'                 .s:fg_yellow          .s:bg_black          .s:fmt_none
-
-" ----------------------------------------------------------------------------
 " Generic Syntax Highlight:
 " see :help group-name
 
@@ -356,6 +303,61 @@ execute 'hi! qfLineNr'                     .s:fg_yellow          .s:bg_none     
 "   qfError"
 
 execute 'hi! ExtraTab'                     .s:fg_none            .s:bg_none           .s:fmt_none
+
+" ----------------------------------------------------------------------------
+" Highlighting:
+
+execute 'hi! ColorColumn'                  .s:fg_none            .s:bg_black          .s:fmt_none
+execute 'hi! Conceal'                      .s:fg_none            .s:bg_line           .s:fmt_none
+execute 'hi! Cursor'                       .s:fg_white           .s:bg_red            .s:fmt_none
+execute 'hi! lCursor'                      .s:fg_white           .s:bg_red            .s:fmt_none
+execute 'hi! CursorIM'                     .s:fg_white           .s:bg_line           .s:fmt_none
+execute 'hi! CursorColumn'                 .s:fg_white           .s:bg_line           .s:fmt_none
+execute 'hi! CursorLine'                   .s:fg_none            .s:bg_nontext        .s:fmt_none
+execute 'hi! Directory'                    .s:fg_blue            .s:bg_none           .s:fmt_none
+execute 'hi! DiffAdd'                      .s:fg_addfg           .s:bg_addbg          .s:fmt_none
+execute 'hi! DiffChange'                   .s:fg_changefg        .s:bg_changebg       .s:fmt_none
+execute 'hi! DiffDelete'                   .s:fg_background      .s:bg_red            .s:fmt_none
+execute 'hi! DiffText'                     .s:fg_background      .s:bg_blue           .s:fmt_none
+execute 'hi! ErrorMsg'                     .s:fg_red             .s:bg_background     .s:fmt_standout
+execute 'hi! VertSplit'                    .s:fg_window          .s:bg_window         .s:fmt_none
+execute 'hi! Folded'                       .s:fg_comment         .s:bg_darkcolumn     .s:fmt_none
+execute 'hi! FoldColumn'                   .s:fg_none            .s:bg_background     .s:fmt_none
+execute 'hi! SignColumn'                   .s:fg_none            .s:bg_darkcolumn     .s:fmt_none
+execute 'hi! Incsearch'                    .s:fg_none            .s:bg_selection      .s:fmt_none
+execute 'hi! LineNr'                       .s:fg_gray            .s:bg_none           .s:fmt_bold
+execute 'hi! CursorLineNr'                 .s:fg_yellow          .s:bg_none           .s:fmt_bold
+execute 'hi! MatchParen'                   .s:fg_background      .s:bg_changebg       .s:fmt_none
+execute 'hi! ModeMsg'                      .s:fg_green           .s:bg_none           .s:fmt_none
+execute 'hi! MoreMsg'                      .s:fg_green           .s:bg_none           .s:fmt_none
+
+execute 'hi! Pmenu'                        .s:fg_foreground      .s:bg_darkbar        .s:fmt_none
+execute 'hi! PmenuSel'                     .s:fg_foreground      .s:bg_selection      .s:fmt_reverse
+execute 'hi! PmenuSbar'                    .s:fg_background      .s:bg_gray           .s:fmt_none
+execute 'hi! PmenuThumb'                   .s:fg_background      .s:bg_foreground     .s:fmt_none
+
+execute 'hi! Question'                     .s:fg_green           .s:bg_none           .s:fmt_none
+execute 'hi! Search'                       .s:fg_none            .s:bg_selection      .s:fmt_none
+execute 'hi! SpecialKey'                   .s:fg_selection       .s:bg_none           .s:fmt_none
+execute 'hi! SpellBad'                     .s:fg_red             .s:bg_darkred        .s:fmt_underline
+execute 'hi! SpellCap'                     .s:fg_blue            .s:bg_darkblue       .s:fmt_underline
+execute 'hi! SpellLocal'                   .s:fg_aqua            .s:bg_darkcyan       .s:fmt_underline
+execute 'hi! SpellRare'                    .s:fg_purple          .s:bg_darkpurple     .s:fmt_underline
+execute 'hi! StatusLine'                   .s:fg_darkgray        .s:bg_foreground     .s:fmt_reverse
+execute 'hi! StatusLineNC'                 .s:fg_window          .s:bg_comment        .s:fmt_reverse
+execute 'hi! TabLine'                      .s:fg_foreground      .s:bg_line           .s:fmt_none
+execute 'hi! TabLineFill'                  .s:fg_line            .s:bg_window         .s:fmt_none
+execute 'hi! TabLineSel'                   .s:fg_foreground      .s:bg_gray           .s:fmt_none
+execute 'hi! Title'                        .s:fg_yellow          .s:bg_none           .s:fmt_none
+execute 'hi! Visual'                       .s:fg_none            .s:bg_selection      .s:fmt_none
+execute 'hi! VisualNos'                    .s:fg_none            .s:bg_selection      .s:fmt_none
+execute 'hi! WarningMsg'                   .s:fg_red             .s:bg_none           .s:fmt_none
+execute 'hi! LongLineWarning'              .s:fg_none            .s:bg_longlinewarn   .s:fmt_underline
+execute 'hi! WildMenu'                     .s:fg_yellow          .s:bg_selection      .s:fmt_none
+" {Nvim}
+execute 'hi! EndOfBuffer'                  .s:fg_nontext         .s:bg_none           .s:fmt_none
+execute 'hi! TermCursor'                   .s:fg_orange          .s:bg_blue           .s:fmt_none
+execute 'hi! TermCursorNC'                 .s:fg_yellow          .s:bg_black          .s:fmt_none
 
 " Diff Syntax Highlighting:
 " ----------------------------------------------------------------------------

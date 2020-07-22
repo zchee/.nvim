@@ -1,212 +1,36 @@
 {
-    "docker": {
-        "languageserver": {
-            "diagnostics": {
-                "deprecatedMaintainer": "error",
-                "directiveCasing": "warning",
-                "emptyContinuationLine": "warning",
-                "instructionCasing": "warning",
-                "instructionCmdMultiple": "warning",
-                "instructionEntrypointMultiple": "warning",
-                "instructionHealthcheckMultiple": "warning",
-                "instructionJSONInSingleQuotes": "warning"
-            }
-        }
-    },
     "gopls": {
-        "completeUnimported": false,
-        "completionBudget": "0",
-        "completionDocumentation": true,
-        "deepCompletion": true,
-        "hoverKind": "FullDocumentation",
-        "matcher": "fuzzy",
-        "staticcheck": false,
-        "tempModfile": true,
+        "completionDocumentation": false,
         "usePlaceholders": true,
-        "verboseOutput": true
-    },
-    "http": {
-        "proxy": "",
-        "proxyStrictSSL": true
-    },
-    "json": {
-        "format": {
-            "enable": true
+        "deepCompletion": true,
+        "completeUnimported": true,
+        "completionBudget": "0",
+        "matcher": "fuzzy",
+        "symbolMatcher": "fuzzy",
+        "symbolStyle": "full",
+        "hoverKind": "FullDocumentation",
+        "linksInHover": false,
+        "importShortcut": "both",
+        "analyses": {
+            "fillreturns": true,
+            "fillstruct": true,
+            "nonewvars": true,
+            "undeclaredname": true,
+            "unusedparams": true
         },
-        "schemas": [
-            {
-                "fileMatch": [
-                    "swagger.json",
-                    "**/swagger-spec/*.json"
-                ],
-                "url": "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json"
-            },
-            {
-                "fileMatch": [
-                    "openapi.json",
-                    "**/openapi-spec/*.json"
-                ],
-                "url": "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json"
-            },
-            {
-                "fileMatch": [
-                    "*.jsonschema"
-                ],
-                "url": "file:///Users/zchee/.config/nvim/lsp/schema/jsonschema-draft-07.jsonschema"
-            },
-            {
-                "fileMatch": [
-                    "openrpc.json"
-                ],
-                "url": "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema"
-            },
-            {
-                "fileMatch": [
-                    "package.json"
-                ],
-                "url": "http://json.schemastore.org/package"
-            },
-            {
-                "fileMatch": [
-                    "tsconfig.json"
-                ],
-                "url": "http://json.schemastore.org/tsconfig"
-            },
-            {
-                "fileMatch": [
-                    "manifest.json"
-                ],
-                "url": "http://json.schemastore.org/chrome-manifest"
-            },
-            {
-                "fileMatch": [
-                    "*discovery.json"
-                ],
-                "url": "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json"
-            }
-        ]
-    },
-    "pyls": {
-        "configurationSources": "flake8",
-        "plugins": {
-            "flake8": {
-                "enabled": true
-            },
-            "jedi_completion": {
-                "enabled": true,
-                "include_params": true
-            },
-            "jedi_definition": {
-                "enabled": true,
-                "follow_builtin_imports": true,
-                "follow_imports": true
-            },
-            "jedi_hover": {
-                "enabled": true
-            },
-            "jedi_references": {
-                "enabled": true
-            },
-            "jedi_signature_help": {
-                "enabled": true
-            },
-            "jedi_symbols": {
-                "all_scopes": true,
-                "enabled": true
-            }
-        }
-    },
-    "rust": {
-        "all_features": false,
-        "all_targets": false,
-        "build_lib": false,
-        "build_on_save": false,
-        "clippy_preference": "opt-in",
-        "full_docs": true,
-        "show_hover_context": true,
-        "sysroot": "",
-        "target": "",
-        "unstable_features": true
-    },
-    "vimls": {
-        "diagnostic": {
-            "enable": true
+        "codelens": {
+            "test": true,
+            "generate": true,
+            "tidy": true,
+            "vendor": true,
+            "upgrade_dependency": true,
+            "regenerate_cgo": true,
+            "fill_struct": true
         },
-        "indexes": {
-            "count": 3,
-            "gap": 100,
-            "projectRootPatterns": [
-                ".git",
-                "autoload",
-                "plugin"
-            ],
-            "runtimepath": true
-        },
-        "iskeyword": "@,48-57,_,192-255,-#",
-        "runtimepath": "",
-        "suggest": {
-            "fromRuntimepath": false,
-            "fromVimruntime": true
-        },
-        "vimruntime": ""
-    },
-    "yaml": {
-        "completion": true,
-        "format": {
-            "bracketSpacing": true,
-            "enable": true,
-            "singleQuote": false
-        },
-        "hover": true,
-        "schemas": {
-            "file:///Users/zchee/.config/nvim/lsp/schema/appengine-app.jsonschema": [ "**/app*.yaml"] ,
-            "file:///Users/zchee/.config/nvim/lsp/schema/azure-pipelines.jsonschema": [ "**/azure-pipelines.yml" ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/circleci.jsonschema": [ ".circleci/config.yml" ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/cloudbuild.jsonschema": [ "**/*cloudbuild.yaml" ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/codecov.jsonschema": [ "*codecov.yml" ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/docker-compose.jsonschema": [
-                "**/*docker-compose*.yaml",
-                "**/*docker-compose*.yml"
-            ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/kaitai-struct-compiler.jsonschema": [ "**/*.ksy" ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/kubernetes.jsonschema": [
-                "**/kubernetes/*.yaml",
-                "**/spinnaker/**/*.yaml",
-                "**/kubectl-edit-*.yaml",
-                "**/config/*.yaml",
-                "**/kind/**/*.yaml"
-            ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/mkdocs.jsonschema": [ "**/mkdocs.yml" ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema": [ "**/openrpc.yaml" ],
-            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
-                "**/openapi.yaml",
-                "openapi-spec/*.yaml"
-            ],
-            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json": [
-                "**/*swagger.yaml",
-                "swagger-spec/*.yaml"
-            ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/travis.jsonschema": [ "**/.travis.yml" ],
-            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/appveyor.json": [ "**/*appveyor.yml" ],
-            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/compile-commands.json": [ "compile_commands.json" ],
-            "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json": [
-                "**/*discovery.yaml"
-            ],
-            "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/master/docs/content/en/schemas/v2alpha3.json": [ "**/*skaffold.yaml" ],
-            "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json": [
-                "**/action.yaml",
-                "**/action.yml"
-            ],
-            "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json": [
-                "**/.github/**/*.yaml",
-                "**/.github/**/*.yml"
-            ],
-            "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/kustomization.json": [
-                "**/kustomization.yaml",
-                "**/kustomizeconfig.yaml"
-            ],
-            "url": "globPattern"
-        },
-        "validate": true
+        "staticcheck": false,
+        "verboseOutput": true,
+        "verboseWorkDoneProgress": true,
+        "tempModfile": true,
+        "gofumpt": true
     }
 }

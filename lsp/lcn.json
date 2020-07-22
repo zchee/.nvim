@@ -1,0 +1,298 @@
+{
+    "clangd": {
+        "syncFileEvents": true,
+        "semanticHighlighting": false
+    },
+    "docker": {
+        "languageserver": {
+            "diagnostics": {
+                "deprecatedMaintainer": "error",
+                "directiveCasing": "warning",
+                "emptyContinuationLine": "warning",
+                "instructionCasing": "warning",
+                "instructionCmdMultiple": "warning",
+                "instructionEntrypointMultiple": "warning",
+                "instructionHealthcheckMultiple": "warning",
+                "instructionJSONInSingleQuotes": "warning"
+            }
+        }
+    },
+    "gopls": {
+        "completionDocumentation": false,
+        "usePlaceholders": true,
+        "deepCompletion": true,
+        "completeUnimported": true,
+        "completionBudget": "0",
+        "matcher": "fuzzy",
+        "symbolMatcher": "fuzzy",
+        "symbolStyle": "full",
+        "hoverKind": "FullDocumentation",
+        "linksInHover": false,
+        "importShortcut": "both",
+        "analyses": {
+            "fillreturns": true,
+            "fillstruct": true,
+            "nonewvars": true,
+            "undeclaredname": true,
+            "unusedparams": true
+        },
+        "codelens": {
+            "test": true,
+            "generate": true,
+            "tidy": true,
+            "vendor": true,
+            "upgrade_dependency": true,
+            "regenerate_cgo": true,
+            "fill_struct": true
+        },
+        "staticcheck": false,
+        "verboseOutput": true,
+        "verboseWorkDoneProgress": true,
+        "tempModfile": true,
+        "gofumpt": true
+    },
+    "http": {
+        "proxy": "",
+        "proxyStrictSSL": true
+    },
+    "json": {
+        "format": {
+            "enable": true
+        },
+        "schemas": [
+            {
+                "fileMatch": [
+                    "swagger.json",
+                    "**/swagger-spec/*.json"
+                ],
+                "url": "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json"
+            },
+            {
+                "fileMatch": [
+                    "openapi.json",
+                    "**/openapi-spec/*.json"
+                ],
+                "url": "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json"
+            },
+            {
+                "fileMatch": [
+                    "*.jsonschema"
+                ],
+                "url": "file:///Users/zchee/.config/nvim/lsp/schema/jsonschema-draft-07.jsonschema"
+            },
+            {
+                "fileMatch": [
+                    "openrpc.json"
+                ],
+                "url": "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema"
+            },
+            {
+                "fileMatch": [
+                    "package.json"
+                ],
+                "url": "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/package.json"
+            },
+            {
+                "fileMatch": [
+                    "tsconfig.json"
+                ],
+                "url": "http://json.schemastore.org/tsconfig"
+            },
+            {
+                "fileMatch": [
+                    "manifest.json"
+                ],
+                "url": "http://json.schemastore.org/chrome-manifest"
+            },
+            {
+                "fileMatch": [
+                    "*discovery.json"
+                ],
+                "url": "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json"
+            }
+        ]
+    },
+    "pyright": {
+        "typeCheckingMode": "strict",
+        "useLibraryCodeForTypes": false,
+        "analysis": {
+            "typeshedPaths": "/Users/zchee/src/github.com/microsoft/pyright/client/typeshed-fallback",
+            "autoSearchPaths": true,
+            "logLevel": "info",
+            "diagnosticMode": "workspace"
+        },
+        "pythonPath": "/usr/local/opt/python@3.8/bin/python3"
+    },
+    "pyls": {
+        "configurationSources": "flake8",
+        "plugins": {
+            "flake8": {
+                "enabled": true
+            },
+            "jedi_completion": {
+                "enabled": true,
+                "include_params": true
+            },
+            "jedi_definition": {
+                "enabled": true,
+                "follow_builtin_imports": true,
+                "follow_imports": true
+            },
+            "jedi_hover": {
+                "enabled": true
+            },
+            "jedi_references": {
+                "enabled": true
+            },
+            "jedi_signature_help": {
+                "enabled": true
+            },
+            "jedi_symbols": {
+                "all_scopes": true,
+                "enabled": true
+            }
+        }
+    },
+    "rust": {
+        "all_features": false,
+        "all_targets": false,
+        "build_lib": false,
+        "build_on_save": false,
+        "clippy_preference": "opt-in",
+        "full_docs": true,
+        "show_hover_context": true,
+        "sysroot": "",
+        "target": "",
+        "unstable_features": false
+    },
+    "rust-analyzer": {
+        "diagnostics.enable": true,
+        "lruCapacity": 500,
+        "files.watcher": "notify",
+        "files.exclude": [],
+        "notifications.workspaceLoaded": true,
+        "notifications.cargoTomlNotFound": true,
+        "cargo.noDefaultFeatures": false,
+        "cargo.allFeatures": true,
+        "cargo.features": [],
+        "cargo.loadOutDirsFromCheck": false,
+        "rustfmt.extraArgs": [],
+        "checkOnSave.enable": false,
+        "checkOnSave.extraArgs": [],
+        "checkOnSave.allTargets": false,
+        "inlayHints.typeHints": true,
+        "inlayHints.chainingHints": true,
+        "inlayHints.maxLength": 20,
+        "completion.addCallParenthesis": true,
+        "completion.addCallArgumentSnippets": false,
+        "completion.postfix.enable": false,
+        "callInfo.full": true,
+        "updates.channel": "nightly",
+        "updates.askBeforeDownload": false,
+        "serverPath": "/usr/local/rust/cargo/bin/rust-analyzer",
+        "trace.server": "off",
+        "trace.extension": false,
+        "procMacro.enable": false
+    },
+    "vimls": {
+        "initializationOptions": {
+            "iskeyword": "@,48-57,_,192-255,-#",
+            "vimruntime": "/usr/local/share/nvim/runtime",
+            "runtimepath": "/usr/local/share/nvim/runtime,/Users/zchee/.cache/nvim/dein/.cache/init.vim/.dein",
+            "diagnostic": {
+                "enable": true
+            },
+            "indexes": {
+                "runtimepath": true,
+                "gap": 100,
+                "count": 3,
+                "projectRootPatterns": [
+                    ".git",
+                    "autoload",
+                    "plugin"
+                ]
+            },
+            "suggest": {
+                "fromVimruntime": true,
+                "fromRuntimepath": true
+            }
+        },
+        "filetypes": [
+            "vim"
+        ]
+    },
+    "yaml": {
+        "completion": true,
+        "format": {
+            "bracketSpacing": true,
+            "enable": true,
+            "singleQuote": false
+        },
+        "hover": true,
+        "schemas": {
+            "file:///Users/zchee/.config/nvim/lsp/schema/appengine-app.jsonschema": [
+                "app*.yaml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/azure-pipelines.jsonschema": [
+                "azure-pipelines.yml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/circleci.jsonschema": [
+                "**/.circleci/config.yml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/cloudbuild.jsonschema": [
+                "*cloudbuild.yaml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/codecov.jsonschema": [
+                "**/.codecov.yml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/docker-compose.jsonschema": [
+                "*docker-compose*.yaml",
+                "*docker-compose*.yml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/kaitai-struct-compiler.jsonschema": [
+                "*.ksy"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/mkdocs.jsonschema": [
+                "mkdocs.yml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema": [
+                "openrpc.yaml"
+            ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
+                "openapi.yaml",
+                "**/openapi-spec/*.yaml"
+            ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json": [
+                "*swagger.yaml",
+                "**/swagger-spec/*.yaml"
+            ],
+            "file:///Users/zchee/.config/nvim/lsp/schema/travis.jsonschema": [
+                ".travis.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/appveyor.json": [
+                "*appveyor.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/compile-commands.json": [
+                "compile_commands.json"
+            ],
+            "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json": [
+                "*discovery.yaml"
+            ],
+            "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/master/docs/content/en/schemas/v2beta5.json": [
+                "*skaffold*.yaml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/github-action.json": [
+                "action.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/github-workflow.json": [
+                "**/.github/workflows/*.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/kustomization.json": [
+                "kustomization.yaml",
+                "kustomizeconfig.yaml"
+            ],
+            "url": "globPattern"
+        },
+        "validate": true
+    }
+}

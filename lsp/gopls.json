@@ -1,14 +1,36 @@
 {
     "gopls": {
-        "completeUnimported": false,
-        "completionBudget": "0",
-        "completionDocumentation": true,
-        "deepCompletion": true,
-        "hoverKind": "FullDocumentation",
-        "matcher": "fuzzy",
-        "staticcheck": false,
-        "tempModfile": true,
+        "completionDocumentation": false,
         "usePlaceholders": true,
-        "verboseOutput": true
+        "deepCompletion": true,
+        "completeUnimported": true,
+        "completionBudget": "0",
+        "matcher": "fuzzy",
+        "symbolMatcher": "fuzzy",
+        "symbolStyle": "full",
+        "hoverKind": "FullDocumentation",
+        "linksInHover": false,
+        "importShortcut": "both",
+        "analyses": {
+            "fillreturns": true,
+            "fillstruct": true,
+            "nonewvars": true,
+            "undeclaredname": true,
+            "unusedparams": true
+        },
+        "codelens": {
+            "test": true,
+            "generate": true,
+            "tidy": true,
+            "vendor": true,
+            "upgrade_dependency": true,
+            "regenerate_cgo": true,
+            "fill_struct": true
+        },
+        "staticcheck": false,
+        "verboseOutput": true,
+        "verboseWorkDoneProgress": true,
+        "tempModfile": true,
+        "gofumpt": true
     }
 }

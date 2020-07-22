@@ -24,9 +24,6 @@ let $TERM            = 'xterm-256color'
 unlet $RUSTC_WRAPPER
 unlet $RUSTFLAGS
 
-let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-
 " -------------------------------------------------------------------------------------------------
 " Neovim Configs:
 
@@ -34,8 +31,25 @@ let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 let g:loaded_python_provider    = 0                              " $VIMRUNTIME/autoload/provider/python.vim
 let g:python3_host_prog         = '/usr/local/opt/python@3.8/bin/python3'
 let g:loaded_node_provider      = 0                              " $VIMRUNTIME/autoload/provider/node.vim
-let g:node_host_prog            = '/usr/local/var/nodebrew/bin/neovim-node-host'
+let g:node_host_prog            = 0                              " '/usr/local/var/nodebrew/bin/neovim-node-host'
 let g:loaded_ruby_provider      = 0                              " $VIMRUNTIME/autoload/provider/ruby.vim
+let g:loaded_perl_provider      = 0                              " $VIMRUNTIME/autoload/provider/perl.vim
+
+
+let s:pbcopy    = '/usr/bin/pbcopy'
+let s:pbpaste   = '/usr/bin/pbpaste'
+let g:clipboard = {
+      \   'name': 'macOS-pbcopy',
+      \   'copy': {
+      \      '+': '/usr/bin/pbcopy',
+      \      '*': '/usr/bin/pbcopy',
+      \    },
+      \   'paste': {
+      \      '+': '/usr/bin/pbpaste',
+      \      '*': '/usr/bin/pbpaste',
+      \   },
+      \   'cache_enabled': 1,
+      \ }
 
 let g:no_man_maps = 0
 let g:ft_man_folding_enable = 0

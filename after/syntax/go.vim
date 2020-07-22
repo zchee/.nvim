@@ -1,6 +1,9 @@
 if get(g:, 'go_highlight_error', 0)
-  syn keyword   goStdlibErr       err
-  hi def link   goStdlibErr       Error
+  syn keyword   goErr             err
+  hi            goErr             gui=bold      guifg=#ff005f  guibg=NONE     guisp=fg_indexed,bg_indexed
+
+  syn keyword   goErrorType       error
+  hi def link   goErrorType       Error
 endif
 
 if get(g:, 'go_highlight_return', 0)

@@ -22,9 +22,11 @@ let g:did_load_filetypes_userafter = 1
 
 augroup filetypedetect
   " extension
-  autocmd! BufNewFile,BufRead *.\(swig\|swigcxx\)                               setlocal filetype=swig " TODO(zchee): 'cxx' prefix only
+  autocmd! BufNewFile,BufRead *.\(swig\|swigcxx\)                               setlocal filetype=swig  " TODO(zchee): 'cxx' prefix only
+  autocmd! BufNewFile,BufRead *.actiongraph                                     setlocal filetype=json  " Go -debug-actiongraph
   autocmd! BufNewFile,BufRead *.asm                                             setlocal filetype=nasm syntax=nasm
   autocmd! BufNewFile,BufRead *.conf                                            setlocal filetype=conf
+  autocmd! BufNewFile,BufRead *.defs                                            setlocal filetype=c
   autocmd! BufNewFile,BufRead *.dockerignore                                    setlocal filetype=gitignore
   autocmd! BufNewFile,BufRead *.editorconfig                                    setlocal filetype=dosini
   autocmd! BufNewFile,BufRead *.es6                                             setlocal filetype=javascript
@@ -38,20 +40,25 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead *.mm                                              setlocal filetype=objcpp
   autocmd! BufNewFile,BufRead *.pbtxt                                           setlocal filetype=proto
   autocmd! BufNewFile,BufRead *.py[xd]                                          setlocal filetype=cython
+  autocmd! BufNewFile,BufRead *.replay                                          setlocal filetype=json
   autocmd! BufNewFile,BufRead *.S                                               setlocal filetype=gas  syntax=gas
   autocmd! BufNewFile,BufRead *.sb                                              setlocal filetype=scheme
   autocmd! BufNewFile,BufRead *.slide                                           setlocal filetype=goslide
   autocmd! BufNewFile,BufRead *.tfstate                                         setlocal filetype=teraterm
+  autocmd! BufNewFile,BufRead *.tmpl                                            setlocal filetype=gotexttmpl
   autocmd! BufNewFile,BufRead *.ts                                              setlocal filetype=typescript
   autocmd! BufNewFile,BufRead *.vfj                                             setlocal filetype=jsonc
   autocmd! BufNewFile,BufRead *.vmoptions                                       setlocal filetype=conf
+  autocmd! BufNewFile,BufRead tmux.conf                                         setlocal filetype=tmux
 
   " directory
+  autocmd! BufNewFile,BufRead **/makedefs/**                                    setlocal filetype=make  " for xnu
   autocmd! BufNewFile,BufRead **/c++/**/*                                       setlocal filetype=cpp  " cpp stdlib
   autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/gcloud/configurations/*          setlocal filetype=cfg  " dosini
 
   " filename
   autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/go/env                           setlocal filetype=sh
+  autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/jira.d/templates/*               setlocal filetype=gotexttmpl
   autocmd! BufNewFile,BufRead **/*hal/config                                    setlocal filetype=yaml
   autocmd! BufNewFile,BufRead **/*kube/config                                   setlocal filetype=yaml
   autocmd! BufNewFile,BufRead **/google-cloud-sdk/properties                    setlocal filetype=cfg
@@ -73,7 +80,7 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead Gopkg.lock                                        setlocal filetype=toml
   autocmd! BufNewFile,BufRead manifest                                          setlocal filetype=json
   autocmd! BufNewFile,BufRead osquery.conf                                      setlocal filetype=json
-  autocmd! BufNewFile,BufRead poetry.lock                                        setlocal filetype=toml
+  autocmd! BufNewFile,BufRead poetry.lock                                       setlocal filetype=toml
   autocmd! BufNewFile,BufRead proto.lock                                        setlocal filetype=json
 augroup END
 

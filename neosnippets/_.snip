@@ -24,6 +24,10 @@ snippet     todo
 abbr				TODO($USER): ...
 	`substitute(&commentstring, '%s', '', 'g')`TODO(`get(g:, 'neosnippet_username')`): ${0}
 
+snippet     note
+abbr				NOTE($USER): ...
+	`substitute(&commentstring, '%s', '', 'g')`NOTE(`get(g:, 'neosnippet_username')`): ${0}
+
 snippet     wip
 abbr				WIP($USER): ...
 	`substitute(&commentstring, '%s', '', 'g')`WIP(`get(g:, 'neosnippet_username')`): ${0}
@@ -34,3 +38,8 @@ abbr				WIP($USER): ...
 snippet     foobar
 abbr        foo, bar, baz ...
 	foo bar baz qux quux quuz corge grault garply waldo fred plugh xyzzy thud${0}
+
+snippet     represents
+alias       rep
+abbr        represents a ...
+	represents a ${0}

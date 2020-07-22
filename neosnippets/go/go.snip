@@ -5,7 +5,8 @@ include go/pragma.snip
 # ------------------------------------------------------------------
 # doc
 
-snippet     dco:compiler time check
+snippet     compile-time-check
+alias       ctc
 abbr        // compile time check
 	// compile time check whether the ${1:#:type} implements ${2:#:interface} interface.
 	var _ $2 = (*$1)(nil)${0}
@@ -14,15 +15,15 @@ snippet     doc:interface
 abbr        // $1 implements $2.
 	// ${1:#:func} implements ${2:#:interface}.${0}
 
-snippet     doc:string
+snippet     doc-string
 abbr        // String returns a string representation of the $1.
 	// String returns a string representation of the ${1:#:type}.
 
-snippet     doc:json.Marshaler
+snippet     doc-json.Marshaler
 abbr        // MarshalJSON implements json.Marshaler.
 	// MarshalJSON implements json.Marshaler.${0}
 
-snippet     doc:json.Unmarshaler
+snippet     doc-json.Unmarshaler
 abbr        // UnmarshalJSON implements json.Unmarshaler.
 	// UnmarshalJSON implements json.Unmarshaler.${0}
 

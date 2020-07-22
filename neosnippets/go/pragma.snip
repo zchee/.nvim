@@ -4,30 +4,42 @@
 ## https://github.com/golang/go/tree/master/src/cmd/compile/internal/gc/lex.go
 
 snippet     pragma:go:nointerface
+alias       nointerface
 abbr        //go:nointerface (method parameters don't implements interface)
 	//go:nointerface${0}
 
 snippet     pragma:go:noescape
+alias       noescape
 abbr        //go:noescape (func parameters don't escape)
 	//go:noescape${0}
 
 snippet     pragma:go:norace
-abbr        //go:norace (func parameters don't escape)
+alias       norace
+abbr        //go:norace (func parameters don't race)
 	//go:norace${0}
 
 snippet     pragma:go:nosplit
+alias       nosplit
 abbr        //go:nosplit (func should not execute on separate stack)
 	//go:nosplit${0}
 
 snippet     pragma:go:noinline
+alias       noinline
 abbr        //go:noinline (func should not be inlined)
 	//go:noinline${0}
 
+snippet     go:nocheckptr
+alias       nocheckptr
+abbr        //go:nocheckptr (func should not be instrumented by checkptr)
+	//go:nocheckptr${0}
+
 snippet     pragma:go:cgo_unsafe_args
+alias       cgo_unsafe_args
 abbr        //go:cgo_unsafe_args (func treat a pointer to one arg as a pointer to them all)
 	//go:cgo_unsafe_args${0}
 
 snippet     pragma:go:uintptrescapes
+alias       uintptrescapes
 abbr        //go:uintptrescapes (func pointers converted to uintptr escape)
 	//go:uintptrescapes${0}
 

@@ -24,7 +24,7 @@ function! remote#define#CommandOnHost(host, method, sync, name, opts)
   endif
 
   if has_key(a:opts, 'nargs')
-    call add(forward_args, ' <args>')
+    call add(forward_args, ' " . <q-args> . "')
   endif
 
   exe s:GetCommandPrefix(a:name, a:opts)
@@ -241,6 +241,10 @@ function! s:GetAutocmdPrefix(name, opts)
 
   if has_key(a:opts, 'nested') && a:opts.nested
     call add(rv, 'nested')
+  endif
+
+  if has_key(a:opts, 'once') && a:opts.once
+    call add(rv, 'once')
   endif
 
   return join(rv, ' ')

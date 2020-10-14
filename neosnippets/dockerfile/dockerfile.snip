@@ -32,13 +32,14 @@ snippet     set-eux
 # apt-get
 
 snippet     apt-get
-	set -eux \
-		&& apt-get update \
-		&& apt-get install -y --no-install-recommends --no-install-suggests \
+	set -eux && \
+		apt-get update && \
+		apt-get install -y --no-install-recommends --no-install-suggests \
 			${1:#:package} \
-		&& rm -rf /var/lib/apt/lists/* \
+		&& \
+		rm -rf /var/lib/apt/lists/* && \
 		\
-		&& ${0}
+		${0}
 
 snippet     no-install-recommends
 	--no-install-recommends ${0}

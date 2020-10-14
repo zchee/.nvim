@@ -205,16 +205,15 @@ abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
 	t.Logf("$1: %+s\n", pp.Sprintln(${1}))
 
 snippet     tgotwant
-abbr        t.Errorf("got %v, want %v", ...)
+abbr        t.Fatalf("got %v, want %v", ...)
 	if got, want := ${1}, ${2}; got != want {
-		t.Errorf("got %v, want %v", got, want)
+		t.Fatalf("got %v, want %v", got, want)
 	}
 
 snippet     tdiff
-abbr        cmp.Diff(1, 2); t.Errorf("(+want, -got)", diff)
+abbr        cmp.Diff(1, 2); t.Fatalf("(+want, -got)", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		t.Errorf("(+want, -got)\n%s", diff)
-		return
+		t.Fatalf("(-want +got):\n%s", diff)
 	}
 	${0}
 
@@ -238,15 +237,16 @@ abbr        log.Debugf(ctx, "$1: %T, %v", $1)
 # ------------------------------------------------------------------
 # go-spew
 
-snippet     spew-conf
+snippet     spewconfig
 abbr        spewer = &spew.ConfigState{...}
 	var spewer = &spew.ConfigState{
 		Indent:                  "  ",
 		SortKeys:                true, // maps should be spewed in a deterministic order
 		DisablePointerAddresses: true, // don't spew the addresses of pointers
 		DisableCapacities:       true, // don't spew capacities of collections
+		ContinueOnMethod:        true, // recursion should continue once a custom error or Stringer interface is invoked
 		SpewKeys:                true, // if unable to sort map keys then spew keys to strings and sort those
-		MaxDepth:                1,
+		MaxDepth:                4,    // maximum number of levels to descend into nested data structures.
 	}
 	${0}
 

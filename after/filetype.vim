@@ -43,6 +43,7 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead *.replay                                          setlocal filetype=json
   autocmd! BufNewFile,BufRead *.S                                               setlocal filetype=gas  syntax=gas
   autocmd! BufNewFile,BufRead *.sb                                              setlocal filetype=scheme
+  autocmd! BufNewFile,BufRead *.schema.json                                     setlocal filetype=jsonschema
   autocmd! BufNewFile,BufRead *.slide                                           setlocal filetype=goslide
   autocmd! BufNewFile,BufRead *.tfstate                                         setlocal filetype=teraterm
   autocmd! BufNewFile,BufRead *.tmpl                                            setlocal filetype=gotexttmpl
@@ -52,9 +53,12 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead tmux.conf                                         setlocal filetype=tmux
 
   " directory
-  autocmd! BufNewFile,BufRead **/makedefs/**                                    setlocal filetype=make  " for xnu
-  autocmd! BufNewFile,BufRead **/c++/**/*                                       setlocal filetype=cpp  " cpp stdlib
+  autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/jira.d/templates/*               setlocal filetype=gotexttmpl
+  autocmd! BufNewFile,BufRead ~/.jira.d/templates/*                             setlocal filetype=gotexttmpl
   autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/gcloud/configurations/*          setlocal filetype=cfg  " dosini
+  autocmd! BufNewFile,BufRead **/c++/**/*                                       setlocal filetype=cpp  " cpp stdlib
+  autocmd! BufNewFile,BufRead **/makedefs/**                                    setlocal filetype=make  " for xnu
+  autocmd! BufNewFile,BufRead /private/etc/sudoers.d/*                          setlocal filetype=sudoers
 
   " filename
   autocmd! BufNewFile,BufRead $XDG_CONFIG_HOME/go/env                           setlocal filetype=sh
@@ -82,6 +86,7 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead osquery.conf                                      setlocal filetype=json
   autocmd! BufNewFile,BufRead poetry.lock                                       setlocal filetype=toml
   autocmd! BufNewFile,BufRead proto.lock                                        setlocal filetype=json
+  autocmd! BufNewFile,BufRead .renovaterc.json,renovate.json[5],.renovaterc     setlocal filetype=json5
 augroup END
 
   " autocmd! BufNewFile,BufRead s:srcpath.'/github.com/envoyproxy/envoy/**/*.h'   setlocal filetype=cpp

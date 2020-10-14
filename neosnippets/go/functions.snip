@@ -24,6 +24,12 @@ abbr http.HandlerFunc(...)
 	})
 	${0}
 
+# -------------------------------------------------------------------
+# time
+
+snippet     date
+	time.Date(`strftime("%Y")`, time.`strftime("%B")`, `strftime("%d")`, `strftime("%H")`, 0, 0, 0, time.FixedZone("Asia/Tokyo", 9*60*60))
+
 # ------------------------------------------------------------------
 # runtime.Callers
 

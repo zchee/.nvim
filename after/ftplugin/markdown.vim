@@ -14,14 +14,16 @@ let g:markdown_fenced_languages = [
       \ 'cpp',
       \ 'go',
       \ 'javascript',
-      \ 'json',
       \ 'python',
+      \ 'rust',
       \ 'sh',
       \ 'toml',
       \ 'vim',
       \ 'yaml',
-      \ 'console=sh',
+      \
       \ 'bash=sh',
+      \ 'console=sh',
+      \ 'json=javascript',
       \ ]
 let g:slide_fenced_languages = [
       \ 'asm',
@@ -31,6 +33,7 @@ let g:slide_fenced_languages = [
       \ 'javascript',
       \ 'json',
       \ 'python',
+      \ 'rust',
       \ 'sh',
       \ 'toml',
       \ 'vim',

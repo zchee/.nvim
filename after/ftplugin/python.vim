@@ -4,7 +4,7 @@ setlocal cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 setlocal colorcolumn=100
 setlocal copyindent
 setlocal expandtab
-setlocal formatoptions+=croq
+setlocal formatoptions=jntcoql
 setlocal nosmartindent
 setlocal shiftwidth=4
 setlocal smarttab

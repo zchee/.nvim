@@ -1,99 +1,53 @@
-" Vim syntax file
-" Language: Dockerfile
-" Maintainer: Eugene Kalinin
-" Latest Revision: 11 September 2013
-" Source: http://docs.docker.io/en/latest/use/builder/
+" dockerfile.vim - Syntax highlighting for Dockerfiles
+" Maintainer:   Honza Pokorny <https://honza.ca>
+" Last Change:  2020 Feb 11
+" License:      BSD
+
+" https://docs.docker.com/engine/reference/builder/
 
 if exists("b:current_syntax")
   finish
 endif
-let b:current_syntax = "dockerfile"
 
-" case sensitivity (fix #17)
-" syn case  ignore
+" syntax include @JSON syntax/json.vim
+" unlet b:current_syntax
 
-" Keywords
-syntax match   dockerfileKeyword  /\v^\s*(ONBUILD\s+)?(CMD|ENTRYPOINT|RUN)\s/
-highlight link dockerfileKeyword   Keyword
-syntax keyword dockerfileKeywords FROM AS MAINTAINER COPY
-syntax keyword dockerfileKeywords EXPOSE ADD
-" syntax keyword dockerfileKeywords FROM AS MAINTAINER RUN CMD COPY
-" syntax keyword dockerfileKeywords EXPOSE ADD ENTRYPOINT
-syntax keyword dockerfileKeywords VOLUME USER WORKDIR ONBUILD
-syntax keyword dockerfileKeywords LABEL ARG HEALTHCHECK SHELL
+syntax include @Shell syntax/sh.vim
+unlet b:current_syntax
 
-" Bash statements
-setlocal iskeyword+=-
-syntax keyword bashStatement add-apt-repository adduser apk apt-get aptitude apt-key autoconf bundle
-syntax keyword bashStatement cd chgrp chmod chown clear complete composer cp curl du echo egrep
-syntax keyword bashStatement expr fgrep find gem gnufind gnugrep gpg grep groupadd head less ln
-syntax keyword bashStatement ls make mkdir mv node npm pacman pip pip3 php python rails rm rmdir rpm ruby
-syntax keyword bashStatement sed sleep sort strip tar tail tailf touch useradd virtualenv yum
-syntax keyword bashStatement usermod bash cat a2ensite a2dissite a2enmod a2dismod apache2ctl
-syntax keyword bashStatement wget gzip
+syntax case ignore
+syntax match dockerfileLinePrefix /\v^\s*(ONBUILD\s+)?\ze\S/ contains=dockerfileKeyword nextgroup=dockerfileInstruction skipwhite
+syntax region dockerfileFrom matchgroup=dockerfileKeyword start=/\v^\s*(FROM)\ze(\s|$)/ skip=/\v\\\_./ end=/\v((^|\s)AS(\s|$)|$)/ contains=dockerfileOption
 
-" Strings
-syntax region dockerfileString start=/"/ skip=/\\"|\\\\/ end=/"/
-syntax region dockerfileString1 start=/'/ skip=/\\'|\\\\/ end=/'/
+" ENV
+syntax keyword dockerfileKeyword contained ADD ARG CMD COPY ENTRYPOINT EXPOSE HEALTHCHECK LABEL MAINTAINER ONBUILD RUN SHELL STOPSIGNAL USER VOLUME WORKDIR
+syntax match dockerfileOption contained /\v(^|\s)\zs--\S+/
 
-" Emails
-syntax region dockerfileEmail start=/</ end=/>/ contains=@ oneline
+syntax match dockerfileInstruction contained /\v<(\S+)>(\s+--\S+)*/             contains=dockerfileKeyword,dockerfileOption skipwhite nextgroup=dockerfileValue
+syntax match dockerfileInstruction contained /\v<(ADD|COPY)>(\s+--\S+)*/        contains=dockerfileKeyword,dockerfileOption skipwhite nextgroup=dockerfileJSON
+syntax match dockerfileInstruction contained /\v<(HEALTHCHECK)>(\s+--\S+)*/     contains=dockerfileKeyword,dockerfileOption skipwhite nextgroup=dockerfileInstruction
+syntax match dockerfileInstruction contained /\v<(CMD|ENTRYPOINT|RUN)>/         contains=dockerfileKeyword skipwhite nextgroup=dockerfileShell
+syntax match dockerfileInstruction contained /\v<(CMD|ENTRYPOINT|RUN)>\ze\s+\[/ contains=dockerfileKeyword skipwhite nextgroup=dockerfileJSON
+syntax match dockerfileInstruction contained /\v<(SHELL|VOLUME)>/               contains=dockerfileKeyword skipwhite nextgroup=dockerfileJSON
 
-" Urls
-syntax match dockerfileUrl /\(http\|https\|ssh\|hg\|git\)\:\/\/[a-zA-Z0-9\/\-\.]\+/
+syntax region dockerfileString contained start=/\v"/ skip=/\v\\./ end=/\v"/
+syntax region dockerfileJSON   contained keepend start=/\v\[/ skip=/\v\\\_./ end=/\v$/ contains=@JSON
+syntax region dockerfileShell  contained keepend start=/\v/ skip=/\v\\\_./ end=/\v$/ contains=@Shell
+syntax region dockerfileValue  contained keepend start=/\v/ skip=/\v\\\_./ end=/\v$/ contains=dockerfileString
 
-" Task tags
-syntax keyword dockerfileTodo contained TODO FIXME XXX
+syntax keyword dockerfileTodo contained TODO FIXME XXX NOTE
 
-" Comments
-syntax region dockerfileComment start="#" end="\n" contains=dockerfileTodo
-syntax region dockerfileEnvWithComment start="^\s*ENV\>" end="\n" contains=dockerfileEnv
 syntax match dockerfileEnv contained /\<ENV\>/
 
-" Highlighting
-highlight link dockerfileKeywords  Keyword
-highlight link dockerfileEnv       Keyword
-highlight link dockerfileString    String
-highlight link dockerfileString1   String
-highlight link dockerfileComment   Comment
-highlight link dockerfileEmail     Identifier
-highlight link dockerfileUrl       Identifier
-highlight link dockerfileTodo      Todo
-highlight link bashStatement       Function
-
+syntax region dockerfileComment start=/\v^\s*#/ end=/\v$/ contains=dockerfileTodo
+syntax region dockerfileEnvWithComment start="^\s*ENV\>" end="\n" contains=dockerfileEnv
 set commentstring=#\ %s
 
-" Enable automatic comment insertion
-setlocal fo+=cro
+hi def link dockerfileString String
+hi def link dockerfileKeyword Keyword
+hi def link dockerfileComment Comment
+hi def link dockerfileOption Special
+hi def link dockerfileTodo Todo
+hi def link dockerfileEnv Keyword
 
-let s:current_syntax = b:current_syntax
-unlet b:current_syntax
-syntax include @SH syntax/sh.vim
-let b:current_syntax = s:current_syntax
-syntax region shLine matchgroup=dockerfileKeyword start=/\v^\s*(RUN|CMD|ENTRYPOINT)\s/ end=/\v$/ contains=@SH
-
-" if exists("b:current_syntax")
-"   finish
-" endif
-" let b:current_syntax = "dockerfile"
-"
-" syntax case ignore
-"
-" syntax match dockerfileKeyword /\v^\s*(ONBUILD\s+)?(ADD|ARG|CMD|COPY|ENTRYPOINT|ENV|EXPOSE|FROM|HEALTHCHECK|LABEL|MAINTAINER|RUN|SHELL|STOPSIGNAL|USER|VOLUME|WORKDIR)\s/
-" highlight link dockerfileKeyword Keyword
-"
-" syntax region dockerfileString start=/\v"/ skip=/\v\\./ end=/\v"/
-" highlight link dockerfileString String
-"
-" syntax match dockerfileComment "\v^\s*#.*$"
-" highlight link dockerfileComment Comment
-"
-" set commentstring=#\ %s
-"
-" " match "RUN", "CMD", and "ENTRYPOINT" lines, and parse them as shell
-" let s:current_syntax = b:current_syntax
-" unlet b:current_syntax
-" syntax include @SH syntax/sh.vim
-" let b:current_syntax = s:current_syntax
-" syntax region shLine matchgroup=dockerfileKeyword start=/\v^\s*(RUN|CMD|ENTRYPOINT)\s/ end=/\v$/ contains=@SH
-" " since @SH will handle "\" as part of the same line automatically, this "just works" for line continuation too, but with the caveat that it will highlight "RUN echo '" followed by a newline as if it were a block because the "'" is shell line continuation...  not sure how to fix that just yet (TODO)
+let b:current_syntax = "dockerfile"

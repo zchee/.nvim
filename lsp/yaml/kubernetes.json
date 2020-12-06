@@ -3,14 +3,18 @@
         "completion": true,
         "format": {
             "enable": true,
+            "singleQuote": false,
             "bracketSpacing": true,
             "proseWrap": true,
-            "singleQuote": false
+            "printWidth": true
         },
         "hover": true,
-        "validate": false,
+        "validate": true,
         "schemas": {
             "file:///Users/zchee/src/github.com/zchee/jsonschema/kubernetes.jsonschema": ["/*"]
+        },
+        "schemaStore": {
+            "enable": false
         }
     }
 }

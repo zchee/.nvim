@@ -3,7 +3,20 @@
         "syncFileEvents": true,
         "semanticHighlighting": false
     },
+    "cmake": {
+        "buildDirectory": "build"
+    },
     "docker": {
+        "diagnostics": {
+            "deprecatedMaintainer": "error",
+            "directiveCasing": "warning",
+            "emptyContinuationLine": "warning",
+            "instructionCasing": "warning",
+            "instructionCmdMultiple": "warning",
+            "instructionEntrypointMultiple": "warning",
+            "instructionHealthcheckMultiple": "warning",
+            "instructionJSONInSingleQuotes": "warning"
+        },
         "languageserver": {
             "diagnostics": {
                 "deprecatedMaintainer": "error",
@@ -22,37 +35,51 @@
         "usePlaceholders": true,
         "deepCompletion": true,
         "completeUnimported": true,
-        "completionBudget": "0",
+        "completionBudget": "100ms",
         "matcher": "fuzzy",
         "symbolMatcher": "fuzzy",
-        "symbolStyle": "full",
-        "hoverKind": "FullDocumentation",
+        "symbolStyle": "dynamic",
+        "hoverKind": "fulldocumentation",
         "linksInHover": false,
         "importShortcut": "both",
         "analyses": {
-            "fillreturns": true,
-            "fillstruct": true,
-            "nonewvars": true,
-            "undeclaredname": true,
-            "unusedparams": true
+            "fieldalignment": false,
+            "unusedparams": false
         },
-        "codelens": {
-            "test": true,
-            "generate": true,
-            "tidy": true,
-            "vendor": true,
-            "upgrade_dependency": true,
-            "regenerate_cgo": true,
-            "fill_struct": true
+        "annotations": {
+            "noEscape": false,
+            "noNilcheck": false,
+            "noInline": false,
+            "noBounds": false
+        },
+        "codelenses": {
+            "test": false,
+            "generate": false,
+            "tidy": false,
+            "vendor": false,
+            "add_dependency": false,
+            "upgrade_dependency": false,
+            "remove_dependency": false,
+            "regenerate_cgo": false,
+            "gc_details": false,
+            "fill_struct": false,
+            "undeclared_name": false,
+            "extract_variable": false,
+            "extract_function": false,
+            "generate_gopls_mod": false
         },
         "staticcheck": false,
-        "verboseOutput": true,
-        "verboseWorkDoneProgress": true,
+        "verboseOutput": false,
+        "verboseWorkDoneProgress": false,
         "tempModfile": true,
-        "gofumpt": true
+        "gofumpt": false,
+	"semanticTokens": true,
+	"expandWorkspaceToModule": true,
+	"experimentalWorkspaceModule": true,
+	"experimentalDiagnosticsDelay": "0",
+	"experimentalPackageCacheKey": true
     },
     "http": {
-        "proxy": "",
         "proxyStrictSSL": true
     },
     "json": {
@@ -76,9 +103,9 @@
             },
             {
                 "fileMatch": [
-                    "*.jsonschema"
+                    "*.schema.json"
                 ],
-                "url": "file:///Users/zchee/.config/nvim/lsp/schema/jsonschema-draft-07.jsonschema"
+                "url": "file:///Users/zchee/.config/nvim/lsp/schema/jsonschema-draft-07.schema.json"
             },
             {
                 "fileMatch": [
@@ -96,32 +123,64 @@
                 "fileMatch": [
                     "tsconfig.json"
                 ],
-                "url": "http://json.schemastore.org/tsconfig"
+                "url": "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/tsconfig.json"
             },
             {
                 "fileMatch": [
                     "manifest.json"
                 ],
-                "url": "http://json.schemastore.org/chrome-manifest"
+                "url": "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/chrome-manifest.json"
             },
             {
                 "fileMatch": [
                     "*discovery.json"
                 ],
                 "url": "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json"
+            },
+            {
+                "fileMatch": [
+                    ".renovaterc.json",
+                    "renovate.json",
+                    "renovate.json5",
+                    ".renovaterc"
+                ],
+                "url": "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/renovate.json"
             }
         ]
     },
-    "pyright": {
-        "typeCheckingMode": "strict",
-        "useLibraryCodeForTypes": false,
-        "analysis": {
-            "typeshedPaths": "/Users/zchee/src/github.com/microsoft/pyright/client/typeshed-fallback",
-            "autoSearchPaths": true,
-            "logLevel": "info",
-            "diagnosticMode": "workspace"
+    "Lua": {
+        "completion": {
+            "callSnippet": "Disable",
+            "displayContext": "Disable",
+            "enable": true,
+            "keywordSnippet": "Disable"
         },
-        "pythonPath": "/usr/local/opt/python@3.8/bin/python3"
+        "diagnostics": {
+            "enable": true,
+            "globals": ["vim", "it", "describe", "before_each", "after_each"],
+            "disable": ["lowercase-global"]
+        },
+        "hover": {
+            "enable": true
+        },
+        "runtime": {
+            "path": [
+                "?.lua",
+                "?/init.lua",
+                "/usr/local/share/lua/5.4/luarocks/?.lua",
+                "/usr/local/share/lua/5.4/luarocks/?/init.lua",
+                "/usr/local/share/lua/5.4/?.lua",
+                "/usr/local/share/lua/5.4//?/init.lua"
+            ],
+            "version": "Lua 5.1"
+        },
+        "workspace": {
+            "library": {
+                "/usr/local/share/nvim/runtime/lua": true
+            },
+            "maxPreload": 2000,
+            "preloadFileSize": 1000
+        }
     },
     "pyls": {
         "configurationSources": "flake8",
@@ -153,6 +212,20 @@
             }
         }
     },
+    "python": {
+        "analysis": {
+            "autoImportCompletions": true,
+            "autoSearchPaths": true,
+            "extraPaths": [],
+            "diagnosticMode": "workspace",
+            "logLevel": "Trace",
+            "typeCheckingMode": "strict",
+            "useLibraryCodeForTypes": false
+        },
+        "typeshedPaths": "/Users/zchee/src/github.com/microsoft/pyright/client/typeshed-fallback",
+        "pythonPath": "/usr/local/opt/python@3.9/bin/python3",
+        "pythonPlatform": "Darwin"
+    },
     "rust": {
         "all_features": false,
         "all_targets": false,
@@ -166,33 +239,56 @@
         "unstable_features": false
     },
     "rust-analyzer": {
-        "diagnostics.enable": true,
+        "callInfo": {
+            "full": true
+        },
+        "cargo": {
+            "allFeatures": false,
+            "features": [],
+            "loadOutDirsFromCheck": true,
+            "noDefaultFeatures": false,
+            "target": "release"
+        },
+        "checkOnSave": {
+            "enable": false,
+            "extraArgs": []
+        },
+        "completion": {
+            "addCallArgumentSnippets": false,
+            "addCallParenthesis": true,
+            "postfix.enable": false
+        },
+        "diagnostics": {
+            "enable": true
+        },
+        "files": {
+            "exclude": [],
+            "watcher": "notify"
+        },
+        "inlayHints": {
+            "chainingHints": true,
+            "maxLength": 20,
+            "typeHints": true
+        },
         "lruCapacity": 500,
-        "files.watcher": "notify",
-        "files.exclude": [],
-        "notifications.workspaceLoaded": true,
-        "notifications.cargoTomlNotFound": true,
-        "cargo.noDefaultFeatures": false,
-        "cargo.allFeatures": true,
-        "cargo.features": [],
-        "cargo.loadOutDirsFromCheck": false,
-        "rustfmt.extraArgs": [],
-        "checkOnSave.enable": false,
-        "checkOnSave.extraArgs": [],
-        "checkOnSave.allTargets": false,
-        "inlayHints.typeHints": true,
-        "inlayHints.chainingHints": true,
-        "inlayHints.maxLength": 20,
-        "completion.addCallParenthesis": true,
-        "completion.addCallArgumentSnippets": false,
-        "completion.postfix.enable": false,
-        "callInfo.full": true,
-        "updates.channel": "nightly",
-        "updates.askBeforeDownload": false,
-        "serverPath": "/usr/local/rust/cargo/bin/rust-analyzer",
-        "trace.server": "off",
-        "trace.extension": false,
-        "procMacro.enable": false
+        "notifications": {
+            "cargoTomlNotFound": true,
+            "workspaceLoaded": true
+        },
+        "procMacro": {
+            "enable": false
+        },
+        "rustfmt": {
+            "extraArgs": []
+        },
+        "trace": {
+            "extension": false,
+            "server": "off"
+        },
+        "updates": {
+            "askBeforeDownload": false,
+            "channel": "nightly"
+        }
     },
     "vimls": {
         "initializationOptions": {
@@ -222,41 +318,60 @@
         ]
     },
     "yaml": {
-        "completion": true,
         "format": {
-            "bracketSpacing": true,
             "enable": true,
-            "singleQuote": false
+            "singleQuote": false,
+            "bracketSpacing": true,
+            "proseWrap": "Preserve",
+            "printWidth": 100
         },
+        "validate": true,
         "hover": true,
+        "completion": true,
         "schemas": {
-            "file:///Users/zchee/.config/nvim/lsp/schema/appengine-app.jsonschema": [
+            "url": "globPattern",
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/appengine-app.schema.json": [
                 "app*.yaml"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/azure-pipelines.jsonschema": [
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/azure-pipelines.schema.json": [
                 "azure-pipelines.yml"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/circleci.jsonschema": [
-                "**/.circleci/config.yml"
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/circleci.schema.json": [
+                "**/.circleci/config.yml",
+                "@orb.yml",
+                "**/commands/*.yml",
+                "**/examples/*.yml",
+                "**/executors/*.yml",
+                "**/jobs/*.yml"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/cloudbuild.jsonschema": [
-                "*cloudbuild.yaml"
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/cloudbuild.schema.json": [
+                "*cloudbuild.yaml",
+                "*cloudbuild.*.yaml"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/codecov.jsonschema": [
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/codecov.schema.json": [
                 "**/.codecov.yml"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/docker-compose.jsonschema": [
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/dependabot.schema.json": [
+                "**/.github/dependabot.yml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/docker-compose.schema.json": [
                 "*docker-compose*.yaml",
                 "*docker-compose*.yml"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/kaitai-struct-compiler.jsonschema": [
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/kaitai-struct-compiler.schema.json": [
                 "*.ksy"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/mkdocs.jsonschema": [
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/kubernetes.schema.json": [
+                "kubernetes/*"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/mkdocs.schema.json": [
                 "mkdocs.yml"
             ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/open-rpc.jsonschema": [
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/open-rpc.schema.json": [
                 "openrpc.yaml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/travis.schema.json": [
+                ".travis.yml"
             ],
             "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
                 "openapi.yaml",
@@ -265,9 +380,6 @@
             "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json": [
                 "*swagger.yaml",
                 "**/swagger-spec/*.yaml"
-            ],
-            "file:///Users/zchee/.config/nvim/lsp/schema/travis.jsonschema": [
-                ".travis.yml"
             ],
             "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/appveyor.json": [
                 "*appveyor.yml"
@@ -291,8 +403,12 @@
                 "kustomization.yaml",
                 "kustomizeconfig.yaml"
             ],
-            "url": "globPattern"
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/dependabot-2.0.json": [
+                "dependabot.yml"
+            ]
         },
-        "validate": true
+        "schemaStore": {
+            "enable": true
+        }
     }
 }

@@ -19,6 +19,10 @@ snippet     doc-string
 abbr        // String returns a string representation of the $1.
 	// String returns a string representation of the ${1:#:type}.
 
+snippet     doc-error
+abbr        // Error implements the error interface.
+	// Error implements the error interface.
+
 snippet     doc-json.Marshaler
 abbr        // MarshalJSON implements json.Marshaler.
 	// MarshalJSON implements json.Marshaler.${0}
@@ -151,7 +155,7 @@ abbr        log.Printf(...)
 
 snippet     lt
 abbr        log.Printf("$1: %T, %v", $1)
-	log.Printf("$1: %T => %v\n", ${1}, $1)
+	log.Printf("$1: %T => %#v\n", ${1}, $1)
 
 # println
 snippet     ll
@@ -172,7 +176,7 @@ abbr        cmp.Diff(1, 2); log.Printf("(+want, -got)", diff)
 # debug
 snippet     ldf
 abbr        log.Debugf("$1: %T, %v", $1)
-	log.Debugf("$1: %T => %v\n", ${1}, $1)
+	log.Debugf("$1: %T => %#v\n", ${1}, $1)
 
 # log.Println 'test'
 snippet     test
@@ -184,15 +188,15 @@ abbr        log.Println("test")${0}
 
 snippet     tf
 abbr        t.Logf(...)
-	t.Logf("$1: %v", ${1})
+	t.Logf("$1: %#v", ${1})
 
 snippet     tl
 abbr        t.Log
 	t.Log(${1})
 
 snippet     tt
-abbr        t.Logf("%T = %v", ...)
-	t.Logf("$1: %T = %v", ${1}, $1)
+abbr        t.Logf("%T = %#v", ...)
+	t.Logf("$1: %T = %#v", ${1}, $1)
 
 # Use "github.com/davecgh/go-spew/spew"
 snippet     td
@@ -216,23 +220,6 @@ abbr        cmp.Diff(1, 2); t.Fatalf("(+want, -got)", diff)
 		t.Fatalf("(-want +got):\n%s", diff)
 	}
 	${0}
-
-# ------------------------------------------------------------------
-# log/appengine
-
-## log for appengine on info
-snippet     lai
-abbr        log.Info(ctx, "$1: %T, %v", $1)
-	log.Info(ctx, "$1: %T => %s\n", ${1}, spew.Sdump($1))${0}
-
-snippet     lad
-abbr        log.Debugf(ctx, "$1: %T, %v", $1)
-	log.Debugf(ctx, "$1: %T => %v\n", ${1}, $1)${0}
-
-## log for appengine on debug with spew.Sdump
-snippet     ladump
-abbr        log.Debugf(ctx, "$1: %T, %v", $1)
-	log.Debugf(ctx, "$1: %T => %s\n", ${1}, spew.Sdump($1))${0}
 
 # ------------------------------------------------------------------
 # go-spew

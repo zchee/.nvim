@@ -10,9 +10,9 @@ class Filter(Base):
         self.description = "auto add parentheses converter for lsp"
 
     def filter(self, context):
-        p = re.compile(r"\(.*\)")
+        p = re.compile("\(.*\)")
         for candidate in [
-            x for x in context["candidates"] if ("kind" in x and p.search(x["kind"]))
+            x for x in context["candidates"] if ("menu" in x and p.search(x["menu"]))
         ]:
             candidate["word"] += "("
 

@@ -26,7 +26,7 @@ let s:p.nocombine             = 'nocombine'
 
 let s:p.material = {}
 
-let s:p.material.foreground   = '#c7c8c8'  " '#eeffff'
+let s:p.material.foreground   = '#e8eae9'  " '#f2f3f3'  " '#c7c8c8'  " '#eeffff'
 let s:p.material.background   = '#0a0a0a'  " '#212121'
 let s:p.material.comment      = '#838c93'  " '#79828a', '#6c7a80', '#838c93', '#878f96'
 let s:p.material.nontext      = '#202122'
@@ -50,7 +50,7 @@ let s:p.material.indent_line  = '#282a2e'  " '#2d3c46'
 let s:p.material.darkcolumn   = '#1c1c1c'
 let s:p.material.darkpmenu    = '#292d34'
 let s:p.material.gray         = '#545454'
-let s:p.material.linenr       = '#8b9ead'  " '#757575'
+let s:p.material.linenr       = '#757575'  " '#8b9ead'
 
 function! s:hl(group, fg, bg, attr, blend)
   let l:hi_group = 'highlight! ' . a:group

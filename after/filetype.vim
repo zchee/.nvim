@@ -39,6 +39,7 @@ augroup filetypedetect
   autocmd! BufNewFile,BufRead *.jsonschema                                      setlocal filetype=jsonschema
   autocmd! BufNewFile,BufRead *.mm                                              setlocal filetype=objcpp
   autocmd! BufNewFile,BufRead *.pbtxt                                           setlocal filetype=proto
+  autocmd! BufNewFile,BufRead *.plist                                           setlocal shiftwidth=4 softtabstop=4 tabstop=4
   autocmd! BufNewFile,BufRead *.py[xd]                                          setlocal filetype=cython
   autocmd! BufNewFile,BufRead *.replay                                          setlocal filetype=json
   autocmd! BufNewFile,BufRead *.S                                               setlocal filetype=gas  syntax=gas

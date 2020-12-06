@@ -1,36 +1,145 @@
 {
     "gopls": {
         "completionDocumentation": false,
-        "usePlaceholders": true,
-        "deepCompletion": true,
-        "completeUnimported": true,
-        "completionBudget": "0",
+        "usePlaceholders": false,
+        "deepCompletion": false,
+        "completeUnimported": false,
+        "completionBudget": "100ms",
         "matcher": "fuzzy",
         "symbolMatcher": "fuzzy",
-        "symbolStyle": "full",
-        "hoverKind": "FullDocumentation",
+        "symbolStyle": "dynamic",
+        "hoverKind": "fulldocumentation",
         "linksInHover": false,
         "importShortcut": "both",
         "analyses": {
-            "fillreturns": true,
-            "fillstruct": true,
-            "nonewvars": true,
-            "undeclaredname": true,
+            "fieldalignment": true,
             "unusedparams": true
         },
-        "codelens": {
+        "annotations": {
+            "noEscape": true,
+            "noNilcheck": true,
+            "noInline": true,
+            "noBounds": true
+        },
+        "codelenses": {
             "test": true,
             "generate": true,
             "tidy": true,
             "vendor": true,
+            "add_dependency": true,
             "upgrade_dependency": true,
+            "remove_dependency": true,
             "regenerate_cgo": true,
-            "fill_struct": true
+            "gc_details": true,
+            "fill_struct": true,
+            "undeclared_name": true,
+            "extract_variable": true,
+            "extract_function": true,
+            "generate_gopls_mod": true
         },
-        "staticcheck": false,
+        "staticcheck": true,
         "verboseOutput": true,
         "verboseWorkDoneProgress": true,
         "tempModfile": true,
-        "gofumpt": true
+        "gofumpt": false,
+	"semanticTokens": true,
+	"expandWorkspaceToModule": true,
+	"experimentalWorkspaceModule": true,
+	"experimentalDiagnosticsDelay": "0",
+	"experimentalPackageCacheKey": true
+    },
+    "yaml": {
+        "format": {
+            "enable": true,
+            "singleQuote": false,
+            "bracketSpacing": true,
+            "proseWrap": "Preserve",
+            "printWidth": 100
+        },
+        "validate": true,
+        "hover": true,
+        "completion": true,
+        "schemas": {
+            "url": "globPattern",
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/appengine-app.schema.json": [
+                "app*.yaml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/azure-pipelines.schema.json": [
+                "azure-pipelines.yml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/circleci.schema.json": [
+                "**/.circleci/config.yml",
+                "@orb.yml",
+                "**/commands/*.yml",
+                "**/examples/*.yml",
+                "**/executors/*.yml",
+                "**/jobs/*.yml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/cloudbuild.schema.json": [
+                "*cloudbuild.yaml",
+                "*cloudbuild.*.yaml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/codecov.schema.json": [
+                "**/.codecov.yml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/dependabot.schema.json": [
+                "**/.github/dependabot.yml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/docker-compose.schema.json": [
+                "*docker-compose*.yaml",
+                "*docker-compose*.yml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/kaitai-struct-compiler.schema.json": [
+                "*.ksy"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/kubernetes.schema.json": [
+                "kubernetes/*"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/mkdocs.schema.json": [
+                "mkdocs.yml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/open-rpc.schema.json": [
+                "openrpc.yaml"
+            ],
+            "file:///Users/zchee/src/github.com/zchee/jsonschema/travis.schema.json": [
+                ".travis.yml"
+            ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
+                "openapi.yaml",
+                "**/openapi-spec/*.yaml"
+            ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json": [
+                "*swagger.yaml",
+                "**/swagger-spec/*.yaml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/appveyor.json": [
+                "*appveyor.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/compile-commands.json": [
+                "compile_commands.json"
+            ],
+            "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json": [
+                "*discovery.yaml"
+            ],
+            "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/master/docs/content/en/schemas/v2beta5.json": [
+                "*skaffold*.yaml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/github-action.json": [
+                "action.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/github-workflow.json": [
+                "**/.github/workflows/*.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/kustomization.json": [
+                "kustomization.yaml",
+                "kustomizeconfig.yaml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/dependabot-2.0.json": [
+                "dependabot.yml"
+            ]
+        },
+        "schemaStore": {
+            "enable": true
+        }
     }
 }

@@ -1,17 +1,8 @@
 import re
 import typing
 
-try:
-    import orjson as json
-except ImportError:
-    import json
-
-
 from deoplete.source.base import Base
-from deoplete.util import Nvim, UserContext, Candidates
-
-_LANGUAGE_CLIENT_OMNI_COMPLETE_RESULTS = "LanguageClient_omniCompleteResults"
-LANGUAGE_CLIENT_OMNI_COMPLETE_RESULTS = "g:LanguageClient_omniCompleteResults"
+from deoplete.util import debug, error_vim, Nvim, UserContext, Candidates
 
 
 class Source(Base):
@@ -19,33 +10,48 @@ class Source(Base):
         super().__init__(vim)
 
         self.name = "LanguageClientInternal"
+        self.description = "Language Sever Protocol Client source"
         self.mark = "[LCI]"
-        self.rank = 1000
         self.min_pattern_length = 1
-        self.filetypes = vim.eval("get(g:, 'LanguageClient_serverCommands', {})").keys()
-        self.is_volatile = True
-        self.input_pattern = r"(\.|::|->)\w*$"  # r'(\.|::|->)\w*(?:[^\W\d]\w*)?'
-
+        self.input_pattern = r"(\.|::|->)\w*$"
+        self.matchers = ["matcher_fuzzy"]
+        self.sorters = []
+        self.filetypes = self.vim.eval(
+            "get(g:, 'LanguageClient_serverCommands', {})"
+        ).keys()
         self.is_debug_enabled = False
-        # self.prev_input = str()
+        self.is_bytepos = True
+        self.is_volatile = True
+        self.is_async = True
+        self.rank = 1000
+        self.events = (
+            []
+        )  # , "BufReadPost", "InsertEnter", "BufWritePost", "InsertLeave"
 
     def reset_var(self) -> None:
-        self.vim.vars[_LANGUAGE_CLIENT_OMNI_COMPLETE_RESULTS] = []
+        self.vim.vars["LanguageClient_omniCompleteResults"] = []
+
+    def on_event(self, context: UserContext) -> None:
+        self.debug("context[event]: {}".format(context["event"]))
+
+        # disable for now
+        if context["event"] == "BufReadPost":
+            ft = self.get_buf_option("filetype")
+            if ft == "go":
+                self.input_pattern = r"(\.|::|->)\w*(?:[^\W\d]\w*)?"
 
     def get_complete_position(self, context: UserContext) -> int:
         return self.vim.call("LanguageClient#get_complete_start", context["input"])
 
     def request_omni_completion(self, context: UserContext) -> None:
-        # self.prev_input = context["input"]
-
         character = context["complete_position"] + len(context["complete_str"])
         self.vim.funcs.LanguageClient_omniComplete(
             {"character": character, "complete_position": context["complete_position"]}
         )
 
     def async_completion(self, context: UserContext) -> Candidates:
-        candidates = self.vim.eval(LANGUAGE_CLIENT_OMNI_COMPLETE_RESULTS)
-        if candidates:  # if context["input"] == self.prev_input and candidates:
+        candidates = self.vim.eval("g:LanguageClient_omniCompleteResults")
+        if candidates:
             return candidates[0].get("result", [])
 
         self.request_omni_completion(context)
@@ -53,65 +59,57 @@ class Source(Base):
         return []
 
     def gather_candidates(self, context: UserContext) -> Candidates:
-        self.reset_var()
+        if context["is_async"]:
+            result = self.vim.eval("g:LanguageClient_omniCompleteResults")
+            if result:
+                context["is_async"] = False
+                candidates = result[0].get("result", [])
 
-        while True:
-            try:
-                candidates = self.async_completion(context)
-                if candidates:
-                    return candidates
+                for candidate in candidates:
+                    if "func" in candidate["menu"]:
+                        candidate["abbr"] += "()"
 
-                    # for candidate in candidates:
-                    #     if candidate["kind"] != "Module":
-                    #         candidate["kind"] = candidate["menu"]
-                    #     if candidate.get("info"):
-                    #         candidate["menu"] = "{}".format(candidate["info"])
+                return candidates
 
-                    # for echodoc.vim
-                    # if candidate.get('user_data'):
-                    #     if candidate['kind'] == 'Function' or candidate['kind'] == 'Method':
-                    #         user_data = json.loads(candidate['user_data'])
-                    #         user_data['signature'] = candidate['info']
-                    #         candidate['user_data'] = user_data
-                    # return candidates
-            except:
-                return False
-
-        return []
-
-    def _gather_candidates(self, context: UserContext) -> Candidates:
+        context["is_async"] = True
         self.reset_var()
 
         character = context["complete_position"] + len(context["complete_str"])
         self.vim.funcs.LanguageClient_omniComplete(
-            {"character": character, "complete_position": context["complete_position"]}
+            {
+                "character": character,
+                "complete_position": context["complete_position"],
+            }
         )
 
-        while True:
-            try:
-                candidates = self.async_completion(context)
-                if candidates:
-                    for candidate in candidates:
-                        if candidate["kind"] != "Module":
-                            candidate["kind"] = candidate["menu"]
-                        if candidate.get("info"):
-                            candidate["menu"] = "{}".format(candidate["info"])
-
-                    # for echodoc.vim
-                    if candidate.get("user_data"):
-                        if (
-                            candidate["kind"] == "Function"
-                            or candidate["kind"] == "Method"
-                        ):
-                            user_data = json.loads(candidate["user_data"])
-                            user_data["signature"] = candidate["info"]
-                            candidate["user_data"] = user_data
-
-                    return candidates
-            except:
-                return False
-
         return []
+
+    # def gather_candidates(self, context: UserContext) -> Candidates:
+    #     self.reset_var()
+    #
+    #     while True:
+    #         try:
+    #             candidates = self.async_completion(context)
+    #             if candidates:
+    #                 return candidates
+    #
+    #                 for candidate in candidates:
+    #                     if candidate["kind"] != "Module":
+    #                         candidate["kind"] = candidate["menu"]
+    #                     if candidate.get("info"):
+    #                         candidate["menu"] = "{}".format(candidate["info"])
+    #
+    #                 # for echodoc.vim
+    #                 if candidate.get('user_data'):
+    #                     if candidate['kind'] == 'Function' or candidate['kind'] == 'Method':
+    #                         user_data = json.loads(candidate['user_data'])
+    #                         user_data['signature'] = candidate['info']
+    #                         candidate['user_data'] = user_data
+    #                 return candidates
+    #         except:
+    #             return False
+    #
+    #     return []
 
 
 """gather_candidates

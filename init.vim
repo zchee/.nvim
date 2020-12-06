@@ -594,7 +594,7 @@ let perl_sync_dist = 100
 Gautocmd InsertLeave * setlocal nopaste
 
 " always jump to the last known cursor position
-"  https://github.com/neovim/neovim/blob/master/runtime/vimrc_example.vim
+" - https://github.com/neovim/neovim/blob/master/runtime/vimrc_example.vim
 function! s:autoJump()
   if line("'\"") > 1 && line("'\"") <= line("$") && &filetype != 'gitcommit' && &filetype != 'gitrebase'
     execute "silent! keepjumps normal! g`\"zz"
@@ -602,8 +602,8 @@ function! s:autoJump()
 endfunction
 Gautocmd BufWinEnter * call s:autoJump()
 
-"" automatically close window
-"  http://stackoverflow.com/questions/7476126/how-to-automatically-close-the-quick-fix-window-when-leaving-a-file
+" automatically close window
+" - http://stackoverflow.com/questions/7476126/how-to-automatically-close-the-quick-fix-window-when-leaving-a-file
 function! s:autoClose()
   let s:ft = getbufvar(winbufnr(winnr()), "&filetype")
   if winnr('$') == 1
@@ -655,7 +655,6 @@ Gautocmdft man://* nmap  <buffer><nowait>k  <Plug>(accelerated_jk_gk_position)
 
 " Vim:
 "" nested autoload
-" Gautocmd BufWritePost $MYVIMRC ++nested silent! source $MYVIMRC
 Gautocmdft vim setlocal tags+=$XDG_DATA_HOME/nvim/tags/runtime.tags
 Gautocmdft qf hi Search  gui=None  guifg=None  guibg=#373b41
 Gautocmd   BufEnter **/colors/*.vim,**/colorscheme/*.vim silent! HexokinaseTurnOn
@@ -678,18 +677,15 @@ Gautocmdft jsp,asp,php,xml,perl syntax sync minlines=500 maxlines=1000
 if isdirectory('/opt/llvm/devel')
   let s:llvm_base_path = '/opt/llvm/devel'
   let s:llvm_clang_version = '12.0.0'
+elseif isdirectory('/opt/llvm/stable')
+  let s:llvm_base_path = '/opt/llvm/stable'
+  let s:llvm_clang_version = '10.0.1'
 elseif isdirectory('/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr')
   let s:llvm_base_path = '/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr'
   let s:llvm_clang_version = '12.0.0'
 elseif isdirectory('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr')
   let s:llvm_base_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr'
-  let s:llvm_clang_version = '11.0.3'
-elseif isdirectory('/opt/llvm/devel')
-  let s:llvm_base_path = '/opt/llvm/devel'
   let s:llvm_clang_version = '12.0.0'
-elseif isdirectory('/opt/llvm/stable')
-  let s:llvm_base_path = '/opt/llvm/stable'
-  let s:llvm_clang_version = '10.0.1'
 elseif isdirectory('/Library/Developer/CommandLineTools/usr')
   let s:llvm_base_path = '/Library/Developer/CommandLineTools/usr'
   let s:llvm_clang_version = '11.0.3'
@@ -750,8 +746,6 @@ let g:clangd_commands_cfamily = [
       \ '--query-driver='.s:llvm_base_path.'/bin/clang-*,'.s:llvm_base_path.'/bin/clang++-*',
       \ ]  " --resource-dir: $ /opt/llvm/devel/bin/clang -print-resource-dir
       "\ '--info-output-file=/tmp/clangd.info.log', '--input-mirror-file=/tmp/clangd.lsp.log', '--log=verbose', '--pretty', '--input-style=standard', '--offset-encoding=utf-8',
-      "\ '--debug-origin',
-      "\ '--stats',
 
 let g:c_cpp_root_path = ''
 Gautocmdft c,cpp,objc,objcpp ++once let g:c_cpp_root_path = fnamemodify(trim(finddir('.git', '.;'), '.git'), ':p:h')
@@ -813,16 +807,14 @@ let s:lsp_root_markers = {
 
 "" GoNvimSP:
 let g:nvim_lsp_server_commands = {
-      \ 'go': [s:gopath . '/bin/gopls', '-vv', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls.log', '-rpc.trace'],
+      \ 'go': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls.log'],
       \ }
-      "\ 'go': [s:gopath . '/bin/gopls', '-v', '-logfile=/tmp/gopls.log', '-rpc.trace'],
-      "\ 'go': [s:gopath . '/bin/gopls', '-v', '-remote', 'unix;/tmp/gopls.sock', '-logfile=/tmp/gopls.log', '-rpc.trace', '-debug=localhost:75699'],
-      "\ 'rust': ['/usr/local/rust/cargo/bin/rustup', 'run', 'nightly', 'rls'],
+      "\ 'go': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls.log', '-debug=localhost:75699'],
+      "\ 'rust': ['rustup', 'run', 'nightly', 'rust-analyzer', '-vv', '--log-file=/tmp/rust-analyzer.log'],
       "\ 'yaml': [s:srcpath_github . 'redhat-developer/yaml-language-server/bin/yaml-language-server', '--stdio'],
 let g:nvim_lsp#server_options = {}
 "      \ 'go': {
 "      \   'env': [
-"      \     'CGO_LDFLAGS=-L/opt/llvm/3.9.0/lib',
 "      \   ]}
 "      \ }
 let g:nvim_lsp_server_auto_start = v:true
@@ -919,32 +911,18 @@ let g:LanguageClient_serverCommands = {
       \ 'yaml': [s:srcpath_github . 'redhat-developer/yaml-language-server/bin/yaml-language-server', '--stdio'],
       \ 'yaml.docker-compose': [s:srcpath_github . 'redhat-developer/yaml-language-server/bin/yaml-language-server', '--stdio'],
       \ }
-      "\ 'lua': ['lua-lsp'],
-      "\ 'c': ['ccls', '--log-file=/tmp/cc.log'],
-      "\ 'cpp': ['ccls', '--log-file=/tmp/cc.log'],
       "\ 'go': [s:gopath . '/bin/gopls'],
-      "\ 'go': [s:gopath . '/bin/gopls', '-logfile=/tmp/gopls-lcn.log'],
       "\ 'go': [s:gopath . '/bin/gopls', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls-lcn.log'],
-      "\ 'go': [s:gopath . '/bin/gopls', '-vv', '-remote=unix;/tmp/gopls.sock', '-rpc.trace'],
-      "\ 'go': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-logfile=/tmp/gopls-lcn.log'],
-      "\ 'go': [s:gopath . '/bin/gopls', '-remote=unix;/tmp/gopls.sock', '-vv', '-rpc.trace', '-logfile=/tmp/gopls-lcn.log'],
-      "\ 'gomod': [s:gopath . '/bin/gopls'],
+      "\ 'go': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls-lcn.log'],
       "\ 'javascript': s:node_exec + [$XDG_DATA_HOME.'/yarn/global/node_modules/javascript-typescript-langserver/lib/language-server-stdio.js'],
-      "\ 'json': ['vscode-json-languageserver', '--stdio'],
-      "\ 'lua': [s:srcpath_github . 'sumneko/lua-language-server/bin/macOS/lua-language-server', '-E', '-e', 'LANG=en', s:srcpath_github . 'sumneko/lua-language-server/main.lua'],
+      "\ 'lua': ['java', '-cp', '/usr/local/share/java/EmmyLua/EmmyLua-LS-all.jar', 'com.tang.vscode.MainKt'],
       "\ 'lua': ['lua-lsp'],
-      "\ 'lua': ['java', '-cp', '/usr/local/share/java/EmmyLua/EmmyLua-LS-all.jar', 'com.tang.vscode.MainKt'],
+      "\ 'lua': [s:srcpath_github . 'sumneko/lua-language-server/bin/macOS/lua-language-server', '-E', '-e', 'LANG=en', s:srcpath_github . 'sumneko/lua-language-server/main.lua'],
       "\ 'lua': [s:srcpath_github . 'sumneko/lua-language-server/bin/macOS/lua-language-server', '-E', '-e', 'LANG=en', s:srcpath_github . 'sumneko/lua-language-server/main-beta.lua'],
-      "\ 'lua': ['java', '-cp', '/usr/local/share/java/EmmyLua/EmmyLua-LS-all.jar', 'com.tang.vscode.MainKt'],
-      "\ 'lua': ['lua-language-server', '-i'],
-      "\ 'python': ['/usr/local/share/pipx/pyls', '--log-file=/tmp/pyls.log', '--verbose'],
       "\ 'python': ['pyright-langserver', '--stdio'],
       "\ 'rust': ['/usr/local/rust/cargo/bin/rustup', 'run', 'nightly', 'rls'],
-      "\ 'rust': ['rust-analyzer', '-vv', '--log-file=/tmp/rust-analyzer.log'],
       "\ 'rust': ['rustup', 'run', 'nightly', 'rust-analyzer', '-vv', '--log-file=/tmp/rust-analyzer.log'],
       "\ 'swift': ['/usr/local/bin/sourcekit-lsp'],
-      "\ 'yaml': [s:srcpath_github . 'redhat-developer/yaml-language-server/bin/yaml-language-server', '--stdio'],
-      "\ 'yaml.docker-compose': [s:srcpath_github . 'redhat-developer/yaml-language-server/bin/yaml-language-server', '--stdio'],
 
 let g:LanguageClient_diagnosticsSignsMax                = v:null
 let g:LanguageClient_changeThrottle                     = 0.5  " default: v:null, 0.5
@@ -998,8 +976,6 @@ function! s:languageclient_mapping_setup()
   nnoremap <silent><buffer><LocalLeader>gt    :<C-u>call LanguageClient#textDocument_typeDefinition({'handle': v:true}, function('LanguageClientCallback'))<CR>
   nmap     <nowait><silent><buffer><Leader>e  <Plug>(lcn-rename)
 endfunction
-" TODO: Gautocmdft join(keys(g:LanguageClient_serverCommands), ',') call s:languageclient_setup()
-" echo join(sort(keys(g:LanguageClient_serverCommands)), ',')
 if !exists('g:vscode')
 Gautocmdft c,cmake,cpp,dockerfile,java,javascript,json,jsonc,jsonschema,objc,objcpp,proto,python,ruby,rust,sh,swift,typescript,vim,yaml,yaml.docker-compose call s:languageclient_mapping_setup()
 endif
@@ -1033,35 +1009,6 @@ endif
 "" Deoplete:
 let g:deoplete#enable_at_startup = 1
 let s:default_ignore_sources = ['around', 'dictionary', 'member', 'omni', 'tag', 'ale', 'LanguageClient', 'lsp']  ", 'LanguageClient', 'LanguageClientInternal', 'lsp'
-" default:
-" let s:deoplete_custom_option = {
-"      \ 'auto_complete': v:true,
-"      \ 'auto_complete_delay': 0,
-"      \ 'auto_complete_popup': 'auto',
-"      \ 'auto_refresh_delay': 20,
-"      \ 'camel_case': v:false,
-"      \ 'candidate_marks': [],
-"      \ 'check_stderr': v:true,
-"      \ 'complete_suffix': v:true,
-"      \ 'ignore_case': &ignorecase,
-"      \ 'ignore_sources': {},
-"      \ 'keyword_patterns': {'_': '[a-zA-Z_]\k*'},
-"      \ 'max_list': 500,
-"      \ 'min_pattern_length': 2,
-"      \ 'num_processes': 1,
-"      \ 'omni_patterns': {},
-"      \ 'on_insert_enter': v:true,
-"      \ 'on_text_changed_i': v:true,
-"      \ 'prev_completion_mode': '',
-"      \ 'profile': v:false,
-"      \ 'refresh_always': v:true,
-"      \ 'skip_chars': ['(', ')'],
-"      \ 'skip_multibyte': v:false,
-"      \ 'smart_case': &smartcase,
-"      \ 'sources': {},
-"      \ 'trigger_key': v:char,
-"      \ 'yarp': v:false,
-"      \ }
 let s:deoplete_custom_option = {
       \ 'auto_complete': v:true,
       \ 'auto_complete_delay': 0,
@@ -1102,21 +1049,6 @@ let s:deoplete_custom_option = {
       \ 'smart_case': &smartcase,
       \ 'trigger_key': v:char,
       \ }
-      "\ 'auto_complete_popup': 'auto',
-      "\ 'keyword_patterns': {
-      "\   '_': '[a-zA-Z_]\k*',
-      "\   'LanguageClientInternal': '\\?[a-zA-Z_]\w*',
-      "\ },
-      "\ 'auto_preview': v:true,
-      "\ 'candidate_marks': [],
-      "\ 'skip_chars': ['(', ')', '<', '>'],
-      "\ 'keyword_patterns': {
-      "\   '_': '[a-zA-Z_]\k*',
-      "\   'tex': '\\?[a-zA-Z_]\w*',
-      "\ },
-      "\ 'omni_patterns': {},
-      "\ 'keyword_patterns': {},
-      "\ 'sources':{},
 if !exists('g:vscode')
   call deoplete#custom#option(s:deoplete_custom_option)
   call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy'])  " matcher_fuzzy, matcher_full_fuzzy, matcher_cpsm, matcher_head, matcher_length
@@ -1133,9 +1065,7 @@ if !exists('g:vscode')
   " call deoplete#custom#source('go', 'sorters', ['sorter_word'])
   " call deoplete#custom#source('go', 'is_debug_enabled', v:true)
 
-  " call deoplete#custom#source('lsp', 'max_menu_width', 100)
-  " call deoplete#custom#source('lsp', 'max_candidates', 1000)
-
+  call deoplete#custom#source('LanguageClientInternal', 'sorters', [])
   call deoplete#custom#source('LanguageClientInternal', 'max_menu_width', 50)
   call deoplete#custom#source('LanguageClientInternal', 'max_candidates', 1000)
   Gautocmdft json,jsonschema,yaml call deoplete#custom#source('LanguageClientInternal', 'min_pattern_length', 0)
@@ -1144,9 +1074,7 @@ if !exists('g:vscode')
   call deoplete#custom#source('asm', 'rank', 1000)
   call deoplete#custom#source('neosnippet', 'rank', 500)
   call deoplete#custom#source('neosnippet', 'converters', ['converter_remove_overlap'])
-  " call deoplete#custom#source('deoppet', 'rank', 1000)
   call deoplete#custom#source('zsh', 'filetypes', ['zsh', 'sh'])
-  " call deoplete#custom#source('zsh', 'auto_refresh_delay', -1)
   " call deoplete#custom#source('zsh', 'refresh_always', v:true)
 endif
 
@@ -1179,10 +1107,6 @@ let g:deoplete#sources#asm#go_mode = 1
 " call deoplete#enable_logging('DEBUG', '/tmp/deoplete.log')
 " call deoplete#custom#source('LanguageClientInternal', 'is_debug_enabled', v:true)
 
-" deoppet
-" call deoppet#initialize()
-" call deoppet#custom#option('snippets_dirs', [globpath(&runtimepath, 'neosnippets', 1, 1)])
-
 " neosnippet
 let g:neosnippet#data_directory = $XDG_CACHE_HOME . '/nvim/neosnippet'
 " let g:neosnippet#disable_runtime_snippets = {}
@@ -1195,7 +1119,6 @@ let g:neosnippet#snippets_directory = $XDG_CONFIG_HOME . '/nvim/neosnippets'
 let g:neosnippet_username = 'zchee'
 let g:neosnippet_author = 'Koichi Shiraishi'
 " echodoc
-" let g:echodoc#enable_at_startup = 1
 if !exists('g:vscode')
 Gautocmd BufWinEnter * call echodoc#enable()
 endif
@@ -1244,8 +1167,6 @@ if !exists('g:vscode')
         \ 'unique': v:true,
         \ 'winheight': 20,
         \ })
-  " call denite#custom#source('_', 'matchers', ['matcher/fruzzy', 'matcher/project_files'])
-  " call denite#custom#source('_', 'sorter', ['sorter/path'])  " sorter/path, sorter/word
   let s:denite_file_rec_command = ['fd', '.', '--threads=16', '--follow', '--hidden', '--no-ignore', '--full-path', '--color=never', '--type=f',
         \ '-E', '.git/',
         \ '-E', 'node_modules/',
@@ -1261,9 +1182,6 @@ if !exists('g:vscode')
         \ '-E', '.gitignore',
         \ '-E', '.*.*',
         \ ]
-        "\ '-E', 'target/',  " rust
-
-  " call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!.git', '--color', 'never'])
   call denite#custom#var('file/rec', 'command', s:denite_file_rec_command)
   call denite#custom#var('file/rec', 'cache_threshold', 100000)
   call denite#custom#option('file/rec', 'expand', v:true)
@@ -1557,8 +1475,6 @@ Gautocmdft zsh let b:ale_sh_shellcheck_exclusions = 'SC1071'
 
 let g:ale_linters.css = ['stylelint']
 
-" Gautocmd User ALELint call lightline#update()
-
 
 " Caw:
 let g:caw_hatpos_skip_blank_line = 0
@@ -1825,278 +1741,6 @@ let g:Hexokinase_optInPatterns = [
       \ 'hsl',
       \ 'hsla',
       \ ]
-" TODO(zchee): not works
-"  https://github.com/RRethy/vim-hexokinase/blob/master/plugin/hexokinase.vim
-" let s:hexokinase_tmux_colours = {
-"      \ '000': '#000000',
-"      \ '001': '#800000',
-"      \ '002': '#008000',
-"      \ '003': '#808000',
-"      \ '004': '#000080',
-"      \ '005': '#800080',
-"      \ '006': '#008080',
-"      \ '007': '#c0c0c0',
-"      \ '008': '#808080',
-"      \ '009': '#ff0000',
-"      \ '010': '#00ff00',
-"      \ '011': '#ffff00',
-"      \ '012': '#0000ff',
-"      \ '013': '#ff00ff',
-"      \ '014': '#00ffff',
-"      \ '015': '#ffffff',
-"      \ '016': '#000000',
-"      \ '017': '#00005f',
-"      \ '018': '#000087',
-"      \ '019': '#0000af',
-"      \ '020': '#0000d7',
-"      \ '021': '#0000ff',
-"      \ '022': '#005f00',
-"      \ '023': '#005f5f',
-"      \ '024': '#005f87',
-"      \ '025': '#005faf',
-"      \ '026': '#005fd7',
-"      \ '027': '#005fff',
-"      \ '028': '#008700',
-"      \ '029': '#00875f',
-"      \ '030': '#008787',
-"      \ '031': '#0087af',
-"      \ '032': '#0087d7',
-"      \ '033': '#0087ff',
-"      \ '034': '#00af00',
-"      \ '035': '#00af5f',
-"      \ '036': '#00af87',
-"      \ '037': '#00afaf',
-"      \ '038': '#00afd7',
-"      \ '039': '#00afff',
-"      \ '040': '#00d700',
-"      \ '041': '#00d75f',
-"      \ '042': '#00d787',
-"      \ '043': '#00d7af',
-"      \ '044': '#00d7d7',
-"      \ '045': '#00d7ff',
-"      \ '046': '#00ff00',
-"      \ '047': '#00ff5f',
-"      \ '048': '#00ff87',
-"      \ '049': '#00ffaf',
-"      \ '050': '#00ffd7',
-"      \ '051': '#00ffff',
-"      \ '052': '#5f0000',
-"      \ '053': '#5f005f',
-"      \ '054': '#5f0087',
-"      \ '055': '#5f00af',
-"      \ '056': '#5f00d7',
-"      \ '057': '#5f00ff',
-"      \ '058': '#5f5f00',
-"      \ '059': '#5f5f5f',
-"      \ '060': '#5f5f87',
-"      \ '061': '#5f5faf',
-"      \ '062': '#5f5fd7',
-"      \ '063': '#5f5fff',
-"      \ '064': '#5f8700',
-"      \ '065': '#5f875f',
-"      \ '066': '#5f8787',
-"      \ '067': '#5f87af',
-"      \ '068': '#5f87d7',
-"      \ '069': '#5f87ff',
-"      \ '070': '#5faf00',
-"      \ '071': '#5faf5f',
-"      \ '072': '#5faf87',
-"      \ '073': '#5fafaf',
-"      \ '074': '#5fafd7',
-"      \ '075': '#5fafff',
-"      \ '076': '#5fd700',
-"      \ '077': '#5fd75f',
-"      \ '078': '#5fd787',
-"      \ '079': '#5fd7af',
-"      \ '080': '#5fd7d7',
-"      \ '081': '#5fd7ff',
-"      \ '082': '#5fff00',
-"      \ '083': '#5fff5f',
-"      \ '084': '#5fff87',
-"      \ '085': '#5fffaf',
-"      \ '086': '#5fffd7',
-"      \ '087': '#5fffff',
-"      \ '088': '#870000',
-"      \ '089': '#87005f',
-"      \ '090': '#870087',
-"      \ '091': '#8700af',
-"      \ '092': '#8700d7',
-"      \ '093': '#8700ff',
-"      \ '094': '#875f00',
-"      \ '095': '#875f5f',
-"      \ '096': '#875f87',
-"      \ '097': '#875faf',
-"      \ '098': '#875fd7',
-"      \ '099': '#875fff',
-"      \ '100': '#878700',
-"      \ '101': '#87875f',
-"      \ '102': '#878787',
-"      \ '103': '#8787af',
-"      \ '104': '#8787d7',
-"      \ '105': '#8787ff',
-"      \ '106': '#87af00',
-"      \ '107': '#87af5f',
-"      \ '108': '#87af87',
-"      \ '109': '#87afaf',
-"      \ '110': '#87afd7',
-"      \ '111': '#87afff',
-"      \ '112': '#87d700',
-"      \ '113': '#87d75f',
-"      \ '114': '#87d787',
-"      \ '115': '#87d7af',
-"      \ '116': '#87d7d7',
-"      \ '117': '#87d7ff',
-"      \ '118': '#87ff00',
-"      \ '119': '#87ff5f',
-"      \ '120': '#87ff87',
-"      \ '121': '#87ffaf',
-"      \ '122': '#87ffd7',
-"      \ '123': '#87ffff',
-"      \ '124': '#af0000',
-"      \ '125': '#af005f',
-"      \ '126': '#af0087',
-"      \ '127': '#af00af',
-"      \ '128': '#af00d7',
-"      \ '129': '#af00ff',
-"      \ '130': '#af5f00',
-"      \ '131': '#af5f5f',
-"      \ '132': '#af5f87',
-"      \ '133': '#af5faf',
-"      \ '134': '#af5fd7',
-"      \ '135': '#af5fff',
-"      \ '136': '#af8700',
-"      \ '137': '#af875f',
-"      \ '138': '#af8787',
-"      \ '139': '#af87af',
-"      \ '140': '#af87d7',
-"      \ '141': '#af87ff',
-"      \ '142': '#afaf00',
-"      \ '143': '#afaf5f',
-"      \ '144': '#afaf87',
-"      \ '145': '#afafaf',
-"      \ '146': '#afafd7',
-"      \ '147': '#afafff',
-"      \ '148': '#afd700',
-"      \ '149': '#afd75f',
-"      \ '150': '#afd787',
-"      \ '151': '#afd7af',
-"      \ '152': '#afd7d7',
-"      \ '153': '#afd7ff',
-"      \ '154': '#afff00',
-"      \ '155': '#afff5f',
-"      \ '156': '#afff87',
-"      \ '157': '#afffaf',
-"      \ '158': '#afffd7',
-"      \ '159': '#afffff',
-"      \ '160': '#d70000',
-"      \ '161': '#d7005f',
-"      \ '162': '#d70087',
-"      \ '163': '#d700af',
-"      \ '164': '#d700d7',
-"      \ '165': '#d700ff',
-"      \ '166': '#d75f00',
-"      \ '167': '#d75f5f',
-"      \ '168': '#d75f87',
-"      \ '169': '#d75faf',
-"      \ '170': '#d75fd7',
-"      \ '171': '#d75fff',
-"      \ '172': '#d78700',
-"      \ '173': '#d7875f',
-"      \ '174': '#d78787',
-"      \ '175': '#d787af',
-"      \ '176': '#d787d7',
-"      \ '177': '#d787ff',
-"      \ '178': '#d7af00',
-"      \ '179': '#d7af5f',
-"      \ '180': '#d7af87',
-"      \ '181': '#d7afaf',
-"      \ '182': '#d7afd7',
-"      \ '183': '#d7afff',
-"      \ '184': '#d7d700',
-"      \ '185': '#d7d75f',
-"      \ '186': '#d7d787',
-"      \ '187': '#d7d7af',
-"      \ '188': '#d7d7d7',
-"      \ '189': '#d7d7ff',
-"      \ '190': '#d7ff00',
-"      \ '191': '#d7ff5f',
-"      \ '192': '#d7ff87',
-"      \ '193': '#d7ffaf',
-"      \ '194': '#d7ffd7',
-"      \ '195': '#d7ffff',
-"      \ '196': '#ff0000',
-"      \ '197': '#ff005f',
-"      \ '198': '#ff0087',
-"      \ '199': '#ff00af',
-"      \ '200': '#ff00d7',
-"      \ '201': '#ff00ff',
-"      \ '202': '#ff5f00',
-"      \ '203': '#ff5f5f',
-"      \ '204': '#ff5f87',
-"      \ '205': '#ff5faf',
-"      \ '206': '#ff5fd7',
-"      \ '207': '#ff5fff',
-"      \ '208': '#ff8700',
-"      \ '209': '#ff875f',
-"      \ '210': '#ff8787',
-"      \ '211': '#ff87af',
-"      \ '212': '#ff87d7',
-"      \ '213': '#ff87ff',
-"      \ '214': '#ffaf00',
-"      \ '215': '#ffaf5f',
-"      \ '216': '#ffaf87',
-"      \ '217': '#ffafaf',
-"      \ '218': '#ffafd7',
-"      \ '219': '#ffafff',
-"      \ '220': '#ffd700',
-"      \ '221': '#ffd75f',
-"      \ '222': '#ffd787',
-"      \ '223': '#ffd7af',
-"      \ '224': '#ffd7d7',
-"      \ '225': '#ffd7ff',
-"      \ '226': '#ffff00',
-"      \ '227': '#ffff5f',
-"      \ '228': '#ffff87',
-"      \ '229': '#ffffaf',
-"      \ '230': '#ffffd7',
-"      \ '231': '#ffffff',
-"      \ '232': '#080808',
-"      \ '233': '#121212',
-"      \ '234': '#1c1c1c',
-"      \ '235': '#262626',
-"      \ '236': '#303030',
-"      \ '237': '#3a3a3a',
-"      \ '238': '#444444',
-"      \ '239': '#4e4e4e',
-"      \ '240': '#585858',
-"      \ '241': '#626262',
-"      \ '242': '#6c6c6c',
-"      \ '243': '#767676',
-"      \ '244': '#808080',
-"      \ '245': '#8a8a8a',
-"      \ '246': '#949494',
-"      \ '247': '#9e9e9e',
-"      \ '248': '#a8a8a8',
-"      \ '249': '#b2b2b2',
-"      \ '250': '#bcbcbc',
-"      \ '251': '#c6c6c6',
-"      \ '252': '#d0d0d0',
-"      \ '253': '#dadada',
-"      \ '254': '#e4e4e4',
-"      \ '255': '#eeeeee',
-"      \ }
-" function! s:hexokinase_patterns_tmux_colour_process(str) abort
-"   if has_key(s:hexokinase_tmux_colours, a:str)
-"     return s:hexokinase_tmux_colours[a:str]
-"   else
-"     return ''
-"   endif
-" endfunction
-" let g:Hexokinase_ft_patterns = {
-"      \   'tmux' : {
-"      \     'colour{3}': function('s:hexokinase_patterns_tmux_colour_process')
-"      \   }
-"      \ }
 
 
 " ParenMatch:
@@ -2238,41 +1882,6 @@ let c_no_curly_error = 1
 let g:cpp_simple_highlight = 1  " Put all standard C and C++ keywords under Vim's highlight group `Statement` (affects both C and C++ files)
 let g:cpp_named_requirements_highlight = 1  " Enable highlighting of named requirements (C++20 library concepts)
 
-"" Chromatica:
-" automatically starts C family filetypes
-" Gautocmdft c,cpp,objc,objcpp ChromaticaStart
-" let g:chromatica#enable_at_startup = 1
-" let g:chromatica#libclang_path = s:llvm_base_path . '/lib/libclang.dylib'
-" let g:chromatica#libclang_path = '/opt/llvm/stable/lib/libclang.dylib'
-" let g:chromatica#enable_log = 0
-" let g:chromatica#enable_profiling = 0
-" let g:chromatica#global_args = [
-"      \ '-I/opt/llvm/stable/include/c++/v1',
-"      \ '-isystem', '/opt/llvm/stable/include',
-"      \ '-isysroot/opt/llvm/stable',
-"      \ '-mmacosx-version-min=10.15',
-"      \ '-F/System/Library/Frameworks',
-"      \ '-F/System/Library/PrivateFrameworks',
-"      \ '-F/Library/Developer/CommandLineTools/Library/Frameworks',
-"      \ '-F/Library/Developer/CommandLineTools/Library/PrivateFrameworks',
-"      \ '-F' . $XCODE_PATH . '/Contents/Applications/Instruments.app/Contents/Frameworks',
-"      \ '-F/System/DriverKit/System/Library/Frameworks',
-"      \ '-F/usr/local/Frameworks',
-"      \ '-I' . $XCODE_PATH . '/lib',
-"      \ '-I/usr/local/lib',
-"      \ ]
-"       "\ '-I' . s:llvm_base_path . '/include/c++/v1',
-"       "\ '-isystem' . s:llvm_base_path . '/lib/clang/' . s:llvm_clang_version . '/include',
-"       "\ '-I' . s:llvm_base_path . '/lib',
-" " let g:chromatica#global_args = ['-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++ -isystem/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include']
-" " let g:chromatica#libclang_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
-" let g:chromatica#responsive_mode = 0
-" let g:chromatica#delay_ms = 30
-" let g:chromatica#use_pch = 1
-" let g:chromatica#highlight_feature_level = 1
-" let g:chromatica#debug_log = 0
-" let g:chromatica#dotclangfile_search_path = ''
-
 
 " Protobuf:
 let g:clang_format#code_style = 'google'
@@ -2366,7 +1975,6 @@ let g:markdownfmt_fail_silently = 0
 let g:mkdp_auto_start = 0
 let g:mkdp_auto_close = 0
 let g:mkdp_markdown_css = $XDG_CONFIG_HOME . '/nvim/plugin/markdown-preview.nvim/github.css'
-" let g:mkdp_highlight_css = $XDG_CONFIG_HOME . '/nvim/plugin/markdown-preview.nvim/highlight.css'
 
 function! s:markdown_preview_forcus_gain()
   call mkdp#util#open_preview_page()
@@ -2438,8 +2046,7 @@ command! -nargs=* -complete=help HelpGrep call s:smart_helpgrep(<q-args>)
 
 
 " SyntaxInfo:
-" Display syntax infomation on under the current cursor
-" for syntax ID
+" Display syntax infomation on under the current cursor for syntax ID
 function! s:get_syn_id(transparent)
   let s:synid = synID(line("."), col("."), 1)
   if a:transparent
@@ -2833,7 +2440,7 @@ nnoremap                 <S-Up>   <Nop>
 
 "" Go:
 Gautocmdft go nnoremap <LocalLeader>go  :<C-u>DeniteProjectDir grep -buffer-name='grep' -path=/usr/local/go/src<CR>
-" Gautocmd BufNewFile,BufRead,BufEnter godoc://** nmap <C-]> <CR>
+Gautocmd BufNewFile,BufRead,BufEnter godoc://** nmap <C-]> <CR>
 
 "" C CXX ObjC:
 Gautocmdft c,cpp  nnoremap <silent><buffer><C-k>       :<C-u>call <SID>open_online_cfamily_doc()<CR>
@@ -2844,7 +2451,6 @@ if dein#tap('vim-clang-format')
 endif
 
 "" Protobuf:
-" Gautocmdft proto nmap <silent><LocalLeader>f  :<C-u>call PrototoolFormat()<CR>
 
 "" Yaml:
 
@@ -2854,7 +2460,6 @@ Gautocmdft markdown nmap <silent><LocalLeader>f  :<C-u>call markdownfmt#Format()
 "" Vim:
 " http://ku.ido.nu/post/90355094974/how-to-grep-a-word-under-the-cursor-on-vim
 Gautocmdft vim nnoremap <silent><buffer>K      :<C-u>Help<Space><C-r><C-w><CR>
-" Gautocmdft vim nnoremap <silent><buffer><C-]>  :<C-u>tag <c-r>=expand("<cword>")<CR><CR>zz
 
 "" Ouickfix:
 Gautocmdft qf  nnoremap <buffer><CR>      <CR>zz
@@ -2888,9 +2493,6 @@ Gautocmdft swift imap <buffer><C-k>  <Plug>(autocomplete_swift_jump_to_placehold
 
 " Plugins:
 "" Deoplete:
-" inoremap         <expr><C-g>    deoplete#refresh()
-" inoremap         <expr><C-e>    deoplete#cancel_popup()
-" inoremap <silent><expr><C-l>    deoplete#complete_common_string()
 function! s:deoplete_check_back_space() abort
   let s:col = col('.') - 1
   return !s:col || getline('.')[s:col - 1]  =~ '\s'
@@ -2905,7 +2507,6 @@ inoremap <silent><expr><Down>   pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <silent><expr><C-z>    pumvisible() ? "\<C-z>" : deoplete#mapping#_undo_completion()
 "" Neosnippet:
 imap     <silent><expr><C-k>    neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<C-k>"
-" imap     <silent><expr><C-k>    deoppet#expandable() ? "\<Plug>(deoppet_expand)" : "\<C-k>"
 
 " -------------------------------------------------------------------------------------------------
 " Visual Select: (v)
@@ -2953,7 +2554,6 @@ xnoremap <silent><C-t>     :<C-u>Trans<CR>
 
 " neosnippet
 smap     <silent><expr><C-k> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<C-k>"
-" smap     <silent><expr><C-k> deoppet#expandable() ? "\<Plug>(deoppet_expand)" : "\<C-k>"
 
 " Language:
 
@@ -2986,13 +2586,6 @@ tnoremap <nowait><buffer><BS>      <BS>
 
 " -------------------------------------------------------------------------------------------------
 
-" if !exists('g:syntax_on')
-"   syntax enable  " `on` is slow, `default` is doesn't enable syntax
-" endif
-" filetype plugin indent on
-" colorscheme equinusocio_material
-
-
 " Global:
 highlight! NonText                     gui=NONE      guifg=NONE     guibg=NONE
 highlight! TermCursor                  gui=NONE      guifg=#222223  guibg=#ffffff
@@ -3001,12 +2594,6 @@ highlight! HoverFloat                  gui=NONE      guifg=#c7c8c8  guibg=#20212
 highlight! manUnderline                gui=underline guifg=#81a2be  guibg=NONE
 highlight! manBold                     gui=NONE      guifg=#f0c674  guibg=NONE
 highlight! manItalic                   gui=italic    guifg=NONE     guibg=NONE
-
-  "        black      red        green      yellow     blue       magenta    cyan       white
-  " for s:color in [
-  "      \ '#101112', '#b24e4e', '#9da45a', '#f0c674', '#5f819d', '#85678f', '#5e8d87', '#707880',
-  "      \ '#373b41', '#cc6666', '#a0a85c', '#f0c674', '#81a2be', '#b294bb', '#8abeb7', '#c5c8c6',
-  "      \ ]
 
 " FileType:
 "" Go:

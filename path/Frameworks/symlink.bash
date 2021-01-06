@@ -6,10 +6,14 @@ warn() { printf "\x1b[1;33m[WARN]\x1b[0m %s\\n" "$1" >&2; }
 XCODE_PATH=$1
 
 if [[ -z $XCODE_PATH ]]; then
-  echo "USAGE: $(basename "$0") [Xcode.app path]"; exit 1
+  echo "USAGE: $(basename "$0") [Xcode.app | MacOSX.sdk path | \$(xcrun --show-sdk-path)]"; exit 1
 fi
 
 DST_DIR="${2:-$(basename "${XCODE_PATH%.*}")}"
+if [[ "$DST_DIR" != 'Xcode' ]]; then
+  DST_DIR="$(basename "$XCODE_PATH")"
+fi
+
 if [[ -d "$DST_DIR" ]]; then
   rm -rf "$DST_DIR"
 fi

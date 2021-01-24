@@ -1,4 +1,4 @@
-# ------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # LICENSE
 
 # BSD Owner
@@ -17,7 +17,7 @@ abbr BSD Go Authors
 	`substitute(&commentstring, '%s', '', 'g')`license that can be found in the LICENSE file.
 	${0}
 
-# ------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # TODO, WIP
 
 snippet     todo
@@ -32,14 +32,15 @@ snippet     wip
 abbr				WIP($USER): ...
 	`substitute(&commentstring, '%s', '', 'g')`WIP(`get(g:, 'neosnippet_username')`): ${0}
 
-# ------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # foo, bar ...
 
 snippet     foobar
 abbr        foo, bar, baz ...
 	foo bar baz qux quux quuz corge grault garply waldo fred plugh xyzzy thud${0}
 
-snippet     represents
-alias       rep
-abbr        represents a ...
-	represents a ${0}
+# ------------------------------------------------------------------------------
+
+snippet     sha256sum-check
+alias       sha256sum
+	`system('sha256sum-check ${1:url}')`${0}

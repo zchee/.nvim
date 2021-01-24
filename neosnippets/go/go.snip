@@ -8,7 +8,7 @@ include go/pragma.snip
 snippet     compile-time-check
 alias       ctc
 abbr        // compile time check
-	// compile time check whether the ${1:#:type} implements ${2:#:interface} interface.
+	// make sure a ${1:#:type} implements the ${2:#:interface} interface.
 	var _ $2 = (*$1)(nil)${0}
 
 snippet     doc:interface
@@ -30,6 +30,11 @@ abbr        // MarshalJSON implements json.Marshaler.
 snippet     doc-json.Unmarshaler
 abbr        // UnmarshalJSON implements json.Unmarshaler.
 	// UnmarshalJSON implements json.Unmarshaler.${0}
+
+snippet     represents
+alias       rep
+abbr        represents a ...
+	represents a ${0}
 
 # ------------------------------------------------------------------
 # Built-in
@@ -112,152 +117,6 @@ snippet     forr
 abbr        for k, v := range items { ... }
 	for ${2:k}, ${3:v} := range ${1} {
 		${0}
-	}
-
-# ------------------------------------------------------------------
-# fmt
-
-snippet     ff
-abbr        fmt.Printf(...)
-	fmt.Printf("$1: %#v\n", ${1})
-
-snippet     fl
-abbr        fmt.Println(...)
-	fmt.Println(${1})
-
-snippet     ft
-abbr        fmt.Printf("$1: %T = %v\n", $1)
-	fmt.Printf("$1: %T = %#v\n", ${1}, $1)
-
-# Use "github.com/davecgh/go-spew/spew"
-snippet     fd
-abbr        fmt.Printf("$1: %+s", spew.Sdump(...))
-	fmt.Printf("$1: %s\n", spew.Sdump(${1}))
-
-# Use "github.com/k0kubun/pp"
-snippet     fp
-abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
-	fmt.Printf("$1: %s\n", pp.Sprintln(${1}))
-
-snippet     fdiff
-abbr        cmp.Diff(1, 2); fmt.Printf("(+want, -got)", diff)
-	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		fmt.Printf("(-got, +want)\n%s\n", diff)
-	}
-
-# ------------------------------------------------------------------
-# log
-
-# printf
-snippet     lf
-abbr        log.Printf(...)
-	log.Printf("$1: %#v\n", ${1})
-
-snippet     lt
-abbr        log.Printf("$1: %T, %v", $1)
-	log.Printf("$1: %T => %#v\n", ${1}, $1)
-
-# println
-snippet     ll
-abbr        log.Println(...)
-	log.Println(${1})
-
-# Use "github.com/davecgh/go-spew/spew"
-snippet     ld
-abbr        log.Printf("$1: %v", spew.Sdump(...))
-	log.Printf("$1: %s\n", spew.Sdump(${1}))
-
-snippet     ldiff
-abbr        cmp.Diff(1, 2); log.Printf("(+want, -got)", diff)
-	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		log.Printf("(-got, +want)\n%s\n", diff)
-	}
-
-# debug
-snippet     ldf
-abbr        log.Debugf("$1: %T, %v", $1)
-	log.Debugf("$1: %T => %#v\n", ${1}, $1)
-
-# log.Println 'test'
-snippet     test
-abbr        log.Println("test")${0}
-	log.Println("test")
-
-# ------------------------------------------------------------------
-# testing
-
-snippet     tf
-abbr        t.Logf(...)
-	t.Logf("$1: %#v", ${1})
-
-snippet     tl
-abbr        t.Log
-	t.Log(${1})
-
-snippet     tt
-abbr        t.Logf("%T = %#v", ...)
-	t.Logf("$1: %T = %#v", ${1}, $1)
-
-# Use "github.com/davecgh/go-spew/spew"
-snippet     td
-abbr        t.Logf("$1: %+s", spew.Sdump(...))
-	t.Logf("$1: %s", spew.Sdump(${1}))
-
-# Use "github.com/k0kubun/pp"
-snippet     tp
-abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
-	t.Logf("$1: %+s\n", pp.Sprintln(${1}))
-
-snippet     tgotwant
-abbr        t.Fatalf("got %v, want %v", ...)
-	if got, want := ${1}, ${2}; got != want {
-		t.Fatalf("got %v, want %v", got, want)
-	}
-
-snippet     tdiff
-abbr        cmp.Diff(1, 2); t.Fatalf("(+want, -got)", diff)
-	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		t.Fatalf("(-want +got):\n%s", diff)
-	}
-	${0}
-
-# ------------------------------------------------------------------
-# go-spew
-
-snippet     spewconfig
-abbr        spewer = &spew.ConfigState{...}
-	var spewer = &spew.ConfigState{
-		Indent:                  "  ",
-		SortKeys:                true, // maps should be spewed in a deterministic order
-		DisablePointerAddresses: true, // don't spew the addresses of pointers
-		DisableCapacities:       true, // don't spew capacities of collections
-		ContinueOnMethod:        true, // recursion should continue once a custom error or Stringer interface is invoked
-		SpewKeys:                true, // if unable to sort map keys then spew keys to strings and sort those
-		MaxDepth:                4,    // maximum number of levels to descend into nested data structures.
-	}
-	${0}
-
-# ------------------------------------------------------------------
-# benchmark
-
-snippet     bench
-abbr        Benchmark...(b *testing.B) {...}
-	func Benchmark${1}(b *testing.B) {
-		${0}
-		for i := 0; i < b.N; i++ {
-			
-		}
-	}
-
-snippet     benchrun
-abbr        Benchmark...(b *testing.B) { b.Run(...) )
-	func Benchmark${1}(b *testing.B) {
-		${0}
-		b.Run("", func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
-				
-			}
-		})
 	}
 
 # ------------------------------------------------------------------

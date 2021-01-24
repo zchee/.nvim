@@ -1,0 +1,33 @@
+# ------------------------------------------------------------------
+# packages
+
+# ------------------------------------------------------------------
+# go-spew
+
+snippet     spew
+alias       spw
+abbr        spw = &spew.ConfigState{...}
+	var spw = &spew.ConfigState{
+		Indent:                  "  ",
+		SortKeys:                true, // maps should be spewed in a deterministic order
+		DisablePointerAddresses: true, // don't spew the addresses of pointers
+		DisableCapacities:       true, // don't spew capacities of collections
+		ContinueOnMethod:        true, // recursion should continue once a custom error or Stringer interface is invoked
+		SpewKeys:                true, // if unable to sort map keys then spew keys to strings and sort those
+		MaxDepth:                4,    // maximum number of levels to descend into nested data structures.
+	}
+	${0}
+
+
+# ------------------------------------------------------------------
+# stdlib
+
+## os.TempDir
+snippet     tmpfile
+abbr        tmpfile := filepath.Join(os.TempDir(), ...)
+	tmpfile := filepath.Join(os.TempDir(), "${1:#:prefix string}")
+
+## text/tabwriter
+snippet     tabwriter
+abbr        tw := tabwriter.NewWriter(...)
+	tw := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', tabwriter.TabIndent)${0}

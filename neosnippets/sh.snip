@@ -1,7 +1,7 @@
-snippet #!
-abbr    #!/bin/${...}
-alias   shebang
-options head
+snippet     #!
+abbr        #!/bin/${...}
+alias       shebang
+options     head
 	#!/bin/${1:sh}
 	${0}
 
@@ -13,7 +13,7 @@ options     head
 	${0}
 
 
-snippet     env-zsh
+snippet     shebang-zsh
 alias       shebang-zsh
 abbr        #!/usr/bin/env zsh
 options     head
@@ -40,31 +40,6 @@ abbr        strict
 	set -euo pipefail
 	${0}
 
-
-snippet     getopt
-options     head
-	usage() { echo "Usage: \$0 [-s <45|90>] [-p <string>]" 1>&2; exit 1; }
-
-	while getopts ":s:p:" opt; do
-	  case "${opt}" in
-	    s)
-	      s=${OPTARG}
-	      ((s == 45 || s == 90)) || usage
-	      ;;
-	    p)
-	      p=${OPTARG}
-	      ;;
-	    *)
-	      usage
-	      ;;
-	  esac
-	done
-	shift $((OPTIND-1))
-
-	if [ -z "${s}" ] || [ -z "${p}" ]; then
-	  usage
-	fi
-	${0}
 
 snippet     case
 abbr        case "${1}" in ...
@@ -129,8 +104,7 @@ snippet     tmp
 
 snippet     function
 alias       func
-	${1:#:name}()
-	{
+	${1:#:name}() {
 		${0:TARGET}
 	}
 
@@ -157,26 +131,27 @@ abbr        > /dev/null 2>&1
 snippet     info
 abbr        [INFO] ...
 	info() { printf "\\x1b[1;34m[INFO]\\x1b[0m %s\\\n" "\$1" >&2; }
-	${0}
 
 
 snippet     warning
 alias       warn
 abbr        [WARN] ...
 	warn() { printf "\\x1b[1;33m[WARN]\\x1b[0m %s\\\n" "\$1" >&2; }
-	${0}
 
 
 snippet     error
 abbr        [ERROR] ...
 	error() { printf "\\x1b[1;31m[ERROR]\\x1b[0m %s\\\n" "\$1" >&2; exit 1; }
-	${0}
+
+
+snippet     type
+abbr        type ${1} && { error '...' }
+	type ${1:#:command} >/dev/null 2>&1 || { error "$1 command not found"; }${0}
 
 
 snippet     command-v
-alias       command-v
 abbr        command -v ${1} && { error '...' }
-	command -v ${1:#:command name} >/dev/null 2>&1 || { error "$1 command not found"; }${0}
+	command -v ${1:#:command} >/dev/null 2>&1 || { error "$1 command not found"; }${0}
 
 
 snippet     echo-var
@@ -194,3 +169,57 @@ abbr        if [ \$# -eq \${1} ]; then [FATAL] ...
 snippet     cwd
 abbr        CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 	CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"${0}
+
+
+snippet     getopt
+	usage() { echo "Usage: \$0 [-s <45|90>] [-p <string>]" 1>&2; exit 1; }
+
+	while getopts ":s:p:" opt; do
+	  case "${opt}" in
+	    s)
+	      s=${OPTARG}
+	      ((s == 45 || s == 90)) || usage
+	      ;;
+	    p)
+	      p=${OPTARG}
+	      ;;
+	    *)
+	      usage
+	      ;;
+	  esac
+	done
+	shift $((OPTIND-1))
+
+	if [ -z "${s}" ] || [ -z "${p}" ]; then
+	  usage
+	fi
+	${0}
+
+
+snippet     getopt2
+	declare -i argc=0
+	declare -a argv=()
+
+	while (( \$# > 0 ))
+	do
+			case \$1 in
+					-*)
+							if [[ "\$1" =~ 'n' ]]; then
+									nflag='-n'
+							fi
+							if [[ "\$1" =~ 'l' ]]; then
+									lflag='-l'
+							fi
+							if [[ "\$1" =~ 'p' ]]; then
+									pflag='-p'
+							fi
+							shift
+							;;
+					*)
+							((++argc))
+							argv=("\${argv[@]}" "\$1")
+							shift
+							;;
+			esac
+	done
+	${0}

@@ -1,6 +1,138 @@
 # ------------------------------------------------------------------
 # functions
 
+# fmt
+
+snippet     ff
+abbr        fmt.Printf(...)
+	fmt.Printf("$1: %#v\n", ${1})
+
+snippet     fl
+abbr        fmt.Println(...)
+	fmt.Println(${1})
+
+snippet     ft
+abbr        fmt.Printf("$1: %T = %v\n", $1)
+	fmt.Printf("$1: %T = %#v\n", ${1}, $1)
+
+# Use "github.com/davecgh/go-spew/spew"
+snippet     fd
+abbr        fmt.Printf("$1: %+s", spew.Sdump(...))
+	fmt.Printf("$1: %s\n", spew.Sdump(${1}))
+
+# Use "github.com/k0kubun/pp"
+snippet     fp
+abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
+	fmt.Printf("$1: %s\n", pp.Sprintln(${1}))
+
+snippet     fdiff
+abbr        cmp.Diff(1, 2); fmt.Printf("(+want, -got)", diff)
+	if diff := cmp.Diff(${1}, ${2}); diff != "" {
+		fmt.Printf("(-got, +want)\n%s\n", diff)
+	}
+
+
+# ------------------------------------------------------------------
+# log
+
+# printf
+snippet     lf
+abbr        log.Printf(...)
+	log.Printf("$1: %#v\n", ${1})
+
+snippet     lt
+abbr        log.Printf("$1: %T, %v", $1)
+	log.Printf("$1: %T => %#v\n", ${1}, $1)
+
+# println
+snippet     ll
+abbr        log.Println(...)
+	log.Println(${1})
+
+# Use "github.com/davecgh/go-spew/spew"
+snippet     ld
+abbr        log.Printf("$1: %v", spew.Sdump(...))
+	log.Printf("$1: %s\n", spew.Sdump(${1}))
+
+snippet     ldiff
+abbr        cmp.Diff(1, 2); log.Printf("(+want, -got)", diff)
+	if diff := cmp.Diff(${1}, ${2}); diff != "" {
+		log.Printf("(-got, +want)\n%s\n", diff)
+	}
+
+# debug
+snippet     ldf
+abbr        log.Debugf("$1: %T, %v", $1)
+	log.Debugf("$1: %T => %#v\n", ${1}, $1)
+
+# log.Println 'test'
+snippet     test
+abbr        log.Println("test")${0}
+	log.Println("test")
+
+
+# ------------------------------------------------------------------
+# testing
+
+snippet     tf
+abbr        t.Logf(...)
+	t.Logf("$1: %#v", ${1})
+
+snippet     tl
+abbr        t.Log
+	t.Log(${1})
+
+snippet     tt
+abbr        t.Logf("%T = %#v", ...)
+	t.Logf("$1: %T = %#v", ${1}, $1)
+
+# Use "github.com/davecgh/go-spew/spew"
+snippet     td
+abbr        t.Logf("$1: %+s", spew.Sdump(...))
+	t.Logf("$1: %s", spew.Sdump(${1}))
+
+# Use "github.com/k0kubun/pp"
+snippet     tp
+abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
+	t.Logf("$1: %+s\n", pp.Sprintln(${1}))
+
+snippet     tgotwant
+abbr        t.Fatalf("got %v, want %v", ...)
+	if got, want := ${1}, ${2}; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+snippet     tdiff
+abbr        cmp.Diff(1, 2); t.Fatalf("(+want, -got)", diff)
+	if diff := cmp.Diff(${1}, ${2}); diff != "" {
+		t.Fatalf("(-want +got):\n%s", diff)
+	}
+	${0}
+
+
+# ------------------------------------------------------------------
+# benchmark
+
+snippet     bench
+abbr        Benchmark...(b *testing.B) {...}
+	func Benchmark${1}(b *testing.B) {
+		${0}
+		for i := 0; i < b.N; i++ {
+			
+		}
+	}
+
+snippet     benchrun
+abbr        Benchmark...(b *testing.B) { b.Run(...) )
+	func Benchmark${1}(b *testing.B) {
+		${0}
+		b.Run("", func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				
+			}
+		})
+	}
+
 snippet IsExist
 abbr IsExist
 	// IsExist returns whether the filename is exists.
@@ -24,11 +156,13 @@ abbr http.HandlerFunc(...)
 	})
 	${0}
 
+
 # -------------------------------------------------------------------
 # time
 
 snippet     date
-	time.Date(`strftime("%Y")`, time.`strftime("%B")`, `strftime("%d")`, `strftime("%H")`, 0, 0, 0, time.FixedZone("Asia/Tokyo", 9*60*60))
+	time.Date(`strftime("%Y")`, time.`strftime("%B")`, `strftime("%d")`, `strftime("%H")`, `strftime("%M")`, 0, 0, time.FixedZone("Asia/Tokyo", 9*60*60))
+
 
 # ------------------------------------------------------------------
 # runtime.Callers
@@ -36,6 +170,7 @@ snippet     date
 snippet     caller
 abbr        log.Println(runtime.Caller(...))
 	log.Println(runtime.Caller(${1:1}))${0}
+
 
 # ------------------------------------------------------------------
 # go/parser
@@ -49,13 +184,6 @@ abbr        parser.ParseFile(...)
 		return err
 	}${0}
 
-# ------------------------------------------------------------------
-# os
-
-## create tempfile
-snippet     tempfile
-abbr        filepath.Join(os.TempDir(), ...)
-	filepath.Join(os.TempDir(), "${1:#:prefix string}")
 
 # ------------------------------------------------------------------
 # cgo
@@ -63,11 +191,3 @@ abbr        filepath.Join(os.TempDir(), ...)
 snippet     cfree
 abbr        defer C.free(unsafe.Pointer(...))
 	defer C.free(unsafe.Pointer(${1}))
-
-# ------------------------------------------------------------------
-# miscellaneous
-
-## tabwriter
-snippet     tw
-abbr        tw := tabwriter.NewWriter(...)
-	tw := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', tabwriter.TabIndent)${0}

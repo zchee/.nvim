@@ -12,6 +12,7 @@ let g:loaded_sysinit = 1
 
 " Environment Variables:
 
+let $LANG            = 'C'
 let $XDG_RUNTIME_DIR = expand('/run/user/502')
 let $XDG_CACHE_HOME  = expand($HOME.'/.cache')
 let $XDG_CONFIG_DIRS = expand('/etc/xdg')
@@ -22,7 +23,6 @@ let $NVIM_LOG_FILE   = expand($HOME.'/.local/share/nvim/log')
 let $TERM            = 'xterm-256color'
 let $MANWIDTH        = 999
 
-unlet $RUSTC_WRAPPER
 unlet $RUSTFLAGS
 
 " -------------------------------------------------------------------------------------------------
@@ -30,7 +30,8 @@ unlet $RUSTFLAGS
 
 "" Remote Plugins:
 let g:loaded_python_provider    = 0                              " $VIMRUNTIME/autoload/provider/python.vim
-let g:python3_host_prog         = '/usr/local/opt/python@3.9/bin/python3.9'
+" let g:python3_host_prog         = '/usr/local/opt/pypy3/bin/pypy3.7'
+let g:python3_host_prog         = '/usr/local/opt/python/bin/python3.9'
 let g:loaded_node_provider      = 0                              " $VIMRUNTIME/autoload/provider/node.vim
 let g:node_host_prog            = 0                              " '/usr/local/var/nodebrew/bin/neovim-node-host'
 let g:loaded_ruby_provider      = 0                              " $VIMRUNTIME/autoload/provider/ruby.vim

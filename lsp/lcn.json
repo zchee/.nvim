@@ -31,6 +31,10 @@
         }
     },
     "gopls": {
+        "env": {},
+        "buildFlags": [],
+        "directoryFilters": [],
+        "directoryFilters": [],
         "completionDocumentation": false,
         "usePlaceholders": true,
         "deepCompletion": true,
@@ -47,10 +51,10 @@
             "unusedparams": false
         },
         "annotations": {
-            "noEscape": false,
-            "noNilcheck": false,
-            "noInline": false,
-            "noBounds": false
+            "bounds": false,
+            "escape": false,
+            "inline": false,
+            "nil": false
         },
         "codelenses": {
             "test": false,
@@ -75,9 +79,11 @@
         "gofumpt": false,
 	"semanticTokens": true,
 	"expandWorkspaceToModule": true,
-	"experimentalWorkspaceModule": true,
+	"experimentalWorkspaceModule": false,
 	"experimentalDiagnosticsDelay": "0",
-	"experimentalPackageCacheKey": true
+	"experimentalPackageCacheKey": true,
+	"allowModfileModifications": true,
+	"allowImplicitNetworkAccess": false
     },
     "http": {
         "proxyStrictSSL": true
@@ -151,7 +157,7 @@
     "Lua": {
         "completion": {
             "callSnippet": "Disable",
-            "displayContext": "Disable",
+            "displayContext": "Enabed",
             "enable": true,
             "keywordSnippet": "Disable"
         },
@@ -170,32 +176,48 @@
                 "/usr/local/share/lua/5.4/luarocks/?.lua",
                 "/usr/local/share/lua/5.4/luarocks/?/init.lua",
                 "/usr/local/share/lua/5.4/?.lua",
-                "/usr/local/share/lua/5.4//?/init.lua"
+                "/usr/local/share/lua/5.4//?/init.lua",
+                "/usr/local/share/nvim/runtime/lua/vim/?.lua",
+                "/usr/local/share/nvim/runtime/lua/?/?.lua",
+                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/lua/vim.lua"
             ],
-            "version": "Lua 5.1"
+            "version": "Lua 5.4"
         },
         "workspace": {
             "library": {
-                "/usr/local/share/nvim/runtime/lua": true
+                "/usr/local/share/nvim/runtime/lua/vim": true,
+                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/lua": true
             },
             "maxPreload": 2000,
             "preloadFileSize": 1000
         }
     },
     "pyls": {
-        "configurationSources": "flake8",
+        "configurationSources": "pycodestyle",
         "plugins": {
-            "flake8": {
-                "enabled": true
+            "jedi": {
+                "extra_paths": [
+                    "/usr/local/lib/python3.9/site-packages",
+                    "/Users/zchee/src/github.com/llvm/llvm-project/clang/bindings/python/clang",
+                    "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/defx.nvim/rplugin/python3/defx",
+                    "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/denite.nvim/rplugin/python3/denite",
+                    "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/deoplete.nvim/rplugin/python3/deoplete",
+                    "/Applications/kitty.app/Contents/Resources/kitty/kittens",
+                    "/Applications/kitty.app/Contents/Resources/kitty/kitty",
+                    "/opt/llvm/devel/lib/python3.9/site-packages/lldb",
+                    "/Users/zchee/src/github.com/llvm/llvm-project/llvm/bindings/python/llvm"
+                ]
             },
             "jedi_completion": {
                 "enabled": true,
-                "include_params": true
+                "include_params": true,
+                "include_class_objects": true,
+                "fuzzy": false
             },
             "jedi_definition": {
                 "enabled": true,
-                "follow_builtin_imports": true,
-                "follow_imports": true
+                "follow_imports": true,
+                "follow_builtin_imports": true
             },
             "jedi_hover": {
                 "enabled": true
@@ -207,7 +229,16 @@
                 "enabled": true
             },
             "jedi_symbols": {
-                "all_scopes": true,
+                "enabled": true,
+                "all_scopes": true
+            },
+            "pycodestyle": {
+                "enabled": true
+            },
+            "rope_completion": {
+                "enabled": false
+            },
+            "flake8": {
                 "enabled": true
             }
         }
@@ -216,14 +247,24 @@
         "analysis": {
             "autoImportCompletions": true,
             "autoSearchPaths": true,
-            "extraPaths": [],
-            "diagnosticMode": "workspace",
+            "extraPaths": [
+                "/usr/local/lib/python3.9/site-packages",
+                "/Users/zchee/src/github.com/llvm/llvm-project/clang/bindings/python/clang",
+                "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/defx.nvim/rplugin/python3/defx",
+                "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/denite.nvim/rplugin/python3/denite",
+                "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/deoplete.nvim/rplugin/python3/deoplete",
+                "/Applications/kitty.app/Contents/Resources/kitty/kittens",
+                "/Applications/kitty.app/Contents/Resources/kitty/kitty",
+                "/opt/llvm/devel/lib/python3.9/site-packages/lldb",
+                "/Users/zchee/src/github.com/llvm/llvm-project/llvm/bindings/python/llvm"
+            ],
+            "diagnosticMode": "openFilesOnly",
             "logLevel": "Trace",
             "typeCheckingMode": "strict",
             "useLibraryCodeForTypes": false
         },
         "typeshedPaths": "/Users/zchee/src/github.com/microsoft/pyright/client/typeshed-fallback",
-        "pythonPath": "/usr/local/opt/python@3.9/bin/python3",
+        "pythonPath": "/usr/local/opt/python/bin/python3",
         "pythonPlatform": "Darwin"
     },
     "rust": {
@@ -330,48 +371,52 @@
         "completion": true,
         "schemas": {
             "url": "globPattern",
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/appengine-app.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/appengine-app.schema.json": [
                 "app*.yaml"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/azure-pipelines.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/azure-pipelines.schema.json": [
                 "azure-pipelines.yml"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/circleci.schema.json": [
-                "**/.circleci/config.yml",
+            "file:///Users/zchee/src/github.com/zchee/schema/circleci.schema.json": [
+                ".circleci/config.yml",
                 "@orb.yml",
                 "**/commands/*.yml",
                 "**/examples/*.yml",
                 "**/executors/*.yml",
                 "**/jobs/*.yml"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/cloudbuild.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/cloudbuild.schema.json": [
                 "*cloudbuild.yaml",
                 "*cloudbuild.*.yaml"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/codecov.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/codecov.schema.json": [
                 "**/.codecov.yml"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/dependabot.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/dependabot.schema.json": [
                 "**/.github/dependabot.yml"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/docker-compose.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/docker-compose.schema.json": [
                 "*docker-compose*.yaml",
                 "*docker-compose*.yml"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/kaitai-struct-compiler.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json": [
                 "*.ksy"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/kubernetes.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/kubernetes.schema.json": [
                 "kubernetes/*"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/mkdocs.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json": [
                 "mkdocs.yml"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/open-rpc.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json": [
                 "openrpc.yaml"
             ],
-            "file:///Users/zchee/src/github.com/zchee/jsonschema/travis.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/travis.schema.json": [
                 ".travis.yml"
+            ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
+                "openapi.yaml",
+                "**/openapi-spec/*.yaml"
             ],
             "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
                 "openapi.yaml",

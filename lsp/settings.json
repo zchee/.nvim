@@ -1,5 +1,8 @@
 {
     "gopls": {
+        "env": {},
+        "buildFlags": [],
+        "directoryFilters": [],
         "completionDocumentation": false,
         "usePlaceholders": false,
         "deepCompletion": false,
@@ -16,10 +19,10 @@
             "unusedparams": true
         },
         "annotations": {
-            "noEscape": true,
-            "noNilcheck": true,
-            "noInline": true,
-            "noBounds": true
+            "bounds": true,
+            "escape": true,
+            "inline": true,
+            "nil": true
         },
         "codelenses": {
             "test": true,
@@ -44,9 +47,11 @@
         "gofumpt": false,
 	"semanticTokens": true,
 	"expandWorkspaceToModule": true,
-	"experimentalWorkspaceModule": true,
+	"experimentalWorkspaceModule": false,
 	"experimentalDiagnosticsDelay": "0",
-	"experimentalPackageCacheKey": true
+	"experimentalPackageCacheKey": true,
+	"allowModfileModifications": true,
+	"allowImplicitNetworkAccess": false
     },
     "yaml": {
         "format": {

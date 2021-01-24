@@ -12,63 +12,95 @@ set background=dark
 " ------------------------------------------------------------------------------
 " Palettes:
 
+"" :help attr-list
+"" :help highlight-gui
+
+"" guisp is used for undercurl and underline.
+
+" NONE		no color (transparent)
+" bg		use normal background color
+" background	use normal background color
+" fg		use normal foreground color
+" foreground	use normal foreground color
+
 let s:p = {}
 
-let s:p.none                  = 'NONE'
-let s:p.bold                  = 'bold'
-let s:p.underline             = 'underline'
-let s:p.undercurl             = 'undercurl'
-let s:p.strikethrough         = 'strikethrough'
-let s:p.inverse               = 'inverse'
-let s:p.italic                = 'italic'
-let s:p.standout              = 'standout'
-let s:p.nocombine             = 'nocombine'
+let s:p.none                    = 'None'          " no attributes used (used to reset it)
+let s:p.bold                    = 'bold'
+let s:p.underline               = 'underline'
+let s:p.undercurl               = 'undercurl'     " curly underline
+let s:p.strikethrough           = 'strikethrough'
+let s:p.reverse                 = 'reverse'
+let s:p.inverse                 = 'inverse'       " same as reverse
+let s:p.italic                  = 'italic'
+let s:p.standout                = 'standout'
+let s:p.nocombine               = 'nocombine'     " override attributes instead of combining them
 
-let s:p.material = {}
+let s:p.material                = {}
+let s:p.material.cursor         = '#111111'
+let s:p.material.cursor_bg      = '#cccccc'
+let s:p.material.hover_float    = '#c7c8c8'
+let s:p.material.hover_float_bg = '#202122'
+let s:p.material.man_bold       = '#f0c674'
+let s:p.material.man_underline  = '#81a2be'
 
-let s:p.material.foreground   = '#e8eae9'  " '#f2f3f3'  " '#c7c8c8'  " '#eeffff'
-let s:p.material.background   = '#0a0a0a'  " '#212121'
-let s:p.material.comment      = '#838c93'  " '#79828a', '#6c7a80', '#838c93', '#878f96'
-let s:p.material.nontext      = '#202122'
-let s:p.material.longlinewarn = '#371f1c'
-let s:p.material.black        = '#000000'
-let s:p.material.red          = '#ff5370'
-let s:p.material.green        = '#bae57d'
-let s:p.material.yellow       = '#ffcb6b'
-let s:p.material.orange       = '#f78c6c'
-let s:p.material.aqua         = '#8abeb7'  " #a1cbc5
-let s:p.material.blue         = '#82aaff'
-let s:p.material.darkblue     = '#81a2be'
-let s:p.material.magenta      = '#c792ea'
-let s:p.material.cyan         = '#75d7ff'  " '#89ddff'
-let s:p.material.white        = '#eeffff'
-let s:p.material.caret        = '#ffcc00'
-let s:p.material.pure_black   = '#000000'
-let s:p.material.cursor_guide = '#343941'  " '#425059'
-let s:p.material.selection    = '#343941'  " '#371f1c'
-let s:p.material.indent_line  = '#282a2e'  " '#2d3c46'
-let s:p.material.darkcolumn   = '#1c1c1c'
-let s:p.material.darkpmenu    = '#292d34'
-let s:p.material.gray         = '#545454'
-let s:p.material.linenr       = '#757575'  " '#8b9ead'
+let s:p.material.foreground     = '#f2f3f3'  " '#e8eae9', '#c7c8c8'  " '#eeffff'
+let s:p.material.background     = '#040404'  " '#0a0a0a', '#212121'
+let s:p.material.comment        = '#838c93'  " '#79828a', '#6c7a80', '#838c93', '#878f96'
+let s:p.material.nontext        = '#202122'
+let s:p.material.longlinewarn   = '#371f1c'
+let s:p.material.black          = '#000000'
+let s:p.material.red            = '#ff5370'
+let s:p.material.green          = '#bae57d'
+let s:p.material.yellow         = '#ffcb6b'
+let s:p.material.orange         = '#f78c6c'
+let s:p.material.aqua           = '#8abeb7'  " #a1cbc5
+let s:p.material.blue           = '#82aaff'
+let s:p.material.darkblue       = '#81a2be'
+let s:p.material.magenta        = '#c792ea'
+let s:p.material.cyan           = '#75d7ff'  " '#89ddff'
+let s:p.material.white          = '#eeffff'
+let s:p.material.caret          = '#ffcc00'
+let s:p.material.pure_black     = '#000000'
+let s:p.material.cursor_guide   = '#343941'  " '#425059'
+let s:p.material.selection      = '#343941'  " '#371f1c'
+let s:p.material.indent_line    = '#282a2e'  " '#2d3c46'
+let s:p.material.darkcolumn     = '#1c1c1c'
+let s:p.material.darkpmenu      = '#292d34'
+let s:p.material.gray           = '#545454'
+let s:p.material.linenr         = '#757575'  " '#8b9ead'
 
-function! s:hl(group, fg, bg, attr, blend)
-  let l:hi_group = 'highlight! ' . a:group
-  let l:hi_group = l:hi_group . ' ctermfg=NONE ctermbg=NONE cterm=NONE'
+function! s:hl(group, fg, bg, attrs, blend)
+  let l:hi_group = 'highlight! ' . a:group . ' ctermfg=None ctermbg=None cterm=None'
   
-  let l:fg = ' guifg=NONE'
+  let l:fg = ' guifg=None'
   if !empty(a:fg)
     let l:fg = ' guifg=' . a:fg
   endif
 
-  let l:bg = ' guibg=NONE'
+  let l:bg = ' guibg=None'
   if !empty(a:bg)
     let l:bg = ' guibg=' . a:bg
   endif
 
-  let l:gui   = ' gui=NONE'
-  if !empty(a:attr)
-    let l:gui = l:gui . ',' . a:attr
+  let l:gui = ' gui=None'
+  if !empty(a:attrs)
+    let l:gui = ' gui='
+
+    if type(a:attrs) == v:t_list
+      let l:i = 1
+      let l:len_attrs = len(a:attrs)
+      while l:i < l:len_attrs
+        let l:gui = l:gui . a:attr[l:i]
+        if l:i < l:len_attrs
+          let l:gui = l:gui . ','
+        endif
+
+        let l:i = l:i + 1
+      endwhile
+    else
+      let l:gui = ' gui=' . a:attrs
+    endif
   endif
 
   let l:blend = ' blend=0'
@@ -76,11 +108,11 @@ function! s:hl(group, fg, bg, attr, blend)
     let l:blend = ' blend=' . a:blend
   endif
 
-  execute l:hi_group.l:fg.l:bg.l:gui.l:blend
+  execute l:hi_group . l:fg . l:bg . l:gui . l:blend
 endfunction
 
-" ------------------------------------------------------------------------------
 " :help group-name
+" ------------------------------------------------------------------------------
 
 call s:hl('ColorColumn',        s:p.none,                  s:p.material.cursor_guide, s:p.none, 0)
 call s:hl('Conceal',            s:p.material.blue,         s:p.none, s:p.none, 0)
@@ -129,8 +161,18 @@ call s:hl('MatchParen',         s:p.material.black,        s:p.material.red, s:p
 
 call s:hl('ModeMsg',            s:p.material.foreground,   s:p.none, s:p.none, 0)
 call s:hl('MoreMsg',            s:p.material.red,          s:p.none, s:p.none, 0)
-call s:hl('NonText',            s:p.material.indent_line,  s:p.none, s:p.none, 0)
+" call s:hl('NonText',            s:p.material.indent_line,  s:p.none, s:p.none, 0)
+call s:hl('NonText',            s:p.none,                  s:p.none, s:p.none, 0)
 call s:hl('Normal',             s:p.material.foreground,   s:p.material.background, s:p.none, 0)
+call s:hl('TermCursor',         s:p.material.cursor,       s:p.material.cursor_bg, s:p.none, 0)
+call s:hl('TermCursorNC',       s:p.material.cursor,       s:p.material.cursor_bg, s:p.reverse, 0)
+call s:hl('HoverFloat',         s:p.material.hover_float,  s:p.material.hover_float_bg, s:p.none, 5)
+
+" ------------------------------------------------------------------------------
+
+call s:hl('manBold',            s:p.material.man_bold,     s:p.none, s:p.bold, 0)
+call s:hl('manItalic',          s:p.none,                  s:p.none, s:p.italic, 0)
+call s:hl('manUnderline',       s:p.material.man_underline,s:p.none, s:p.underline, 0)
 
 " ------------------------------------------------------------------------------
 

@@ -1,5 +1,7 @@
 import re
 import typing
+import threading
+import queue
 
 from deoplete.source.base import Base
 from deoplete.util import debug, error_vim, Nvim, UserContext, Candidates
@@ -13,66 +15,57 @@ class Source(Base):
         self.description = "Language Sever Protocol Client source"
         self.mark = "[LCI]"
         self.min_pattern_length = 1
-        self.input_pattern = r"(\.|::|->)\w*$"
+        # self.input_pattern = r"(\.|::|->)\w*$"
+        self.input_pattern = r"(\.)\w*|" r"(:)\w*|" r"(::)\w*|" r"(->)\w*"
         self.matchers = ["matcher_fuzzy"]
         self.sorters = []
         self.filetypes = self.vim.eval(
             "get(g:, 'LanguageClient_serverCommands', {})"
         ).keys()
         self.is_debug_enabled = False
-        self.is_bytepos = True
+        self.is_bytepos = False
         self.is_volatile = True
-        self.is_async = True
+        self.is_async = False
         self.rank = 1000
-        self.events = (
-            []
-        )  # , "BufReadPost", "InsertEnter", "BufWritePost", "InsertLeave"
-
-    def reset_var(self) -> None:
-        self.vim.vars["LanguageClient_omniCompleteResults"] = []
+        self.events = []  # "BufReadPost", "InsertEnter", "BufWritePost", "InsertLeave"
 
     def on_event(self, context: UserContext) -> None:
         self.debug("context[event]: {}".format(context["event"]))
-
         # disable for now
-        if context["event"] == "BufReadPost":
-            ft = self.get_buf_option("filetype")
-            if ft == "go":
-                self.input_pattern = r"(\.|::|->)\w*(?:[^\W\d]\w*)?"
+        # if context["event"] == "BufReadPost":
+        #     ft = self.get_buf_option("filetype")
+        #     if ft == "go":
+        #         self.input_pattern = r"(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?"
 
     def get_complete_position(self, context: UserContext) -> int:
         return self.vim.call("LanguageClient#get_complete_start", context["input"])
 
-    def request_omni_completion(self, context: UserContext) -> None:
-        character = context["complete_position"] + len(context["complete_str"])
-        self.vim.funcs.LanguageClient_omniComplete(
-            {"character": character, "complete_position": context["complete_position"]}
-        )
-
-    def async_completion(self, context: UserContext) -> Candidates:
-        candidates = self.vim.eval("g:LanguageClient_omniCompleteResults")
-        if candidates:
-            return candidates[0].get("result", [])
-
-        self.request_omni_completion(context)
-
-        return []
+    def reset_var(self) -> None:
+        self.vim.vars["LanguageClient_omniCompleteResults"] = []
 
     def gather_candidates(self, context: UserContext) -> Candidates:
+        self.debug("gather_candidates: context: {}".format(context))
+
         if context["is_async"]:
             result = self.vim.eval("g:LanguageClient_omniCompleteResults")
             if result:
                 context["is_async"] = False
-                candidates = result[0].get("result", [])
 
+                candidates = result[0].get("result", [])
                 for candidate in candidates:
-                    if "func" in candidate["menu"]:
-                        candidate["abbr"] += "()"
+                    if (
+                        # for gopls.usePlaceholders
+                        context["filetype"] == "go"
+                        and candidate["word"] in candidate["abbr"]
+                        and candidate["word"] != candidate["abbr"]
+                        and candidate["abbr"].partition(".")[0] in context["input"]
+                    ):
+                        candidate["word"] = candidate["abbr"].partition(".")[2]
 
                 return candidates
 
-        context["is_async"] = True
         self.reset_var()
+        context["is_async"] = True
 
         character = context["complete_position"] + len(context["complete_str"])
         self.vim.funcs.LanguageClient_omniComplete(
@@ -84,6 +77,31 @@ class Source(Base):
 
         return []
 
+    # async def request_omni_completion(self, context: UserContext, q: asyncio.Queue) -> None:
+    #     character = context["complete_position"] + len(context["complete_str"])
+    #
+    #     await self.vim.funcs.LanguageClient_omniComplete(
+    #         {
+    #             "character": character,
+    #             "complete_position": context["complete_position"],
+    #         }
+    #     )
+    #
+    #     result = self.vim.eval("g:LanguageClient_omniCompleteResults")
+    #     if result:
+    #         await q.put(result)
+    #
+    #     await self.reset_var()
+    #
+    # def async_completion(self, context: UserContext) -> Candidates:
+    #     candidates = self.vim.eval("g:LanguageClient_omniCompleteResults")
+    #     if candidates:
+    #         return candidates[0].get("result", [])
+    #
+    #     self.request_omni_completion(context)
+    #
+    #     return []
+    #
     # def gather_candidates(self, context: UserContext) -> Candidates:
     #     self.reset_var()
     #
@@ -110,6 +128,119 @@ class Source(Base):
     #             return False
     #
     #     return []
+
+
+"""
+{
+  "changedtick": 524,
+  "event": "TextChangedI",
+  "filetype": "go",
+  "filetypes": [
+    "go"
+  ],
+  "input": "\t\tcase *spansql.",
+  "max_abbr_width": 80,
+  "max_kind_width": 40,
+  "max_menu_width": 50,
+  "next_input": "",
+  "position": [
+    0,  # bufnum
+    28, # lnum
+    17, # col
+    0   # off
+  ],
+  "same_filetypes": [],
+  "time": [
+    13740,
+    -1469993891
+  ],
+  "bufnr": 1,
+  "bufname": "main.go",
+  "bufpath": "/Users/zchee/go/src/github.com/kouzoh/merpay-creditdesign-kit/test/main.go",
+  "camelcase": true,
+  "complete_str": "",
+  "cwd": "/Users/zchee/go/src/github.com/kouzoh/merpay-creditdesign-kit/test",
+  "encoding": "utf-8",
+  "ignorecase": 0,
+  "is_windows": 0,
+  "smartcase": 1,
+  "keyword_pattern": "[a-zA-Z_][\\w@0-9_À-ÿ]*",
+  "sources": [],
+  "rpc": "deoplete_auto_completion_begin",
+  "char_position": 16,
+  "complete_position": 16,
+  "is_async": true,
+  "is_refresh": false,
+  "max_info_width": 200,
+  "vars": "<pynvim.api.common.RemoteMap object at 0x10c912700>",
+  "candidates": []
+}
+
+# placeholders
+{
+    'word': 'rParam',
+    'menu': '[LCI] interface{...}',
+    'user_data': '{
+        "lspitem":{
+            "label":"spansql.LiteralOrParam",
+            "kind":8,"detail":"interface{...}",
+            "preselect":true,
+            "sortText":"00000",
+            "filterText":"spansql.LiteralOrParam",
+            "insertTextFormat":1,
+            "textEdit":{
+                "range":{
+                    "start":{
+                        "line":26,
+                        "character":8,
+                    },
+                    "end":{
+                        "line":26,
+                        "character":15,
+                    },
+                },
+            "newText":"spansql.LiteralOrParam",
+            },
+        },
+    }',
+    'info': '',
+    'kind': 'Interface',
+    'abbr': 'spansql.LiteralOrParam',
+}
+
+# Not placeholders
+{
+    'word': 'AlterTable',
+    'menu': '[LCI] struct{...}',
+    'user_data': '{
+        "lspitem":{
+            "label":"AlterTable",
+            "kind":22,
+            "detail":"struct{...}",
+            "preselect":true,
+            "sortText":"00000",
+            "filterText":"AlterTable",
+            "insertTextFormat":1,
+            "textEdit":{
+                "range":{
+                    "start":{
+                        "line":27,
+                        "character":16,
+                    },
+                    "end":{
+                        "line":27,
+                        "character":16,
+                    },
+                },
+            "newText":"AlterTable",
+            },
+        },
+    }',
+    'info': '',
+    'kind': 'Struct',
+    'abbr': 'AlterTable',
+}
+"""
 
 
 """gather_candidates

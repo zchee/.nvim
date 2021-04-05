@@ -163,7 +163,7 @@ call s:hl('ModeMsg',            s:p.material.foreground,   s:p.none, s:p.none, 0
 call s:hl('MoreMsg',            s:p.material.red,          s:p.none, s:p.none, 0)
 " call s:hl('NonText',            s:p.material.indent_line,  s:p.none, s:p.none, 0)
 call s:hl('NonText',            s:p.none,                  s:p.none, s:p.none, 0)
-call s:hl('Normal',             s:p.material.foreground,   s:p.material.background, s:p.none, 0)
+call s:hl('Normal',             s:p.material.foreground,   s:p.none, s:p.none, 0)
 call s:hl('TermCursor',         s:p.material.cursor,       s:p.material.cursor_bg, s:p.none, 0)
 call s:hl('TermCursorNC',       s:p.material.cursor,       s:p.material.cursor_bg, s:p.reverse, 0)
 call s:hl('HoverFloat',         s:p.material.hover_float,  s:p.material.hover_float_bg, s:p.none, 5)

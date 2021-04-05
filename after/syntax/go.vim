@@ -1,9 +1,9 @@
 if get(g:, 'go_highlight_error', 0)
   syn keyword   goErr             err
-  hi            goErr             gui=bold      guifg=#ff005f  guibg=NONE     guisp=fg_indexed,bg_indexed
+  hi            goErr             gui=bold  guifg=#ff005f  guibg=NONE
 
   syn keyword   goErrorType       error
-  hi def link   goErrorType       Error
+  hi            goErrorType       gui=bold  guifg=#ff5370 guibg=None
 endif
 
 if get(g:, 'go_highlight_return', 0)

@@ -56,6 +56,7 @@ augroup filetypedetect
   autocmd! BufRead,BufNewFile tmux.conf                                         setlocal filetype=tmux
 
   " directory
+  autocmd! BufRead,BufNewFile $XDG_CACHE_HOME/go/go-build/**/*                  setlocal filetype=go
   autocmd! BufRead,BufNewFile $XDG_CONFIG_HOME/gcloud/configurations/*          setlocal filetype=cfg  " not dosini
   autocmd! BufRead,BufNewFile $XDG_CONFIG_HOME/jira.d/templates/*               setlocal filetype=gotexttmpl
   autocmd! BufRead,BufNewFile $XDG_CONFIG_HOME/zsh/**/*                         setlocal filetype=zsh
@@ -86,6 +87,7 @@ augroup filetypedetect
   autocmd! BufRead,BufNewFile gdbinit                                           setlocal filetype=gdb
   autocmd! BufRead,BufNewFile glide.lock                                        setlocal filetype=yaml
   autocmd! BufRead,BufNewFile Gopkg.lock                                        setlocal filetype=toml
+  autocmd! BufRead,BufNewFile lsif.json                                         setlocal filetype=json5
   autocmd! BufRead,BufNewFile manifest                                          setlocal filetype=json
   autocmd! BufRead,BufNewFile osquery.conf                                      setlocal filetype=json
   autocmd! BufRead,BufNewFile poetry.lock                                       setlocal filetype=toml

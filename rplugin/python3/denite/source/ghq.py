@@ -2,7 +2,7 @@ import subprocess
 import os
 
 from denite.base.source import Base
-from denite.util import Nvim, UserContext, Candidates, Buffer
+from denite.util import Nvim, UserContext, Candidates
 
 
 class Source(Base):

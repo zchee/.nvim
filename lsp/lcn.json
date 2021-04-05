@@ -34,15 +34,14 @@
         "env": {},
         "buildFlags": [],
         "directoryFilters": [],
-        "directoryFilters": [],
         "completionDocumentation": false,
         "usePlaceholders": true,
         "deepCompletion": true,
         "completeUnimported": true,
-        "completionBudget": "100ms",
+        "completionBudget": "0",
         "matcher": "fuzzy",
         "symbolMatcher": "fuzzy",
-        "symbolStyle": "dynamic",
+        "symbolStyle": "full",
         "hoverKind": "fulldocumentation",
         "linksInHover": false,
         "importShortcut": "both",
@@ -77,13 +76,14 @@
         "verboseWorkDoneProgress": false,
         "tempModfile": true,
         "gofumpt": false,
-	"semanticTokens": true,
+	"semanticTokens": false,
+	"experimentalPostfixCompletions": false,
 	"expandWorkspaceToModule": true,
-	"experimentalWorkspaceModule": false,
+	"experimentalWorkspaceModule": true,
 	"experimentalDiagnosticsDelay": "0",
 	"experimentalPackageCacheKey": true,
 	"allowModfileModifications": true,
-	"allowImplicitNetworkAccess": false
+	"allowImplicitNetworkAccess": true
     },
     "http": {
         "proxyStrictSSL": true
@@ -170,26 +170,18 @@
             "enable": true
         },
         "runtime": {
-            "path": [
-                "?.lua",
-                "?/init.lua",
-                "/usr/local/share/lua/5.4/luarocks/?.lua",
-                "/usr/local/share/lua/5.4/luarocks/?/init.lua",
-                "/usr/local/share/lua/5.4/?.lua",
-                "/usr/local/share/lua/5.4//?/init.lua",
-                "/usr/local/share/nvim/runtime/lua/vim/?.lua",
-                "/usr/local/share/nvim/runtime/lua/?/?.lua",
-                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/lua/vim.lua"
-            ],
-            "version": "Lua 5.4"
+            "version": "Lua 5.1"
         },
         "workspace": {
-            "library": {
-                "/usr/local/share/nvim/runtime/lua/vim": true,
-                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/lua": true
+            "ignoreDir": {
+                "test"
             },
-            "maxPreload": 2000,
-            "preloadFileSize": 1000
+            "maxPreload": 200000,
+            "preloadFileSize": 1000000,
+            "library": {
+                "/usr/local/share/nvim/runtime/lua": true,
+                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/lua": true
+            }
         }
     },
     "pyls": {
@@ -248,22 +240,14 @@
             "autoImportCompletions": true,
             "autoSearchPaths": true,
             "extraPaths": [
-                "/usr/local/lib/python3.9/site-packages",
-                "/Users/zchee/src/github.com/llvm/llvm-project/clang/bindings/python/clang",
-                "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/defx.nvim/rplugin/python3/defx",
-                "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/denite.nvim/rplugin/python3/denite",
-                "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/deoplete.nvim/rplugin/python3/deoplete",
-                "/Applications/kitty.app/Contents/Resources/kitty/kittens",
-                "/Applications/kitty.app/Contents/Resources/kitty/kitty",
-                "/opt/llvm/devel/lib/python3.9/site-packages/lldb",
-                "/Users/zchee/src/github.com/llvm/llvm-project/llvm/bindings/python/llvm"
+                "/usr/local/lib/python3.9/site-packages"
             ],
             "diagnosticMode": "openFilesOnly",
             "logLevel": "Trace",
             "typeCheckingMode": "strict",
             "useLibraryCodeForTypes": false
         },
-        "typeshedPaths": "/Users/zchee/src/github.com/microsoft/pyright/client/typeshed-fallback",
+        "typeshedPaths": "/Users/zchee/src/github.com/microsoft/pyright/packages/pyright-internal/typeshed-fallback",
         "pythonPath": "/usr/local/opt/python/bin/python3",
         "pythonPlatform": "Darwin"
     },
@@ -357,103 +341,5 @@
         "filetypes": [
             "vim"
         ]
-    },
-    "yaml": {
-        "format": {
-            "enable": true,
-            "singleQuote": false,
-            "bracketSpacing": true,
-            "proseWrap": "Preserve",
-            "printWidth": 100
-        },
-        "validate": true,
-        "hover": true,
-        "completion": true,
-        "schemas": {
-            "url": "globPattern",
-            "file:///Users/zchee/src/github.com/zchee/schema/appengine-app.schema.json": [
-                "app*.yaml"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/azure-pipelines.schema.json": [
-                "azure-pipelines.yml"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/circleci.schema.json": [
-                ".circleci/config.yml",
-                "@orb.yml",
-                "**/commands/*.yml",
-                "**/examples/*.yml",
-                "**/executors/*.yml",
-                "**/jobs/*.yml"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/cloudbuild.schema.json": [
-                "*cloudbuild.yaml",
-                "*cloudbuild.*.yaml"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/codecov.schema.json": [
-                "**/.codecov.yml"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/dependabot.schema.json": [
-                "**/.github/dependabot.yml"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/docker-compose.schema.json": [
-                "*docker-compose*.yaml",
-                "*docker-compose*.yml"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json": [
-                "*.ksy"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/kubernetes.schema.json": [
-                "kubernetes/*"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json": [
-                "mkdocs.yml"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json": [
-                "openrpc.yaml"
-            ],
-            "file:///Users/zchee/src/github.com/zchee/schema/travis.schema.json": [
-                ".travis.yml"
-            ],
-            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
-                "openapi.yaml",
-                "**/openapi-spec/*.yaml"
-            ],
-            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
-                "openapi.yaml",
-                "**/openapi-spec/*.yaml"
-            ],
-            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json": [
-                "*swagger.yaml",
-                "**/swagger-spec/*.yaml"
-            ],
-            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/appveyor.json": [
-                "*appveyor.yml"
-            ],
-            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/compile-commands.json": [
-                "compile_commands.json"
-            ],
-            "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json": [
-                "*discovery.yaml"
-            ],
-            "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/master/docs/content/en/schemas/v2beta5.json": [
-                "*skaffold*.yaml"
-            ],
-            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/github-action.json": [
-                "action.yml"
-            ],
-            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/github-workflow.json": [
-                "**/.github/workflows/*.yml"
-            ],
-            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/kustomization.json": [
-                "kustomization.yaml",
-                "kustomizeconfig.yaml"
-            ],
-            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/dependabot-2.0.json": [
-                "dependabot.yml"
-            ]
-        },
-        "schemaStore": {
-            "enable": true
-        }
     }
 }

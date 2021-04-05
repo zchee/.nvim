@@ -7,16 +7,19 @@
         "usePlaceholders": false,
         "deepCompletion": false,
         "completeUnimported": false,
-        "completionBudget": "100ms",
+        "completionBudget": "0",
         "matcher": "fuzzy",
         "symbolMatcher": "fuzzy",
-        "symbolStyle": "dynamic",
+        "symbolStyle": "full",
         "hoverKind": "fulldocumentation",
         "linksInHover": false,
         "importShortcut": "both",
         "analyses": {
-            "fieldalignment": true,
-            "unusedparams": true
+            "fieldalignment": false,
+            "nilness": true,
+            "shadow": false,
+            "unusedparams": true,
+            "unusedwrite": true
         },
         "annotations": {
             "bounds": true,
@@ -40,18 +43,19 @@
             "extract_function": true,
             "generate_gopls_mod": true
         },
-        "staticcheck": true,
+        "staticcheck": false,
         "verboseOutput": true,
         "verboseWorkDoneProgress": true,
         "tempModfile": true,
         "gofumpt": false,
-	"semanticTokens": true,
+	"semanticTokens": false,
+	"experimentalPostfixCompletions": false,
 	"expandWorkspaceToModule": true,
-	"experimentalWorkspaceModule": false,
-	"experimentalDiagnosticsDelay": "0",
+	"experimentalWorkspaceModule": true,
+	"experimentalDiagnosticsDelay": "50ms",
 	"experimentalPackageCacheKey": true,
 	"allowModfileModifications": true,
-	"allowImplicitNetworkAccess": false
+	"allowImplicitNetworkAccess": true
     },
     "yaml": {
         "format": {

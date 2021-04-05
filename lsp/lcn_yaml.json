@@ -1,0 +1,99 @@
+{
+    "yaml": {
+        "format": {
+            "enable": true,
+            "singleQuote": false,
+            "bracketSpacing": true,
+            "printWidth": 150
+        },
+        "validate": true,
+        "hover": true,
+        "completion": true,
+        "schemaStore": {
+            "enable": false
+        },
+        "schemas": {
+            "url": "globPattern",
+            "/Users/zchee/src/github.com/zchee/schema/appengine-app.schema.json": [
+                "app*.yaml"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/azure-pipelines.schema.json": [
+                "azure-pipelines.yml"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/circleci.schema.json": [
+                ".circleci/config.yml",
+                "@orb.yml",
+                "**/commands/*.yml",
+                "**/examples/*.yml",
+                "**/executors/*.yml",
+                "**/jobs/*.yml"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/cloudbuild.schema.json": [
+                "*cloudbuild.yaml",
+                "*cloudbuild.*.yaml"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/codecov.schema.json": [
+                "**/.codecov.yml"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/dependabot.schema.json": [
+                ".github/dependabot.yml"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/docker-compose.schema.json": [
+                "*docker-compose*.yaml",
+                "*docker-compose*.yml"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json": [
+                "*.ksy"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/kubernetes.schema.json": [
+                "kubernetes/*"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json": [
+                "mkdocs.yml"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json": [
+                "openrpc.yaml"
+            ],
+            "/Users/zchee/src/github.com/zchee/schema/travis.schema.json": [
+                ".travis.yml"
+            ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
+                "openapi.yaml",
+                "**/openapi-spec/*.yaml"
+            ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [
+                "openapi.yaml",
+                "**/openapi-spec/*.yaml"
+            ],
+            "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v2.0/schema.json": [
+                "*swagger.yaml",
+                "**/swagger-spec/*.yaml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/appveyor.json": [
+                "*appveyor.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/compile-commands.json": [
+                "compile_commands.json"
+            ],
+            "https://github.com/googleapis/gnostic/raw/master/discovery/discovery.json": [
+                "*discovery.yaml"
+            ],
+            "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/master/docs/content/en/schemas/v2beta5.json": [
+                "*skaffold*.yaml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/github-action.json": [
+                "action.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/github-workflow.json": [
+                "**/.github/workflows/*.yml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/kustomization.json": [
+                "kustomization.yaml",
+                "kustomizeconfig.yaml"
+            ],
+            "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/dependabot-2.0.json": [
+                "dependabot.yml"
+            ]
+        }
+    }
+}

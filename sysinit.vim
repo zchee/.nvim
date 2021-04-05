@@ -20,10 +20,31 @@ let $XDG_CONFIG_HOME = expand($HOME.'/.config')
 let $XDG_DATA_DIRS   = expand('/usr/local/share:/usr/share')
 let $XDG_DATA_HOME   = expand($HOME.'/.local/share')
 let $NVIM_LOG_FILE   = expand($HOME.'/.local/share/nvim/log')
-let $TERM            = 'xterm-256color'
+let $TERM            = 'tmux-256color'
 let $MANWIDTH        = 999
 
 unlet $RUSTFLAGS
+
+set runtimepath-=~/.local/share/nvim/site
+set runtimepath-=/usr/local/share/nvim/site
+set runtimepath-=/usr/share/nvim/site
+set runtimepath-=/usr/share/nvim/site/after
+set runtimepath-=~/.local/share/nvim/site/after
+set runtimepath-=/etc/xdg/nvim/after
+
+
+let g:clipboard = {
+      \   'name': 'mac',
+      \   'copy': {
+      \      '+': ['pbcopy'],
+      \      '*': ['pbcopy'],
+      \    },
+      \   'paste': {
+      \      '+': ['pbpaste'],
+      \      '*': ['pbpaste'],
+      \   },
+      \   'cache_enabled': 0,
+      \ }
 
 " -------------------------------------------------------------------------------------------------
 " Neovim Configs:

@@ -18,8 +18,13 @@ class Source(Base):
         cmd = ["ghq", "list", "--full-path"]
         self.env["GIT_CONFIG"] = os.path.expanduser("~/.config/ghq/.gitconfig")
 
-        return [{"word": path, "action__path": path} for path in subprocess.run(cmd,
-                                  check=True,
-                                  universal_newlines=True,
-                                  stdout=subprocess.PIPE,
-                                  env=self.env).stdout.split()]
+        return [
+            {"word": path, "action__path": path}
+            for path in subprocess.run(
+                cmd,
+                check=True,
+                universal_newlines=True,
+                stdout=subprocess.PIPE,
+                env=self.env,
+            ).stdout.split()
+        ]

@@ -16,10 +16,16 @@ class Source(Base):
         self.mark = "[LCI]"
         self.min_pattern_length = 1
         # self.input_pattern = r"(\.|::|->)\w*$"
-        self.input_pattern = r"(\.|::|->)\w*$|(\.)\w*|" r"(:)\w*|" r"(::)\w*|" r"(->)\w*"
+        self.input_pattern = (
+            r"(\.|::|->)\w*$|(\.)\w*|" r"(:)\w*|" r"(::)\w*|" r"(->)\w*"
+        )
         self.matchers = ["matcher_fuzzy"]
         self.sorters = []
-        self.converters = ['converter_auto_paren_lsp', 'converter_auto_paren', 'converter_remove_overlap']
+        self.converters = [
+            "converter_auto_paren_lsp",
+            "converter_auto_paren",
+            "converter_remove_overlap",
+        ]
         self.filetypes = self.vim.eval(
             "get(g:, 'LanguageClient_serverCommands', {})"
         ).keys()

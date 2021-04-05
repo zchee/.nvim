@@ -12,8 +12,8 @@ abbr        fmt.Println(...)
 	fmt.Println(${1})
 
 snippet     ft
-abbr        fmt.Printf("$1: %T = %v\n", $1)
-	fmt.Printf("$1: %T = %#v\n", ${1}, $1)
+abbr        fmt.Printf("$1: %[1]T = %#[1]v\n", ${1})
+	fmt.Printf("$1: %[1]T = %#[1]v\n", ${1})
 
 # Use "github.com/davecgh/go-spew/spew"
 snippet     fd

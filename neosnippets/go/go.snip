@@ -5,13 +5,13 @@ include go/pragma.snip
 # ------------------------------------------------------------------
 # doc
 
-snippet     compile-time-check
-alias       ctc
+snippet     doc-compile-time-check
+alias       compile-time-check
 abbr        // compile time check
-	// make sure a ${1:#:type} implements the ${2:#:interface} interface.
+	// make sure ${1:#:type} implements the ${2:#:interface} interface.
 	var _ $2 = (*$1)(nil)${0}
 
-snippet     doc:interface
+snippet     doc-interface
 abbr        // $1 implements $2.
 	// ${1:#:func} implements ${2:#:interface}.${0}
 

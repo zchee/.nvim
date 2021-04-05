@@ -1,5 +1,3 @@
-import re
-
 from deoplete.base.filter import Base
 from deoplete.util import Nvim, UserContext, Candidates
 
@@ -12,21 +10,11 @@ class Filter(Base):
         self.description = "auto add parentheses converter for lsp"
 
     def filter(self, context: UserContext) -> Candidates:
-        # p = re.compile("\(.*\)")
-        # for candidate in [
-        #     x for x in context["candidates"] if ("menu" in x and p.search(x["menu"]))
-        # ]:
-        #     candidate["word"] += "("
-
         for candidate in [
             x
             for x in context["candidates"]
             if ("kind" in x and x["kind"] == "Function")
-        ]:
-            candidate["word"] += "("
-
-        for candidate in [
-            x for x in context["candidates"] if ("menu" in x and "func" in x["menu"])
+            or ("menu" in x and "func" in x["menu"])
         ]:
             candidate["word"] += "("
 

@@ -3,6 +3,10 @@
 
 ## https://github.com/golang/go/tree/master/src/cmd/compile/internal/gc/lex.go
 
+snippet     go:linkname
+alias       linkname
+abbr        //go:linkname instructs the compiler to use 'importpath.name' as the object file symbol name for the variable or function declared as 'localname' in the source code.
+
 snippet     go:nointerface
 alias       nointerface
 abbr        //go:nointerface (method parameters don't implements interface)

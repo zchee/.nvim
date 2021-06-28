@@ -122,13 +122,23 @@ abbr        Benchmark...(b *testing.B) {...}
 		}
 	}
 
-snippet     benchrun
+snippet     benchsub
 abbr        Benchmark...(b *testing.B) { b.Run(...) )
 	func Benchmark${1}(b *testing.B) {
 		${0}
 		b.Run("", func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				
+			}
+		})
+	}
+
+snippet     benchparallel
+abbr        Benchmark...(b *testing.B) { b.RunParallel(...) )
+	func Benchmark${1}Parallel(b *testing.B) {
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				${0}
 			}
 		})
 	}

@@ -17,11 +17,11 @@ abbr        // $1 implements $2.
 
 snippet     doc-string
 abbr        // String returns a string representation of the $1.
-	// String returns a string representation of the ${1:#:type}.
+	// String returns a string representation of the ${1:#:type}.${0}
 
 snippet     doc-error
-abbr        // Error implements the error interface.
-	// Error implements the error interface.
+abbr        // Error returns a string representation of the $1.
+	// Error returns a string representation of the ${1:#:type}.${0}
 
 snippet     doc-json.Marshaler
 abbr        // MarshalJSON implements json.Marshaler.

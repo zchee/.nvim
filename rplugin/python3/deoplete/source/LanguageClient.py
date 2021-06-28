@@ -13,12 +13,12 @@ class Source(Base):
 
         self.name = "LanguageClient"
         self.description = "Language Sever Protocol Client source"
-        self.mark = "[LCI]"
+        self.mark = "[LC]"
         self.min_pattern_length = 1
-        # self.input_pattern = r"(\.|::|->)\w*$"
-        self.input_pattern = (
-            r"(\.|::|->)\w*$|(\.)\w*|" r"(:)\w*|" r"(::)\w*|" r"(->)\w*"
-        )
+        self.input_pattern = r"(\.|::|->)\w*$"
+        # self.input_pattern = (
+        #     r"(\.|::|->)\w*$|(\.)\w*|" r"(:)\w*|" r"(::)\w*|" r"(->)\w*"
+        # )
         self.matchers = ["matcher_fuzzy"]
         self.sorters = []
         self.converters = [
@@ -45,7 +45,9 @@ class Source(Base):
         #         self.input_pattern = r"(?:\b[^\W\d]\w*|[\]\)])\.(?:[^\W\d]\w*)?"
 
     def get_complete_position(self, context: UserContext) -> int:
-        return self.vim.call("LanguageClient#get_complete_start", context["input"])
+        # return self.vim.call("LanguageClient#get_complete_start", context["input"])
+        m = re.search("(?:" + context["keyword_pattern"] + ")$|$", context["input"])
+        return m.start() if m else -1
 
     def reset_var(self) -> None:
         self.vim.vars["LanguageClient_omniCompleteResults"] = []
@@ -136,6 +138,355 @@ class Source(Base):
     #
     #     return []
 
+
+"""
+{
+    "changedtick": 4,
+    "event": "TextChangedI",
+    "filetype": "go",
+    "filetypes": [
+        "go"
+    ],
+    "input": "\ttracer.",
+    "max_abbr_width": 80,
+    "max_kind_width": 40,
+    "max_menu_width": 40,
+    "next_input": "",
+    "position": [
+        0,
+        35,
+        9,
+        0
+    ],
+    "same_filetypes": [],
+    "time": [
+        10541,
+        1456126216
+    ],
+    "bufnr": 1,
+    "bufname": "pkg//autocmd/bufenter.go",
+    "bufpath": "/Users/zchee/go/src/github.com/zchee/nvim-lsp/pkg/autocmd/bufenter.go",
+    "camelcase": true,
+    "complete_str": "",
+    "custom": {
+        "filter": {},
+        "source": {
+            "file": {
+                "enable_slash_completion": true,
+                "rank": 150,
+                "force_completion_length": -1,
+                "enable_buffer_path": true
+            },
+            "zsh": {
+                "filetypes": [
+                    "sh",
+                    "zsh"
+                ]
+            },
+            "neosnippet": {
+                "converters": [
+                    "converter_remove_overlap"
+                ],
+                "rank": 500
+            },
+            "asm": {
+                "rank": 1000
+            },
+            "python": {
+                "refresh_always": false
+            },
+            "omni": {
+                "vars": {
+                    "input_patterns": {
+                        "go": "(\\.|::|->)\\w*$"
+                    }
+                }
+            },
+            "LanguageClient": {
+                "converters": [
+                    "converter_auto_paren_lsp",
+                    "converter_auto_paren",
+                    "converter_remove_overlap"
+                ],
+                "sorters": [],
+                "max_candidates": 1000,
+                "is_debug_enabled": true
+            },
+            "buffer": {
+                "rank": 100
+            },
+            "_": {
+                "converters": [
+                    "converter_auto_paren",
+                    "converter_remove_overlap"
+                ],
+                "sorters": [
+                    "sorter_rand",
+                    "sorter_word"
+                ],
+                "matchers": [
+                    "matcher_cpsm_internal"
+                ]
+            }
+        },
+        "option": {
+            "auto_complete_popup": "auto",
+            "check_stderr": false,
+            "camel_case": true,
+            "on_text_changed_i": true,
+            "nofile_complete_filetypes": [
+                "denite-filter"
+            ],
+            "max_list": 10000,
+            "candidate_marks": [],
+            "skip_multibyte": false,
+            "auto_refresh_delay": 50,
+            "auto_complete_delay": 0,
+            "trigger_key": "",
+            "yarp": false,
+            "profile": false,
+            "omni_patterns": {},
+            "auto_complete": true,
+            "smart_case": 1,
+            "ignore_case": 0,
+            "prev_completion_mode": "none",
+            "sources": {},
+            "refresh_always": true,
+            "complete_suffix": true,
+            "num_processes": 5,
+            "refresh_backspace": true,
+            "keyword_patterns": {
+                "tex": "[^\\w|\\s][a-zA-Z_]\\w*",
+                "_": "[a-zA-Z_]\\k*\\(?"
+            },
+            "on_insert_enter": true,
+            "skip_chars": [
+                "(",
+                ")"
+            ],
+            "min_pattern_length": 1,
+            "ignore_sources": {
+                "cpp": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "sh": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "typescript": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "yaml.docker-compose": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag",
+                    "buffer"
+                ],
+                "go": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag",
+                    "buffer"
+                ],
+                "lua": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "objc": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag",
+                    "buffer"
+                ],
+                "yaml": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "python": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "_": [
+                    "ale",
+                    "around",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "c": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "proto": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "zsh": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "rust": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "javascript": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "TelescopePrompt": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag",
+                    "buffer",
+                    "neosnippet"
+                ],
+                "swift": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ],
+                "dockerfile": [
+                    "ale",
+                    "around",
+                    "denite",
+                    "file_include",
+                    "floaterm",
+                    "lsp",
+                    "member",
+                    "omni",
+                    "tag"
+                ]
+            }
+        }
+    },
+    "cwd": "/Users/zchee/go/src/github.com/zchee/nvim-lsp",
+    "encoding": "utf-8",
+    "ignorecase": 0,
+    "is_windows": 0,
+    "smartcase": 1,
+    "keyword_pattern": "[a-zA-Z_][\\w@0-9_À-ÿ]*\\(?",
+    "sources": [],
+    "rpc": "deoplete_auto_completion_begin",
+    "char_position": 8,
+    "complete_position": 8,
+    "is_async": true,
+    "is_refresh": false,
+    "max_info_width": 200,
+    "vars": "<pynvim.api.common.RemoteMap object at 0x10246f9a0>",
+    "candidates": []
+}
+"""
 
 """
 {

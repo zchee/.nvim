@@ -20,7 +20,7 @@ let $XDG_CONFIG_HOME = expand($HOME.'/.config')
 let $XDG_DATA_DIRS   = expand('/usr/local/share:/usr/share')
 let $XDG_DATA_HOME   = expand($HOME.'/.local/share')
 let $NVIM_LOG_FILE   = expand($HOME.'/.local/share/nvim/log')
-let $TERM            = 'tmux-256color'
+" let $TERM            = 'xterm-256color'
 let $MANWIDTH        = 999
 
 unlet $RUSTFLAGS
@@ -50,13 +50,14 @@ let g:clipboard = {
 " Neovim Configs:
 
 "" Remote Plugins:
-let g:loaded_python_provider    = 0                              " $VIMRUNTIME/autoload/provider/python.vim
+let g:loaded_python_provider    = 1                              " $VIMRUNTIME/autoload/provider/python.vim
 " let g:python3_host_prog         = '/usr/local/opt/pypy3/bin/pypy3.7'
-let g:python3_host_prog         = '/usr/local/opt/python/bin/python3.9'
-let g:loaded_node_provider      = 0                              " $VIMRUNTIME/autoload/provider/node.vim
-let g:node_host_prog            = 0                              " '/usr/local/var/nodebrew/bin/neovim-node-host'
-let g:loaded_ruby_provider      = 0                              " $VIMRUNTIME/autoload/provider/ruby.vim
-let g:loaded_perl_provider      = 0                              " $VIMRUNTIME/autoload/provider/perl.vim
+" let g:python3_host_prog         = '/usr/local/opt/python/bin/python3.9'
+let g:python3_host_prog         = '/usr/local/opt/python@3.10/bin/python3.10'
+let g:loaded_node_provider      = 1                              " $VIMRUNTIME/autoload/provider/node.vim
+" let g:node_host_prog            = 2                              " '/usr/local/var/nodebrew/bin/neovim-node-host'
+let g:loaded_ruby_provider      = 1                              " $VIMRUNTIME/autoload/provider/ruby.vim
+let g:loaded_perl_provider      = 1                              " $VIMRUNTIME/autoload/provider/perl.vim
 
 let g:no_man_maps = 0
 let g:ft_man_folding_enable = 0

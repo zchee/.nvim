@@ -34,20 +34,25 @@
         "env": {},
         "buildFlags": [],
         "directoryFilters": [],
+        "memoryMode": "normal",
         "completionDocumentation": false,
-        "usePlaceholders": true,
-        "deepCompletion": true,
-        "completeUnimported": true,
-        "completionBudget": "0",
+        "usePlaceholders": false,
+        "deepCompletion": false,
+        "completeUnimported": false,
+        "completionBudget": "100ms",
         "matcher": "fuzzy",
         "symbolMatcher": "fuzzy",
         "symbolStyle": "full",
         "hoverKind": "fulldocumentation",
+        "linkTarget": "",
         "linksInHover": false,
         "importShortcut": "both",
         "analyses": {
             "fieldalignment": false,
-            "unusedparams": false
+            "nilness": false,
+            "shadow": false,
+            "unusedparams": false,
+            "unusedwrite": false
         },
         "annotations": {
             "bounds": false,
@@ -56,34 +61,45 @@
             "nil": false
         },
         "codelenses": {
-            "test": false,
-            "generate": false,
-            "tidy": false,
-            "vendor": false,
             "add_dependency": false,
-            "upgrade_dependency": false,
-            "remove_dependency": false,
-            "regenerate_cgo": false,
+            "add_import": false,
+            "apply_fix": false,
+            "check_upgrades": false,
             "gc_details": false,
-            "fill_struct": false,
-            "undeclared_name": false,
-            "extract_variable": false,
+            "generate": false,
+            "generate_gopls_mod": false,
+            "go_get_package": false,
+            "list_known_packages": false,
+            "regenerate_cgo": false,
+            "remove_dependency": false,
+            "run_tests": false,
+            "start_debugging": false,
+            "test": false,
+            "tidy": false,
+            "toggle_gc_details": false,
+            "update_go_sum": false,
+            "upgrade_dependency": false,
+            "vendor": false,
+            "workspace_metadata": false,
             "extract_function": false,
-            "generate_gopls_mod": false
+            "extract_variable": false,
+            "fill_struct": false,
+            "undeclared_name": false
         },
         "staticcheck": false,
         "verboseOutput": false,
         "verboseWorkDoneProgress": false,
-        "tempModfile": true,
+        "tempModfile": false,
         "gofumpt": false,
 	"semanticTokens": false,
-	"experimentalPostfixCompletions": false,
 	"expandWorkspaceToModule": true,
+	"experimentalPostfixCompletions": true,
 	"experimentalWorkspaceModule": true,
-	"experimentalDiagnosticsDelay": "0",
+	"experimentalTemplateSupport": true,
+	"experimentalDiagnosticsDelay": "250ms",
 	"experimentalPackageCacheKey": true,
 	"allowModfileModifications": true,
-	"allowImplicitNetworkAccess": true
+	"allowImplicitNetworkAccess": false
     },
     "http": {
         "proxyStrictSSL": true
@@ -151,37 +167,59 @@
                     ".renovaterc"
                 ],
                 "url": "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/renovate.json"
+            },
+            {
+                "fileMatch": [
+                    "compile_commands.json"
+                ],
+                "url": "https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/compile-commands.json"
             }
         ]
     },
     "Lua": {
+        "runtime": {
+            "version": "LuaJIT",
+            "path": {
+                "/Users/zchee/.cache/nvim/dein/.cache/init.vim/.dein/lua/?.lua",
+                "/Users/zchee/.cache/nvim/dein/.cache/init.vim/.dein/lua/?/init.lua",
+                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/?.lua",
+                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/lua/?.lua"
+            }
+        },
         "completion": {
             "callSnippet": "Disable",
             "displayContext": "Enabed",
-            "enable": true,
+            "enable": false,
             "keywordSnippet": "Disable"
         },
         "diagnostics": {
             "enable": true,
-            "globals": ["vim", "it", "describe", "before_each", "after_each"],
-            "disable": ["lowercase-global"]
+            "globals": [
+                "vim"
+            ]
         },
         "hover": {
             "enable": true
         },
-        "runtime": {
-            "version": "Lua 5.1"
-        },
         "workspace": {
-            "ignoreDir": {
-                "test"
-            },
+            "ignoreDir": [
+                "test/*"
+            ],
+            "useGitIgnore": true,
             "maxPreload": 200000,
             "preloadFileSize": 1000000,
             "library": {
                 "/usr/local/share/nvim/runtime/lua": true,
-                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/lua": true
+                "/usr/local/share/nvim/runtime/lua/vim/lsp": true,
+                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/?.lua": true,
+                "/Users/zchee/src/github.com/neovim/neovim/src/nvim/lua/vim.lua": true
             }
+        },
+        "telemetry": {
+            "enable": false
+        },
+        "files": {
+            "exclude": {}
         }
     },
     "pyls": {
@@ -197,7 +235,9 @@
                     "/Applications/kitty.app/Contents/Resources/kitty/kittens",
                     "/Applications/kitty.app/Contents/Resources/kitty/kitty",
                     "/opt/llvm/devel/lib/python3.9/site-packages/lldb",
-                    "/Users/zchee/src/github.com/llvm/llvm-project/llvm/bindings/python/llvm"
+                    "/Users/zchee/src/github.com/llvm/llvm-project/llvm/bindings/python/llvm",
+                    "/usr/local/var/pipx/venvs/mypy/lib/python3.9/site-packages",
+                    "/usr/local/var/pipx/venvs/ptpython/lib/python3.9/site-packages"
                 ]
             },
             "jedi_completion": {
@@ -224,6 +264,13 @@
                 "enabled": true,
                 "all_scopes": true
             },
+            "preload": {
+                "enabled": true,
+                "modules": {
+                    "clang.cindex",
+                    "typing"
+                }
+            },
             "pycodestyle": {
                 "enabled": true
             },
@@ -240,14 +287,22 @@
             "autoImportCompletions": true,
             "autoSearchPaths": true,
             "extraPaths": [
-                "/usr/local/lib/python3.9/site-packages"
+                "/usr/local/lib/python3.9/site-packages",
+                "/Users/zchee/src/github.com/llvm/llvm-project/clang/bindings/python/clang",
+                "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/defx.nvim/rplugin/python3/defx",
+                "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/denite.nvim/rplugin/python3/denite",
+                "/Users/zchee/.cache/nvim/dein/repos/github.com/Shougo/deoplete.nvim/rplugin/python3/deoplete",
+                "/Applications/kitty.app/Contents/Resources/kitty/kittens",
+                "/Applications/kitty.app/Contents/Resources/kitty/kitty",
+                "/opt/llvm/devel/lib/python3.9/site-packages/lldb",
+                "/Users/zchee/src/github.com/llvm/llvm-project/llvm/bindings/python/llvm",
+                "/usr/local/var/pipx/venvs/mypy/lib/python3.9/site-packages",
+                "/usr/local/var/pipx/venvs/ptpython/lib/python3.9/site-packages"
             ],
             "diagnosticMode": "openFilesOnly",
-            "logLevel": "Trace",
-            "typeCheckingMode": "strict",
-            "useLibraryCodeForTypes": false
+            "logLevel": "Error",
+            "typeCheckingMode": "basic"
         },
-        "typeshedPaths": "/Users/zchee/src/github.com/microsoft/pyright/packages/pyright-internal/typeshed-fallback",
         "pythonPath": "/usr/local/opt/python/bin/python3",
         "pythonPlatform": "Darwin"
     },

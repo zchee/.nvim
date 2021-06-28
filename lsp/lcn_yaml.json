@@ -1,4 +1,7 @@
 {
+    "http": {
+        "proxyStrictSSL": true
+    },
     "yaml": {
         "format": {
             "enable": true,
@@ -13,14 +16,14 @@
             "enable": false
         },
         "schemas": {
-            "url": "globPattern",
-            "/Users/zchee/src/github.com/zchee/schema/appengine-app.schema.json": [
+            "http://json.schemastore.org/composer": ["/*"],
+            "file:///Users/zchee/src/github.com/zchee/schema/appengine-app.schema.json": [
                 "app*.yaml"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/azure-pipelines.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/azure-pipelines.schema.json": [
                 "azure-pipelines.yml"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/circleci.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/circleci.schema.json": [
                 ".circleci/config.yml",
                 "@orb.yml",
                 "**/commands/*.yml",
@@ -28,33 +31,33 @@
                 "**/executors/*.yml",
                 "**/jobs/*.yml"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/cloudbuild.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/cloudbuild.schema.json": [
                 "*cloudbuild.yaml",
                 "*cloudbuild.*.yaml"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/codecov.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/codecov.schema.json": [
                 "**/.codecov.yml"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/dependabot.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/dependabot.schema.json": [
                 ".github/dependabot.yml"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/docker-compose.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/docker-compose.schema.json": [
                 "*docker-compose*.yaml",
                 "*docker-compose*.yml"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json": [
                 "*.ksy"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/kubernetes.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/kubernetes.schema.json": [
                 "kubernetes/*"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json": [
                 "mkdocs.yml"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json": [
                 "openrpc.yaml"
             ],
-            "/Users/zchee/src/github.com/zchee/schema/travis.schema.json": [
+            "file:///Users/zchee/src/github.com/zchee/schema/travis.schema.json": [
                 ".travis.yml"
             ],
             "https://github.com/OAI/OpenAPI-Specification/raw/master/schemas/v3.0/schema.json": [

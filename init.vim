@@ -192,7 +192,7 @@ if has('mac')
   set wildignore+=.DS_Store  " macOS only
 
   function! s:path_add_macos_headers()
-    let s:clt_dir        = '/Library/Developer/CommandLineTools'
+    let s:clt_dir        = '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer'
     let s:sdk_dir        = s:clt_dir . '/SDKs/MacOSX.sdk'
     let s:macos_paths =
           \ expand($HOME) . '/.local/include'
@@ -202,11 +202,11 @@ if has('mac')
           \ . ',' . s:clt_dir . '/usr/include/c++/v1'  " /Library/Developer/CommandLineTools/usr/include/c++/v1
 
     execute 'set path+=' . s:macos_paths
-    for l:d in ['MacOSX11.3.sdk', 'Xcode-beta', 'Xcode']
-      if isdirectory(expand($XDG_CONFIG_HOME) . '/nvim/path/Frameworks/' . l:d)
-        execute 'set path+=' . expand($XDG_CONFIG_HOME) . '/nvim/path/Frameworks/' . l:d
-      endif
-    endfor
+    " for l:d in ['MacOSX11.3.sdk', 'Xcode-beta', 'Xcode']
+    if isdirectory(expand($XDG_CONFIG_HOME) . '/nvim/path/Frameworks/Xcode')
+      execute 'set path+=' . expand($XDG_CONFIG_HOME) . '/nvim/path/Frameworks/Xcode'
+    endif
+    " endfor
   endfunction
 
   Gautocmdft c,cpp,objc,objcpp,go call s:path_add_macos_headers()  " only Go and C family filetypes
@@ -218,6 +218,13 @@ function! s:path_add_python_headers()
   endif
 endfunction
 Gautocmdft c,cpp,objc,objcpp call s:path_add_python_headers()  " only Go and C family filetypes
+
+function! s:go_pkg_hearder() abort
+  if isdirectory('/usr/local/go/pkg/include')
+    set path+=/usr/local/go/pkg/include
+  endif
+endfunction
+Gautocmdft go,goasm call s:path_add_python_headers()  " only Go and goasm filetypes
 
 " -------------------------------------------------------------------------------------------------
 " Dein:
@@ -252,57 +259,61 @@ if dein#load_state(s:dein_cache_dir)
   call dein#begin(s:dein_cache_dir, [ expand('<sfile>') ])
 
   " Develop Plugins:
-  call dein#local(s:gopath_src, { 'frozen': 1, 'merged': 0 }, ['github.com/zchee/nvim-go'])
-  call dein#local(s:gopath_src, { 'frozen': 1, 'merged': 0 }, ['github.com/zchee/nvim-lsp'])
-  " call dein#local(s:srcpath_github, { 'on_ft': ['fbs'], 'frozen': 1, 'merged': 0 }, ['zchee/vim-flatbuffers'])
-  " call dein#local(s:srcpath_github, { 'on_ft': ['gn'], 'frozen': 1, 'merged': 0 }, ['zchee/vim-gn'])
-  call dein#local(s:srcpath_github, { 'frozen': 1, 'merged': 0 }, ['zchee/vim-goasm'])
-  " call dein#local(s:srcpath_github, { 'frozen': 1, 'merged': 0 }, ['zchee/vim-go-testscript'])
+  call dein#local(s:gopath_src, { 'frozen': v:true, 'merged': v:false }, ['github.com/zchee/nvim-go'])
+  call dein#local(s:gopath_src, { 'frozen': v:true, 'merged': v:false }, ['github.com/zchee/nvim-lsp'])
+  call dein#local(s:srcpath_github, { 'frozen': v:true, 'merged': v:false, 'on_ft': ['fbs'] }, ['zchee/vim-flatbuffers'])
+  call dein#local(s:srcpath_github, { 'frozen': v:true, 'merged': v:false, 'on_ft': ['gn'] }, ['zchee/vim-gn'])
+  call dein#local(s:srcpath_github, { 'frozen': v:true, 'merged': v:false }, ['zchee/vim-goasm'])
+  call dein#local(s:srcpath_github, { 'frozen': v:true, 'merged': v:false }, ['zchee/vim-go-testscript'])
+  call dein#local(s:gopath_src, { 'frozen': v:true, 'merged': v:false }, ['go.nvim.dev/exp'])
 
   " Dein:
   call dein#add('Shougo/dein.vim')
-  call dein#add('haya14busa/dein-command.vim', { 'on_cmd': ['Dein'] })
+  call dein#add('haya14busa/dein-command.vim', { 'on_cmd': 'Dein' })
 
   " Deoplete:
   call dein#add('Shougo/deoplete.nvim')
-  "" suorces
-  call dein#local(s:srcpath_github, { 'on_ft': ['go'], 'frozen': 1, 'merged': 0 }, ['deoplete-plugins/deoplete-go'])
-  " call dein#local(s:srcpath_github, { 'on_ft': ['python', 'cython', 'pyrex'], 'frozen': 1, 'merged': 0 }, ['deoplete-plugins/deoplete-jedi'])
+  " call dein#local(s:srcpath_github, { 'frozen': v:true, 'merged': v:false }, ['Shougo/deoplete.nvim'])
+  "" Suorces:
+  " call dein#local(s:srcpath_github, { 'on_ft': ['go'], 'frozen': v:true, 'merged': v:false }, ['deoplete-plugins/deoplete-go'])
+  call dein#local(s:srcpath_github, { 'on_ft': ['go'], 'frozen': v:true, 'merged': v:false }, ['deoplete-plugins/deoplete-cgo'])
+  call dein#local(s:srcpath_github, { 'on_ft': ['python', 'cython', 'pyrex'], 'frozen': 1, 'merged': 0 }, ['deoplete-plugins/deoplete-jedi'])
   " call dein#local(s:srcpath_github, { 'on_ft': ['goasm', 'asm', 'gas', 'masm'], 'frozen': 1, 'merged': 0 }, ['deoplete-plugins/deoplete-asm'])
-  call dein#local(s:srcpath_github, { 'on_ft': ['zsh'], 'frozen': 1, 'merged': 0 }, ['deoplete-plugins/deoplete-zsh'])
+  call dein#local(s:srcpath_github, { 'on_ft': ['zsh'], 'frozen': v:true, 'merged': v:false }, ['deoplete-plugins/deoplete-zsh'])
   " call dein#add('deoplete-plugins/deoplete-lsp', { 'lazy': 1 })
   call dein#add('Shougo/neco-vim', { 'on_ft': ['vim'] })
   call dein#add('Shougo/neosnippet-snippets')
   call dein#add('Shougo/neosnippet.vim')
-  "" support
-  call dein#add('Shougo/neoinclude.vim', { 'on_ft': ['c', 'cpp', 'objc', 'objcpp', 'swift'] })  " , 'go'
+  call dein#add('tbodt/deoplete-tabnine', { 'build': './install.sh', 'lazy': v:true })
+  "" Support:
+  call dein#add('Shougo/neoinclude.vim', { 'on_ft': ['c', 'cpp', 'objc', 'objcpp', 'swift', 'go'] })
   call dein#add('Shougo/echodoc.vim')
   call dein#add('Shougo/neopairs.vim')
 
   " Denite:
   call dein#add('Shougo/denite.nvim')
   "" dependency
-  call dein#local(s:srcpath_github, { 'frozen': 1, 'merged': 1 }, ['nixprime/cpsm'])
-  call dein#local(s:srcpath_github, { 'frozen': 1, 'merged': 1 }, ['raghur/fruzzy'])
+  " call dein#local(s:srcpath_github, { 'frozen': v:true, 'merged': v:true }, ['nixprime/cpsm'])
+  call dein#local(s:srcpath_github, { 'frozen': v:true, 'merged': v:true }, ['raghur/fruzzy'])
   "" suorces
 
   " LanguageClient:
-  call dein#local(s:srcpath_github, { 'frozen': 1, 'merged': 0 }, ['autozimu/LanguageClient-neovim'])
+  call dein#local(s:srcpath_github, { 'frozen': v:true, 'merged': v:false }, ['autozimu/LanguageClient-neovim'])
   call dein#add('liuchengxu/vista.vim', { 'on_cmd': ['Vista'] })
 
   " Filer:
   call dein#add('Shougo/defx.nvim')
-  call dein#add('kristijanhusak/defx-icons')
+  call dein#add('kristijanhusak/defx-icons', { 'on_ft': 'defx' })
 
   " Git:
   call dein#add('airblade/vim-gitgutter')
-  call dein#add('rhysd/git-messenger.vim', { 'on_cmd' : 'GitMessenger', 'on_map' : '<Plug>' })
+  call dein#add('rhysd/git-messenger.vim', { 'on_cmd': 'GitMessenger', 'on_map' : '<Plug>' })
 
   " Linter:
   call dein#add('dense-analysis/ale')
 
   " Formatter:
-  " call dein#add('rhysd/vim-clang-format', { 'on_cmd': ['ClangFormat', 'ClangFormatEchoFormattedCode', 'ClangFormatAutoToggle', 'ClangFormatAutoEnable', 'ClangFormatAutoDisable'], 'on_map': '<Plug>' })
+  call dein#add('rhysd/vim-clang-format', { 'on_cmd': ['ClangFormat', 'ClangFormatEchoFormattedCode', 'ClangFormatAutoToggle', 'ClangFormatAutoEnable', 'ClangFormatAutoDisable'] })
 
   " Debugger:
   " call dein#local(s:srcpath_github, { 'on_cmd': ['NvimAPI'] }, ['tweekmonster/nvim-api-viewer'])
@@ -312,35 +323,40 @@ if dein#load_state(s:dein_cache_dir)
   " References:
 
   " TreeSitter:
-  call dein#add('nvim-treesitter/nvim-treesitter', { 'merged': 0 })
-  " call dein#local(s:srcpath_github, { 'frozen': 1, 'merged': 0 }, ['nvim-treesitter/nvim-treesitter'])
+  call dein#add('nvim-treesitter/nvim-treesitter', { 'merged': v:false })
   " call dein#add('nvim-treesitter/nvim-treesitter-refactor', { 'depends': ['nvim-treesitter'] })
   " call dein#add('nvim-treesitter/nvim-treesitter-textobjects', { 'depends': ['nvim-treesitter'] })
   " call dein#add('nvim-treesitter/playground', { 'depends': ['nvim-treesitter'] })
-  call dein#add('p00f/nvim-ts-rainbow', { 'depends': ['nvim-treesitter'] })
+  " call dein#add('p00f/nvim-ts-rainbow', { 'depends': ['nvim-treesitter'] })
 
   " Interface:
   call dein#add('itchyny/lightline.vim')
-  call dein#add('maximbaz/lightline-ale')
+  call dein#add('maximbaz/lightline-ale', { 'on_cmd': ['FloatermNew', 'FloatermToggle', 'FloatermPrev', 'FloatermNext', 'FloatermHide'] })
   call dein#add('mgee/lightline-bufferline')
   call dein#add('ryanoasis/vim-devicons')
   call dein#add('voldikss/vim-floaterm', { 'on_cmd': ['FloatermNew', 'FloatermToggle', 'FloatermPrev', 'FloatermNext', 'FloatermHide'] })
-  "" nvim-telescope
-  call dein#add('nvim-lua/popup.nvim')
+  "" Telescope:
   call dein#add('nvim-lua/plenary.nvim')
+  call dein#add('nvim-lua/popup.nvim')
   call dein#add('nvim-telescope/telescope.nvim')
-  call dein#add('nvim-telescope/telescope-symbols.nvim')
+  call dein#add('nvim-telescope/telescope-project.nvim')
+  call dein#add('nvim-telescope/telescope-fzf-native.nvim', { 'build': 'make' })
+  call dein#add('nvim-telescope/telescope-dap.nvim')
+  call dein#add('nvim-telescope/telescope-ghq.nvim')
+  call dein#add('nvim-telescope/telescope-github.nvim')
   call dein#add('kyazdani42/nvim-web-devicons')
+  call dein#add('mfussenegger/nvim-dap', { 'on_lua': [''] })
+  call dein#add('rcarriga/nvim-dap-ui')
 
   " Operator:
   call dein#add('kana/vim-operator-user')
   call dein#add('kana/vim-repeat')
   call dein#add('kana/vim-operator-replace', { 'on_map': '<Plug>', 'depends': 'vim-operator-user' })
   call dein#add('rhysd/vim-operator-surround', { 'on_map': '<Plug>', 'depends': 'vim-operator-user' })
-  call dein#add('mopp/vim-operator-convert-case')
+  call dein#add('mopp/vim-operator-convert-case', { 'on_map': '<Plug>', 'depends': 'vim-operator-user' })
 
   " Utility:
-  call dein#add('AndrewRadev/switch.vim', { 'on_cmd': ['Switch'], 'on_func': ['switch#Switch'] })
+  call dein#add('AndrewRadev/switch.vim', { 'on_map': ['switch#Switch'] })
   call dein#add('haya14busa/vim-asterisk', { 'on_map': ['<Plug>'] })
   call dein#add('itchyny/vim-parenmatch')
   call dein#add('junegunn/vim-easy-align', { 'on_cmd': ['EasyAlign'] })
@@ -354,36 +370,65 @@ if dein#load_state(s:dein_cache_dir)
   call dein#add('utahta/trans.nvim', { 'on_cmd': ['Trans'], 'build': 'make' })
 
   " Lifelog:
-  call dein#add('zchee/vim-wakatime')  " forked and update wakatime-cli to 13.1.0
+  call dein#add('wakatime/vim-wakatime')
+
+  " nvim-web-devicons
+  " vim-cython-syntax
+  " vim-devicons
+  "
+  " vim-gas
+  " vim-gitgutter
+  " vim-gitignore
+  " vim-glsl
+  " vim-goasm
+  " vim-graphql
+  " vim-hexokinase
+  " vim-illuminate
+  " vim-jinja2-syntax
+  " vim-json
+  " vim-mustache-handlebars
+  " vim-operator-user
+  " vim-parenmatch
+  " vim-protobuf
+  " vim-rego
+  " vim-repeat
+  " vim-sh-indent
+  " vim-terraform
+  " vim-toml
+  " vim-wakatime
+  " vim-yaml
+  " vimdoc-ja
+  " yats.vim
 
   " -----------------------------------------------------------------------------
   " Language Plugin:
 
   "" Go:
   call dein#add('tweekmonster/hl-goimport.vim', { 'on_ft': ['go']})
-  call dein#local(s:gopath_src,  { 'frozen': 1, 'merged': 0, 'lazy': 1 }, ['github.com/garyburd/vigor'])
+  call dein#local(s:gopath_src,  { 'frozen': 1, 'merged': v:false, 'lazy': v:true }, ['github.com/garyburd/vigor'])
 
-  "" Cue:
+  "" CUE:
   " call dein#add('jjo/vim-cue', { 'on_ft': ['cue'] })
-  call dein#add('hofstadter-io/cue.vim')
+  call dein#add('hofstadter-io/cue.vim', { 'on_ft': ['cue'] })
 
   "" C Family:
-  call dein#add('vim-jp/vim-cpp')
+  call dein#add('vim-jp/vim-cpp', { 'on_ft': ['cpp'] })
   " call dein#add('bfrg/vim-cpp-modern')
   " call dein#add('octol/vim-cpp-enhanced-highlight')
   "" Swift:
   call dein#add('keith/swift.vim', { 'on_ft': ['swift'] })
   "" CMake:
-  call dein#add('pboettch/vim-cmake-syntax')
-  call dein#add('neui/cmakecache-syntax.vim')
+  call dein#add('pboettch/vim-cmake-syntax', { 'on_ft': ['cmake'] })
+  call dein#add('neui/cmakecache-syntax.vim', { 'on_ft': ['cmakec'] })
 
   "" Python:
   call dein#add('lambdalisue/vim-cython-syntax')
   " call dein#add('hynek/vim-python-pep8-indent')
-  " call dein#local('tweekmonster/impsort.vim', { 'frozen': 1, 'merged': 1, 'on_ft': ['python'] })
+  " call dein#local('tweekmonster/impsort.vim', { 'frozen': v:true, 'merged': v:true, 'on_ft': ['python'] })
 
   "" Rust:
   call dein#add('rust-lang/rust.vim', { 'on_ft': ['rust'] })
+  call dein#add('ron-rs/ron.vim', { 'on_ft': ['ron'] })
 
   "" Docker:
   " call dein#add('ekalinin/Dockerfile.vim')
@@ -397,10 +442,10 @@ if dein#load_state(s:dein_cache_dir)
   call dein#add('tsandall/vim-rego')
 
   "" Bazel Starlark:
-  call dein#add('cappyzawa/starlark.vim')
+  call dein#add('cappyzawa/starlark.vim', { 'on_ft': ['starlark'] })
 
   "" Assembly:
-  call dein#add('Shirk/vim-gas')
+  call dein#add('Shirk/vim-gas', { 'on_path': ['.*\.S'] })
 
   "" TypeScript:
   call dein#add('HerringtonDarkholme/yats.vim')
@@ -434,7 +479,7 @@ if dein#load_state(s:dein_cache_dir)
 
   "" Json JsonC Json5:
   call dein#add('elzr/vim-json')
-  call dein#add('gutenye/json5.vim')
+  call dein#add('gutenye/json5.vim', { 'on_ft': ['json5'] })
 
   "" JsonSchema:
 
@@ -442,11 +487,10 @@ if dein#load_state(s:dein_cache_dir)
   call dein#add('jparise/vim-graphql')
 
   "" Kotlin:
-  call dein#add('udalov/kotlin-vim')
+  call dein#add('udalov/kotlin-vim', { 'on_ft': ['kotlin'] })
 
   "" Tmux:
-  " call dein#add('tmux-plugins/vim-tmux')
-  " call dein#add('tmux-plugins/vim-tmux-focus-events')
+  call dein#add('ericpruitt/tmux.vim', { 'on_path': [$HOME.'/.tmux.conf', $XDG_CONFIG_HOME.'/tmux/tmux.conf'], 'rtp': 'vim/' })
 
   "" TerraFrom:
   call dein#add('hashivim/vim-terraform')
@@ -461,11 +505,14 @@ if dein#load_state(s:dein_cache_dir)
   call dein#add('vim-scripts/vim-niji', { 'on_ft': ['scheme'] })
 
   " MacOS Modulemap:
-  call dein#add('compnerd/modulemap-vim')
+  call dein#add('compnerd/modulemap-vim', { 'on_ft': ['modulemap'] })
 
   "" PlantUML:
-  call dein#add('aklt/plantuml-syntax')
+  call dein#add('aklt/plantuml-syntax', { 'on_ft': ['plantuml'] })
   call dein#add('weirongxu/plantuml-previewer.vim', { 'on_ft': ['plantuml'] })
+
+  "" OpenGL:
+  call dein#add('tikhomirov/vim-glsl')
 
   " Testing Plugin:
   " call dein#add('aliou/bats.vim')
@@ -499,7 +546,6 @@ if dein#load_state(s:dein_cache_dir)
   " call dein#add('mattn/benchvimrc-vim', { 'on_cmd': ['BenchVimrc'] })
   " call dein#add('mattn/sonictemplate-vim', { 'on_cmd': ['Template'] })
   " call dein#add('mbbill/undotree')
-  " call dein#add('mfussenegger/nvim-dap')
   " call dein#add('mrk21/yaml-vim')
   " call dein#add('neovim/nvim-lspconfig')
   " call dein#add('norcalli/nvim-colorizer.lua')
@@ -523,6 +569,8 @@ if dein#load_state(s:dein_cache_dir)
   " call dein#add('simnalamburt/vim-mundo')
   " call dein#add('theHamsta/nvim-dap-virtual-text')
   " call dein#add('tmsvg/pear-tree', { 'on_event': 'InsertEnter' })
+  " call dein#add('tmux-plugins/vim-tmux')
+  " call dein#add('tmux-plugins/vim-tmux-focus-events')
   " call dein#add('tpope/vim-fugitive')
   " call dein#add('tweekmonster/helpful.vim', { 'on_cmd': ['HelpfulVersion'] })
   " call dein#add('tweekmonster/wstrip.vim')
@@ -705,21 +753,21 @@ Gautocmdft jsp,asp,php,xml,perl syntax sync minlines=500 maxlines=1000
 if isdirectory('/opt/llvm/devel')
   let s:llvm_base_path = '/opt/llvm/devel'
   let s:llvm_clang_version = '13.0.0'
-elseif isdirectory('/opt/llvm/stable')
-  let s:llvm_base_path = '/opt/llvm/stable'
-  let s:llvm_clang_version = '11.1.0'
 elseif isdirectory('/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr')
   let s:llvm_base_path = '/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr'
-  let s:llvm_clang_version = '12.0.5'
+  let s:llvm_clang_version = '13.0.0'
 elseif isdirectory('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr')
   let s:llvm_base_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr'
-  let s:llvm_clang_version = '12.0.5'
+  let s:llvm_clang_version = '13.0.0'
 elseif isdirectory('/Library/Developer/CommandLineTools/usr')
   let s:llvm_base_path = '/Library/Developer/CommandLineTools/usr'
-  let s:llvm_clang_version = '12.0.5'
+  let s:llvm_clang_version = '13.0.0'
 else
   echoerr 'not found s:llvm_base_path and s:llvm_clang_version'
 endif
+" elseif isdirectory('/opt/llvm/stable')
+"   let s:llvm_base_path = '/opt/llvm/stable'
+"   let s:llvm_clang_version = '12.0.0'
 
 if isdirectory('/Applications/Xcode-beta.app')
   let s:xcode_path = '/Applications/Xcode-beta.app'
@@ -738,7 +786,7 @@ let s:clang_flags = [
       \ '-isystem '.s:llvm_base_path.'/lib/clang/13.0.0',
       \ '-isysroot'.$SDKROOT,
       \
-      \ '-mmacosx-version-min=11.3',
+      \ '-mmacosx-version-min=12.0',
       \ ]  " clang++ -v -E -x c++ - -v < /dev/null
       "\ '-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include',
       "\ '-I' . s:llvm_base_path . '/include/c++/v1',
@@ -759,6 +807,7 @@ let g:clangd_commands_cfamily = [
       \ '--completion-style=detailed',
       \ '--cross-file-rename',
       \ '--folding-ranges',
+      \ '--ranking-model=decision_forest',
       \ '--function-arg-placeholders',
       \ '--header-insertion-decorators',
       \ '--header-insertion=iwyu',
@@ -771,7 +820,6 @@ let g:clangd_commands_cfamily = [
       \ '--resource-dir='.s:llvm_base_path.'/lib/clang/'.s:llvm_clang_version,
       \ '--static-func-full-module-prefix',
       \ '--suggest-missing-includes',
-      \ '--query-driver='.s:llvm_base_path.'/bin/clang-*,'.s:llvm_base_path.'/bin/clang++-*',
       \ ]  " --resource-dir: $ /opt/llvm/devel/bin/clang -print-resource-dir
       "\ '--info-output-file=/tmp/clangd.info.log', '--input-mirror-file=/tmp/clangd.lsp.log', '--log=verbose', '--pretty', '--input-style=standard', '--offset-encoding=utf-8',
 
@@ -786,14 +834,14 @@ function! s:clangd_commands_cfamily_setup() abort
   let g:did_server_commands_cfamily_setup = v:true
 
   " clangd.dex
-  if filereadable(getcwd() . '/../build/clangd.dex')
+  if filereadable(getcwd() . 'clangd.dex')
+    let g:clangd_commands_cfamily += ['--index-file=' . getcwd() . '/clangd.idx']
+  elseif filereadable(g:c_cpp_root_path . '/clangd.idx')
+    let g:clangd_commands_cfamily += ['--index-file=' . g:c_cpp_root_path . '/clangd.idx']
+  elseif filereadable(g:c_cpp_root_path . '/build/clangd.idx')
+    let g:clangd_commands_cfamily += ['--index-file=' . g:c_cpp_root_path . '/build/clangd.idx']
+  elseif filereadable(getcwd() . '/../build/clangd.idx')
     let g:clangd_commands_cfamily += ['--index-file=' . getcwd() . '/../build/clangd.dex']
-  elseif filereadable(g:c_cpp_root_path . '/build/clangd.dex')
-    let g:clangd_commands_cfamily += ['--index-file=' . g:c_cpp_root_path . '/build/clangd.dex']
-  elseif filereadable(getcwd() . 'clangd.dex')
-    let g:clangd_commands_cfamily += ['--index-file=' . getcwd() . '/clangd.dex']
-  elseif filereadable(g:c_cpp_root_path . '/clangd.dex')
-    let g:clangd_commands_cfamily += ['--index-file=' . g:c_cpp_root_path . '/clangd.dex']
 
   " compile_commands.json
   elseif filereadable(glob("`find " . getcwd() . " -maxdepth 1 -type d -iwholename '*build*' `").'/compile_commands.json')
@@ -824,7 +872,7 @@ let s:lsp_root_markers = {
       \ 'cpp': s:lsp_root_markers_cfamily,
       \ 'go': s:lsp_root_markers_go,
       \ 'javascript': s:lsp_root_markers_js,
-      \ 'lua': ['.git'],
+      \ 'lua': ['.git/'],
       \ 'objc': s:lsp_root_markers_cfamily,
       \ 'objcpp': s:lsp_root_markers_cfamily,
       \ 'python': s:lsp_root_markers_python,
@@ -837,31 +885,32 @@ let s:lsp_root_markers = {
 "" GoNvimSP:
 let g:nvim_lsp_server_commands = {
       \ 'go': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls.log'],
+      \ 'gomod': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls.log'],
       \ }
-      "\ 'lua': [s:srcpath_github . 'sumneko/lua-language-server/bin/macOS/lua-language-server', '-E', s:srcpath_github . 'sumneko/lua-language-server/main.lua', '--logpath=/tmp/lualsp.log'],
-      "\ 'go': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls.log'],
       "\ 'go': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls.log', '-debug=localhost:75699'],
-      "\ 'rust': ['rustup', 'run', 'nightly', 'rust-analyzer', '-vv', '--log-file=/tmp/rust-analyzer.log'],
-      "\ 'yaml': [s:srcpath_github . 'redhat-developer/yaml-language-server/bin/yaml-language-server', '--stdio'],
 let g:nvim_lsp#server_options = {}
 "      \ 'go': {
 "      \   'env': [
 "      \   ]}
 "      \ }
+Gautocmd BufRead $HOME/go/src/gvisor.dev/gvisor/* let g:nvim_lsp#server_options = { 'go': { 'env': [ 'GOOS=linux'] }}
 let g:nvim_lsp_server_auto_start = v:true
 let g:nvim_lsp_server_stderr = v:false
-let g:nvim_lsp#change_throttle = 0.5
-let g:nvim_lsp_debug = v:true
-let g:nvim_lsp_enable_diagnostics = v:true
-let g:nvim_lsp_settings_paths = [ '.nvim/settings.json', $XDG_CONFIG_HOME.'/nvim/lsp/settings.json' ]
-let g:nvim_lsp_root_markers = s:lsp_root_markers
-let g:nvim_lsp_hover_highlight = 'Normal:NormalFloat'
-let g:nvim_lsp_use_virtual_text = v:true
+let g:nvim_lsp_change_throttle = 0.5
 let g:nvim_lsp_diagnostics_list = 'location-list'
-let g:nvim_lsp_selection_ui_type = 'quickfix'
-let g:nvim_lsp_selection_ui_auto_open = v:true
+let g:nvim_lsp_enable_diagnostics = v:true
+let g:nvim_lsp_hover_highlight = 'Normal:NormalFloat'
 let g:nvim_lsp_logLevel = 'debug'
+let g:nvim_lsp_root_markers = s:lsp_root_markers
+let g:nvim_lsp_selection_ui_auto_open = v:true
+let g:nvim_lsp_selection_ui_type = 'quickfix'
+let g:nvim_lsp_settings_paths = [ '.nvim/settings.json', $XDG_CONFIG_HOME.'/nvim/lsp/settings.json' ]
 let g:nvim_lsp_trace = 'verbose'
+let g:nvim_lsp_use_virtual_text = v:true
+" debug
+let g:nvim_lsp_debug = v:true
+let g:nvim_lsp_enable_datadog = v:true
+let g:nvim_lsp_enable_gops = v:false
 " let g:nvim_lsp#diagnostics_display = {
 "     \ 1: {
 "     \      'name': 'Error',
@@ -900,6 +949,8 @@ function! s:nvim_lsp_setup()
   setlocal formatexpr=LanguageClient#textDocument_rangeFormatting_sync()
   nmap     <silent><buffer><C-]>              <Plug>(nvim-lsp-textdocument-definition)
   nnoremap <silent><buffer><C-]>v             :<C-u>call LSPTextDocumentDefinition('vsplit')<CR>
+  " nnoremap <silent><buffer><C-]>              :<C-u>call LanguageClient#textDocument_definition({'handle': v:true}, function('LanguageClientCallback'))<CR>
+  " nnoremap <silent><buffer><C-]>v             :<C-u>call LanguageClient#textDocument_definition({'gotoCmd': 'vsplit', 'handle': v:true}, function('LanguageClientCallback'))<CR>
   nmap     <nowait><silent><buffer>K          <Plug>(nvim-lsp-textdocument-hover)
   nnoremap <silent><buffer><LocalLeader>gh    :<C-u>call LanguageClient#textDocument_signatureHelp()<CR>
   nmap     <silent><buffer><LocalLeader>gdh   <Plug>(lcn-highlight)
@@ -925,58 +976,60 @@ let g:LanguageClient_serverCommands = {
       \ 'go': [s:gopath . '/bin/gopls', '-remote=unix;/tmp/gopls.sock'],
       \ 'java': ['jdtls', '-data', getcwd()],
       \ 'javascript': ['javascript-typescript-stdio'],
-      \ 'json': ['json-languageserver', '--stdio'],
-      \ 'json5': ['json-languageserver', '--stdio'],
-      \ 'jsonc': ['json-languageserver', '--stdio'],
-      \ 'jsonschema': ['json-languageserver', '--stdio'],
+      \ 'json': ['vscode-json-languageserver', '--stdio'],
+      \ 'json5': ['vscode-json-languageserver', '--stdio'],
+      \ 'jsonc': ['vscode-json-languageserver', '--stdio'],
+      \ 'jsonschema': ['vscode-json-languageserver', '--stdio'],
       \ 'objc': g:clangd_commands_cfamily,
       \ 'objcpp': g:clangd_commands_cfamily,
-      \ 'python': ['pyright-langserver', '--stdio'],
+      \ 'python': ['/usr/local/share/pipx/pyls'],
+      \ 'cython': ['/usr/local/share/pipx/pyls'],
       \ 'ruby': ['solargraph', 'stdio'],
       \ 'rust': ['rustup', 'run', 'nightly', 'rust-analyzer'],
-      \ 'lua': [s:srcpath_github . 'sumneko/lua-language-server/bin/macOS/lua-language-server', s:srcpath_github . 'sumneko/lua-language-server/main.lua', '--logpath=/tmp/lualsp.log'],
+      \ 'lua': [s:srcpath_github . 'sumneko/lua-language-server/bin/macOS/lua-language-server', '-E', s:srcpath_github . 'sumneko/lua-language-server/main.lua', '--locale=en-us'],
       \ 'sh': ['bash-language-server', 'start'],
       \ 'swift': ['sourcekit-lsp', '--build-path', $XDG_CACHE_HOME.'/sourcekit-lsp', '-c', 'release', '--log-level', 'debug'],
       \ 'typescript': ['typescript-language-server', '--stdio', '--tsserver-path=/usr/local/var/nodebrew/current/bin/tsserver'],
       \ 'vim': ['vim-language-server', '--stdio'],
-      \ 'yaml': [s:srcpath_github . 'redhat-developer/yaml-language-server/bin/yaml-language-server', '--stdio'],
-      \ 'yaml.docker-compose': [s:srcpath_github . 'redhat-developer/yaml-language-server/bin/yaml-language-server', '--stdio'],
+      \ 'zsh': ['bash-language-server', 'start'],
       \ }
-      "\ 'go': [s:gopath . '/bin/gopls'],
-      "\ 'go': [s:gopath . '/bin/gopls', '-remote=unix;/tmp/gopls.sock'],
       "\ 'go': [s:gopath . '/bin/gopls', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls-lcn.log'],
+      "\ 'go': [s:gopath . '/bin/gopls', '-remote=unix;/tmp/gopls.sock'],
       "\ 'go': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-remote=unix;/tmp/gopls.sock', '-logfile=/tmp/gopls-lcn.log'],
       "\ 'go': [s:gopath . '/bin/gopls'],
-      "\ 'lua': ['lua-lsp'],
+      "\ 'go': [s:gopath . '/bin/gopls'],
       "\ 'lua': ['java', '-cp', '/usr/local/share/java/EmmyLua/EmmyLua-LS-all.jar', 'com.tang.vscode.MainKt'],
+      "\ 'lua': ['lua-lsp'],
       "\ 'lua': [s:srcpath_github . 'sumneko/lua-language-server/bin/macOS/lua-language-server', '-E', s:srcpath_github . 'sumneko/lua-language-server/main.lua', '--logpath=/tmp/lualsp.log'],
       "\ 'proto': [s:gopath . '/bin/protocol-buffers-language-server'],
-      "\ 'python': ['/usr/local/share/pipx/pyls'],
       "\ 'python': ['/usr/local/share/pipx/pyls', '--log-file=/tmp/pyls.log', '--verbose'],
       "\ 'python': ['/usr/local/share/pipx/pyls', '--log-file=/tmp/pyls.log', '--verbose'],
       "\ 'python': ['/usr/local/share/pipx/pyls'],
+      "\ 'python': ['/usr/local/share/pipx/pyls'],
+      "\ 'python': ['pyright-langserver', '--stdio'],
       "\ 'rust': ['/usr/local/rust/cargo/bin/rustup', 'run', 'nightly', 'rls'],
       "\ 'rust': ['rustup', 'run', 'nightly', 'rust-analyzer', '-vv', '--log-file=/tmp/rust-analyzer.log'],
       "\ 'swift': ['/usr/local/bin/sourcekit-lsp'],
       "\ 'yaml': ['yaml-language-server', '--stdio'],
-      "\ 'yaml': ['yaml-language-server', '--stdio'],
+      "\ 'yaml.docker-compose': ['yaml-language-server', '--stdio'],
 
+" [/Users/zchee/.cache/nvim/dein/.cache/init.vim/.dein,/usr/local/share/nvim/runtime,/Users/zchee/.cache/nvim/dein/repos/github.com/nvim-treesitter/nvim-treesitter/after,/Users/zchee/.cache/nvim/dein/.cache/init.vim/.dein/after,/usr/local/lib/nvim,/usr/local/share/nvim/site/after,/Users/zchee/.config/nvim/after']
 let g:LanguageClient_diagnosticsSignsMax                = v:null
 let g:LanguageClient_changeThrottle                     = 0.5  " default: v:null, 0.5
 let g:LanguageClient_autoStart                          = 1
-let g:LanguageClient_autoStop                           = 0
+let g:LanguageClient_autoStop                           = 1
 let g:LanguageClient_selectionUI                        = 'location-list'  " fzf, quickfix, location-list
 let g:LanguageClient_selectionUI_autoOpen               = 1
-let g:LanguageClient_trace                              = 'verbose'  " 'verbose'
+let g:LanguageClient_trace                              = 'off'  " 'verbose'
 let g:LanguageClient_diagnosticsList                    = 'Disabled'  " default: Quickfix, Location, Disabled
 let g:LanguageClient_diagnosticsEnable                  = 0
 let g:LanguageClient_windowLogMessageLevel              = 'Error'  " default: Warning, available: 'Error' 'Warning' 'Info' 'Log'
-let g:LanguageClient_settingsPath                       = [$XDG_CONFIG_HOME.'/nvim/lsp/lcn.json']
+let g:LanguageClient_settingsPath                       = [ '.nvim/lcn.json', $XDG_CONFIG_HOME.'/nvim/lsp/lcn.json' ]
 let g:LanguageClient_loadSettings                       = 1
 let g:LanguageClient_rootMarkers                        = s:lsp_root_markers
 let g:LanguageClient_fzfOptions                         = v:null
 let g:LanguageClient_hasSnippetSupport                  = 0
-let g:LanguageClient_waitOutputTimeout                  = 0  " default: 10
+let g:LanguageClient_waitOutputTimeout                  = 10  " default: 10
 let g:LanguageClient_hoverPreview                       = 'Always'  " Always, Auto, Never
 let g:LanguageClient_fzfContextMenu                     = 0
 let g:LanguageClient_completionPreferTextEdit           = 0
@@ -990,7 +1043,8 @@ let g:LanguageClient_semanticHighlightMaps              = {}
 let g:LanguageClient_applyCompletionAdditionalTextEdits = 1
 let g:LanguageClient_preferredMarkupKind                = ['plaintext', 'markdown']  " 'plaintext'
 Gautocmdft go,python,yaml,zsh let g:LanguageClient_diagnosticsEnable = 0
-Gautocmdft go let g:LanguageClient_echoProjectRoot = 0
+Gautocmdft go let g:LanguageClient_echoProjectRoot = 0 | let g:LanguageClient_autoStop = 0
+Gautocmdft rust call LanguageClient#startServer()  " why?
 " debug
 " let g:LanguageClient_serverStderr = '/tmp/lcn.server.log'
 " let g:LanguageClient_loggingFile  = '/tmp/lcn.client.log'
@@ -1006,30 +1060,15 @@ function! s:languageclient_settings_setup()
   if !empty(g:lcn_settings)
     Gautocmd User LanguageClientTextDocumentDidOpenPost call LanguageClient#Notify('workspace/didChangeConfiguration', { 'settings': g:lcn_settings })  " workspace/configuration, workspace/didChangeConfiguration, LanguageClientStarted, LanguageClientTextDocumentDidOpenPost
   endif
-  echomsg &filetype
 endfunction
 Gautocmdft go,c,cmake,cpp,dockerfile,java,javascript,json,jsonc,jsonschema,lua,objc,objcpp,proto,python,ruby,rust,sh,swift,typescript,vim call s:languageclient_settings_setup()
-
-function! s:languageclient_settings_setup_yaml()
-  let g:lcn_settings = ''
-  let g:lcn_settings_filepath = '/.nvim/lcn.json'
-  if filereadable(getcwd() . g:lcn_settings_filepath)
-    let g:lcn_settings = json_decode(readfile(getcwd() . g:lcn_settings_filepath))
-  else
-    let g:lcn_settings = json_decode(readfile(expand($XDG_CONFIG_HOME.'/nvim/lsp/lcn_yaml.json')))
-  endif
-
-  if !empty(g:lcn_settings)
-    Gautocmd User LanguageClientTextDocumentDidOpenPost call LanguageClient#Notify('workspace/didChangeConfiguration', { 'settings': g:lcn_settings })
-  endif
-endfunction
-Gautocmdft yaml,yaml.docker-compose call s:languageclient_settings_setup_yaml()
 
 function! LanguageClientCallback(output, ...) abort
   normal! zz
 endfunction
 
 function! s:languageclient_mapping_setup()
+  nnoremap <silent><buffer><C-]>t             <C-]>
   nnoremap <silent><buffer><C-]>              :<C-u>call LanguageClient#textDocument_definition({'handle': v:true}, function('LanguageClientCallback'))<CR>
   nnoremap <silent><buffer><C-]>v             :<C-u>call LanguageClient#textDocument_definition({'gotoCmd': 'vsplit', 'handle': v:true}, function('LanguageClientCallback'))<CR>
   nmap     <nowait><silent><buffer>K          <Plug>(lcn-hover)
@@ -1042,13 +1081,17 @@ function! s:languageclient_mapping_setup()
   nmap     <nowait><silent><buffer><Leader>e  <Plug>(lcn-rename)
   setlocal formatexpr=LanguageClient#textDocument_rangeFormatting_sync()
 endfunction
-Gautocmdft c,cmake,cpp,dockerfile,java,javascript,json,jsonc,jsonschema,lua,objc,objcpp,proto,python,ruby,rust,sh,swift,typescript,vim,yaml,yaml.docker-compose call s:languageclient_mapping_setup()
+Gautocmdft c,cmake,cpp,dockerfile,java,javascript,json,jsonc,jsonschema,lua,objc,objcpp,proto,python,ruby,rust,sh,swift,typescript,vim call s:languageclient_mapping_setup()
+
+Gautocmd BufRead,BufNewFile $HOME/src/github.com/neovim/neovim/runtime/lua/vim/* let g:LanguageClient_rootMarkers['lua'] = ['lsp.lua']
 
 "" Deoplete:
 let g:deoplete#enable_at_startup = 1
+" g:deoplete#omni#input_patterns
 
-let s:default_ignore_sources = ['ale', 'around', 'denite', 'file_include', 'floaterm', 'lsp', 'member', 'omni', 'tag']
+let s:default_ignore_sources = ['ale', 'around', 'denite', 'file_include', 'floaterm', 'lsp', 'member', 'omni', 'tabnine', 'tag']
 let s:deoplete_custom_option = {
+      \ 'auto_preview': v:true,
       \ 'auto_complete': v:true,
       \ 'auto_complete_delay': 0,
       \ 'auto_complete_popup': 'auto',
@@ -1058,7 +1101,7 @@ let s:deoplete_custom_option = {
       \ 'complete_suffix': v:true,
       \ 'ignore_case': &ignorecase,
       \ 'ignore_sources': {
-      \   '_': ['ale', 'around', 'floaterm', 'lsp', 'member', 'omni', 'tag'],
+      \   '_': ['ale', 'around', 'floaterm', 'lsp', 'member', 'omni', 'tabnine', 'tag'],
       \   'c': s:default_ignore_sources,
       \   'cpp': s:default_ignore_sources,
       \   'dockerfile': s:default_ignore_sources,
@@ -1079,7 +1122,7 @@ let s:deoplete_custom_option = {
       \ },
       \ 'max_list': 10000,
       \ 'min_pattern_length': 1,
-      \ 'num_processes': 3,
+      \ 'num_processes': 1,
       \ 'on_insert_enter': v:true,
       \ 'on_text_changed_i': v:true,
       \ 'prev_completion_mode': 'none',
@@ -1090,22 +1133,28 @@ let s:deoplete_custom_option = {
       \ 'smart_case': &smartcase,
       \ 'trigger_key': v:char,
       \ }
+
 call deoplete#custom#option(s:deoplete_custom_option)
 Gautocmdft python call deoplete#custom#option('ignore_sources', { 'python': ['ale', 'around', 'dictionary', 'floaterm', 'lsp', 'member', 'omni', 'tag'] })
-call deoplete#custom#source('_', 'matchers', ['matcher_cpsm_internal'])  " matcher_fuzzy, matcher_full_fuzzy, matcher_cpsm, matcher_head, matcher_length
+call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy'])  " matcher_fuzzy, matcher_fruzzy, matcher_full_fuzzy, matcher_cpsm, matcher_head, matcher_length
 call deoplete#custom#source('_', 'sorters', ['sorter_rand', 'sorter_word'])  " 'sorter_word', 'sorter_rand'
 call deoplete#custom#source('_', 'converters', ['converter_auto_paren', 'converter_remove_overlap'])
 
 call deoplete#custom#source('buffer', 'rank', 100)
 call deoplete#custom#source('file', 'rank', 150)
 call deoplete#custom#source('file', 'enable_buffer_path', v:true)
+call deoplete#custom#source('file', 'enable_slash_completion', v:true)
 call deoplete#custom#source('file', 'force_completion_length', -1)
 
-" call deoplete#custom#source('go', 'auto_refresh_delay', 1000)
+" call deoplete#custom#source('go', 'num_processes', 1)
+call deoplete#custom#source('go', 'refresh_always', v:false)
 " call deoplete#custom#source('go', 'matchers', ['matcher_fuzzy', 'matcher_length'])
 " call deoplete#custom#source('go', 'sorters', ['sorter_word'])
 " call deoplete#custom#source('go', 'is_debug_enabled', v:true)
 
+call deoplete#custom#source('cgo', 'refresh_always', v:false)
+
+call deoplete#custom#source('LanguageClient', 'matchers', ['matcher_fruzzy'])
 call deoplete#custom#source('LanguageClient', 'sorters', [])
 call deoplete#custom#source('LanguageClient', 'max_candidates', 1000)
 call deoplete#custom#source('LanguageClient', 'converters', ['converter_auto_paren_lsp', 'converter_auto_paren', 'converter_remove_overlap'])
@@ -1120,6 +1169,9 @@ call deoplete#custom#source('neosnippet', 'converters', ['converter_remove_overl
 call deoplete#custom#source('zsh', 'filetypes', ['sh', 'zsh'])
 
 " source
+"" cgo
+let g:deoplete#sources#cgo#libclang_library_path = s:llvm_base_path.'/lib/libclang.dylib'
+let g:deoplete#sources#cgo#sort_algo = 'priority'
 "" go
 let g:deoplete#sources#go#gocode_binary = s:gopath.'/bin/gocode'
 let g:deoplete#sources#go#auto_goos = 0
@@ -1128,11 +1180,7 @@ let g:deoplete#sources#go#cgo = 1
 let g:deoplete#sources#go#cgo_only = 1
 let g:deoplete#sources#go#cgo#flags = s:clang_flags
 let g:deoplete#sources#go#cgo#libclang_path = s:llvm_base_path.'/lib/libclang.dylib'
-let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'  " 'priority', 'alphabetical'
-"" clang
-" let g:deoplete#sources#clang#clang_header = s:llvm_base_path.'/lib/clang'  " s:llvm_base_path . '/lib/clang'
-" let g:deoplete#sources#clang#libclang_path = s:llvm_base_path.'/lib/libclang.dylib' " s:llvm_base_path . '/lib/libclang.dylib'
-" let g:deoplete#sources#clang#flags = s:clang_flags
+let g:deoplete#sources#go#cgo#sort_algo = 'priority'  " 'priority', 'alphabetical'
 "" jedi
 let g:deoplete#sources#jedi#statement_length = 0
 let g:deoplete#sources#jedi#short_types = 0
@@ -1146,7 +1194,7 @@ let g:deoplete#sources#asm#go_mode = 1
 " debug
 " call deoplete#custom#option('profile', v:true)
 " call deoplete#enable_logging('DEBUG', '/tmp/deoplete.log')
-" call deoplete#custom#source('LanguageClientInternal', 'is_debug_enabled', v:true)
+" call deoplete#custom#source('cgo', 'is_debug_enabled', v:true)
 
 " neosnippet
 let g:neosnippet#data_directory = $XDG_CACHE_HOME . '/nvim/neosnippet'
@@ -1160,16 +1208,16 @@ let g:neosnippet_username = 'zchee'
 let g:neosnippet_author = 'Koichi Shiraishi'
 " echodoc
 Gautocmd BufWinEnter * call echodoc#enable()
-let g:echodoc#events = ['CompleteDone']  " default
-let g:echodoc#type = 'virtual'  " echo, signature, virtual, floating
+let g:echodoc#events = ['CompleteDone']            " default
+let g:echodoc#type = 'virtual'                     " echo, signature, virtual, floating
 let g:echodoc#highlight_identifier = 'Identifier'  " default
-let g:echodoc#highlight_arguments = 'Special'  " default
-let g:echodoc#highlight_trailing = 'Type'  " default
-let g:echodoc_max_blank_lines = 3  " hidden params
+let g:echodoc#highlight_arguments = 'Special'      " default
+let g:echodoc#highlight_trailing = 'Type'          " default
+let g:echodoc_max_blank_lines = 3                  " hidden params
 highlight link EchoDocFloat HoverFloat
 " neopairs
 let g:neopairs#enable = 1
-let g:neopairs#pairs = { '[': ']', '<': '>', '(': ')', '{': '}', '"': '"' }
+" let g:neopairs#pairs = { '[': ']', '<': '>', '(': ')', '{': '}', '"': '"' }
 
 
 "" Denite:
@@ -1219,20 +1267,31 @@ let s:denite_file_rec_command = ['fd', '.', '--threads=20', '--follow', '--hidde
       \ '-E', '*.a',
       \ '-E', '*.lib',
       \ '-E', '.gitignore',
+      \ '-E', '_tmp/',
       \ '-E', '.*.*',
       \ ]
 call denite#custom#var('file/rec', 'command', s:denite_file_rec_command)
 call denite#custom#var('file/rec', 'cache_threshold', 100000)
 call denite#custom#option('file/rec', 'expand', v:true)
 
-call denite#custom#var('grep', {
-  \ 'command': ['rg'],
-  \ 'default_opts': ['-i', '--no-config', '--no-ignore-vcs', '--threads=20', '--mmap', '--hidden', '--no-heading', '--vimgrep', '--glob=!.git', '--glob=!node_modules'],
-  \ 'recursive_opts': [],
-  \ 'pattern_opt': ['--regexp'],
-  \ 'separator': ['--'],
-  \ 'final_opts': [],
-  \ })
+call denite#custom#alias('source', 'grep/rg', 'grep')
+call denite#custom#alias('source', 'grep/ugrep', 'grep')
+call denite#custom#var('grep/ugrep', {
+ \ 'command': ['ug'],
+ \ 'default_opts': ['--color=never', '--no-heading', '--hidden', '--ignore-binary', '--ignore-case', '--no-ignore-files', '--column-number', '--mmap', '--line-number', '--no-group-separator', '--recursive', '--tabs=1', '-J20'],
+ \ 'recursive_opts': [],
+ \ 'pattern_opt': [],
+ \ 'separator': ['--'],
+ \ 'final_opts': [],
+ \ })
+call denite#custom#var('grep/rg', {
+ \ 'command': ['rg'],
+ \ 'default_opts': ['-i', '--no-config', '--no-ignore-vcs', '--threads=20', '--mmap', '--hidden', '--no-heading', '--vimgrep', '--glob=!.git', '--glob=!node_modules', '--glob=!_tmp'],
+ \ 'recursive_opts': [],
+ \ 'pattern_opt': ['--regexp'],
+ \ 'separator': ['--'],
+ \ 'final_opts': [],
+ \ })
 
 "" map
 function! DeniteActionZZ() abort
@@ -1418,46 +1477,51 @@ let g:ale_go_staticcheck_options = ''
 let g:ale_go_staticcheck_lint_package = 0
 
 "" CFamily:
+""" global
 let g:ale_c_build_dir_names = ['build']
 let g:ale_c_parse_compile_commands = 1
-let g:ale_c_parse_makefile = 1
+let g:ale_c_parse_makefile = 0
+let s:ale_linters_c_cpp = ['clangd', 'clang-format', 'clangcheck']  " 'clangd', 'clangtidy', 'cppcheck', 'clangcheck'
+let s:ale_c_cpp_clangd_executable = s:llvm_base_path . '/bin/clang'
+let s:ale_c_cpp_clangd_options = g:clangd_commands_cfamily[1:len(g:clangd_commands_cfamily)]
+let s:ale_c_cpp_clangformat_executable = s:llvm_base_path . '/bin/clang-format'
+let s:ale_c_cpp_clangtidy_executable = s:llvm_base_path . '/bin/clang-tidy'
 
-" function! s:ale_c_cpp_setup() abort
-  let s:llvm_bin_directory = '/opt/llvm/devel/bin'
+"" C:
+let g:ale_linters.c = s:ale_linters_c_cpp
+""" cc
+let g:ale_c_cc_executable = s:llvm_base_path . '/bin/clang'
+let g:ale_c_cc_options = '-std=c17 -Wall'
+""" clangd
+let g:ale_c_clangd_executable = s:ale_c_cpp_clangd_executable
+let g:ale_c_clangd_options = s:ale_c_cpp_clangd_options
+""" clang-format
+let g:ale_c_clangformat_executable = s:ale_c_cpp_clangformat_executable
+let g:ale_c_clangformat_use_local_file = 1
+""" clang-tidy
+let g:ale_c_clangtidy_checks = []
+let g:ale_c_clangtidy_executable = s:ale_c_cpp_clangtidy_executable
+let g:ale_c_clangtidy_options = ''
+let g:ale_c_clangtidy_extra_options = ''
+let g:ale_c_clangtidy_fix_errors = 1
 
-  let s:ale_linters_c_cpp = ['clangd', 'clang-format']  " 'clangd', 'clangtidy', 'cppcheck', 'uncrustify'
-  let s:ale_c_cpp_clangd_executable = s:llvm_bin_directory . '/clang'
-  let s:ale_c_cpp_clangd_options = g:clangd_commands_cfamily[1:len(g:clangd_commands_cfamily)]
-  let s:ale_c_cpp_clangformat_executable = s:llvm_bin_directory . '/clang-format'
-  let s:ale_c_cpp_clangtidy_executable = s:llvm_bin_directory . '/clang-tidy'
-
-  """ C:
-  let g:ale_linters.c = s:ale_linters_c_cpp
-  let g:ale_c_cc_executable = s:llvm_bin_directory . '/clang'
-  let g:ale_c_cc_options = '-march=native -std=c17 -Wall'
-  let g:ale_c_clangd_executable = s:ale_c_cpp_clangd_executable
-  let g:ale_c_clangd_options = s:ale_c_cpp_clangd_options
-  let g:ale_c_clangformat_executable = s:ale_c_cpp_clangformat_executable
-  let g:ale_c_clangformat_options = ''
-  let g:ale_c_clangtidy_checks = []
-  let g:ale_c_clangtidy_executable = s:ale_c_cpp_clangtidy_executable
-  let g:ale_c_clangtidy_options = ''
-  let g:ale_c_clangtidy_extra_options = ''
-  let g:ale_c_uncrustify_executable = 'uncrustify'
-  let g:ale_c_uncrustify_options = ''
-
-  """ CPP:
-  let g:ale_linters.cpp = s:ale_linters_c_cpp
-  let g:ale_cpp_clang_executable = s:llvm_bin_directory . '/clang++'
-  let g:ale_cpp_clang_options = '-march=native -std=c++17 -Wall'
-  let g:ale_cpp_clangd_executable = s:ale_c_cpp_clangd_executable
-  let g:ale_cpp_clangd_options = s:ale_c_cpp_clangd_options
-  let g:ale_cpp_clangformat_executable = s:ale_c_cpp_clangformat_executable
-  let g:ale_cpp_clangtidy_executable = s:ale_c_cpp_clangtidy_executable
-" endfunction
-" Gautocmdft c,cpp,objc,objcpp call s:ale_c_cpp_setup()
-" let g:ale_linters.c = []
-" let g:ale_linters.cpp = []
+"" CPP:
+let g:ale_linters.cpp = s:ale_linters_c_cpp
+""" cc
+let g:ale_cpp_cc_executable = s:llvm_base_path . '/bin/clang++'
+let g:ale_cpp_cc_options = '-std=c++17 -Wall'
+""" clang-check
+let g:ale_cpp_clangcheck_executable = s:llvm_base_path . '/bin/clang-check'
+let g:ale_cpp_clangcheck_options = ''
+""" clangd
+let g:ale_cpp_clangd_executable = s:ale_c_cpp_clangd_executable
+let g:ale_cpp_clangd_options = s:ale_c_cpp_clangd_options
+""" clang-tidy
+let g:ale_cpp_clangtidy_checks = []
+let g:ale_cpp_clangtidy_executable = s:ale_c_cpp_clangtidy_executable
+let g:ale_cpp_clangtidy_options = ''
+let g:ale_cpp_clangtidy_extra_options = ''
+let g:ale_cpp_clangtidy_fix_errors = 1
 
 "" Python:
 let g:ale_linters.python = ['black', 'pyright']  " ['flake8', 'pylint', 'pyls', 'mypy']
@@ -1491,10 +1555,7 @@ let g:ale_proto_api_linter_include_paths = ['.', 'third_party/googleapis']
 let g:ale_linters.rust = ['cargo']
 
 "" Sh:
-let g:ale_linters.sh = ['shellcheck', 'shfmt', 'sh-language-server']  " 'shell', 'bashate'
-""" Bashate:
-let g:ale_sh_bashate_executable = 'bashate'
-let g:ale_sh_bashate_options = '-i E006'
+let g:ale_linters.sh = ['shellcheck', 'shfmt']  " 'shell', 'bashate', 'sh-language-server'
 """ ShLanguageServer:
 let g:ale_sh_language_server_executable = 'bash-language-server'
 let g:ale_sh_language_server_use_global = 1
@@ -1506,7 +1567,7 @@ let g:ale_sh_shellcheck_options = '-x --color=never --severity=style --wiki-link
 let g:ale_sh_shellcheck_exclusions = 'SC1072,SC1090,SC1091'
 let g:ale_sh_shellcheck_change_directory = 1  " default
 """ ShFmt:
-let g:ale_sh_shfmt_options = ''
+let g:ale_sh_shfmt_options = '-bn -ci -sr -i 2'
 
 "" Terraform:
 let g:ale_linters.terraform = ['fmt', 'tflint']
@@ -1521,9 +1582,9 @@ let s:yamllint_config_file = ''
 if exists("$YAMLLINT_CONFIG_FILE")
   let s:yamllint_config_file = '--config-file=' . expand('$YAMLLINT_CONFIG_FILE')
 else
-  let s:yamllint_root = fnamemodify(findfile('.yamllint', '.;'), ':p') . '.yamllint.yaml'
-  if filereadable(s:yamllint_root)
-    let s:yamllint_config_file = '--config-file=' . s:yamllint_root
+  let g:yamllint_filepath = findfile(fnamemodify(resolve(expand('%')), ':p:h') . '/.yamllint.yaml', '.;')
+  if filereadable(g:yamllint_filepath)
+    let s:yamllint_config_file = '--config-file=' . g:yamllint_filepath
   endif
 endif
 let g:ale_yaml_yamllint_options = '--strict ' . s:yamllint_config_file
@@ -1742,8 +1803,8 @@ let g:gitgutter_sign_modified_removed   = '~_'
 
 " Accelerated JK:
 let g:accelerated_jk_enable_deceleration = 0
-let g:accelerated_jk_acceleration_limit = 30  " 150, 250, 350
-let g:accelerated_jk_acceleration_table = [15, 18, 21, 25, 31, 37, 44, 53, 64, 72]  " [7, 16, 24, 30, 42, 58, 64, 72]  [15, 18, 21, 25, 31, 37, 44, 53, 64, 72] (1.5*1.2): [12,17,21,24,26,28,30,35], [7,12,17,21,24,26,28,30], [15, 19, 25, 32, 42, 55, 72]
+let g:accelerated_jk_acceleration_limit = 70  " 150, 250, 350
+let g:accelerated_jk_acceleration_table = [1, 3, 7, 12, 17, 21, 24, 26, 28]
 
 
 " EasyMotion:
@@ -1830,7 +1891,7 @@ let g:trans_lang_cutset = ['//', '#']
 let g:openbrowser_search_engines = {
       \ 'google': 'http://google.com/search?q={query}&tbs=qdr:y',
       \ }
-let g:openbrowser_message_verbosity = 0
+let g:openbrowser_message_verbosity = 1
 
 
 " EasyAlign:
@@ -2262,8 +2323,9 @@ command! -nargs=* LSPYamlSetSchema call <SID>lsp_set_schema(<q-args>)
 " -------------------------------------------------------------------------------------------------
 " Command:
 
-" override Man command
-command! -nargs=+ ManV vertical Man <args>
+" ManV:
+"" Man with vertical split
+command! -bang -bar -range=-1 -complete=customlist,man#complete -nargs=* ManV vertical Man <args>
 
 " CheckColor:
 function s:check_colorscheme() abort
@@ -2271,15 +2333,13 @@ function s:check_colorscheme() abort
   wincmd x
   setlocal filetype=vim
 endfunction
-
 command! CheckColorScheme call s:check_colorscheme()
 
 " Terminal:
-" command! -nargs=* Terminal vsplit | terminal <args>
 command! -nargs=* TerminalV vsplit | terminal <args>
 
 " Capture:
-" http://qiita.com/sgur/items/9e243f13caa4ff294fa8
+"" http://qiita.com/sgur/items/9e243f13caa4ff294fa8
 command! -nargs=+ -complete=command Capture QuickRun -type vim -src <q-args>
 
 " Shfmt:
@@ -2365,6 +2425,18 @@ endfunction
 command! -nargs=* NvimCxn call Cxn(<q-args>)
 
 command! Sha256Put -nargs=1 call nvim_paste(system("sha256sum-check " . expand(<line1>) . " | perl -pe 's/\n//g'"), v:false, -1)
+
+function! TextEntered(text)
+  if a:text == 'exit' || a:text == 'quit'
+    stopinsert
+    close
+  else
+    call append(line('$') - 1, 'Entered: "' . a:text . '"')
+    " Reset 'modified' to allow the buffer to be closed.
+    set nomodified
+  endif
+endfunc
+" call prompt_setcallback(bufnr(''), function('TextEntered'))
 
 " -------------------------------------------------------------------------------------------------
 " Keymap:
@@ -2479,7 +2551,7 @@ nmap     <silent><nowait>k        <Plug>(accelerated_jk_k)
 " nmap     <silent><nowait><Right>  :<C-u>call accelerated#time_driven#command('l')<CR>
 
 nnoremap                 Q        gq
-nnoremap                 s        A
+nnoremap         <nowait>s        A
 nnoremap         <nowait>x        "_x
 nnoremap                 zj       zjzt
 nnoremap                 zk       2zkzjzt
@@ -2488,7 +2560,7 @@ nnoremap         <nowait><Up>     <Up>
 nnoremap         <nowait><Down>   <Down>
 
 nnoremap         <silent><C-e>    <C-e><C-e><C-e><C-e>
-nnoremap         <silent><C-g>    :<C-u>DeniteProjectDir grep -buffer-name='grep' -path=`expand('%:p:h')`<CR>
+nnoremap         <silent><C-g>    :<C-u>DeniteProjectDir grep/ugrep -buffer-name='grep' -path=`expand('%:p:h')` -winheight=40 -preview-height=200<CR>
 " nnoremap         <silent><C-p>    :<C-u>DeniteProjectDir file/rec -buffer-name='file_rec/fd' -start-filter -path=`expand('%:p')`<CR>
 nnoremap         <silent><C-p>    <cmd>lua require('telescope.builtin').find_files()<cr>
 nnoremap         <silent><C-q>    :<C-u>nohlsearch<CR>
@@ -2558,10 +2630,11 @@ Gautocmdft swift imap <buffer><C-k>  <Plug>(autocomplete_swift_jump_to_placehold
 " Plugins:
 "" Deoplete:
 function! s:deoplete_check_back_space() abort
-  let s:col = col('.') - 1
-  return !s:col || getline('.')[s:col - 1]  =~ '\s'
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 inoremap <silent><expr><TAB>    pumvisible() ? "\<C-n>" : <SID>deoplete_check_back_space() ? "\<TAB>" : deoplete#manual_complete()
+inoremap <silent><expr><C-g>    deoplete#manual_complete('tabnine')
 inoremap       <expr><S-TAB>    pumvisible() ? "\<C-p>" : "\<C-h>"
 inoremap <silent><expr><CR>     pumvisible() ? deoplete#close_popup() : "\<CR>"
 " inoremap <silent><expr><BS>     pumvisible() ? deoplete#close_popup()."\<C-h>" : "\<C-h>"
@@ -2576,12 +2649,12 @@ imap     <silent><expr><C-k>    neosnippet#expandable_or_jumpable() ? "\<Plug>(n
 " Visual Select: (v)
 
 " Do not add register to current cursor word
-vnoremap c       "_c
-vnoremap x       "_x
-vnoremap P       "_dP
-vnoremap p       "_dp
-vnoremap @       ^
-vnoremap ^       @
+vnoremap         c       "_c
+vnoremap         x       "_x
+vnoremap         P       "_dP
+vnoremap         p       "_dp
+vnoremap <nowait>@       ^
+vnoremap <nowait>^       @
 " sort by ignorecase alphabetically.
 vnoremap <silent>gs :<C-u>'<,'>sort i<CR>
 vnoremap v       <End>h
@@ -2590,13 +2663,10 @@ vnoremap V ^
 " Jump to match pair brackets
 vnoremap <S-Tab> %
 
-" vmap gc                      <Plug>KommentaryVisual
-
-xmap <silent>gx              <Plug>(openbrowser-smart-search)
-vmap <silent>gc              <Plug>(caw:hatpos:toggle)
-vmap <silent><LocalLeader>t  :<C-u>Trans<CR>
-vmap <silent>ga              <Plug>(LiveEasyAlign)
-vmap <silent>tu              <Plug>(operator-camelize-toggle)
+vmap              <silent>ga   <Plug>(LiveEasyAlign)
+vmap              <silent>gc   <Plug>(caw:hatpos:toggle)
+vmap              <silent>tu   <Plug>(operator-convert-case-upper-camel)
+vmap <silent><LocalLeader>t    :<C-u>Trans<CR>
 
 
 " Language:
@@ -2609,8 +2679,9 @@ Gautocmdft c,cpp,objc,objcpp,proto vnoremap <buffer><Leader>cf  :<C-u>ClangForma
 
 " -------------------------------------------------------------------------------------------------
 " Visual: (x)
-xmap  <LocalLeader>        <Plug>(operator-replace)
 
+xmap  <LocalLeader>        <Plug>(operator-replace)
+xmap        <silent>gx     <Plug>(openbrowser-smart-search)
 xnoremap <silent><C-t>     :<C-u>Trans<CR>
 
 " Language:

@@ -20,17 +20,9 @@ let $XDG_CONFIG_HOME = expand($HOME.'/.config')
 let $XDG_DATA_DIRS   = expand('/usr/local/share:/usr/share')
 let $XDG_DATA_HOME   = expand($HOME.'/.local/share')
 let $NVIM_LOG_FILE   = expand($HOME.'/.local/share/nvim/log')
-" let $TERM            = 'xterm-256color'
 let $MANWIDTH        = 999
 
 unlet $RUSTFLAGS
-
-set runtimepath-=~/.local/share/nvim/site
-set runtimepath-=/usr/local/share/nvim/site
-set runtimepath-=/usr/share/nvim/site
-set runtimepath-=/usr/share/nvim/site/after
-set runtimepath-=~/.local/share/nvim/site/after
-set runtimepath-=/etc/xdg/nvim/after
 
 
 let g:clipboard = {
@@ -51,11 +43,8 @@ let g:clipboard = {
 
 "" Remote Plugins:
 let g:loaded_python_provider    = 1                              " $VIMRUNTIME/autoload/provider/python.vim
-" let g:python3_host_prog         = '/usr/local/opt/pypy3/bin/pypy3.7'
-" let g:python3_host_prog         = '/usr/local/opt/python/bin/python3.9'
 let g:python3_host_prog         = '/usr/local/opt/python@3.10/bin/python3.10'
 let g:loaded_node_provider      = 1                              " $VIMRUNTIME/autoload/provider/node.vim
-" let g:node_host_prog            = 2                              " '/usr/local/var/nodebrew/bin/neovim-node-host'
 let g:loaded_ruby_provider      = 1                              " $VIMRUNTIME/autoload/provider/ruby.vim
 let g:loaded_perl_provider      = 1                              " $VIMRUNTIME/autoload/provider/perl.vim
 
@@ -93,8 +82,8 @@ let g:skip_loading_mswin                   = 1                   " $VIMRUNTIME/m
 "" $VIMRUNTIME/pack/dist/opt
 let loaded_cfilter                         = 1                   " $VIMRUNTIME/pack/dist/opt/cfilter/plugin/cfilter.vim
 let g:loaded_matchit                       = 1                   " $VIMRUNTIME/pack/dist/opt/matchit/plugin/matchit.vim
-" let g:loaded_vimball                       = "v37"               " $VIMRUNTIME/pack/dist/opt/vimball/autoload/vimball.vim
-" let g:loaded_vimballPlugin                 = "v37"               " $VIMRUNTIME/pack/dist/opt/vimball/plugin/vimballPlugin.vim
+let g:loaded_vimball                       = "v37"               " $VIMRUNTIME/pack/dist/opt/vimball/autoload/vimball.vim
+let g:loaded_vimballPlugin                 = "v37"               " $VIMRUNTIME/pack/dist/opt/vimball/plugin/vimballPlugin.vim
 
 "" $VIMRUNTIME/autoload
 let g:loaded_netrw                         = 1                   " $VIMRUNTIME/autoload/netrw.vim
@@ -121,7 +110,7 @@ let g:loaded_zipPlugin                     = "v28"               " $VIMRUNTIME/p
 
 "" DO NOT SET: !!
 " let g:loaded_clipboard_provider            = 1                   " $VIMRUNTIME/autoload/provider/clipboard.vim
-let s:loaded_pythonx_provider              = 1                   " $VIMRUNTIME/autoload/provider/pythonx.vim
+let s:loaded_pythonx_provider                = 1                   " $VIMRUNTIME/autoload/provider/pythonx.vim
 " let g:loaded_man                           = 1                   " $VIMRUNTIME/autoload/man.vim
 " let g:loaded_msgpack_autoload              = 1                   " $VIMRUNTIME/autoload/msgpack.vim
 " let g:loaded_shada_autoload                = 1                   " $VIMRUNTIME/autoload/shada.vim

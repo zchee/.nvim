@@ -70,8 +70,10 @@ augroup filetypedetect
   " filename
   autocmd! BufRead,BufNewFile $XDG_CONFIG_HOME/direnv/direnvrc                     setlocal filetype=sh
   autocmd! BufRead,BufNewFile $XDG_CONFIG_HOME/go/env                              setlocal filetype=sh
+  autocmd! BufRead,BufNewFile $HOME/go/src/github.com/DXER-inc/denali/api/db/*.sql setlocal filetype=mysql
   autocmd! BufRead,BufNewFile **/*hal/config                                       setlocal filetype=yaml
   autocmd! BufRead,BufNewFile **/*kube/config                                      setlocal filetype=yaml
+  autocmd! BufRead,BufNewFile **/db.xo.go.tpl,**/funcs.go.tpl                      setlocal filetype=go
   autocmd! BufRead,BufNewFile **/google-cloud-sdk/properties                       setlocal filetype=cfg
   autocmd! BufRead,BufNewFile *.gunk                                               setlocal filetype=gunk.go
   autocmd! BufRead,BufNewFile *[Dd]ockerfile\(\.|-\).*\(.vim\)\@!*                 setlocal filetype=dockerfile

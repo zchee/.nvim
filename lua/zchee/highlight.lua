@@ -1,0 +1,84 @@
+-- " function! s:go_highlight()
+-- "   highlight TSBoolean             gui=NONE       guifg=#c792ea  guibg=NONE  blend=0
+-- "   " highlight TSCharacter           gui=NONE       guifg=#92999f  guibg=NONE  blend=0
+-- "   " highlight TSComment             gui=NONE       guifg=#838c93  guibg=NONE  blend=0
+-- "   highlight TSConditional         gui=NONE       guifg=#c792ea  guibg=NONE  blend=0
+-- "   highlight TSConstant            gui=NONE       guifg=#c7c8c8  guibg=NONE  blend=0
+-- "   highlight TSConstBuiltin        gui=NONE       guifg=#c792ea  guibg=NONE  blend=0
+-- "   " highlight! TSError               gui=NONE       guifg=NONE     guibg=NONE
+-- "   highlight link                  TSError        Error
+-- "   highlight TSFloat               gui=NONE       guifg=#ffcb6b  guibg=NONE  blend=0
+-- "   highlight TSFuncBuiltin         gui=NONE       guifg=#c792ea  guibg=NONE  blend=0
+-- "   highlight TSFunction            gui=NONE       guifg=#82aaff  guibg=NONE  blend=0
+-- "   highlight TSInclude             gui=NONE       guifg=#82aaff  guibg=NONE  blend=0
+-- "   highlight TSKeyword             gui=NONE       guifg=#c792ea  guibg=NONE  blend=0
+-- "   highlight TSKeywordFunction     gui=NONE       guifg=#82aaff  guibg=NONE  blend=0
+-- "   highlight link                  TSKeywordReturn               Statement
+-- "   highlight TSMethod              gui=bold       guifg=#ffcb6b  guibg=NONE  blend=0
+-- "   highlight TSNone                gui=NONE       guifg=NONE     guibg=NONE  blend=0
+-- "   highlight TSNote                gui=NONE       guifg=#ffcc00  guibg=NONE  blend=0
+-- "   highlight TSNumber              gui=NONE       guifg=#c792ea  guibg=NONE  blend=0
+-- "   highlight TSOperator            gui=NONE       guifg=#75d7ff  guibg=NONE  blend=0
+-- "   highlight TSParameter           gui=NONE       guifg=#f2f3f3  guibg=NONE  blend=0
+-- "   highlight TSProperty            gui=NONE       guifg=#f2f3f3  guibg=NONE  blend=0
+-- "   highlight link                  TSPunctBracket                NonText
+-- "   highlight TSPunctDelimiter      gui=NONE       guifg=#92999f  guibg=NONE  blend=0
+-- "   highlight TSRepeat              gui=NONE       guifg=#c792ea  guibg=NONE  blend=0
+-- "   highlight TSString              gui=NONE       guifg=#92999f  guibg=NONE  blend=0
+-- "   highlight TSStringEscape        gui=NONE       guifg=#bae57d  guibg=NONE  blend=0
+-- "   highlight TSStringRegex         gui=NONE       guifg=#bae57d  guibg=NONE  blend=0
+-- "   highlight TSText                gui=NONE       guifg=#bae57d  guibg=NONE  blend=0
+-- "   highlight TSType                gui=bold       guifg=#c7c8c8  guibg=NONE  blend=0
+-- "   highlight TSTypeBuiltin         gui=NONE       guifg=#c792ea  guibg=NONE  blend=0
+-- "   " highlight TSVariable            gui=NONE       guifg=#f2f3f3  guibg=NONE  blend=0
+-- "   highlight TSVariableBuiltin     gui=NONE       guifg=#75d7ff  guibg=NONE  blend=0
+-- " 
+-- "   highlight TSAnnotation          gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSAttribute           gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSConstMacro          gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSConstructor         gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSDanger              gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSEmphasis            gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSEnvironment         gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSEnvironmentName     gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSException           gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSField               gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSFuncMacro           gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSKeywordOperator     gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSLabel               gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSLiteral             gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSMath                gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSNamespace           gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSParameterReference  gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSPunctSpecial        gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSStrike              gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSStrong              gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSSymbol              gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSTag                 gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSTagDelimiter        gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSTitle               gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSUnderline           gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSURI                 gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSWarning             gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSStringSpecial       gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSTagAttribute        gui=underline  guifg=#ff5370  guibg=NONE
+-- "   highlight TSTextReference       gui=underline  guifg=#ff5370  guibg=NONE
+-- " 
+-- "   highlight  link                 TSKeywordReturn  Statement
+-- "   highlight! goImportedPkg        gui=NONE       guifg=#82aaff  guibg=None blend=10
+-- " 
+-- "   " highlight! goPackageComment      gui=italic     guifg=#838c93  guibg=NONE
+-- "   " highlight! goString              gui=NONE       guifg=#92999f  guibg=NONE
+-- "   " highlight link                   goImportedPkg  Statement
+-- " 
+-- " 
+-- "   " highlight! goErrorType           gui=bold       guifg=#ff5370  guibg=NONE
+-- "   " highlight! goImportedPkg         gui=NONE       guifg=#82aaff  guibg=NONE
+-- " 
+-- "   " syn keyword     goTodo              contained TODO FIXME XXX BUG
+-- "   " syn match       goTodo              display contained "Deprecated:"
+-- "   " syn cluster     goCommentGroup      contains=goTodo
+-- "   " hi def link     goComment           Comment
+-- "   " hi def link     goTodo              Todo
+-- " endfunction
+-- " Gautocmdft go call s:go_highlight()

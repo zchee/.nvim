@@ -45,7 +45,7 @@ let s:p.material.man_bold       = '#f0c674'
 let s:p.material.man_underline  = '#81a2be'
 
 let s:p.material.foreground     = '#f2f3f3'  " '#e8eae9', '#c7c8c8'  " '#eeffff'
-let s:p.material.background     = '#040404'  " '#0a0a0a', '#212121'
+let s:p.material.background     = '#010101'  " '#0a0a0a', '#212121', '#040404'
 let s:p.material.comment        = '#838c93'  " '#79828a', '#6c7a80', '#838c93', '#878f96'
 let s:p.material.nontext        = '#202122'
 let s:p.material.longlinewarn   = '#371f1c'

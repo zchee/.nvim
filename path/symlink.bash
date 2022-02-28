@@ -6,18 +6,21 @@ warn() { printf "\x1b[1;33m[WARN]\x1b[0m %s\\n" "$1" >&2; }
 XCODE_PATH=$1
 
 if [[ -z $XCODE_PATH ]]; then
-  echo "USAGE: $(basename "$0") [Xcode.app | MacOSX.sdk path | \$(xcrun --show-sdk-path)]"; exit 1
+  echo "USAGE: $(basename "$0") [/Applications/Xcode.app | /Applications/Xcode-beta.app | \$(xcode-select --print-path)]"; exit 1
 fi
 
-DST_DIR="${2:-$(basename "${XCODE_PATH%.*}")}"
-if [[ "$DST_DIR" != 'Xcode' ]]; then
-  DST_DIR="$(basename "$XCODE_PATH")"
-fi
+DST_DIR='./Frameworks'
+# DST_DIR="${2:-$(basename "${XCODE_PATH%.*}")}"
+# if [[ "$DST_DIR" != 'Xcode' ]]; then
+#   DST_DIR="$(basename "$XCODE_PATH")"
+# fi
 
-if [[ -d "$DST_DIR" ]]; then
-  rm -rf "$DST_DIR"
-fi
-mkdir -p "$DST_DIR"
+# echo "$DST_DIR"
+
+# if [[ -d "$DST_DIR" ]]; then
+#   rm -rf "$DST_DIR"
+# fi
+# mkdir -p "$DST_DIR"
 
 # _find_framework_header() {
 #   for d in $(find "$1" -type d -and \( -name 'Headers' -and -not -iwholename '*Python*' \)); do

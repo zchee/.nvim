@@ -1,3 +1,9 @@
+-- :source $VIMRUNTIME/syntax/hitest.vim
+vim.api.nvim_set_hl(0, "lCursor", { reverse = true })
+vim.api.nvim_set_hl(0, "PmenuThumb", { fg="#545454", bg="#f2f3f3" })
+vim.api.nvim_set_hl(0, "RedrawDebugClear", { fg = "black", bg = "yellow" })
+vim.api.nvim_set_hl(0, "NvimInternalError", { fg = "white", bg = "red" })
+
 -- " function! s:go_highlight()
 -- "   highlight TSBoolean             gui=NONE       guifg=#c792ea  guibg=NONE  blend=0
 -- "   " highlight TSCharacter           gui=NONE       guifg=#92999f  guibg=NONE  blend=0

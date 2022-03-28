@@ -28,7 +28,7 @@ abbr        fmt.Printf("$1: %+s", pp.Sprintln(...))
 snippet     fdiff
 abbr        cmp.Diff(1, 2); fmt.Printf("(+want, -got)", diff)
 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
-		fmt.Printf("(-got, +want)\n%s\n", diff)
+		fmt.Printf("(-want, +got)\n%s\n", diff)
 	}
 
 
@@ -42,7 +42,7 @@ abbr        log.Printf(...)
 
 snippet     lt
 abbr        log.Printf("$1: %T, %v", $1)
-	log.Printf("$1: %T => %#v\n", ${1}, $1)
+	log.Printf("$1: %[1]T = %#[1]v\n", ${1})
 
 # println
 snippet     ll
@@ -83,8 +83,8 @@ abbr        t.Log
 	t.Log(${1})
 
 snippet     tt
-abbr        t.Logf("%T = %#v", ...)
-	t.Logf("$1: %T = %#v", ${1}, $1)
+abbr        t.Logf("$1: %[1]T = %#[1]v\n", ${1})
+	t.Logf("$1: %[1]T = %#[1]v\n", ${1})
 
 # Use "github.com/davecgh/go-spew/spew"
 snippet     td

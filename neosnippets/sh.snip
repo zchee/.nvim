@@ -40,6 +40,8 @@ abbr        strict
 	set -euo pipefail
 	${0}
 
+snippet     shellcheck_disable
+	# shellcheck disable=${1:#code}${0}
 
 snippet     case
 abbr        case "${1}" in ...

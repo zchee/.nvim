@@ -1,33 +1,28 @@
-# include separate snip for go packages
-include go/functions.snip
-include go/pragma.snip
-
 # ------------------------------------------------------------------
 # doc
 
-snippet     doc-compile-time-check
-alias       compile-time-check
-abbr        // compile time check
+snippet     doc_compile_time_check
+abbr        compile time check interface assertion
 	// make sure ${1:#:type} implements the ${2:#:interface} interface.
 	var _ $2 = (*$1)(nil)${0}
 
-snippet     doc-interface
+snippet     doc_interface
 abbr        // $1 implements $2.
 	// ${1:#:func} implements ${2:#:interface}.${0}
 
-snippet     doc-string
+snippet     doc_string
 abbr        // String returns a string representation of the $1.
 	// String returns a string representation of the ${1:#:type}.${0}
 
-snippet     doc-error
+snippet     doc_error
 abbr        // Error returns a string representation of the $1.
 	// Error returns a string representation of the ${1:#:type}.${0}
 
-snippet     doc-json.Marshaler
+snippet     doc_json.Marshaler
 abbr        // MarshalJSON implements json.Marshaler.
 	// MarshalJSON implements json.Marshaler.${0}
 
-snippet     doc-json.Unmarshaler
+snippet     doc_json.Unmarshaler
 abbr        // UnmarshalJSON implements json.Unmarshaler.
 	// UnmarshalJSON implements json.Unmarshaler.${0}
 

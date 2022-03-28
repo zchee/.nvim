@@ -1,6 +1,4 @@
-require('zchee.filetype')
+require("zchee.plugin")
 
-require('zchee.plugins')
-
-require('zchee.lsp')
-require('zchee.config')
+require("zchee.config")
+require("zchee.highlight")

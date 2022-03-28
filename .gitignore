@@ -84,3 +84,6 @@ shada/
 undo/
 
 test/vint
+
+# packaer.nvim
+plugin/packer_compiled.lua

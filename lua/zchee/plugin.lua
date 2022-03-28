@@ -344,9 +344,9 @@ return packer.startup(
         require("zchee.plugins.lint")
       end,
     }
-    use {
-      "dense-analysis/ale"
-    }
+    -- use {
+    --   "dense-analysis/ale"
+    -- }
 
     -- operator
     use {

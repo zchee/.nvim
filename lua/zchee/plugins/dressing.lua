@@ -1,4 +1,5 @@
-require('dressing').setup({
+local dressing = require('dressing')
+dressing.setup({
   input = {
     -- Default prompt string
     default_prompt = "➤ ",
@@ -53,7 +54,7 @@ require('dressing').setup({
     nui = {
       position = "50%",
       size = nil,
-      relative = "cursor",
+      relative = "editor",  -- "cursor",
       border = {
         style = "rounded",
         highlight = "NightflyRed",

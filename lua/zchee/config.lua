@@ -1,32 +1,26 @@
-local g = vim.g
-
 -- Accelerated JK:
-g.accelerated_jk_enable_deceleration = 0
-g.accelerated_jk_acceleration_limit = 250  -- 70, 250, 350
-g.accelerated_jk_acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28, 30 }  -- g.accelerated_jk_acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28 }
+vim.g.accelerated_jk_enable_deceleration = 0
+vim.g.accelerated_jk_acceleration_limit = 250  -- 70, 250, 350
+vim.g.accelerated_jk_acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28, 30 }  -- g.accelerated_jk_acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28 }
 
-vim.api.nvim_set_keymap("n", "j", "<CMD>call accelerated#time_driven#command('j')<CR>", { nowait = true, silent = false })
-vim.api.nvim_set_keymap("n", "k", "<CMD>call accelerated#time_driven#command('k')<CR>", { nowait = true, silent = false })
-vim.api.nvim_set_keymap("n", "b", "b", { nowait = true, silent = false })
-vim.api.nvim_set_keymap("n", "w", "w", { nowait = true, silent = false })
+vim.api.nvim_set_keymap("n", "j", "<cmd>call accelerated#time_driven#command('j')<CR>", { nowait = true, silent = true })
+vim.api.nvim_set_keymap("n", "k", "<cmd>call accelerated#time_driven#command('k')<CR>", { nowait = true, silent = true })
+vim.api.nvim_set_keymap("n", "b", "b", { nowait = true, silent = true })
+vim.api.nvim_set_keymap("n", "w", "w", { nowait = true, silent = true })
 
--- ale-lint-file-linters
--- g.ale_set_highlights = 0
--- g.ale_set_balloons = 0
-
-g["vista#renderer#enable_icon"] = true
-g["vista#renderer#enable_kind"] = true
-g.vista_blink = {0, 0}
-g.vista_cursor_delay = 400  -- default
-g.vista_default_executive = "nvim_lsp"
-g.vista_disable_statusline = 0
-g.vista_echo_cursor_strategy = "floating_win"  -- echo, scroll, floating_win, both
-g.vista_executive_for = {
+vim.g["vista#renderer#enable_icon"] = true
+vim.g["vista#renderer#enable_kind"] = true
+vim.g.vista_blink = {0, 0}
+vim.g.vista_cursor_delay = 400  -- default
+vim.g.vista_default_executive = "nvim_lsp"
+vim.g.vista_disable_statusline = 0
+vim.g.vista_echo_cursor_strategy = "floating_win"  -- echo, scroll, floating_win, both
+vim.g.vista_executive_for = {
   markdown = "toc",
 }
-g.vista_sidebar_width = "80"
-g.vista_update_on_text_changed = true
-g.vista_executive_nvim_lsp_fetching = true
+vim.g.vista_sidebar_width = "80"
+vim.g.vista_update_on_text_changed = true
+vim.g.vista_executive_nvim_lsp_fetching = true
 
 vim.cmd([[
 function! s:open_vista(mode)
@@ -45,11 +39,25 @@ endfunction
 command! -nargs=* VistaOpen call s:open_vista(<q-args>)
 ]])
 
-vim.api.nvim_create_autocmd("BufWritePost", {
-  callback = function()
-    require('lint').try_lint()
-  end
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
+	pattern = { "*" },
+	nested = true,
+	callback = function()
+    if vim.fn.winnr "$" == 1 and vim.fn.bufname() == "NvimTree_" .. vim.fn.tabpagenr() then
+      vim.api.nvim_command ":silent qa!"
+    end
+	end,
 })
+
+-- ale-lint-file-linters
+-- g.ale_set_highlights = 0
+-- g.ale_set_balloons = 0
+
+-- vim.api.nvim_create_autocmd("BufWritePost", {
+--   callback = function()
+--     require('lint').try_lint()
+--   end
+-- })
 
 -- Current FileType: go
 -- Avaliable Executives: ['ctags']
@@ -88,21 +96,6 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 -- let g:vista_top_level_blink = [2, 100]
 -- let g:vista_update_on_text_changed = 0
 -- let g:vista_update_on_text_changed_delay = 500
-
--- function! s:open_vista(mode)
---   if len(a:mode)
---     let l:save_vista_default_executive = g:vista_default_executive
---     let g:vista_default_executive = a:mode
---   endif
--- 
---   Vista!!
---   call timer_start(500, {-> execute('wincmd W')}, {'repeat': 1})
--- 
---   if get(l:, 'save_vista_default_executive', 0)
---     let g:vista_default_executive = l:save_vista_default_executive
---   endif
--- endfunction
--- command! -nargs=* VistaOpen call s:open_vista(<q-args>)
 
 -- ale-options
 -- vim.cmd([[

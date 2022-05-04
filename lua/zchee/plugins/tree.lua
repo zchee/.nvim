@@ -6,7 +6,7 @@ vim.g.nvim_tree_group_empty = 1
 vim.g.nvim_tree_highlight_opened_files = 1
 vim.g.nvim_tree_highlight_opened_files = 1
 vim.g.nvim_tree_icon_padding = ' '
-vim.g.nvim_tree_indent_markers = 1
+-- vim.g.nvim_tree_indent_markers = 1
 vim.g.nvim_tree_respect_buf_cwd = 1
 vim.g.nvim_tree_root_folder_modifier = ':~'
 vim.g.nvim_tree_symlink_arrow = ' >> '
@@ -47,16 +47,38 @@ nvim_tree.setup {
   hijack_netrw        = true,
   open_on_setup       = false,
   open_on_tab         = false,
-  update_to_buf_dir   = {
+  hijack_cursor       = true,
+  update_cwd          = true,
+  view = {
+    width = "10%",
+    height = 30,
+    hide_root_folder = false,
+    side = "left",
+    preserve_window_proportions = false,
+    number = false,
+    relativenumber = false,
+    signcolumn = "yes",
+    mappings = {
+      custom_only = false,
+      list = {
+        -- user mappings go here
+      },
+    },
+  },
+  renderer = {
+    indent_markers = {
+      enable = false,
+    },
+    icons = {
+      webdev_colors = true,
+    },
+  },
+  hijack_directories = {
     enable = true,
     auto_open = true,
   },
-  -- auto_close          = true,
-  hijack_cursor       = true,
-  update_cwd          = true,
-  hide_root_folder    = false,
   update_focused_file = {
-    enable      = false,
+    enable      = true,
     update_cwd  = true,
     ignore_list = {}
   },
@@ -76,13 +98,11 @@ nvim_tree.setup {
   },
   git = {
     enable = true,
-    ignore = false,
+    ignore = true,
     timeout = 400,
   },
-  view = {
-    width = "10%",
-  },
   actions = {
+    use_system_clipboard = true,
     change_dir = {
       enable = true,
       global = false,
@@ -94,12 +114,12 @@ nvim_tree.setup {
         enable = true,
         chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
         exclude = {
-          filetype = { "notify", "packer", "qf", "diff" },
-          buftype  = { "nofile", "terminal", "help" },
+          filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame" },
+          buftype = { "nofile", "terminal", "help" },
         }
       }
     },
   },
 }
 
-vim.api.nvim_set_keymap("n", "-", ":<C-u>NvimTreeFindFile<CR>", { noremap = true, silent = true, nowait = true } )
+vim.api.nvim_set_keymap("n", "-", ":<C-u>NvimTreeFindFile<CR>", { noremap = true, silent = true, nowait = true })

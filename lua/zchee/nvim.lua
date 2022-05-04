@@ -16,8 +16,8 @@ local srcpath        = vim.fn.expand('$HOME/src')
 local srcpath_github = srcpath..'/github.com/'
 
 -- :help lua-filetype
-vim.g.did_load_filetypes = 0
 vim.g.do_filetype_lua = 1
+vim.g.did_load_filetypes = 0
 
 vim.cmd([[
 if !exists("syntax_on")
@@ -74,7 +74,8 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.cmdheight = 2
 vim.opt.cmdwinheight = 50
 vim.opt.complete = "." -- .,w,b,u,t  -- default: .,w,b,u,t, .
-vim.opt.completeopt = { "noinsert", "noselect", "menuone" } -- noinsert,noselect,longest,menu,menuone,preview
+-- vim.opt.completeopt = { "noinsert", "noselect", "menuone" } -- noinsert,noselect,longest,menu,menuone,preview
+vim.opt.completeopt = { "menu", "menuone", "noinsert" }
 vim.opt.concealcursor = "niv"
 vim.opt.conceallevel = 0
 vim.opt.copyindent = true
@@ -118,7 +119,7 @@ vim.opt.lazyredraw = true
 vim.opt.listchars = { tab = "»-", trail = "-", nbsp = "%", extends = "›", precedes = "‹" }
 vim.opt.makeprg = "make"
 vim.opt.matchtime = 0  -- disable nvim matchparen
-vim.opt.maxmempattern = 2000000  -- default: 1000, max: 2000000
+vim.opt.maxmempattern = 1000  -- default: 1000, max: 2000000
 vim.opt.modelines = 1
 vim.opt.mouse = "a"
 vim.opt.number = true
@@ -127,7 +128,7 @@ vim.opt.previewheight = 5
 vim.opt.pumblend = 25
 vim.opt.pumheight = 30
 vim.opt.pyxversion = 3
-vim.opt.redrawtime = 2000
+vim.opt.redrawtime = 20000
 vim.opt.regexpengine = 2
 vim.opt.ruler = true
 vim.opt.scrollback = 100000

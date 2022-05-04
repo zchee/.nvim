@@ -1,35 +1,83 @@
-local fn = vim.fn
-local install_path = fn.stdpath("data").."/site/pack/packer/start/packer.nvim"
-if fn.empty(fn.glob(install_path)) > 0 then
-  PackerBootstrap = fn.system({"git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path})
+local function io_exists(name)
+  local f = io.open(name, "r")
+  return f ~= nil and io.close(f)
 end
 
-local config_path = fn.stdpath("config")
-local gopath = fn.expand("~/go/src/github.com/")
-local src = fn.expand("~/src/github.com/")
+local function join_paths(...)
+  return table.concat({ ... }, "/")
+end
 
-vim.cmd([[ packadd packer.nvim ]])
+local homedir = vim.loop.os_homedir()
+
+-- bootstrap packer
+local install_path = join_paths(vim.fn.stdpath("data"), "site/pack/packer/start/")
+local bootstrap = false
+if not io_exists(install_path) then
+  bootstrap = true
+
+  vim.fn.system({"git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path})
+  vim.fn.system({"git", "clone", "--depth", "1", "https://github.com/nvim-lua/plenary.nvim", install_path})
+end
+
 vim.cmd([[
-augroup packerUserConfig
-  autocmd!
-  autocmd BufWritePost $HOME/src/github.com/zchee/.nvim/lua/**/*.lua source <afile> | PackerCompile
-augroup end
+  packadd packer.nvim
+  packadd plenary.nvim
+
+  augroup packerUserConfig
+    autocmd!
+    autocmd BufWritePost plugin.lua source <afile> | PackerInstall
+    autocmd BufWritePost plugin.lua source <afile> | PackerCompile
+  augroup end
 ]])
 
 local packer = require("packer")
-local join_paths = require("packer.util").join_paths
+
+local gopath = join_paths(homedir, "go/src/github.com/")
+local src = join_paths(homedir, "src/github.com/")
+
 
 packer.init {
   max_jobs = 20,
   package_root = join_paths(vim.fn.stdpath("data"), "site", "pack"),
   compile_path = join_paths(vim.fn.stdpath("config"), "plugin", "packer_compiled.lua"),
   luarocks = {
-    python_cmd = "python3",
+    python_cmd = "python3.10",
   },
 }
 
+-- use {
+--   -- The following keys are all optional
+--   disable = boolean,                                     -- Mark a plugin as inactive
+--   as = string,                                           -- Specifies an alias under which to install the plugin
+--   installer = function,                                  -- Specifies custom installer. See |packer-custom-installers|
+--   updater = function,                                    -- Specifies custom updater. See |packer-custom-installers|
+--   after = string or list,                                -- Specifies plugins to load before this plugin.
+--   rtp = string,                                          -- Specifies a subdirectory of the plugin to add to runtimepath.
+--   opt = boolean,                                         -- Manually marks a plugin as optional.
+--   branch = string,                                       -- Specifies a git branch to use
+--   tag = string,                                          -- Specifies a git tag to use. Supports '*' for "latest tag"
+--   commit = string,                                       -- Specifies a git commit to use
+--   lock = boolean,                                        -- Skip updating this plugin in updates/syncs. Still cleans.
+--   run = string, function, or table                       -- Post-update/install hook. See |packer-plugin-hooks|
+--   requires = string or list                              -- Specifies plugin dependencies. See |packer-plugin-dependencies|
+--   config = string or function,                           -- Specifies code to run after this plugin is loaded.
+--   rocks = string or list,                                -- Specifies Luarocks dependencies for the plugin
+--
+--   -- The following keys all imply lazy-loading
+--   cmd = string or list,                                  -- Specifies commands which load this plugin.  Can be an autocmd pattern.
+--   ft = string or list,                                   -- Specifies filetypes which load this plugin.
+--   keys = string or list,                                 -- Specifies maps which load this plugin. See |packer-plugin-keybindings|
+--   event = string or list,                                -- Specifies autocommand events which load this plugin.
+--   fn = string or list                                    -- Specifies functions which load this plugin.
+--   cond = string, function, or list of strings/functions, -- Specifies a conditional test to load this plugin
+--   setup = string or function,                            -- Specifies code to run before this plugin is loaded.
+--   module = string or list                                -- Specifies Lua module names for require. When requiring a string which starts with one of these module names, the plugin will be loaded.
+--   module_pattern = string/list                           -- Specifies Lua pattern of Lua module names for require. When requiring a string which matches one of these patterns, the plugin will be loaded.
+-- }
 return packer.startup(
-  function(use)
+  function()
+    local use = packer.use
+
     use {
       "wbthomason/packer.nvim",
     }
@@ -48,23 +96,24 @@ return packer.startup(
 
     -- local
     use {
-      gopath.."/zchee/nvim-go",
+      join_paths(gopath, "zchee/nvim-go"),
       ft = "go",
     }
     use {
-      src.."zchee/vim-goasm",
+      join_paths(src, "zchee/vim-goasm"),
     }
     use {
-      src.."zchee/vim-flatbuffers",
+      join_paths(src, "zchee/vim-flatbuffers"),
     }
     use {
-      src.."zchee/vim-gn",
+      join_paths(src, "zchee/vim-gn"),
     }
     use {
-      src.."zchee/vim-go-testscript",
+      join_paths(src, "zchee/vim-go-testscript"),
     }
     -- use {
     --   gopath.."/zchee/nvim-lsp",
+    --   ft = "go",
     -- }
     -- use {
     --   src.."/deoplete-plugins/deoplete-cgo",
@@ -76,7 +125,79 @@ return packer.startup(
     --   src.."/deoplete-plugins/deoplete-zsh",
     -- }
 
-    -- completion
+    -- LSP
+    use {
+      "hrsh7th/nvim-cmp",
+      requires = {
+        "neovim/nvim-lspconfig",
+        "junnplus/nvim-lsp-setup",
+        "williamboman/nvim-lsp-installer",
+        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-nvim-lsp-document-symbol",
+        "hrsh7th/cmp-nvim-lsp-signature-help",
+        "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-path",
+        "onsails/lspkind-nvim",
+        "saadparwaiz1/cmp_luasnip",
+        "L3MON4D3/LuaSnip",
+        "molleweide/LuaSnip-snippets.nvim",
+        "ray-x/lsp_signature.nvim",
+        -- "hrsh7th/cmp-cmdline",  -- TODO(zchee): dig usage
+        {
+          "windwp/nvim-autopairs",
+          requires = {
+            "nvim-treesitter/nvim-treesitter",
+          },
+        },
+        {
+          "petertriho/cmp-git",
+          requires = {
+            "nvim-lua/plenary.nvim",
+          },
+          ft = "gitcommit",
+        },
+        {
+          "folke/lua-dev.nvim",
+        },
+        {
+          "hrsh7th/cmp-nvim-lua",
+          ft = "lua",
+        },
+        {
+          "b0o/schemastore.nvim",
+          ft = "yaml",
+        },
+      },
+      config = function()
+        require("zchee.plugins.autopairs")
+        require("zchee.plugins.lsp-config")
+        require("zchee.plugins.cmp")
+      end,
+    }
+    use {
+      join_paths(src, "tami5/lspsaga.nvim"),  -- "tami5/lspsaga.nvim",
+      config = function()
+        require("zchee.plugins.lspsaga")
+      end,
+    }
+    use {
+      "j-hui/fidget.nvim",
+      config = function()
+        require("zchee.plugins.fidget")
+      end,
+    }
+
+    use {
+      "stevearc/dressing.nvim",
+      -- disable = true,
+      requires = {
+        "MunifTanjim/nui.nvim"
+      },
+      config = function()
+        require("zchee.plugins.dressing")
+      end
+    }
+
     -- use {
     --   "ms-jpq/coq_nvim",
     --   requires = {
@@ -111,41 +232,7 @@ return packer.startup(
     --     }
     --   end
     -- }
-    use {
-      "hrsh7th/nvim-cmp",
-      requires = {
-        "hrsh7th/cmp-nvim-lsp",
-        "hrsh7th/cmp-nvim-lsp-document-symbol",
-        "hrsh7th/cmp-nvim-lsp-signature-help",
-        "hrsh7th/cmp-buffer",
-        "hrsh7th/cmp-path",
-        "petertriho/cmp-git",
-        -- "hrsh7th/cmp-cmdline",  -- TODO(zchee): dig usage
-        {
-          "tamago324/cmp-zsh",
-          ft = "zsh",
-        },
-        "folke/lua-dev.nvim",
-        {
-          "hrsh7th/cmp-nvim-lua",
-          ft = "lua",
-        },
-        "saadparwaiz1/cmp_luasnip",
-        "L3MON4D3/LuaSnip",
-        "molleweide/LuaSnip-snippets.nvim",
-        "neovim/nvim-lspconfig",
-        "williamboman/nvim-lsp-installer",
-        "ray-x/lsp_signature.nvim",
-        {
-          "b0o/schemastore.nvim",
-          ft = "yaml",
-        },
-      },
-      config = function()
-        require('zchee.plugins.lsp')
-        require('zchee.plugins.cmp')
-      end,
-    }
+
     -- use {
     --   "Shougo/ddc.vim",
     --   requires = {
@@ -167,16 +254,8 @@ return packer.startup(
     --     require('zchee.plugins.lsp')
     --   end
     -- }
-
     -- use {
     --   "Shougo/deol.nvim",
-    -- }
-
-    use {
-      "ray-x/lsp_signature.nvim"
-    }
-    -- use {
-    --   "folke/lua-dev.nvim",
     -- }
 
     -- LSP
@@ -185,30 +264,18 @@ return packer.startup(
     -- }
     -- use {
     --   "williamboman/nvim-lsp-installer",
-    --   config = function() 
-    --     require('zchee.plugins.nvim-lsp')
-    --   end
     -- }
 
-    use {
-      "windwp/nvim-autopairs",
-      requires = {
-        "nvim-treesitter/nvim-treesitter",
-      },
-      config = function()
-        require('zchee.plugins.autopairs')
-      end,
-    }
-
-    use {
-      "stevearc/dressing.nvim",
-      requires = {
-        "MunifTanjim/nui.nvim"
-      },
-      config = function()
-        require('zchee.plugins.dressing')
-      end
-    }
+    -- use {
+    --   "stevearc/dressing.nvim",
+    --   -- disable = true,
+    --   requires = {
+    --     "MunifTanjim/nui.nvim"
+    --   },
+    --   config = function()
+    --     require("zchee.plugins.dressing")
+    --   end
+    -- }
 
     -- telescope
     use {
@@ -217,15 +284,15 @@ return packer.startup(
         "nvim-lua/popup.nvim",
         "nvim-lua/plenary.nvim",
         "nvim-telescope/telescope-packer.nvim",
+        {
+          "nvim-telescope/telescope-fzf-native.nvim",
+          run = "make",
+        },
       },
       config = function()
         require("zchee.plugins.telescope")
       end,
     }
-    -- use {
-    --   "nvim-telescope/telescope-fzf-native.nvim",
-    --   run = "make",
-    -- }
 
     -- tree-sitter
     use {
@@ -257,13 +324,11 @@ return packer.startup(
         require("zchee.plugins.tree")
       end,
     }
-    use {
-      "kyazdani42/nvim-web-devicons",
-    }
 
     -- git
     use {
       "TimUntersberger/neogit",
+      disable = true,
       requires = {
         "nvim-lua/plenary.nvim",
         "sindrets/diffview.nvim",
@@ -289,17 +354,11 @@ return packer.startup(
       requires = {
         "junegunn/fzf",
       },
+      ft = "qf",
       config = function ()
         require("zchee.plugins.bqf")
       end,
     }
-
-    -- use {
-    --   "junegunn/fzf",
-    --   run = function()
-    --     vim.fn['fzf#install']()
-    --   end,
-    -- }
 
     -- Dap
     use {
@@ -307,6 +366,7 @@ return packer.startup(
       requires = {
         "rcarriga/nvim-dap-ui",
         "jbyuki/one-small-step-for-vimkind",
+        "leoluz/nvim-dap-go",
       },
       config = function()
         require("zchee.plugins.dap")
@@ -319,11 +379,21 @@ return packer.startup(
       requires = {
         "ryanoasis/vim-devicons",
         "maximbaz/lightline-ale",
-        "mgee/lightline-bufferline",
+        -- "mgee/lightline-bufferline",
       },
     }
     use {
+      "akinsho/bufferline.nvim",
+      requires = {
+        "kyazdani42/nvim-web-devicons",
+      },
+      config = function()
+        require("zchee.plugins.bufferline")
+      end,
+    }
+    use {
       "voldikss/vim-floaterm",
+      disable = true,
       cmd = {
         "FloatermNew",
         "FloatermToggle",
@@ -334,19 +404,18 @@ return packer.startup(
     }
     use {
       "liuchengxu/vista.vim",
-      -- cmd = { "Vista" },
+      -- disable = true,
+      cmd = { "Vista" },
     }
 
     -- linters
     use {
       "mfussenegger/nvim-lint",
+      disable = true,
       config = function()
         require("zchee.plugins.lint")
       end,
     }
-    -- use {
-    --   "dense-analysis/ale"
-    -- }
 
     -- operator
     use {
@@ -383,7 +452,7 @@ return packer.startup(
     }
     use {
       "junegunn/vim-easy-align",
-      -- cmd = { "EasyAlign" },
+      cmd = { "EasyAlign" },
     }
     use {
       "rhysd/accelerated-jk"
@@ -391,11 +460,11 @@ return packer.startup(
     use {
       "RRethy/vim-illuminate",
       config = function()
-        vim.g.Illuminate_delay = 100,
+        vim.g.Illuminate_delay = 300
         vim.cmd([[
-        hi LspReferenceText  guifg=None guibg=None gui=underline
-        hi LspReferenceWrite guifg=None guibg=None gui=underline
-        hi LspReferenceRead  guifg=None guibg=None gui=underline
+          hi LspReferenceText  guifg=None guibg=None gui=underline
+          hi LspReferenceWrite guifg=None guibg=None gui=underline
+          hi LspReferenceRead  guifg=None guibg=None gui=underline
         ]])
       end,
     }
@@ -421,13 +490,13 @@ return packer.startup(
     -- Debug
     use {
       "dstein64/vim-startuptime",
-      -- cmd = "StartupTime",
+      cmd = "StartupTime",
     }
 
     -- unsed
     -- use {
     --   "nathom/filetype.nvim",
-    --   config = function() 
+    --   config = function()
     --     require('zchee.plugins.filetype')
     --   end
     -- }
@@ -474,39 +543,51 @@ return packer.startup(
     }
     use {
       "bfredl/nvim-luadev",
+      ft = "lua",
     }
     use {
       "nanotee/luv-vimdocs",
+      ft = "lua",
     }
     use {
       "milisims/nvim-luaref",
+      ft = "lua",
     }
     use {
       "vim-jp/vim-cpp",
+      ft = { "c", "cpp" },
     }
     use {
       "keith/swift.vim",
+      ft = "swift",
     }
     use {
       "pboettch/vim-cmake-syntax",
+      ft = "cmake",
     }
     use {
       "neui/cmakecache-syntax.vim",
+      ft = "cmake",
     }
     use {
       "lambdalisue/vim-cython-syntax",
+      ft = { "python", "cython" },
     }
     use {
       "rust-lang/rust.vim",
+      ft = "rust",
     }
     use {
       "uarun/vim-protobuf",
+      ft = "proto",
     }
     use {
       "cappyzawa/starlark.vim",
+      ft = "starlark",
     }
     use {
       "HerringtonDarkholme/yats.vim",
+      ft = "yaml",
     }
 
     -- markdown
@@ -532,16 +613,17 @@ return packer.startup(
       --   --   disable_filename    = 1,
       --   -- }
         vim.cmd([[
-        function! s:markdown_preview_kitty()
-          call mkdp#util#open_preview_page()
-          call timer_start(500, {-> system('kitty @ focus-window')}, {'repeat': 1})
-        endfunction
-        command! -nargs=* MarkdownPreviews call s:markdown_preview_kitty()
+          function! s:markdown_preview_kitty()
+            call mkdp#util#open_preview_page()
+            call timer_start(500, {-> system("kitty @ focus-window")}, {"repeat": 1})
+          endfunction
+          command! -nargs=* MarkdownPreviews call s:markdown_preview_kitty()
         ]])
       end
     }
     use {
       "moorereason/vim-markdownfmt",
+      ft = "markdown",
     }
 
     -- git
@@ -558,12 +640,15 @@ return packer.startup(
     }
     use {
       "vim-jp/syntax-vim-ex",
+      ft = "vim",
     }
     use {
       "cespare/vim-toml",
+      ft = "toml",
     }
     use {
       "elzr/vim-json",
+      ft = "json",
     }
     use {
       "gutenye/json5.vim",
@@ -576,6 +661,7 @@ return packer.startup(
     }
     use {
       "hashivim/vim-terraform",
+      ft = "terraform",
     }
     use {
       "vim-scripts/vim-niji",
@@ -585,15 +671,15 @@ return packer.startup(
       "compnerd/modulemap-vim",
     }
     -- sql
-    use {
-      "tpope/vim-dadbod",
-    }
-    use {
-      "kristijanhusak/vim-dadbod-completion",
-    }
-    use {
-      "kristijanhusak/vim-dadbod-ui",
-    }
+    -- use {
+    --   "tpope/vim-dadbod",
+    -- }
+    -- use {
+    --   "kristijanhusak/vim-dadbod-completion",
+    -- }
+    -- use {
+    --   "kristijanhusak/vim-dadbod-ui",
+    -- }
     -- plantuml
     use {
       "aklt/plantuml-syntax",
@@ -624,7 +710,7 @@ return packer.startup(
     --   ft = { "gas" },
     -- }
 
-    if PackerBootstrap then
+    if bootstrap then
       require("packer").sync()
     end
   end

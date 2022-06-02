@@ -1,11 +1,10 @@
-local dotfiles = vim.fn.expand("$HOME").."/src/github.com/zchee/dotfiles"
-local xdg_cache_home = vim.fn.expand("$XDG_CACHE_HOME")
+local xdg_config_home = vim.fn.expand("$XDG_CONFIG_HOME")
+local xdg_cache_home  = vim.fn.expand("$XDG_CACHE_HOME")
+local xdg_data_home   = vim.fn.expand("$XDG_DATA_HOME")
 
 vim.filetype.add({
   extension = {
     ["code-workspace"] = "json",
-    tpl                = "gotexttmpl",
-    y                  = "goyacc",
     actiongrap         = "json",
     apinotes           = "yaml",
     asm                = "nasm",
@@ -14,6 +13,7 @@ vim.filetype.add({
     bzl                = "starlark",
     conf               = "conf",
     defs               = "c",
+    dockerfile         = "dockerfile",
     dockerignore       = "gitignore",
     editorconfig       = "dosini",
     envrc              = "sh",
@@ -40,16 +40,11 @@ vim.filetype.add({
     tbd                = "yaml",
     tfstate            = "teraterm",
     tmpl               = "gotexttmpl",
+    tpl                = "gotexttmpl",
     ts                 = "typescript",
     vfj                = "jsonc",
     vmoptions          = "conf",
-    dockerfile         = "dockerfile",
-    -- go = function(path, bufnr)
-    --   if vim.bo.ft == "bqfpreview" then
-    --     return "barscript"
-    --   end
-    --   return ""
-    -- end,
+    y                  = "goyacc",
   },
 
   filename = {
@@ -78,7 +73,6 @@ vim.filetype.add({
     ["poetry.lock"]      = "toml",
     ["proto.lock"]       = "json",
     ["renovate.json"]    = "json5",
-    ["renovate.json5"]   = "json5",
     bash_profile         = "sh",
     boto                 = "cfg",
     BUILD                = "bzl",
@@ -88,34 +82,26 @@ vim.filetype.add({
   },
 
   pattern = {
-    ["*%.schema%.json"]                        = "jsonschema",
-    ["**/*%.go%.tpl"]                              = "gotexttmpl",
-    ["**/*kube/config"]                            = "yaml",
-    ["**/c++/**/*"]                                = "cpp",
-    ["**/db%.xo%.go%.tpl"]                         = "go",
-    ["**/funcs%.go%.tpl"]                          = "go",
-    ["**/google-cloud-sdk/properties"]             = "cfg",
-    ["**/kitty/*%.conf"]                           = "kitty",
-    ["**/makedefs/**"]                             = "make",
-    [".*git/config"]                               = "gitconfig",
-    ["/private/etc/sudoers%.d/*"]                  = "sudoers",
-    ["/usr/local/share/zsh/**/*"]                  = "zsh",
+    [".*%.go%.tpl"]                                = "gotexttmpl",
+    [".*%.schema%.json"]                           = "jsonschema",
+    [".*%.xo%.go%.tpl"]                            = "go",
+    [".*/c%+%+/.*"]                                = "cpp",
+    [".*/funcs%.go%.tpl"]                          = "go",
+    [".*/git/config"]                              = "gitconfig",
+    [".*/google%-cloud%-sdk/properties"]           = "cfg",
+    [".*/kitty/.*%.conf"]                          = "kitty",
+    [".*/kube/config"]                             = "yaml",
+    [".*/makedefs/.*"]                             = "make",
+    [".*/testdata/.*/.*%.go%.golden"]              = "go",
+    ["/private/etc/sudoers%.d/.*"]                 = "sudoers",
+    ["/usr/local/share/zsh/.*"]                    = "zsh",
     ["[Dd]ockerfile.*[^.vim]"]                     = "dockerfile",
-    ["testdata/**/*.go.golden"]                    = "go",
-    [dotfiles.."/.config/direnv/direnvrc"]         = "sh",
-    [dotfiles.."/.config/gcloud/configurations/*"] = "cfg",
-    [dotfiles.."/.config/go/env"]                  = "sh",
-    [dotfiles.."/.config/jira%.d/templates/*"]     = "gotexttmpl",
-    [dotfiles.."/.config/zsh/**/*"]                = "zsh",
-    [xdg_cache_home.."/go/go-build/**/*"]          = "go",
-    -- Using an optional priority
-    -- [".*&zwj;/etc/foo/.*%.conf"] = { "dosini", { priority = 10 } },
-    -- ["README.(%a+)$"] = function(path, bufnr, ext)
-    --   if ext == "md" then
-    --     return "markdown"
-    --   elseif ext == "rst" then
-    --     return "rst"
-    --   end
-    -- end,
+    [xdg_cache_home.."/go/go%-build/.*"]           = "go",
+    [xdg_config_home.."/direnv/direnvrc"]          = "sh",
+    [xdg_config_home.."/gcloud/configurations/.*"] = "cfg",
+    [xdg_config_home.."/go/env.*"]                 = "sh",
+    [xdg_config_home.."/jira%.d/templates/.*"]     = "gotexttmpl",
+    [xdg_config_home.."/zsh/.*"]                   = "zsh",
+    [xdg_data_home.."/token/.*"]                   = "sh",
   },
 })

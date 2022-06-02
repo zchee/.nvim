@@ -5,8 +5,8 @@ local packer_util = require("packer.util")
 
 local installer_servers = require("nvim-lsp-installer.servers")
 local installer_server = require("nvim-lsp-installer.server")
-local installer_process = require("nvim-lsp-installer.process")
-local installer_path = require("nvim-lsp-installer.path")
+local installer_process = require("nvim-lsp-installer.core.process")
+local installer_path = require("nvim-lsp-installer.core.path")
 local installer_cargo = require("nvim-lsp-installer.core.managers.cargo")
 local installer_npm = require("nvim-lsp-installer.core.managers.npm")
 
@@ -14,22 +14,7 @@ local function path_join(...)
   return table.concat(vim.tbl_flatten({ ... }), "/")
 end
 
--- go
-local gopls = installer_server.Server:new {
-  name = "gopls",
-  root_dir = nvim_data .. "/lsp_servers/gopls",
-  homepage = "https://pkg.go.dev/golang.org/x/tools/gopls",
-  languages = { "go", "gomod", "gowork", "gotexttmpl" },
-  async = true,
-  installer = function(ctx)
-    ctx.spawn.bash { "-c", "true" }
-  end,
-  default_options = {
-    cmd = { "/Users/zchee/go/bin/gopls", "-remote=unix;/tmp/gopls.sock" },  -- cmd = { "/Users/zchee/go/bin/gopls", "serve" },
-    filetypes = { "go", "gomod", "gowork", "gotexttmpl" },
-  },
-}
-installer_servers.register(gopls)
+-- server
 
 -- clangd
 local clangd = installer_server.Server:new {
@@ -44,24 +29,49 @@ local clangd = installer_server.Server:new {
   default_options = {
     cmd = {
       "/opt/llvm/clangd/devel/bin/clangd",
+      "--compile_args_from=filesystem",
+      "--resource-dir=/opt/llvm/clangd/devel/lib/clang/15.0.0",
       "--all-scopes-completion",
-      "--completion-parse=always",
+      "--background-index-priority=normal",
+      "--completion-parse=auto",
       "--completion-style=detailed",
-      "--header-insertion-decorators",
-      "--header-insertion=iwyu",
-      "--index",
-      "--enable-config",
       "--folding-ranges",
-      "--use-dirty-headers",
+      "--function-arg-placeholders",
+      "--header-insertion=iwyu",
+      "--header-insertion-decorators",
+      "--include-cleaner-stdlib",
       "--include-ineligible-results",
-      "--offset-encoding=utf-16",
+      "--ranking-model=heuristics",
+      "--enable-config",
+      "-j=20",
+      "--parse-forwarding-functions",
+      "--pch-storage=memory",
+      "--use-dirty-headers",
+      -- "--offset-encoding=utf-8",
       "--input-style=standard",
-      "--resource-dir=/opt/llvm/devel/lib/clang/15.0.0",
     },
     filetypes = { "c", "cpp", "objc", "objcpp" },
   },
 }
 installer_servers.register(clangd)
+
+-- go
+local gopls = installer_server.Server:new {
+  name = "gopls",
+  root_dir = nvim_data .. "/lsp_servers/gopls",
+  homepage = "https://pkg.go.dev/golang.org/x/tools/gopls",
+  languages = { "go", "gomod", "gowork", "gotexttmpl" },
+  async = true,
+  installer = function(ctx)
+    ctx.spawn.bash { "-c", "true" }
+  end,
+  default_options = {
+    cmd = { "/Users/zchee/go/bin/gopls", "-remote=unix;/tmp/gopls.sock" },
+    -- cmd = { "/Users/zchee/go/bin/gopls", "serve" },
+    filetypes = { "go", "gomod", "gowork", "gotexttmpl" },
+  },
+}
+installer_servers.register(gopls)
 
 -- taplo
 local taplo = installer_server.Server:new {
@@ -79,6 +89,45 @@ local taplo = installer_server.Server:new {
   },
 }
 installer_servers.register(taplo)
+
+-- terraformls
+local terraformls = installer_server.Server:new {
+  name = "terraformls",
+  root_dir = installer_servers.get_server_install_path("terraformls"),
+  homepage = "https://github.com/hashicorp/terraform-ls",
+  languages = { "terraform" },
+  async = true,
+  installer = function(ctx)
+    ctx.spawn.go {
+      "install", "-v", "-x", "-trimpath", "-tags=osusergo,netgo,static", "-buildmode=pie", ("-ldflags=-s -w -linkmode external -buildid= %s"):format('"-extldflags=-static-pie"'), "github.com/hashicorp/terraform-ls@main",
+      env = {
+        GOBIN = ctx.cwd:get(),
+        CGO_ENABLED = 0,
+      },
+    }
+  end,
+  default_options = {
+    cmd = { "/usr/local/opt/terraform-ls/bin/terraform-ls", "serve" },
+    -- cmd_env = {
+    --   PATH = installer_process.extend_path { installer_path.concat { installer_servers.get_server_install_path("terraformls"), "terraform-ls" } },
+    -- },
+  },
+}
+installer_servers.register(terraformls)
+
+-- tsserver
+local tsserver = installer_server.Server:new {
+  name = "tsserver",
+  root_dir = installer_servers.get_server_install_path("tsserver"),
+  languages = { "typescript", "javascript" },
+  homepage = "https://github.com/typescript-language-server/typescript-language-server",
+  async = true,
+  installer = installer_npm.packages { "typescript-language-server@latest", "typescript@next" },
+  default_options = {
+    cmd_env = installer_npm.env(installer_servers.get_server_install_path("tsserver")),
+  },
+}
+installer_servers.register(tsserver)
 
 -- sourcekit
 local sourcekit = installer_server.Server:new {
@@ -98,6 +147,7 @@ local sourcekit = installer_server.Server:new {
 }
 installer_servers.register(sourcekit)
 
+-- sumneko_lua
 local sumneko_lua = installer_server.Server:new {
   name = "sumneko_lua",
   root_dir = installer_servers.get_server_install_path("sumneko_lua"),
@@ -126,197 +176,6 @@ local sumneko_lua = installer_server.Server:new {
 }
 installer_servers.register(sumneko_lua)
 
--- rust_analyzer
-local rust_analyzer = installer_server.Server:new {
-  name = "rust_analyzer",
-  root_dir = installer_servers.get_server_install_path("rust_analyzer"),
-  languages = { "rust" },
-  homepage = "https://rust-analyzer.github.io",
-  async = true,
-  installer = function(ctx)
-    ctx.spawn.bash { "-c", "true" }
-  end,
-  default_options = {
-    cmd = { "/usr/local/rust/rustup/toolchains/nightly-x86_64-apple-darwin/bin/rust-analyzer" },
-  },
-}
-installer_servers.register(rust_analyzer)
-
-local terraformls = installer_server.Server:new {
-  name = "terraformls",
-  root_dir = installer_servers.get_server_install_path("terraformls"),
-  homepage = "https://github.com/hashicorp/terraform-ls",
-  languages = { "terraform" },
-  async = true,
-  installer = function(ctx)
-    ctx.spawn.go {
-      "install", "-v", "-x", "-trimpath", "-tags=osusergo,netgo,static", "-buildmode=pie", ("-ldflags=-s -w -linkmode external -buildid= %s"):format('"-extldflags=-static-pie"'), "github.com/hashicorp/terraform-ls@main",
-      env = {
-        GOBIN = ctx.cwd:get(),
-        CGO_ENABLED = 0,
-      },
-    }
-  end,
-  default_options = {
-    cmd_env = {
-      PATH = installer_process.extend_path { installer_path.concat { installer_servers.get_server_install_path("terraformls"), "terraform-ls" } },
-    },
-  },
-}
-installer_servers.register(terraformls)
-
--- tsserver
-local tsserver = installer_server.Server:new {
-  name = "tsserver",
-  root_dir = installer_servers.get_server_install_path("tsserver"),
-  languages = { "typescript", "javascript" },
-  homepage = "https://github.com/typescript-language-server/typescript-language-server",
-  async = true,
-  installer = installer_npm.packages { "typescript-language-server@latest", "typescript@next" },
-  default_options = {
-    cmd_env = installer_npm.env(installer_servers.get_server_install_path("tsserver")),
-  },
-}
-installer_servers.register(tsserver)
-
--- yamlls
-local yamlls = installer_server.Server:new {
-  name = "yamlls",
-  root_dir = installer_servers.get_server_install_path("yamlls"),
-  languages = { "yaml" },
-  homepage = "https://github.com/redhat-developer/yaml-language-server",
-  async = true,
-  installer = installer_npm.packages { "yaml-language-server@next" },
-  default_options = {
-    cmd_env = installer_npm.env(installer_servers.get_server_install_path("yamlls")),
-    settings = {
-      yaml = {
-        yamlVersion = 1.2,
-        format = {
-          enable = true,
-          singleQuote = false,
-          bracketSpacing = true,
-          printWidth = 150,
-        },
-        validate = true,
-        hover = true,
-        completion = true,
-        -- customTags = {
-        --   "!!python/name scalar",
-        --   "!Seq-example sequence",
-        --   "!Mapping-example mapping"
-        -- },
-        schemas = {
-          -- local
-          -- [ "file:///Users/zchee/src/github.com/zchee/schema/appengine-app.schema.json" ] = {
-          --   "app*.yaml"
-          -- },
-          -- [ "file:///Users/zchee/src/github.com/zchee/schema/circleci.schema.json" ] = {
-          --   ".circleci/config.yml",
-          --   -- "@orb.yml",
-          --   -- "**/commands/*.yml",
-          --   -- "**/examples/*.yml",
-          --   -- "**/executors/*.yml",
-          --   -- "**/jobs/*.yml"
-          -- },
-          ["file:///Users/zchee/src/github.com/zchee/schema/clangd.schema.json"] = {
-            ".clangd",
-            path_join(xdg_config_home, "clangd/config.yaml"),
-          },
-          ["file:///Users/zchee/src/github.com/zchee/schema/codecov.schema.json"] = {
-            ".codecov.yml"
-          },
-          ["file:///Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json"] = {
-            "*.ksy"
-          },
-          ["file:///Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json"] = {
-            "mkdocs.yml"
-          },
-          ["file:///Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json"] = {
-            "openrpc.yaml"
-          },
-          -- https
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/clang-format.json"] = {
-            ".clang-format",
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/circleciconfig.json"] = {
-            ".circleci/config.yml",
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/appveyor.json"] = {
-            "*appveyor.yml"
-          },
-          ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = {
-            "*docker-compose*.yaml",
-            "*docker-compose*.yml"
-          },
-          ["https://github.com/microsoft/azure-pipelines-vscode/raw/main/service-schema.json"] = {
-            "azure-pipelines.yml"
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/dependabot-2.0.json"] = {
-            ".github/dependabot.yml"
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/cloudbuild.json"] = {
-            "*cloudbuild.yaml",
-            "*cloudbuild.*.yaml"
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/compile-commands.json"] = {
-            "compile_commands.json"
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/kustomization.json"] = {
-            "kustomization.yaml",
-            "kustomizeconfig.yaml"
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-forms.json"] = {
-            ".github/ISSUE_TEMPLATE/*.yml"
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-config.json"] = {
-            ".github/ISSUE_TEMPLATE/config.yml"
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/workflows.json"] = {
-            "cloudfunctions.workflow.yaml"
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json"] = {
-            "action.yml"
-          },
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
-            "**/.github/workflows/*.yml"
-          },
-          ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"] = {
-            "*openapi.yaml",
-            "**/openapi-spec/*.yaml",
-          },
-          ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v2.0/schema.json"] = {
-            "*swagger.yaml",
-            "**/swagger-spec/*.yaml"
-          },
-          ["https://raw.githubusercontent.com/googleapis/gnostic/master/discovery/discovery.json"] = {
-            "*discovery.yaml"
-          },
-          ["https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs/content/en/schemas/v2beta28.json"] = {
-            "skaffold*.yaml"
-          },
-          -- kubernetes
-          ["kubernetes"] = {
-            "kubernetes/*",
-            "manifest.yaml",
-            "statefulset.yaml",
-            "daemonset.yaml",
-            "deployment.yaml",
-            "replicaset.yaml",
-            "pod.yaml",
-          },
-          -- [ "file:///Users/zchee/go/src/github.com/kouzoh/kube-pubsub-operator/_kubernetes/kube-pubsub-operator-api/apis/v1alpha1/crd/delivery.platform.mercari.com_subscriptionreplicationconfigs.yaml" ] = {
-          --   "kubernetes/*/subscription_replication_config.yaml",
-          --   "_kubernetes/*/subscription_replication_config.yaml",
-          --   "subscription_replication_config.yaml",
-          -- },
-        }
-      }
-    }
-  }
-}
-installer_servers.register(yamlls)
-
 -- sqls
 local sqls = installer_server.Server:new {
   name = "sqls",
@@ -333,7 +192,43 @@ local sqls = installer_server.Server:new {
 }
 installer_servers.register(sqls)
 
+-- rust_analyzer
+local rust_analyzer = installer_server.Server:new {
+  name = "rust_analyzer",
+  root_dir = installer_servers.get_server_install_path("rust_analyzer"),
+  languages = { "rust" },
+  homepage = "https://rust-analyzer.github.io",
+  async = true,
+  installer = function(ctx)
+    ctx.spawn.bash { "-c", "true" }
+  end,
+  default_options = {
+    cmd = { "/usr/local/rust/rustup/toolchains/nightly-x86_64-apple-darwin/bin/rust-analyzer" },
+  },
+}
+installer_servers.register(rust_analyzer)
+
+-- yamlls
+local yamlls = installer_server.Server:new {
+  name = "yamlls",
+  root_dir = installer_servers.get_server_install_path("yamlls"),
+  languages = { "yaml" },
+  homepage = "https://github.com/redhat-developer/yaml-language-server",
+  async = true,
+  installer = installer_npm.packages { "yaml-language-server@next" },
+  default_options = {
+    cmd_env = installer_npm.env(installer_servers.get_server_install_path("yamlls")),
+  }
+}
+installer_servers.register(yamlls)
+
+-- config
+
 local asm_lsp_config = {
+  autostart = false,
+  root_dir = function()
+    return "/Users/zchee/src/github.com/bergercookie/asm-lsp/target/release"
+  end,
   languages = {
     "asm",
     "goasm",
@@ -346,14 +241,28 @@ local asm_lsp_config = {
   }
 }
 
-local grammarly_config = {
-  filetypes = {
-    "markdown",
+local awk_ls_config = {
+  -- cmd = { "node", "/Users/zchee/src/github.com/Beaglefoot/awk-language-server/server/out/server.js", "--stdio" },
+  root_dir = function()
+    return "/usr/local/var/node/bin"
+  end,
+  cmd = { "/usr/local/var/node/bin/awk-language-server" },
+  filetypes = { "awk" },
+  single_file_support = true,
+  handlers = {
+    ['workspace/workspaceFolders'] = function()
+      return {{
+        uri = 'file://' .. vim.fn.getcwd(),
+        -- uri = vim.fn.getcwd(),
+        name = 'current_dir',
+      }}
+    end
   },
 }
 
--- local bashls_config = {}
--- local clangd_config = {}
+local bashls_config = {}
+
+local clangd_config = {}
 
 local cmake_config = {
   on_init = function(client)
@@ -367,6 +276,8 @@ local cmake_config = {
     return true
   end
 }
+
+local codeqlls_config = {}
 
 local denols_config = {
   autostart = false,
@@ -401,68 +312,10 @@ local dockerls_config = {
   end
 }
 
-local eslint_config = {
-  autostart = false,
-}
-
-local spectral_config = {
-  autostart = false,
-}
-
-local jsonls_config = {
-  on_init = function(client)
-    client.config.settings = {
-      json = {
-        format = {
-          enable = true,
-        },
-        maxItemsComputed = 100000,
-        schemas = vim.list_extend(
-          {
-            {
-              url = "https://github.com/OAI/OpenAPI-Specification/raw/main/schemas/v2.0/schema.json",
-              fileMatch = {
-                "swagger.json",
-                "**/swagger-spec/*.json"
-              },
-            },
-            {
-              url = "https://github.com/OAI/OpenAPI-Specification/raw/main/schemas/v3.1/schema.json",
-              fileMatch = {
-                "swagger.json",
-                "**/swagger-spec/*.json"
-              },
-            },
-            {
-              url = "file:///Users/zchee/src/github.com/zchee/schema/jsonschema-draft-07.schema.json",
-              fileMatch = {
-                "circleci.schema.json",
-              },
-            },
-          },
-          require('schemastore').json.schemas {
-            select = {
-              "package.json",
-              "tsconfig.json",
-              "renovate.json",
-              "compile-commands.json",
-            },
-          }
-        ),
-      }
-    }
-
-    client.notify("workspace/didChangeConfiguration")
-    return true
-  end
-}
-
 local gopls_config = {
   settings = {
-    env = {
-    },
-    buildFlags = {
-    },
+    env = {},
+    buildFlags = {},
     directoryFilters = {
       "-asm",  -- mmcloughlin/avo
       "-example",
@@ -544,43 +397,46 @@ local gopls_config = {
     experimentalUseInvalidMetadata = true,
   },
   filetypes = { "go", "gomod", "gotexttmpl" },
-  on_attach = function(client)
+  on_new_config = function(new_config, new_root_dir)
+    _ = new_root_dir
     local cwd = vim.fn.getcwd()
 
     local update_env = function()
       local envs = {}
-
-      -- gvisor, moby/buildkit, zchee/go-cloud-debug-agent
-      if string.find(cwd, "gvisor") or string.find(cwd, "buildkit") or string.find(cwd, "go-cloud-debug-agent") then
+      -- gvisor, moby/buildkit, chaos%-mesh/chaos%-mesh, zchee/go-cloud-debug-agent
+      if string.find(cwd, "gvisor") or 
+        string.find(cwd, "buildkit") or 
+        string.find(cwd, "chaos%-mesh/chaos%-mesh") or 
+        string.find(cwd, "go%-cloud%-debug%-agent") then
         envs = vim.tbl_deep_extend("keep", envs, {
           ["GOOS"] = { "linux" },
+          -- ["GOFLAGS"] = { "-tags=linux" },
         })
       end
       -- go-clang/gen
       if string.find(cwd, "go%-clang/gen") then
         envs = vim.tbl_deep_extend("keep", envs, {
           ["CGO_CFLAGS"] = { "-Wno-deprecated-declarations" },
-          ["CGO_LDFLAGS"] = { "-L/opt/llvm/13/lib -Wl,%-rpath,/opt/llvm/13/lib" },
+          ["CGO_LDFLAGS"] = { "-L/opt/llvm/14/lib -Wl,%-rpath,/opt/llvm/14/lib" },
         })
       end
-
       return envs
     end
 
     local update_buildFlags = function()
       local flags = {}
-      if string.find(cwd, "gvisor") or string.find(cwd, "buildkit") or string.find(cwd, "go-cloud-debug-agent") then
-        flags = vim.tbl_deep_extend("keep", flags, { "%-tags=linux" })
+      if string.find(cwd, "gvisor") or 
+        string.find(cwd, "buildkit") or 
+        string.find(cwd, "chaos%-mesh/chaos%-mesh") or 
+        string.find(cwd, "go%-cloud%-debug%-agent") then
+        flags = vim.tbl_deep_extend("keep", flags, { "-tags=linux" })
       end
       return flags
     end
 
-    client.config.settings.env = update_env()
-    client.config.settings.buildFlags = update_buildFlags()
-
-    client.notify("workspace/didChangeConfiguration")
-    return true
-  end
+    new_config.settings.env = update_env()
+    -- new_config.settings.buildFlags = update_buildFlags()
+  end,
 }
 
 -- https://github.com/microsoft/pyright/blob/main/docs/settings.md
@@ -610,16 +466,68 @@ local pyright_config = {
   end
 }
 
+local grammarly_config = {
+  autostart = false,
+  filetypes = {
+    "markdown",
+  },
+}
+
+local graphql_config = {}
+
+local jsonls_config = {
+  on_init = function(client)
+    client.config.settings = {
+      json = {
+        format = {
+          enable = true,
+        },
+        maxItemsComputed = 100000,
+        schemas = vim.list_extend(
+          {
+            {
+              url = "https://github.com/OAI/OpenAPI-Specification/raw/main/schemas/v2.0/schema.json",
+              fileMatch = {
+                "swagger.json",
+                "**/swagger-spec/*.json"
+              },
+            },
+            {
+              url = "https://github.com/OAI/OpenAPI-Specification/raw/main/schemas/v3.1/schema.json",
+              fileMatch = {
+                "swagger.json",
+                "**/swagger-spec/*.json"
+              },
+            },
+            {
+              url = "file:///Users/zchee/src/github.com/zchee/schema/jsonschema-draft-07.schema.json",
+              fileMatch = {
+                "circleci.schema.json",
+              },
+            },
+          },
+          require('schemastore').json.schemas {
+            select = {
+              "package.json",
+              "tsconfig.json",
+              "renovate.json",
+              "compile-commands.json",
+            },
+          }
+        ),
+      }
+    }
+
+    client.notify("workspace/didChangeConfiguration")
+    return true
+  end
+}
+
 local runtime_path = vim.split(package.path, ";")
 table.insert(runtime_path, "lua")
 table.insert(runtime_path, "lua/?.lua")
 table.insert(runtime_path, "lua/?/init.lua")
 local sumneko_config = require("lua-dev").setup({
-  library = {
-    vimruntime = true,
-    types = true,
-    plugins = true,
-  },
   lspconfig = {
     cmd = {
       installer_path.concat { installer_servers.get_server_install_path("sumneko_lua"), "lua-language-server", "bin", "lua-language-server" },
@@ -645,23 +553,20 @@ local sumneko_config = require("lua-dev").setup({
           enable = true,
           disable = {
             "trailing-space",
+            -- "missing-parameter",
           },
           globals = {
             "vim",  -- Neovim
             "describe", "it", "before_each", "after_each", "teardown", "pending", "clear",  -- Busted
-          }
+          },
         },
-        -- workspace = {
-        --   maxPreload = 10000,
-        --   preloadFileSize = 10000,
-        --   -- library = vim.api.nvim_get_runtime_file("", true),
-        -- },
         workspace = {
           maxPreload = 10000,
           preloadFileSize = 10000,
           library = {
             path_join(os.getenv("VIMRUNTIME"), "lua"),
             path_join(vim.fn.stdpath("data"), "/site/pack/packer"),
+            path_join(vim.fn.stdpath("data"), "/lua-dev.nvim/types"),
           },
         },
         completion = {
@@ -681,6 +586,9 @@ local sumneko_config = require("lua-dev").setup({
       },
     }
   },
+  on_init = function(client)
+    client.config.settings.Lua.workspace.library['/usr/share/nvim/runtime'] = nil
+  end,
 })
 
 local solargraph_config = {
@@ -712,168 +620,213 @@ local solargraph_config = {
   end
 }
 
-local clangd_config = {}
 local rust_analyzer_config = {}
-local tsserver_config = {}
 local sourcekit_config = {}
-local terraformls_config = {}
-local yamlls_config = {}
-
--- on_attach
-local function register_mappings()
-  local function set_keymap(mode, lhs, rhs, opts)
-    vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
-  end
-
-  local opts = { noremap = true, silent = true }
-
-  set_keymap("n", "<Leader>e", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
-  -- set_keymap("n", "<leader>e", "<cmd>Lspsaga rename<CR>", opts)
-  set_keymap("n", "<C-]>", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
-  -- set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
-  set_keymap("n", "K", "<cmd>Lspsaga hover_doc<CR>", opts)
-  set_keymap("n", "<LocalLeader>gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-  set_keymap("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
-  set_keymap("n", "<LocalLeader>gt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
-  -- set_keymap("n", "<LocalLeader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
-  set_keymap("n", "<LocalLeader>ca", "<cmd>Lspsaga code_action<cr>", opts)
-  set_keymap("x", "<LocalLeader>ca", ":<c-u>Lspsaga range_code_action<cr>", opts)
-  set_keymap("n", "<LocalLeader>gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
-  set_keymap("n", "<Leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-  set_keymap("n", "ge", "<cmd>Lspsaga show_line_diagnostics<cr>", opts)
-  set_keymap("n", "[d", "<cmd>Lspsaga diagnostic_jump_next<cr>", opts)
-  set_keymap("n", "]d", "<cmd>Lspsaga diagnostic_jump_prev<cr>", opts)
-end
-
--- local register_mapping_go = function()
---   local function set_keymap(mode, lhs, rhs, opts)
---     vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
---   end
--- 
---   local opts = { noremap = true, silent = true }
--- 
---   if vim.fn.eval('&filetype') == 'go' then
---     set_keymap("n", "<Leader>e", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
---     set_keymap('n', '<C-]>', '<Plug>(nvim-lsp-textdocument-definition)', { silent = true })
---     set_keymap('n', 'K', '<Plug>(nvim-lsp-textdocument-hover)', { silent = true })
---     set_keymap('n', '<LocalLeader>gi', '<Plug>(nvim-lsp-textdocument-implementation)', { silent = true })
---     set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
---     set_keymap('n', '<LocalLeader>gc', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
---     set_keymap('n', '<LocalLeader>gr', '<Plug>(nvim-lsp-textdocument-references)', { silent = true })
---     set_keymap('n', '<LocalLeader>gs', '<Plug>(nvim-lsp-textdocument-symbol)', { silent = true })
---     set_keymap('n', '<LocalLeader>gt', '<Plug>(nvim-lsp-textdocument-typedefinition)', { silent = true })
---   else
---     set_keymap("n", "<Leader>e", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
---     set_keymap("n", "<C-]>", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
---     set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
---     set_keymap("n", "<LocalLeader>gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
---     set_keymap("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
---     set_keymap("n", "<LocalLeader>gt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
---     set_keymap("n", "<LocalLeader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
---     set_keymap("n", "<LocalLeader>gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
---     set_keymap("n", "<Leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
---     set_keymap("n", "<Leader>e", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
---   end
--- end
-
-local on_attach = function(client, _)
-  require("illuminate").on_attach(client)
-end
-
--- config that activates keymaps and enables snippet support
-local function make_config()
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-  capabilities.textDocument.completion.completionItem.snippetSupport = false
-  capabilities.textDocument.completion.completionItem.preselectSupport = true
-  capabilities.textDocument.completion.completionItem.insertReplaceSupport = true
-  capabilities.textDocument.completion.completionItem.labelDetailsSupport = true
-  capabilities.textDocument.completion.completionItem.deprecatedSupport = true
-  capabilities.textDocument.completion.completionItem.commitCharactersSupport = true
-
-  return {
-    capabilities = capabilities,
+local sqls_config = {}
+local taplo_config = {}
+local terraformls_config = {
+  settings = {
+    ["terraform-ls"] = {
+      validateOnSave = true,
+      experimentalFeatures = {
+        referenceCountCodeLens = true,
+        refreshModuleProviders = true,
+        refreshModuleCalls = true,
+        telemetryVersion = nil,
+      },
+    },
   }
+}
+local tflint_config = {}
+local tsserver_config = {}
+local vimls_config = {}
+
+local yamlls_config = {
+  settings = {
+    yaml = {
+      yamlVersion = 1.2,
+      format = {
+        enable = true,
+        singleQuote = false,
+        bracketSpacing = true,
+        printWidth = 150,
+      },
+      validate = true,
+      hover = true,
+      completion = true,
+      -- customTags = {
+      --   "!!python/name scalar",
+      --   "!Seq-example sequence",
+      --   "!Mapping-example mapping"
+      -- },
+      schemas = {
+        -- local
+        -- [ "file:///Users/zchee/src/github.com/zchee/schema/appengine-app.schema.json" ] = {
+        --   "app*.yaml"
+        -- },
+        -- [ "file:///Users/zchee/src/github.com/zchee/schema/circleci.schema.json" ] = {
+        --   ".circleci/config.yml",
+        --   -- "@orb.yml",
+        --   -- "**/commands/*.yml",
+        --   -- "**/examples/*.yml",
+        --   -- "**/executors/*.yml",
+        --   -- "**/jobs/*.yml"
+        -- },
+        ["file:///Users/zchee/src/github.com/zchee/schema/clangd.schema.json"] = {
+          ".clangd",
+          path_join(xdg_config_home, "clangd/config.yaml"),
+        },
+        ["file:///Users/zchee/src/github.com/zchee/schema/codecov.schema.json"] = {
+          ".codecov.yml"
+        },
+        ["file:///Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json"] = {
+          "*.ksy"
+        },
+        ["file:///Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json"] = {
+          "mkdocs.yml"
+        },
+        ["file:///Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json"] = {
+          "openrpc.yaml"
+        },
+        -- https
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/clang-format.json"] = {
+          ".clang-format",
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/circleciconfig.json"] = {
+          ".circleci/config.yml",
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/appveyor.json"] = {
+          "*appveyor.yml"
+        },
+        ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = {
+          "*docker-compose*.yaml",
+          "*docker-compose*.yml"
+        },
+        ["https://github.com/microsoft/azure-pipelines-vscode/raw/main/service-schema.json"] = {
+          "azure-pipelines.yml"
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/dependabot-2.0.json"] = {
+          ".github/dependabot.yml"
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/cloudbuild.json"] = {
+          "*cloudbuild.yaml",
+          "*cloudbuild.*.yaml"
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/compile-commands.json"] = {
+          "compile_commands.json"
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/kustomization.json"] = {
+          "kustomization.yaml",
+          "kustomizeconfig.yaml"
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-forms.json"] = {
+          ".github/ISSUE_TEMPLATE/*.yml"
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-config.json"] = {
+          ".github/ISSUE_TEMPLATE/config.yml"
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/workflows.json"] = {
+          "cloudfunctions.workflow.yaml"
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json"] = {
+          "action.yml"
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
+          "**/.github/workflows/*.yml"
+        },
+        ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"] = {
+          "*openapi.yaml",
+          "**/openapi-spec/*.yaml",
+        },
+        ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v2.0/schema.json"] = {
+          "*swagger.yaml",
+          "**/swagger-spec/*.yaml"
+        },
+        ["https://raw.githubusercontent.com/googleapis/gnostic/master/discovery/discovery.json"] = {
+          "*discovery.yaml"
+        },
+        ["https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs/content/en/schemas/v2beta28.json"] = {
+          "skaffold*.yaml"
+        },
+        -- kubernetes
+        ["kubernetes"] = {
+          "kubernetes/*",
+          "manifest.yaml",
+          "statefulset.yaml",
+          "daemonset.yaml",
+          "deployment.yaml",
+          "replicaset.yaml",
+          "pod.yaml",
+        },
+      }
+    }
+  }
+}
+
+-- local bufmap = function(mode, lhs, rhs, opts)
+--   vim.api.nvim_buf_set_keymap(0, mode, lhs, rhs, opts)
+-- end
+-- bufmap("x", "gx", ":<c-u>Lspsaga range_code_action<cr>", { silent = true, noremap = true })
+
+local default_capabilities = function(capabilities)
+  -- capabilities.textDocument.completion.completionItem.snippetSupport = false
+  -- capabilities.textDocument.completion.completionItem.preselectSupport = true
+  -- capabilities.textDocument.completion.completionItem.insertReplaceSupport = true
+  -- capabilities.textDocument.completion.completionItem.labelDetailsSupport = true
+  -- capabilities.textDocument.completion.completionItem.deprecatedSupport = true
+  -- capabilities.textDocument.completion.completionItem.commitCharactersSupport = true
+
+  return capabilities
 end
 
-local function setup_servers()
-  local lsp_installer = require("nvim-lsp-installer")
-  lsp_installer.on_server_ready(function(server)
-    local config = make_config()
-
-    register_mappings()
-
-    if server.name == "asm_lsp" then
-      config = packer_util.deep_extend('keep', config, asm_lsp_config)
-    end
-    if server.name == "cmake" then
-      config = packer_util.deep_extend('keep', config, cmake_config)
-    end
-    if server.name == "denols" then
-      config = packer_util.deep_extend('keep', config, denols_config)
-    end
-    if server.name == "dockerls" then
-      config = packer_util.deep_extend('keep', config, dockerls_config)
-    end
-    if server.name == "grammarly" then
-      config = packer_util.deep_extend('keep', config, grammarly_config)
-    end
-    if server.name == "pyright" then
-      config = packer_util.deep_extend('keep', config, pyright_config)
-    end
-    if server.name == "solargraph" then
-      config = packer_util.deep_extend('keep', config, solargraph_config)
-    end
-    if server.name == "yamlls" then
-      config = packer_util.deep_extend('keep', config, yamlls_config)
-    end
-
-    config.on_attach = function(client, bufnr)
-      on_attach(client, bufnr)
-    end
-
-    -- server:setup(config)
-    -- server:on_ready(config.on_attach)
-  end)
-end
--- setup_servers()
-
-local bufmap = function(mode, lhs, rhs, opts)
-  vim.api.nvim_buf_set_keymap(0, mode, lhs, rhs, opts)
-end
-
-bufmap("x", "gx", ":<c-u>Lspsaga range_code_action<cr>", { silent = true, noremap = true })
 local nvim_lsp_setup = require("nvim-lsp-setup")
 nvim_lsp_setup.setup({
   default_mappings = false,
   mappings = {
-    ["<leader>e"] = "Lspsaga rename",
     ["<C-]>"] = "lua vim.lsp.buf.definition()",
-    -- K = "lua vim.lsp.buf.hover()",
-    K = "Lspsaga hover_doc",
+    ["<C-k>"] = "Lspsaga signature_help",
+    ["<Leader>[d"] = "Lspsaga diagnostic_jump_next",
+    ["<Leader>]d"] = "Lspsaga diagnostic_jump_prev",
+    ["<leader>e"] = "Lspsaga rename",  -- lua vim.lsp.buf.rename
+    ["<Leader>f"] = "lua vim.lsp.buf.formatting()",
+    ["<LocalLeader>ca"] = "Lspsaga range_code_action",
     ["<LocalLeader>gi"] = "lua vim.lsp.buf.implementation()",
-    ["<C-k>"] = "lua vim.lsp.buf.signature_help()",
-    ["<LocalLeader>gt"] = "lua vim.lsp.buf.type_definition()",
-    -- ["<LocalLeader>ca"] = "lua vim.lsp.buf.code_action()",
-    ["<LocalLeader>gx"] = "Lspsaga code_action<cr>",
-    -- ["<LocalLeader>ca"] = "Lspsaga range_code_action",
     ["<LocalLeader>gr"] = "lua vim.lsp.buf.references()",
-    ["<Leader>f"] = "<cmd>lua vim.lsp.buf.formatting()",
+    ["<LocalLeader>gt"] = "lua vim.lsp.buf.type_definition()",
+    ["<LocalLeader>gx"] = "Lspsaga code_action<cr>",  -- "lua vim.lsp.buf.code_action()",
     ge = "Lspsaga show_line_diagnostics",
-    ["[d"] = "Lspsaga diagnostic_jump_next",
-    ["]d"] = "Lspsaga diagnostic_jump_prev",
+    K = "Lspsaga hover_doc",  -- "lua vim.lsp.buf.hover()",
   },
-  capabilities = vim.lsp.protocol.make_client_capabilities(),
+  capabilities = default_capabilities(vim.lsp.protocol.make_client_capabilities()),
   on_attach = function(client, bufnr)
     _ = client
     _ = bufnr
   end,
   servers = {
     asm_lsp = asm_lsp_config,
+    awk_ls = awk_ls_config,
+    bashls = bashls_config,
     clangd = clangd_config,
+    cmake = cmake_config,
+    codeqlls = codeqlls_config,
+    denols = denols_config,
+    dockerls = dockerls_config,
     gopls = gopls_config,
-    sourcekit = {},
+    grammarly = grammarly_config,
+    graphql = graphql_config,
+    jsonls = jsonls_config,
+    pyright = pyright_config,
+    rust_analyzer = rust_analyzer_config,
+    solargraph = solargraph_config,
+    sourcekit = sourcekit_config,
+    sqls = sqls_config,
     sumneko_lua = sumneko_config,
+    taplo = taplo_config,
+    terraformls = terraformls_config,
+    tflint = tflint_config,
+    tsserver = tsserver_config,
+    vimls = vimls_config,
+    yamlls = yamlls_config,
   },
 })
 
@@ -1104,3 +1057,247 @@ vim.cmd([[
 --   check_3rd_handler = nil,
 -- }
 -- require("lsp_signature").setup(lsp_signature_cfg)
+
+-- on_attach
+-- local function register_mappings()
+--   local function set_keymap(mode, lhs, rhs, opts)
+--     vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
+--   end
+--
+--   local opts = { noremap = true, silent = true }
+--
+--   set_keymap("n", "<Leader>e", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
+--   -- set_keymap("n", "<leader>e", "<cmd>Lspsaga rename<CR>", opts)
+--   set_keymap("n", "<C-]>", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+--   -- set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
+--   set_keymap("n", "K", "<cmd>Lspsaga hover_doc<CR>", opts)
+--   set_keymap("n", "<LocalLeader>gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
+--   set_keymap("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
+--   set_keymap("n", "<LocalLeader>gt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
+--   -- set_keymap("n", "<LocalLeader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+--   set_keymap("n", "<LocalLeader>ca", "<cmd>Lspsaga code_action<cr>", opts)
+--   set_keymap("x", "<LocalLeader>ca", ":<c-u>Lspsaga range_code_action<cr>", opts)
+--   set_keymap("n", "<LocalLeader>gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
+--   set_keymap("n", "<Leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+--   set_keymap("n", "ge", "<cmd>Lspsaga show_line_diagnostics<cr>", opts)
+--   set_keymap("n", "[d", "<cmd>Lspsaga diagnostic_jump_next<cr>", opts)
+--   set_keymap("n", "]d", "<cmd>Lspsaga diagnostic_jump_prev<cr>", opts)
+-- end
+
+-- local register_mapping_go = function()
+--   local function set_keymap(mode, lhs, rhs, opts)
+--     vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
+--   end
+-- 
+--   local opts = { noremap = true, silent = true }
+-- 
+--   if vim.fn.eval('&filetype') == 'go' then
+--     set_keymap("n", "<Leader>e", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
+--     set_keymap('n', '<C-]>', '<Plug>(nvim-lsp-textdocument-definition)', { silent = true })
+--     set_keymap('n', 'K', '<Plug>(nvim-lsp-textdocument-hover)', { silent = true })
+--     set_keymap('n', '<LocalLeader>gi', '<Plug>(nvim-lsp-textdocument-implementation)', { silent = true })
+--     set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+--     set_keymap('n', '<LocalLeader>gc', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+--     set_keymap('n', '<LocalLeader>gr', '<Plug>(nvim-lsp-textdocument-references)', { silent = true })
+--     set_keymap('n', '<LocalLeader>gs', '<Plug>(nvim-lsp-textdocument-symbol)', { silent = true })
+--     set_keymap('n', '<LocalLeader>gt', '<Plug>(nvim-lsp-textdocument-typedefinition)', { silent = true })
+--   else
+--     set_keymap("n", "<Leader>e", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
+--     set_keymap("n", "<C-]>", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+--     set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
+--     set_keymap("n", "<LocalLeader>gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
+--     set_keymap("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
+--     set_keymap("n", "<LocalLeader>gt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
+--     set_keymap("n", "<LocalLeader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
+--     set_keymap("n", "<LocalLeader>gr", "<cmd>lua vim.lsp.buf.references()<CR>", opts)
+--     set_keymap("n", "<Leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+--     set_keymap("n", "<Leader>e", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
+--   end
+-- end
+
+-- local on_attach = function(client, _)
+--   require("illuminate").on_attach(client)
+-- end
+
+-- config that activates keymaps and enables snippet support
+-- local function make_config()
+--   local capabilities = vim.lsp.protocol.make_client_capabilities()
+--
+--   capabilities.textDocument.completion.completionItem.snippetSupport = false
+--   capabilities.textDocument.completion.completionItem.preselectSupport = true
+--   capabilities.textDocument.completion.completionItem.insertReplaceSupport = true
+--   capabilities.textDocument.completion.completionItem.labelDetailsSupport = true
+--   capabilities.textDocument.completion.completionItem.deprecatedSupport = true
+--   capabilities.textDocument.completion.completionItem.commitCharactersSupport = true
+--
+--   return {
+--     capabilities = capabilities,
+--   }
+-- end
+
+-- local function setup_servers()
+--   local lsp_installer = require("nvim-lsp-installer")
+--   lsp_installer.on_server_ready(function(server)
+--     local config = make_config()
+--
+--     register_mappings()
+--
+--     if server.name == "asm_lsp" then
+--       config = packer_util.deep_extend('keep', config, asm_lsp_config)
+--     end
+--     if server.name == "cmake" then
+--       config = packer_util.deep_extend('keep', config, cmake_config)
+--     end
+--     if server.name == "denols" then
+--       config = packer_util.deep_extend('keep', config, denols_config)
+--     end
+--     if server.name == "dockerls" then
+--       config = packer_util.deep_extend('keep', config, dockerls_config)
+--     end
+--     if server.name == "grammarly" then
+--       config = packer_util.deep_extend('keep', config, grammarly_config)
+--     end
+--     if server.name == "pyright" then
+--       config = packer_util.deep_extend('keep', config, pyright_config)
+--     end
+--     if server.name == "solargraph" then
+--       config = packer_util.deep_extend('keep', config, solargraph_config)
+--     end
+--     if server.name == "yamlls" then
+--       config = packer_util.deep_extend('keep', config, yamlls_config)
+--     end
+--
+--     config.on_attach = function(client, bufnr)
+--       on_attach(client, bufnr)
+--     end
+--
+--     -- server:setup(config)
+--     -- server:on_ready(config.on_attach)
+--   end)
+-- end
+-- setup_servers()
+
+    -- settings = {
+    --   yaml = {
+    --     yamlVersion = 1.2,
+    --     format = {
+    --       enable = true,
+    --       singleQuote = false,
+    --       bracketSpacing = true,
+    --       printWidth = 150,
+    --     },
+    --     validate = true,
+    --     hover = true,
+    --     completion = true,
+    --     -- customTags = {
+    --     --   "!!python/name scalar",
+    --     --   "!Seq-example sequence",
+    --     --   "!Mapping-example mapping"
+    --     -- },
+    --     schemas = {
+    --       -- local
+    --       -- [ "file:///Users/zchee/src/github.com/zchee/schema/appengine-app.schema.json" ] = {
+    --       --   "app*.yaml"
+    --       -- },
+    --       -- [ "file:///Users/zchee/src/github.com/zchee/schema/circleci.schema.json" ] = {
+    --       --   ".circleci/config.yml",
+    --       --   -- "@orb.yml",
+    --       --   -- "**/commands/*.yml",
+    --       --   -- "**/examples/*.yml",
+    --       --   -- "**/executors/*.yml",
+    --       --   -- "**/jobs/*.yml"
+    --       -- },
+    --       ["file:///Users/zchee/src/github.com/zchee/schema/clangd.schema.json"] = {
+    --         ".clangd",
+    --         path_join(xdg_config_home, "clangd/config.yaml"),
+    --       },
+    --       ["file:///Users/zchee/src/github.com/zchee/schema/codecov.schema.json"] = {
+    --         ".codecov.yml"
+    --       },
+    --       ["file:///Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json"] = {
+    --         "*.ksy"
+    --       },
+    --       ["file:///Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json"] = {
+    --         "mkdocs.yml"
+    --       },
+    --       ["file:///Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json"] = {
+    --         "openrpc.yaml"
+    --       },
+    --       -- https
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/clang-format.json"] = {
+    --         ".clang-format",
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/circleciconfig.json"] = {
+    --         ".circleci/config.yml",
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/appveyor.json"] = {
+    --         "*appveyor.yml"
+    --       },
+    --       ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = {
+    --         "*docker-compose*.yaml",
+    --         "*docker-compose*.yml"
+    --       },
+    --       ["https://github.com/microsoft/azure-pipelines-vscode/raw/main/service-schema.json"] = {
+    --         "azure-pipelines.yml"
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/dependabot-2.0.json"] = {
+    --         ".github/dependabot.yml"
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/cloudbuild.json"] = {
+    --         "*cloudbuild.yaml",
+    --         "*cloudbuild.*.yaml"
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/compile-commands.json"] = {
+    --         "compile_commands.json"
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/kustomization.json"] = {
+    --         "kustomization.yaml",
+    --         "kustomizeconfig.yaml"
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-forms.json"] = {
+    --         ".github/ISSUE_TEMPLATE/*.yml"
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-config.json"] = {
+    --         ".github/ISSUE_TEMPLATE/config.yml"
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/workflows.json"] = {
+    --         "cloudfunctions.workflow.yaml"
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json"] = {
+    --         "action.yml"
+    --       },
+    --       ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
+    --         "**/.github/workflows/*.yml"
+    --       },
+    --       ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"] = {
+    --         "*openapi.yaml",
+    --         "**/openapi-spec/*.yaml",
+    --       },
+    --       ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v2.0/schema.json"] = {
+    --         "*swagger.yaml",
+    --         "**/swagger-spec/*.yaml"
+    --       },
+    --       ["https://raw.githubusercontent.com/googleapis/gnostic/master/discovery/discovery.json"] = {
+    --         "*discovery.yaml"
+    --       },
+    --       ["https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs/content/en/schemas/v2beta28.json"] = {
+    --         "skaffold*.yaml"
+    --       },
+    --       -- kubernetes
+    --       ["kubernetes"] = {
+    --         "kubernetes/*",
+    --         "manifest.yaml",
+    --         "statefulset.yaml",
+    --         "daemonset.yaml",
+    --         "deployment.yaml",
+    --         "replicaset.yaml",
+    --         "pod.yaml",
+    --       },
+    --       -- [ "file:///Users/zchee/go/src/github.com/kouzoh/kube-pubsub-operator/_kubernetes/kube-pubsub-operator-api/apis/v1alpha1/crd/delivery.platform.mercari.com_subscriptionreplicationconfigs.yaml" ] = {
+    --       --   "kubernetes/*/subscription_replication_config.yaml",
+    --       --   "_kubernetes/*/subscription_replication_config.yaml",
+    --       --   "subscription_replication_config.yaml",
+    --       -- },
+    --     }
+    --   }
+    -- }

@@ -49,14 +49,66 @@ lint.linters.golangcilint = {
   end
 }
 
+-- ansible_lint.lua
+-- checkstyle.lua
+-- chktex.lua
+-- clangtidy.lua
+-- clazy.lua
+-- clj-kondo.lua
+-- cmakelint.lua
+-- codespell.lua
+-- compiler.lua
+-- cppcheck.lua
+-- cpplint.lua
+-- credo.lua
+-- cspell.lua
+-- eslint.lua
+-- fennel.lua
+-- fish.lua
+-- flake8.lua
+-- flawfinder.lua
+-- glslc.lua
+-- golangcilint.lua
+-- hadolint.lua
+-- hlint.lua
+-- inko.lua
+-- jshint.lua
+-- ktlint.lua
+-- lacheck.lua
+-- languagetool.lua
+-- luacheck.lua
+-- markdownlint.lua
+-- mlint.lua
+-- mypy.lua
+-- nix.lua
+-- phpcs.lua
+-- proselint.lua
+-- pycodestyle.lua
+-- pydocstyle.lua
+-- pylint.lua
+-- revive.lua
+-- rflint.lua
+-- robocop.lua
+-- rstcheck.lua
+-- rstlint.lua
+-- ruby.lua
+-- selene.lua
+-- shellcheck.lua
+-- standardrb.lua
+-- staticcheck.lua
+-- statix.lua
+-- stylelint.lua
+-- tidy.lua
+-- vale.lua
+-- vint.lua
+-- vulture.lua
+-- yamllint.lua
+-- zig.lua
+
 lint.linters_by_ft = {
-  clojure = { },
+  cmake = { "cmakelint" },
   dockerfile = { "hadolint" },
-  inko = { },
-  go = { },
-  markdown = { },
-  rst = { },
-  ruby = { },
+  -- lua = { "luacheck" },
   sh = { "shellcheck" },
-  text = { },
+  yaml = { "yamllint" },
 }

@@ -21,8 +21,6 @@ let $XDG_DATA_HOME   = expand($HOME.'/.local/share')
 let $NVIM_LOG_FILE   = expand($HOME.'/.local/share/nvim/log')
 let $MANWIDTH        = 999
 
-unlet $RUSTFLAGS
-
 
 let g:clipboard = {
       \   'name': 'mac',
@@ -41,11 +39,11 @@ let g:clipboard = {
 " Neovim Configs:
 
 "" Remote Plugins:
-let g:loaded_python_provider    = 1                              " $VIMRUNTIME/autoload/provider/python.vim
-let g:python3_host_prog         = '/usr/local/opt/python@3.10/bin/python3.10'
-let g:loaded_node_provider      = 1                              " $VIMRUNTIME/autoload/provider/node.vim
-let g:loaded_ruby_provider      = 1                              " $VIMRUNTIME/autoload/provider/ruby.vim
-let g:loaded_perl_provider      = 1                              " $VIMRUNTIME/autoload/provider/perl.vim
+let g:loaded_python_provider = 1                              " $VIMRUNTIME/autoload/provider/python.vim
+let g:python3_host_prog      = '/usr/local/opt/python@3.10/bin/python3.10'
+let g:loaded_node_provider   = 1                              " $VIMRUNTIME/autoload/provider/node.vim
+let g:loaded_ruby_provider   = 1                              " $VIMRUNTIME/autoload/provider/ruby.vim
+let g:loaded_perl_provider   = 1                              " $VIMRUNTIME/autoload/provider/perl.vim
 
 let g:no_man_maps = 0
 let g:ft_man_folding_enable = 0

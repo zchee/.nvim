@@ -1,20 +1,15 @@
 -- Accelerated JK:
 vim.g.accelerated_jk_enable_deceleration = 0
-vim.g.accelerated_jk_acceleration_limit = 250  -- 70, 250, 350
-vim.g.accelerated_jk_acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28, 30 }  -- g.accelerated_jk_acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28 }
-
-vim.api.nvim_set_keymap("n", "j", "<cmd>call accelerated#time_driven#command('j')<CR>", { nowait = true, silent = true })
-vim.api.nvim_set_keymap("n", "k", "<cmd>call accelerated#time_driven#command('k')<CR>", { nowait = true, silent = true })
-vim.api.nvim_set_keymap("n", "b", "b", { nowait = true, silent = true })
-vim.api.nvim_set_keymap("n", "w", "w", { nowait = true, silent = true })
+vim.g.accelerated_jk_acceleration_limit = 250 -- 70, 250, 350
+vim.g.accelerated_jk_acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28, 30 } -- g.accelerated_jk_acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28 }
 
 vim.g["vista#renderer#enable_icon"] = true
 vim.g["vista#renderer#enable_kind"] = true
-vim.g.vista_blink = {0, 0}
-vim.g.vista_cursor_delay = 400  -- default
+vim.g.vista_blink = { 0, 0 }
+vim.g.vista_cursor_delay = 400 -- default
 vim.g.vista_default_executive = "nvim_lsp"
 vim.g.vista_disable_statusline = 0
-vim.g.vista_echo_cursor_strategy = "floating_win"  -- echo, scroll, floating_win, both
+vim.g.vista_echo_cursor_strategy = "floating_win" -- echo, scroll, floating_win, both
 vim.g.vista_executive_for = {
   markdown = "toc",
 }
@@ -40,14 +35,113 @@ command! -nargs=* VistaOpen call s:open_vista(<q-args>)
 ]])
 
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
-	pattern = { "*" },
-	nested = true,
-	callback = function()
+  pattern = { "*" },
+  nested = true,
+  callback = function()
     if vim.fn.winnr "$" == 1 and vim.fn.bufname() == "NvimTree_" .. vim.fn.tabpagenr() then
       vim.api.nvim_command ":silent qa!"
     end
-	end,
+  end,
 })
+
+local terraform_id = vim.api.nvim_create_augroup("terraform", { clear = true })
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  group = terraform_id,
+  pattern = { "*.tf" },
+  callback = function()
+    vim.lsp.buf.format()
+  end,
+})
+vim.g.hcl_align = 1
+vim.g.terraform_binary_path = "/usr/local/opt/terraform/bin/terraform"
+
+-- https://github.com/vovkasm/input-source-switcher
+local issw_id = vim.api.nvim_create_augroup("terraform", { clear = true })
+vim.api.nvim_create_autocmd({ "FocusGained" }, {
+  group = issw_id,
+  pattern = { "*" },
+  callback = function()
+    vim.fn.jobstart('issw com.apple.inputmethod.Kotoeri.RomajiTyping.Roman', { detach = true })
+  end,
+})
+
+-- vim.cmd([[
+-- let s:single_import = '^import\\>\\_.\\{-}\\_$\\%(\\nimport\\>\\)\\@!'
+-- let s:multi_import = '^import\\>\\s\\+(\\_[^)]\\+)'
+--
+-- function! s:uniqadd(obj, item) abort
+--   if index(a:obj, a:item) == -1
+--     call add(a:obj, a:item)
+--   endif
+-- endfunction
+--
+-- function! HlGoimportUpdate(forced) abort
+--   let start = 0
+--   let end = 0
+--   let view = winsaveview()
+--
+--   call cursor(1, 1)
+--   let start = search(s:multi_import, 'cW')
+--   if start
+--     let end = search(s:multi_import, 'ceW')
+--   else
+--     let start = search(s:single_import, 'cW')
+--     if start
+--       let end = search(s:single_import, 'ceW')
+--     endif
+--   endif
+--
+--   let imports = []
+--   if start && end
+--     for l in range(start, end)
+--       let text = getline(l)
+--       let import = matchstr(text, '"\\zs[^"]\\+\\ze"')
+--       if empty(import)
+--         continue
+--       endif
+--
+--       let alias = matchstr(substitute(text, '^\\s*import\\>', '', ''), '^\\s*\\zs\\k\\+')
+--       if !empty(alias)
+--         call s:uniqadd(imports, alias)
+--       else
+--         call s:uniqadd(imports, split(import, '/')[-1])
+--       endif
+--     endfor
+--
+--     call sort(imports)
+--   endif
+--
+--   if a:forced || !exists('b:goimports') || b:goimports != imports
+--     silent! syntax clear goImportedPkg
+--     let b:goimports = imports
+--     silent! execute 'syntax keyword goImportedPkg '.join(imports, ' ')
+--   endif
+--
+--   call winrestview(view)
+-- endfunction
+--
+-- highlight default link goImportedPkg Statement
+-- ]])
+
+-- local id = vim.api.nvim_create_augroup("hlgoimport", {
+--   clear = false
+-- })
+-- vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
+-- 	group = id,
+-- 	pattern = { "*.go" },
+-- 	nested = false,
+-- 	callback = function()
+-- 	  vim.fn.HlGoimportUpdate(0)
+-- 	end,
+-- })
+-- vim.api.nvim_create_autocmd({ "FileType", "Syntax" }, {
+-- 	group = id,
+-- 	pattern = { "*.go" },
+-- 	nested = false,
+-- 	callback = function()
+-- 	  vim.fn.HlGoimportUpdate(1)
+-- 	end,
+-- })
 
 -- ale-lint-file-linters
 -- g.ale_set_highlights = 0
@@ -132,31 +226,31 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 --     "yamllint",
 --   },
 -- }
--- 
+--
 -- -- python:
 -- vim.g.ale_python_black_executable = "black"
 -- vim.g.ale_python_black_use_global = true
--- 
+--
 -- -- dockerfile:
 -- vim.g.ale_dockerfile_hadolint_use_docker = "never"
--- 
+--
 -- -- proto:
 -- vim.g.ale_proto_api_linter_options = {}
 -- vim.g.ale_proto_api_linter_config_path = ".api-linter.yaml"
 -- vim.g.ale_proto_api_linter_include_paths = { ".", "third_party/googleapis" }
--- 
+--
 -- -- rust:
--- 
+--
 -- -- shellcheck:
 -- vim.g.ale_sh_shellcheck_executable = "shellcheck"
 -- vim.g.ale_sh_shellcheck_options = "-x --color=never --severity=style --wiki-link-count=10"
 -- vim.g.ale_sh_shellcheck_exclusions = "SC1072,SC1090,SC1091"
 -- vim.g.ale_sh_shellcheck_change_directory = 1
--- 
+--
 -- -- terraform:
 -- vim.g.ale_terraform_fmt_executable = 'terraform'
 -- vim.g.ale_terraform_fmt_options = ''
--- 
+--
 -- -- yaml:
 -- local yamllint_config_file
 -- if vim.env.YAMLLINT_CONFIG_FILE then
@@ -168,7 +262,7 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 --   end
 -- end
 -- vim.g.ale_yaml_yamllint_options = '--strict '..yamllint_config_file
--- 
+--
 -- vim.g["airline#extensions#ale#enabled"] = 0
 -- vim.g.ale_cache_executable_check_failures = 1
 -- vim.g.ale_change_sign_column_color = 0

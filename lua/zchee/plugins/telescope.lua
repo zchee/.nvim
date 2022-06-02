@@ -13,3 +13,4 @@ telescope.setup {
 telescope.load_extension("fzf")
 telescope.load_extension("packer")
 telescope.load_extension("ghq")
+telescope.load_extension("openbrowser")

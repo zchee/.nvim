@@ -1,20 +1,20 @@
-if get(g:, 'go_highlight_error', 0)
-  syn keyword   goErr             err
-  hi            goErr             gui=bold  guifg=#ff005f  guibg=NONE
-
-  syn keyword   goErrorType       error
-  hi            goErrorType       gui=bold  guifg=#ff5370 guibg=None
-endif
-
-if get(g:, 'go_highlight_return', 0)
-  syn keyword   goStdlibReturn    return
-  hi def link   goStdlibReturn    PreProc
-endif
-
-if get(g:, 'go_highlight_nil', 0)
-  syn keyword     goNil           nil
-  hi def link     goNil           Constant
-endif
+" if get(g:, 'go_highlight_error', 0)
+"   syn keyword   goErr             err
+"   hi            goErr             gui=bold  guifg=#ff005f  guibg=NONE
+" 
+"   syn keyword   goErrorType       error
+"   hi            goErrorType       gui=bold  guifg=#ff5370 guibg=None
+" endif
+" 
+" if get(g:, 'go_highlight_return', 0)
+"   syn keyword   goStdlibReturn    return
+"   hi def link   goStdlibReturn    PreProc
+" endif
+" 
+" if get(g:, 'go_highlight_nil', 0)
+"   syn keyword     goNil           nil
+"   hi def link     goNil           Constant
+" endif
 
 " the regions that contain=@CSource all use the goComment region as well,
 " because the Vim C comment syntax rule is defined with "extend", which breaks

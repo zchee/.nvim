@@ -1,4 +1,4 @@
--- gowork.vim: Vim filetype plugin for Go modules.
+-- gotexttmpl.lua: Vim filetype plugin for Go template file.
 
 if vim.b.did_ftplugin then
   return
@@ -16,7 +16,7 @@ vim.opt.formatoptions:remove("t")
 vim.bo.expandtab = false
 
 vim.cmd([[
-augroup goworkBuffer
+augroup gotexttmplBuffer
   autocmd! * <buffer>
   autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync(nil, 1000)
 augroup end

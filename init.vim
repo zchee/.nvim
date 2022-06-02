@@ -8,7 +8,7 @@
 "                                                                                                 "
 " -------------------------------------------------------------------------------------------------
 
-lua pcall(require, "impatient")
+lua require("impatient")
 lua require('zchee.nvim')
 lua require('init')
 
@@ -46,7 +46,9 @@ if has('mac')
           \ . ',' . s:sdk_dir . '/usr/include'
           \ . ',' . s:toolchain_dir . '/usr/include/c++/v1'
           \ . ',' . s:toolchain_dir . '/usr/include/swift'
+          \ . ',' . '/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include'
           \ . ',' . s:toolchain_dir . '/usr/lib/clang/**/include'
+          \ . ',' . '/Users/zchee/src/github.com/apple-oss-distributions/xnu'
 
     execute 'set path+=' . s:macos_paths
 
@@ -366,33 +368,16 @@ let g:nvim_lsp_enable_otel = v:true
 let g:nvim_lsp_enable_datadog_profile = v:true
 let g:nvim_lsp_enable_gops = v:false
 
-function! s:nvim_lsp_setup()
-  setlocal formatexpr=LanguageClient#textDocument_rangeFormatting_sync()
-  nnoremap                 <silent><buffer><C-]>             :<C-u>call LSPTextDocumentDefinition('')<CR>
-  nnoremap                 <silent><buffer><C-]>v            :<C-u>call LSPTextDocumentDefinition('vsplit')<CR>
-  nmap                     <silent><buffer><LocalLeader>]    <Plug>(lcn-definition)
-  nmap     <nowait><silent><buffer><Leader>e                 <Plug>(lcn-rename)
-  nmap     <nowait><silent><buffer><Leader>gdh               <Plug>(lcn-highlight)
-  nnoremap    <silent><buffer><LocalLeader>gh                :<C-u>call LanguageClient#textDocument_signatureHelp()<CR>
-  nmap        <silent><buffer><LocalLeader>gi                <Plug>(nvim-lsp-textdocument-implementation)
-  nmap        <silent><buffer><LocalLeader>gr                <Plug>(nvim-lsp-textdocument-references)
-  nmap        <silent><buffer><LocalLeader>gs                <Plug>(nvim-lsp-textdocument-symbol)
-  nmap        <silent><buffer><LocalLeader>gt                <Plug>(nvim-lsp-textdocument-typedefinition)
-  nmap             <nowait><silent><buffer>K                 <Plug>(nvim-lsp-textdocument-hover)
-endfunction
-" Gautocmdft go call s:nvim_lsp_setup()
-
-
 "" FloatTerm:
-let g:floaterm_keymap_toggle = '<F10>'
-let g:floaterm_width = 0.9
-let g:floaterm_height = 0.9
+" let g:floaterm_keymap_toggle = '<F10>'
+" let g:floaterm_width = 0.9
+" let g:floaterm_height = 0.9
 
 
 " Caw:
-let g:caw_hatpos_skip_blank_line = 0
-let g:caw_no_default_keymappings = 1
-let g:caw_operator_keymappings = 0
+" let g:caw_hatpos_skip_blank_line = 0
+" let g:caw_no_default_keymappings = 1
+" let g:caw_operator_keymappings = 0
 
 
 " VimDevIcons:
@@ -551,7 +536,7 @@ let g:lightline.tab = {
       \ 'active':   [ 'tabnum', 'filename', 'modified' ],
       \ 'inactive': [ 'tabnum', 'filename', 'modified' ]
       \ }
-let g:lightline.enable = { 'statusline': 1 }  " , 'tabline': 1
+let g:lightline.enable = { 'statusline': 1, 'tabline': 0 }  " , 'tabline': 1
 let g:lightline.separator = { 'left': '', 'right': '' }
 let g:lightline.subseparator = { 'left': '', 'right': '  ' }
 let g:lightline#bufferline#shorten_path = 1
@@ -605,11 +590,6 @@ let g:easy_align_ignore_groups = []
 " Switchvim:
 let g:switch_mapping = ""
 let g:switch_custom_definitions = [ [1, 0], ['v:true', 'v:false'], ['yes', 'no'], ['on', 'off'], ['ON', 'OFF'], ['static', 'dynamic'] ]
-
-
-" ISSW:
-"" https://github.com/vovkasm/input-source-switcher
-Gautocmd InsertLeave * call jobstart('issw com.apple.inputmethod.Kotoeri.RomajiTyping.Roman', { 'detach': v:true })
 
 
 " Operator Camelize:
@@ -717,6 +697,7 @@ endif
 "" Markdown:
 let g:markdown_fenced_languages = [
       \ 'c',
+      \ 'console=sh',
       \ 'cpp',
       \ 'dockerfile',
       \ 'go',
@@ -1069,7 +1050,7 @@ nnoremap         <nowait>@        ^
 nnoremap         <nowait>^        @
 
 nmap                     ga       <Plug>(LiveEasyAlign)
-nmap             <silent>gc       <Plug>(caw:hatpos:toggle)
+" nmap             <silent>gc       <Plug>(caw:hatpos:toggle)
 nnoremap         <silent>gs       :<C-u>Switch<CR>
 nmap             <silent>gx       <Plug>(openbrowser-smart-search)
 " nmap     <silent><nowait>j        <Plug>(accelerated_jk_j)
@@ -1197,7 +1178,7 @@ vnoremap                <nowait>x    "_x
 vnoremap                <nowait>@    ^
 vnoremap                <nowait>^    @
 vmap                    <silent>ga   <Plug>(LiveEasyAlign)
-vmap                    <silent>gc   <Plug>(caw:hatpos:toggle)
+" vmap                    <silent>gc   <Plug>(caw:hatpos:toggle)
 vnoremap                <silent>gs   :<C-u>'<,'>sort i<CR>
 vmap                    <silent>gx   <Plug>(openbrowser-smart-search)
 vmap                    <silent>tu   <Plug>(operator-convert-case-upper-camel)
@@ -1271,35 +1252,37 @@ tnoremap <nowait><buffer><BS>      <BS>
 " Highlight:
 
 "" Go:
-" highlight! goErrorType                 gui=bold      guifg=#ff5370  guibg=NONE     guisp=fg_indexed,bg_indexed
-" " highlight! goField                     gui=NONE      guifg=#d9d9f0  guibg=NONE     guisp=fg_indexed,bg_indexed
-" highlight! goField                     gui=NONE      guifg=NONE  guibg=NONE     guisp=fg_indexed,bg_indexed
-" " highlight! goFunction                  gui=bold      guifg=#82aaff  guibg=NONE     guisp=fg_indexed,bg_indexed
-" highlight! goFunctionCall              gui=bold      guifg=#ffcb6b  guibg=NONE     guisp=fg_indexed,bg_indexed
-" highlight! goImportedPkg               gui=NONE      guifg=#62d2ff  guibg=NONE     guisp=fg_indexed,bg_indexed
-" highlight! goPackageComment            gui=italic    guifg=#838c93  guibg=NONE     guisp=fg_indexed,bg_indexed
-" highlight! goComment                   gui=italic    guifg=#92999f  guibg=None     guisp=fg_indexed,bg_indexed blend=0
-" highlight! goString                    gui=NONE      guifg=#9ba3a8  guibg=NONE     guisp=fg_indexed,bg_indexed
-" highlight! goReceiverType              gui=bold      guifg=#81a2be  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " highlight! goErrorType                 gui=bold      guifg=#ff5370  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " " highlight! goField                     gui=NONE      guifg=#d9d9f0  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " highlight! goField                     gui=NONE      guifg=NONE  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " " highlight! goFunction                  gui=bold      guifg=#82aaff  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " highlight! goFunctionCall              gui=bold      guifg=#ffcb6b  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " highlight! goImportedPkg               gui=NONE      guifg=#62d2ff  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " highlight! goPackageComment            gui=italic    guifg=#838c93  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " highlight! goComment                   gui=italic    guifg=#92999f  guibg=None     guisp=fg_indexed,bg_indexed blend=0
+" " highlight! goString                    gui=NONE      guifg=#9ba3a8  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " highlight! goReceiverType              gui=bold      guifg=#81a2be  guibg=NONE     guisp=fg_indexed,bg_indexed
+" " highlight! link                        goBuiltins                   Keyword
+" " highlight! link                        goFormatSpecifier            PreProc
+" " highlight! link                        goImportedPkg                Statement
+" " highlight! link                        goStdlib                     Statement
+" " highlight! link                        goStdlibReturn               PreProc
+" highlight! goErrorType                 gui=bold      guifg=#ff5370  guibg=NONE       guisp=fg_indexed,bg_indexed
+" highlight! goField                     gui=NONE      guifg=#d9d9f0  guibg=NONE
+"                                                                                      
+" " highlight! goField                     gui=NONE      guifg=NONE  guibg=NONE          guisp=fg_indexed,bg_indexed
+" highlight! goFunction                  gui=bold      guifg=#82aaff  guibg=NONE       guisp=fg_indexed,bg_indexed
+"                                                                                      
+" highlight! goFunctionCall              gui=bold      guifg=#ffbf6b  guibg=NONE
+" highlight! goImportedPkg               gui=NONE      guifg=#82aaff  guibg=NONE       guisp=fg_indexed,bg_indexed
+" highlight! goPackageComment            gui=italic    guifg=#838c93  guibg=NONE       guisp=fg_indexed,bg_indexed
+" highlight! goString                    gui=NONE      guifg=#92999f  guibg=NONE       guisp=fg_indexed,bg_indexed
+" highlight! goReceiverType              gui=bold      guifg=#81a2be  guibg=NONE       guisp=fg_indexed,bg_indexed
 " highlight! link                        goBuiltins                   Keyword
 " highlight! link                        goFormatSpecifier            PreProc
-" highlight! link                        goImportedPkg                Statement
+" " highlight! link                        goImportedPkg                Statement
 " highlight! link                        goStdlib                     Statement
 " highlight! link                        goStdlibReturn               PreProc
-highlight! goErrorType                 gui=bold      guifg=#ff5370  guibg=NONE     guisp=fg_indexed,bg_indexed
-" highlight! goField                     gui=NONE      guifg=#d9d9f0  guibg=NONE     guisp=fg_indexed,bg_indexed
-highlight! goField                     gui=NONE      guifg=NONE  guibg=NONE     guisp=fg_indexed,bg_indexed
-" highlight! goFunction                  gui=bold      guifg=#82aaff  guibg=NONE     guisp=fg_indexed,bg_indexed
-highlight! goFunctionCall              gui=bold      guifg=#ffcb6b  guibg=NONE     guisp=fg_indexed,bg_indexed
-highlight! goImportedPkg               gui=NONE      guifg=#62d2ff  guibg=NONE     guisp=fg_indexed,bg_indexed
-highlight! goPackageComment            gui=italic    guifg=#838c93  guibg=NONE     guisp=fg_indexed,bg_indexed
-highlight! goString                    gui=NONE      guifg=#92999f  guibg=NONE     guisp=fg_indexed,bg_indexed
-highlight! goReceiverType              gui=bold      guifg=#81a2be  guibg=NONE     guisp=fg_indexed,bg_indexed
-highlight! link                        goBuiltins                   Keyword
-highlight! link                        goFormatSpecifier            PreProc
-highlight! link                        goImportedPkg                Statement
-highlight! link                        goStdlib                     Statement
-highlight! link                        goStdlibReturn               PreProc
 
 "" Python:
 highlight! pythonSpaceError            gui=NONE      guifg=#787f86  guibg=#787f86     guisp=fg_indexed,bg_indexed

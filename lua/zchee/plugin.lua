@@ -95,10 +95,10 @@ return packer.startup(
     }
 
     -- local
-    use {
-      join_paths(gopath, "zchee/nvim-go"),
-      ft = "go",
-    }
+    -- use {
+    --   join_paths(gopath, "zchee/nvim-go"),
+    --   ft = "go",
+    -- }
     use {
       join_paths(src, "zchee/vim-goasm"),
     }
@@ -113,16 +113,6 @@ return packer.startup(
     }
     -- use {
     --   gopath.."/zchee/nvim-lsp",
-    --   ft = "go",
-    -- }
-    -- use {
-    --   src.."/deoplete-plugins/deoplete-cgo",
-    -- }
-    -- use {
-    --   src.."/deoplete-plugins/deoplete-asm",
-    -- }
-    -- use {
-    --   src.."/deoplete-plugins/deoplete-zsh",
     -- }
 
     -- LSP
@@ -152,7 +142,7 @@ return packer.startup(
         {
           "petertriho/cmp-git",
           requires = {
-            "nvim-lua/plenary.nvim",
+            -- "nvim-lua/plenary.nvim",
           },
           ft = "gitcommit",
         },
@@ -175,12 +165,13 @@ return packer.startup(
       end,
     }
     use {
-      join_paths(src, "tami5/lspsaga.nvim"),  -- "tami5/lspsaga.nvim",
+      "tami5/lspsaga.nvim",
       config = function()
         require("zchee.plugins.lspsaga")
       end,
     }
     use {
+      disable = true,
       "j-hui/fidget.nvim",
       config = function()
         require("zchee.plugins.fidget")
@@ -189,7 +180,6 @@ return packer.startup(
 
     use {
       "stevearc/dressing.nvim",
-      -- disable = true,
       requires = {
         "MunifTanjim/nui.nvim"
       },
@@ -198,92 +188,15 @@ return packer.startup(
       end
     }
 
-    -- use {
-    --   "ms-jpq/coq_nvim",
-    --   requires = {
-    --     "neovim/nvim-lspconfig",
-    --     "williamboman/nvim-lsp-installer",
-    --     "folke/lua-dev.nvim",
-    --     "ray-x/lsp_signature.nvim",
-    --     "ms-jpq/coq.artifacts",
-    --     "b0o/schemastore.nvim",
-    --   },
-    --   config = function()
-    --     require('zchee.plugins.coq')
-    --     require('zchee.plugins.lsp')
-    --   end,
-    -- }
-    -- use {
-    --   "ms-jpq/coq.thirdparty",
-    --   config = function()
-    --     require "coq_3p" {
-    --     {
-    --         src = "nvimlua",
-    --         short_name = "nlua",
-    --         conf_only = false,
-    --       },
-    --       -- {
-    --       --   src = "dap",
-    --       -- },
-    --       -- {
-    --       --   src = "vim_dadbod_completion",
-    --       --   short_name = "dadbod",
-    --       -- },
-    --     }
-    --   end
-    -- }
-
-    -- use {
-    --   "Shougo/ddc.vim",
-    --   requires = {
-    --     "vim-denops/denops.vim",
-    --     "Shougo/ddc-nvim-lsp",
-    --     "Shougo/ddc-converter_remove_overlap",
-    --     "Shougo/ddc-matcher_head",
-    --     "Shougo/ddc-sorter_rank",
-    --     "neovim/nvim-lspconfig",
-    --     "williamboman/nvim-lsp-installer",
-    --     "Shougo/pum.vim",
-    --     "ray-x/lsp_signature.nvim",
-    --     "Shougo/echodoc.vim",
-    --     "matsui54/ddc-nvim-lsp-doc",
-    --     "b0o/schemastore.nvim",
-    --   },
-    --   config = function()
-    --     require('zchee.plugins.ddc')
-    --     require('zchee.plugins.lsp')
-    --   end
-    -- }
-    -- use {
-    --   "Shougo/deol.nvim",
-    -- }
-
-    -- LSP
-    -- use {
-    --   "neovim/nvim-lspconfig",
-    -- }
-    -- use {
-    --   "williamboman/nvim-lsp-installer",
-    -- }
-
-    -- use {
-    --   "stevearc/dressing.nvim",
-    --   -- disable = true,
-    --   requires = {
-    --     "MunifTanjim/nui.nvim"
-    --   },
-    --   config = function()
-    --     require("zchee.plugins.dressing")
-    --   end
-    -- }
-
     -- telescope
     use {
       "nvim-telescope/telescope.nvim",
       requires = {
         "nvim-lua/popup.nvim",
-        "nvim-lua/plenary.nvim",
+        -- "nvim-lua/plenary.nvim",
         "nvim-telescope/telescope-packer.nvim",
+        "tamago324/telescope-openbrowser.nvim",
+        "nvim-telescope/telescope-dap.nvim",
         {
           "nvim-telescope/telescope-fzf-native.nvim",
           run = "make",
@@ -297,6 +210,13 @@ return packer.startup(
     -- tree-sitter
     use {
       "nvim-treesitter/nvim-treesitter",
+      requires = {
+        "nvim-treesitter/nvim-treesitter-refactor",
+        {
+          "nvim-treesitter/playground",
+          cmd = { "TSPlaygroundToggle", "TSHighlightCapturesUnderCursor" }
+        },
+      },
       run = ":TSUpdate",
       config = function()
         require("zchee.plugins.treesitter")
@@ -327,33 +247,29 @@ return packer.startup(
 
     -- git
     use {
+      'lewis6991/gitsigns.nvim',
+      requires = {
+        -- 'nvim-lua/plenary.nvim'
+      },
+      config = function()
+        require("zchee.plugins.gitsigns")
+      end
+    }
+    use {
       "TimUntersberger/neogit",
-      disable = true,
       requires = {
         "nvim-lua/plenary.nvim",
         "sindrets/diffview.nvim",
       },
-      -- cmd = "Neogit",
+      cmd = "Neogit",
       config = function()
         require("zchee.plugins.neogit")
-      end
-    }
-    use {
-      'lewis6991/gitsigns.nvim',
-      requires = {
-        'nvim-lua/plenary.nvim'
-      },
-      config = function()
-        require("zchee.plugins.gitsigns")
       end
     }
 
     -- quickfix
     use {
       "kevinhwang91/nvim-bqf",
-      requires = {
-        "junegunn/fzf",
-      },
       ft = "qf",
       config = function ()
         require("zchee.plugins.bqf")
@@ -365,8 +281,9 @@ return packer.startup(
       "mfussenegger/nvim-dap",
       requires = {
         "rcarriga/nvim-dap-ui",
-        "jbyuki/one-small-step-for-vimkind",
+        "theHamsta/nvim-dap-virtual-text",
         "leoluz/nvim-dap-go",
+        "jbyuki/one-small-step-for-vimkind",
       },
       config = function()
         require("zchee.plugins.dap")
@@ -378,9 +295,11 @@ return packer.startup(
       "itchyny/lightline.vim",
       requires = {
         "ryanoasis/vim-devicons",
-        "maximbaz/lightline-ale",
-        -- "mgee/lightline-bufferline",
+        -- "maximbaz/lightline-ale",
       },
+    }
+    use {
+      "kyazdani42/nvim-web-devicons",
     }
     use {
       "akinsho/bufferline.nvim",
@@ -391,27 +310,24 @@ return packer.startup(
         require("zchee.plugins.bufferline")
       end,
     }
-    use {
-      "voldikss/vim-floaterm",
-      disable = true,
-      cmd = {
-        "FloatermNew",
-        "FloatermToggle",
-        "FloatermPrev",
-        "FloatermNext",
-        "FloatermHide",
-      },
-    }
+    -- use {
+    --   "fgheng/winbar.nvim",
+    --   requires = {
+    --     "kyazdani42/nvim-web-devicons",
+    --   },
+    --   cfile_icononfig = function()
+    --     require("zchee.plugins.winbar")
+    --   end,
+    -- }
     use {
       "liuchengxu/vista.vim",
-      -- disable = true,
       cmd = { "Vista" },
     }
 
     -- linters
     use {
-      "mfussenegger/nvim-lint",
       disable = true,
+      "mfussenegger/nvim-lint",
       config = function()
         require("zchee.plugins.lint")
       end,
@@ -442,6 +358,17 @@ return packer.startup(
         "kana/vim-operator-user",
       },
     }
+    
+    -- comment
+    use {
+      'numToStr/Comment.nvim',
+      requires = {
+        "JoosepAlviste/nvim-ts-context-commentstring",
+      },
+      config = function()
+        require("zchee.plugins.comment")
+      end
+    }
 
     -- utilities
     use {
@@ -458,6 +385,7 @@ return packer.startup(
       "rhysd/accelerated-jk"
     }
     use {
+      disable = true,
       "RRethy/vim-illuminate",
       config = function()
         vim.g.Illuminate_delay = 300
@@ -467,9 +395,6 @@ return packer.startup(
           hi LspReferenceRead  guifg=None guibg=None gui=underline
         ]])
       end,
-    }
-    use {
-      "tyru/caw.vim"
     }
     use {
       "tyru/open-browser.vim",
@@ -494,6 +419,74 @@ return packer.startup(
     }
 
     -- unsed
+    -- use {
+    --   "ms-jpq/coq_nvim",
+    --   requires = {
+    --     "neovim/nvim-lspconfig",
+    --     "williamboman/nvim-lsp-installer",
+    --     "folke/lua-dev.nvim",
+    --     "ray-x/lsp_signature.nvim",
+    --     "ms-jpq/coq.artifacts",
+    --     "b0o/schemastore.nvim",
+    --   },
+    --   config = function()
+    --     require('zchee.plugins.coq')
+    --     require('zchee.plugins.lsp')
+    --   end,
+    -- }
+    -- use {
+    --   "ms-jpq/coq.thirdparty",
+    --   config = function()
+    --     require "coq_3p" {
+    --     {
+    --         src = "nvimlua",
+    --         short_name = "nlua",
+    --         conf_only = false,
+    --       },
+    --       {
+    --         src = "dap",
+    --       },
+    --       {
+    --         src = "vim_dadbod_completion",
+    --         short_name = "dadbod",
+    --       },
+    --     }
+    --   end
+    -- }
+    -- use {
+    --   "Shougo/ddc.vim",
+    --   requires = {
+    --     "vim-denops/denops.vim",
+    --     "Shougo/ddc-nvim-lsp",
+    --     "Shougo/ddc-converter_remove_overlap",
+    --     "Shougo/ddc-matcher_head",
+    --     "Shougo/ddc-sorter_rank",
+    --     "neovim/nvim-lspconfig",
+    --     "williamboman/nvim-lsp-installer",
+    --     "Shougo/pum.vim",
+    --     "ray-x/lsp_signature.nvim",
+    --     "Shougo/echodoc.vim",
+    --     "matsui54/ddc-nvim-lsp-doc",
+    --     "b0o/schemastore.nvim",
+    --   },
+    --   config = function()
+    --     require('zchee.plugins.ddc')
+    --     require('zchee.plugins.lsp')
+    --   end
+    -- }
+    -- use {
+    --   "Shougo/deol.nvim",
+    -- }
+    -- use {
+    --   "voldikss/vim-floaterm",
+    --   cmd = {
+    --     "FloatermNew",
+    --     "FloatermToggle",
+    --     "FloatermPrev",
+    --     "FloatermNext",
+    --     "FloatermHide",
+    --   },
+    -- }
     -- use {
     --   "nathom/filetype.nvim",
     --   config = function()
@@ -533,9 +526,6 @@ return packer.startup(
       requires = {
         "nvim-lua/plenary.nvim",
       },
-    }
-    use {
-      "tweekmonster/hl-goimport.vim",
     }
     use {
       -- "hofstadter-io/cue.vim",
@@ -583,35 +573,16 @@ return packer.startup(
     }
     use {
       "cappyzawa/starlark.vim",
-      ft = "starlark",
     }
     use {
       "HerringtonDarkholme/yats.vim",
       ft = "yaml",
     }
-
-    -- markdown
     use {
       "iamcco/markdown-preview.nvim",
       run = { "cd app & yarn install" },
+      ft = "markdown",
       config = function()
-      --   -- vim.g.mkdp_auto_start = 0
-      --   -- vim.g.mkdp_auto_close = 0
-      --   vim.g.mkdp_markdown_css = config_path.."/assets/markdown-preview.nvim/github.css"
-      --   vim.g.mkdp_highlight_css = config_path.."/assets/markdown-preview.nvim/highlight.css"
-      --   -- vim.g.mkdp_preview_options = {
-      --   --   mkit                = {},
-      --   --   katex               = {},
-      --   --   uml                 = {},
-      --   --   maid                = {},
-      --   --   disable_sync_scroll = 0,
-      --   --   sync_scroll_type    = "middle",
-      --   --   hide_yaml_meta      = 1,
-      --   --   sequence_diagrams   = {},
-      --   --   flowchart_diagrams  = {},
-      --   --   content_editable    = true,
-      --   --   disable_filename    = 1,
-      --   -- }
         vim.cmd([[
           function! s:markdown_preview_kitty()
             call mkdp#util#open_preview_page()
@@ -625,16 +596,12 @@ return packer.startup(
       "moorereason/vim-markdownfmt",
       ft = "markdown",
     }
-
-    -- git
     use {
       "gisphm/vim-gitignore",
     }
     use {
       "rhysd/vim-syntax-codeowners",
     }
-
-    -- vim
     use {
       "vim-jp/vimdoc-ja",
     }
@@ -655,21 +622,43 @@ return packer.startup(
     }
     use {
       "jparise/vim-graphql",
+      ft = "graphql",
+    }
+    use {
+      "hashivim/vim-terraform",
+      ft = { "hcl", "terraform" }
     }
     use {
       "ericpruitt/tmux.vim",
     }
     use {
-      "hashivim/vim-terraform",
-      ft = "terraform",
-    }
-    use {
       "vim-scripts/vim-niji",
     }
-    -- modulemap
     use {
       "compnerd/modulemap-vim",
     }
+    use {
+      "aklt/plantuml-syntax",
+    }
+    use {
+      "weirongxu/plantuml-previewer.vim",
+    }
+    use {
+      "fladson/vim-kitty",
+    }
+    use {
+      "chrisbra/vim-zsh",
+    }
+    use {
+      "direnv/direnv.vim",
+    }
+
+    -- unsed
+    -- terraform
+    -- use {
+    --   "hashivim/vim-terraform",
+    --   ft = "terraform",
+    -- }
     -- sql
     -- use {
     --   "tpope/vim-dadbod",
@@ -680,23 +669,6 @@ return packer.startup(
     -- use {
     --   "kristijanhusak/vim-dadbod-ui",
     -- }
-    -- plantuml
-    use {
-      "aklt/plantuml-syntax",
-    }
-    use {
-      "weirongxu/plantuml-previewer.vim",
-    }
-    -- kitty
-    use {
-      "fladson/vim-kitty",
-    }
-    -- zsh
-    use {
-      "chrisbra/vim-zsh",
-    }
-
-    -- unsed
     -- use {
     --   "bfrg/vim-cpp-modern",
     --   ft = { "c", "cpp" },

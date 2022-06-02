@@ -113,7 +113,7 @@ vim.opt.inccommand = "nosplit"
 vim.opt.isfname:remove("=")
 vim.opt.keywordprg = ":Help"
 vim.opt.langmenu = "none"
-vim.opt.laststatus = 2
+vim.opt.laststatus = 3
 vim.opt.linebreak = true
 vim.opt.lazyredraw = true
 vim.opt.listchars = { tab = "»-", trail = "-", nbsp = "%", extends = "›", precedes = "‹" }
@@ -169,6 +169,7 @@ vim.opt.updatetime = 100  -- default: 4000
 vim.opt.pumblend = 15
 vim.opt.pumheight = 30
 vim.opt.virtualedit = "block"
+-- vim.opt.winbar = vim.fn.expand('%:~:.:h')..'/%t'
 vim.opt.wildignore:append("*.jpg", "*.jpeg", "*.bmp", "*.gif", "*.png")
 vim.opt.wildignore:append("*.o", "*.obj", "*.exe", "*.dll", "*.so", "*.out", "*.class")
 vim.opt.wildignore:append("*.swp", "*.swo", "*.swn")
@@ -200,150 +201,3 @@ vim.opt.visualbell = false
 vim.opt.wrapscan = false
 
 vim.opt.termguicolors = true
-
--- set autoindent
--- set autoread
--- set backup
--- set backupdir=$XDG_DATA_HOME/nvim/backup
--- set belloff=all
--- set cindent
--- set cinkeys-=0#             " comments don't fiddle with indenting
--- set cinoptions+=:0,g0,N-1,m1
--- set cinoptions=''                 " See :h cinoptions-values
--- set clipboard+=unnamedplus
--- set cmdheight=2
--- set cmdwinheight=50
--- set complete=.  " .,w,b,u,t  " default: .,w,b,u,t, .
--- set completeopt=noinsert,noselect,menuone  " noinsert,noselect,longest,menu,menuone,preview
--- set concealcursor=niv
--- set conceallevel=0
--- set copyindent
--- set cpoptions-=_
--- set cscopetag
--- set diffopt+=hiddenoff
--- set directory=$XDG_DATA_HOME/nvim/swap
--- set display-=msgsep
--- set emoji
--- set encoding=utf-8
--- set expandtab
--- set fileformats=unix,mac,dos
--- " set fillchars="diff:⣿,fold: ,vert:│"  " ,msgsep:‾
--- " set fillchars=vert:│,fold:·
--- set fillchars=vert:\|
--- set foldcolumn=0
--- set foldlevel=0
--- set foldlevelstart=99  "open all folds by default
--- " set foldmethod=manual
--- set foldmethod=expr
--- set foldexpr=nvim_treesitter#foldexpr()
--- set foldnestmax=1     " maximum fold depth
--- set formatoptions+=c  " Autowrap comments using textwidth - :help fo-table
--- set formatoptions+=j  " Delete comment character when joining commented lines
--- set formatoptions+=l  " do not wrap lines that have been longer when starting insert mode already
--- set formatoptions+=n  " Recognize numbered lists
--- set formatoptions+=q  " Allow formatting of comments with "gq"
--- set formatoptions+=r  " Insert comment leader after hitting <Enter>
--- set formatoptions+=t  " Auto-wrap text using textwidth
--- set formatoptions-=o  " Automatically insert the current comment leader after hitting 'o' or'O' in Normal mode
--- set grepformat=%f:%l:%c:%m
--- " set grepprg=rg\ -H\ --no-heading\ --smart-case\ --vimgrep
--- set helplang=en,ja
--- set hidden
--- set history=10000
--- set iminsert=0
--- set imsearch=0
--- set inccommand=nosplit
--- set isfname-==
--- set keywordprg=:Help
--- set langmenu=none
--- set laststatus=2
--- set linebreak
--- set lazyredraw
--- set listchars=tab:»-,trail:-,nbsp:%,extends:›,precedes:‹
--- " set listchars=nbsp:%,extends:›,precedes:‹ " tab:»-,trail:_,nbsp:+
--- set makeprg=make
--- set matchtime=0  " disable nvim matchparen
--- set maxmempattern=2000000  " default: 1000, max: 2000000
--- set modelines=1
--- set mouse=a
--- set number
--- set path+=$PWD/**,**
--- set previewheight=5
--- set pumblend=25
--- set pumheight=30
--- set pyxversion=3
--- set redrawtime=2000
--- set regexpengine=2
--- set ruler
--- set scrollback=100000
--- set scrolljump=5
--- set scrolloff=8  " default: 0
--- set secure
--- set shada='20,<50,s10
--- set shiftround
--- set shiftwidth=2
--- set shortmess+=cI  " atOIc " default: filnxtToOF
--- set showfulltag
--- set showtabline=2
--- set sidescroll=1  " 0
--- set sidescrolloff=15  " 0
--- set signcolumn=yes:2
--- set sessionoptions=blank,buffers,curdir,folds,globals,help,resize,tabpages,terminal,winpos,winsize
--- set smartcase
--- set smartindent
--- set smarttab
--- set softtabstop=2
--- set splitbelow
--- set splitright
--- set suffixes+=.pyc
--- set switchbuf=uselast  " useopen
--- set synmaxcol=3000  " default: 3000, 0: unlimited, 400, 1500, 5000
--- set tabstop=2
--- set tagcase=smart
--- set tags=./tags;  " http://d.hatena.ne.jp/thinca/20090723/1248286959
--- set textwidth=0
--- " set title
--- " set titlestring=%{getpid().':'.getcwd()}
--- set timeout         " mappnig timeout
--- set timeoutlen=200  " default: 1000
--- set ttimeout        " keycode timeout
--- set ttimeoutlen=20  " default: 50
--- set undodir=~/.local/share/nvim/undo
--- set undofile
--- set undolevels=100000
--- set updatetime=100  " default: 4000
--- set pumblend=15
--- set pumheight=30
--- set virtualedit=block
--- set wildignore+=*.jpg,*.jpeg,*.bmp,*.gif,*.png            " image
--- set wildignore+=*.o,*.obj,*.exe,*.dll,*.so,*.out,*.class  " compiler
--- set wildignore+=*.swp,*.swo,*.swn                         " vim
--- set wildignore+=*/.git,*/.hg,*/.svn                       " vcs
--- set wildignore+=tags,*.tags                               " tags
--- set wildmenu
--- set wildmode=longest,full
--- set wildoptions=pum
--- set winblend=20
--- set wrap
--- set writebackup
--- 
--- set noautochdir
--- set nocursorcolumn
--- set nocursorline
--- set noerrorbells
--- set nofoldenable
--- set noignorecase
--- set noimdisable
--- set nojoinspaces
--- set nolist
--- set noshiftround
--- set noshowcmd
--- set noshowmatch
--- set noshowmode
--- set nospell
--- set noswapfile
--- set novisualbell
--- set nowrapscan
--- 
--- set termguicolors
--- =================================================================================================

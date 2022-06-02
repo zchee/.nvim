@@ -1,54 +1,19 @@
-vim.g.nvim_tree_add_trailing = 1
-vim.g.nvim_tree_create_in_closed_folder = 0
-vim.g.nvim_tree_git_hl = 1
-vim.g.nvim_tree_git_hl = 1
-vim.g.nvim_tree_group_empty = 1
-vim.g.nvim_tree_highlight_opened_files = 1
-vim.g.nvim_tree_highlight_opened_files = 1
-vim.g.nvim_tree_icon_padding = ' '
--- vim.g.nvim_tree_indent_markers = 1
-vim.g.nvim_tree_respect_buf_cwd = 1
-vim.g.nvim_tree_root_folder_modifier = ':~'
-vim.g.nvim_tree_symlink_arrow = ' >> '
-
-vim.g.nvim_tree_show_icons = {
-  git = 1,
-  folders = 1,
-  files = 1,
-  folder_arrows = 0,
-}
-vim.g.nvim_tree_icons = {
-  default = '',
-  symlink = '',
-  git = {
-    unstaged = "✗",
-    staged = "✓",
-    unmerged = "",
-    renamed = "➜",
-    untracked = "★",
-    deleted = "",
-    ignored = "◌",
-  },
-  folder = {
-    arrow_open = "",
-    arrow_closed = "",
-    default = "",
-    open = "",
-    empty = "",
-    empty_open = "",
-    symlink = "",
-    symlink_open = "",
-  }
-}
-
 local nvim_tree = require("nvim-tree")
 nvim_tree.setup {
-  disable_netrw       = true,
-  hijack_netrw        = true,
-  open_on_setup       = false,
-  open_on_tab         = false,
-  hijack_cursor       = true,
-  update_cwd          = true,
+  auto_reload_on_write = true,
+  create_in_closed_folder = false,
+  disable_netrw = true,
+  hijack_netrw = true,
+  hijack_cursor = true,
+  hijack_unnamed_buffer_when_opening = false,
+  ignore_buffer_on_setup = false,
+  open_on_setup = false,
+  open_on_setup_file = false,
+  open_on_tab = false,
+  sort_by = "name",
+  update_cwd = true,
+  respect_buf_cwd = true,
+  reload_on_bufenter = false,
   view = {
     width = "10%",
     height = 30,
@@ -66,11 +31,46 @@ nvim_tree.setup {
     },
   },
   renderer = {
+    add_trailing = true,
+    group_empty = true,
+    root_folder_modifier = ":~",
+    highlight_opened_files = "all",
     indent_markers = {
       enable = false,
     },
     icons = {
       webdev_colors = true,
+      symlink_arrow =  ">>" ,
+      padding = " ",
+      show = {
+        file = true,
+        folder = true,
+        folder_arrow = true,
+        git = true,
+      },
+      glyphs = {
+        default = "",
+        symlink = "",
+        folder = {
+          arrow_open = "",
+          arrow_closed = "",
+          default = "",
+          open = "",
+          empty = "",
+          empty_open = "",
+          symlink = "",
+          symlink_open = "",
+        },
+        git = {
+          unstaged = "✗",
+          staged = "✓",
+          unmerged = "",
+          renamed = "➜",
+          untracked = "★",
+          deleted = "",
+          ignored = "◌",
+        },
+      },
     },
   },
   hijack_directories = {
@@ -80,32 +80,31 @@ nvim_tree.setup {
   update_focused_file = {
     enable      = true,
     update_cwd  = true,
-    ignore_list = {}
+    ignore_list = {},
   },
   ignore_ft_on_setup = {},
+  system_open = {
+    cmd = "",
+    args = {},
+  },
   diagnostics = {
     enable = false,
-    icons = {
-      hint = "",
-      info = "",
-      warning = "",
-      error = "",
-    }
   },
   filters = {
-    dotfiles = true,
+    dotfiles = false,
     -- custom_filter = {}
   },
   git = {
     enable = true,
-    ignore = true,
-    timeout = 400,
+    ignore = false,
+    timeout = 200,
   },
   actions = {
     use_system_clipboard = true,
     change_dir = {
       enable = true,
       global = false,
+      restrict_above_cwd = false,
     },
     open_file = {
       quit_on_open = false,

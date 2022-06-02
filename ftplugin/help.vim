@@ -1,3 +1,8 @@
+if exists('b.did_ftplugin')
+  finish
+endif
+let b:did_ftplugin = 1
+
 " Adjusts the click position of the mouse on lines with concealed characters
 function! s:cursor_adjust() abort
   if !&conceallevel
@@ -80,7 +85,6 @@ function! s:adjust_cursor(...) abort
     endif
   endif
 endfunction
-
 
 augroup vimrc_help
   autocmd! * <buffer>

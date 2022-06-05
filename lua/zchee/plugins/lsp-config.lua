@@ -1,11 +1,14 @@
 local nvim_data = vim.fn.stdpath("data")
-local xdg_config_home = vim.fn.resolve(vim.fn.expand('$XDG_CONFIG_HOME'))
+local xdg_config_home = vim.fn.resolve(os.getenv("$XDG_CONFIG_HOME"))
 
-local packer_util = require("packer.util")
+local cmp_nvim_lsp = require("cmp_nvim_lsp")
+local lua_dev = require("lua-dev")
+local nvim_lsp_setup = require("nvim-lsp-setup")
+local lspsaga = require("lspsaga")
+local gl_codelens = require("gl.codelens")
 
 local installer_servers = require("nvim-lsp-installer.servers")
 local installer_server = require("nvim-lsp-installer.server")
-local installer_process = require("nvim-lsp-installer.core.process")
 local installer_path = require("nvim-lsp-installer.core.path")
 local installer_cargo = require("nvim-lsp-installer.core.managers.cargo")
 local installer_npm = require("nvim-lsp-installer.core.managers.npm")
@@ -47,8 +50,8 @@ local clangd = installer_server.Server:new {
       "--parse-forwarding-functions",
       "--pch-storage=memory",
       "--use-dirty-headers",
-      -- "--offset-encoding=utf-8",
       "--input-style=standard",
+      -- "--offset-encoding=utf-8",
     },
     filetypes = { "c", "cpp", "objc", "objcpp" },
   },
@@ -262,7 +265,20 @@ local awk_ls_config = {
 
 local bashls_config = {}
 
-local clangd_config = {}
+-- :Help vim.lsp.start_client()
+local clangd_config = {
+  on_new_config = function (new_config, _)
+    local cwd = vim.fn.getcwd()
+    new_config.init_options = {
+      compilationDatabasePath = cwd,
+    }
+
+    -- if string.find(cwd, "google/EXEgesis") then
+    --   new_config.cmd = vim.tbl_flatten({ new_config.cmd, "--header-insertion=never", "--compile-commands-dir="..cwd })
+    -- end
+    -- print(vim.inspect(new_config.init_options))
+  end
+}
 
 local cmake_config = {
   on_init = function(client)
@@ -312,6 +328,7 @@ local dockerls_config = {
   end
 }
 
+-- https://github.com/golang/tools/blob/master/gopls/doc/settings.md
 local gopls_config = {
   settings = {
     env = {},
@@ -333,7 +350,7 @@ local gopls_config = {
     completionBudget = "100ms",
     matcher = "fuzzy",
     symbolMatcher = "fastfuzzy",
-    symbolStyle = "dynamic",
+    symbolStyle = "package",
     hoverKind = "fulldocumentation",
     linkTarget = "",
     linksInHover = false,
@@ -389,8 +406,8 @@ local gopls_config = {
     experimentalPostfixCompletions = true,
     experimentalWorkspaceModule = true,
     templateExtensions = { "tmpl", "gotmpl", "tpl" },
-    diagnosticsDelay = "0",
-    experimentalWatchedFileDelay = "0",
+    diagnosticsDelay = "0s",
+    experimentalWatchedFileDelay = "0s",
     experimentalPackageCacheKey = true,
     allowModfileModifications = true,
     allowImplicitNetworkAccess = true,
@@ -435,7 +452,7 @@ local gopls_config = {
     end
 
     new_config.settings.env = update_env()
-    -- new_config.settings.buildFlags = update_buildFlags()
+    new_config.settings.buildFlags = update_buildFlags()
   end,
 }
 
@@ -523,11 +540,7 @@ local jsonls_config = {
   end
 }
 
-local runtime_path = vim.split(package.path, ";")
-table.insert(runtime_path, "lua")
-table.insert(runtime_path, "lua/?.lua")
-table.insert(runtime_path, "lua/?/init.lua")
-local sumneko_config = require("lua-dev").setup({
+local sumneko_config = lua_dev.setup({
   lspconfig = {
     cmd = {
       installer_path.concat { installer_servers.get_server_install_path("sumneko_lua"), "lua-language-server", "bin", "lua-language-server" },
@@ -542,11 +555,10 @@ local sumneko_config = require("lua-dev").setup({
     end,
     -- https://github.com/sumneko/lua-language-server/blob/master/script/config/config.lua
     settings = {
-      -- https://github.com/sumneko/lua-language-server/blob/master/script/config/config.lua
       Lua = {
         runtime = {
           version = "LuaJIT",
-          path = runtime_path,
+          pathStrict = true,
           unicodeName = true,
         },
         diagnostics = {
@@ -571,6 +583,9 @@ local sumneko_config = require("lua-dev").setup({
         },
         completion = {
           enable = true,
+        },
+        semantic = {
+          keyword = true,
         },
         hint = {
           enable = true,
@@ -654,11 +669,6 @@ local yamlls_config = {
       validate = true,
       hover = true,
       completion = true,
-      -- customTags = {
-      --   "!!python/name scalar",
-      --   "!Seq-example sequence",
-      --   "!Mapping-example mapping"
-      -- },
       schemas = {
         -- local
         -- [ "file:///Users/zchee/src/github.com/zchee/schema/appengine-app.schema.json" ] = {
@@ -768,18 +778,23 @@ local yamlls_config = {
 -- end
 -- bufmap("x", "gx", ":<c-u>Lspsaga range_code_action<cr>", { silent = true, noremap = true })
 
-local default_capabilities = function(capabilities)
-  -- capabilities.textDocument.completion.completionItem.snippetSupport = false
-  -- capabilities.textDocument.completion.completionItem.preselectSupport = true
-  -- capabilities.textDocument.completion.completionItem.insertReplaceSupport = true
-  -- capabilities.textDocument.completion.completionItem.labelDetailsSupport = true
-  -- capabilities.textDocument.completion.completionItem.deprecatedSupport = true
-  -- capabilities.textDocument.completion.completionItem.commitCharactersSupport = true
+local capabilities_config = function()
+  local capabilities = cmp_nvim_lsp.update_capabilities(vim.lsp.protocol.make_client_capabilities())
+  capabilities.textDocument.completion.completionItem.snippetSupport = true
+  capabilities.textDocument.completion.completionItem.preselectSupport = true
+  capabilities.textDocument.completion.completionItem.insertReplaceSupport = true
+  capabilities.textDocument.completion.completionItem.labelDetailsSupport = true
+  capabilities.textDocument.completion.completionItem.deprecatedSupport = true
+  capabilities.textDocument.completion.completionItem.commitCharactersSupport = true
+  capabilities.textDocument.completion.completionItem.contextSupport = true
+  capabilities.textDocument.definition = {
+    linkSupport = false,
+  }
+  capabilities.window.showDocument.support = true
 
   return capabilities
 end
 
-local nvim_lsp_setup = require("nvim-lsp-setup")
 nvim_lsp_setup.setup({
   default_mappings = false,
   mappings = {
@@ -795,9 +810,9 @@ nvim_lsp_setup.setup({
     ["<LocalLeader>gt"] = "lua vim.lsp.buf.type_definition()",
     ["<LocalLeader>gx"] = "Lspsaga code_action<cr>",  -- "lua vim.lsp.buf.code_action()",
     ge = "Lspsaga show_line_diagnostics",
-    K = "Lspsaga hover_doc",  -- "lua vim.lsp.buf.hover()",
+    K  = "Lspsaga hover_doc",  -- "lua vim.lsp.buf.hover()",
   },
-  capabilities = default_capabilities(vim.lsp.protocol.make_client_capabilities()),
+  capabilities = capabilities_config(),
   on_attach = function(client, bufnr)
     _ = client
     _ = bufnr
@@ -830,6 +845,47 @@ nvim_lsp_setup.setup({
   },
 })
 
+lspsaga.setup({
+  debug = false,
+  use_saga_diagnostic_sign = false,
+  error_sign = "",
+  warn_sign = "",
+  hint_sign = "",
+  infor_sign = "",
+  diagnostic_header_icon = "   ",
+  code_action_icon = " ",
+  code_action_prompt = {
+    enable = true,
+    sign = false,
+    sign_priority = 40,
+    virtual_text = false,
+  },
+  finder_definition_icon = "  ",
+  finder_reference_icon = "  ",
+  max_preview_lines = 10,
+  finder_action_keys = {
+    open = "o",
+    vsplit = "s",
+    split = "i",
+    quit = "q",
+    scroll_down = "<C-f>",
+    scroll_up = "<C-b>",
+  },
+  code_action_keys = {
+    quit = "q",
+    exec = "<CR>",
+  },
+  rename_action_keys = {
+    quit = "<C-c>",
+    exec = "<CR>",
+  },
+  definition_preview_icon = "  ",
+  border_style = "round",
+  rename_prompt_prefix = "➤",
+  server_filetype_map = {},
+  diagnostic_prefix_format = "%d. ",
+})
+
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
   vim.lsp.handlers.hover, {
   border = {
@@ -847,7 +903,7 @@ vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
 
 -- https://github.com/tjdevries/config_manager/blob/master/xdg_config/nvim/lua/tj/lsp/handlers.lua
 
--- Jump directly to the first available definition every time.
+-- Jump directly to the first available definition every time
 vim.lsp.handlers["textDocument/definition"] = function(_, result)
   if not result or vim.tbl_isempty(result) then
     print "[LSP] Could not find definition"
@@ -855,9 +911,9 @@ vim.lsp.handlers["textDocument/definition"] = function(_, result)
   end
 
   if vim.tbl_islist(result) then
-    vim.lsp.util.jump_to_location(result[1], "utf-8")
+    vim.lsp.util.jump_to_location(result[1], "utf-8", true)
   else
-    vim.lsp.util.jump_to_location(result, "utf-8")
+    vim.lsp.util.jump_to_location(result, "utf-8", true)
   end
 end
 
@@ -983,7 +1039,7 @@ end
 --   end)
 -- end
 
-vim.lsp.codelens.display = require("gl.codelens").display
+vim.lsp.codelens.display = gl_codelens.display
 
 -- local lspconfig = require("lspconfig")
 -- lspconfig.util.default_config = vim.tbl_extend("force", lspconfig.util.default_config,

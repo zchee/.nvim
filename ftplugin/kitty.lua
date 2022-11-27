@@ -1,0 +1,1 @@
+vim.b.commentstring = "#\\ %s%"

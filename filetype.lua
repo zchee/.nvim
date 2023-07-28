@@ -1,16 +1,25 @@
-local xdg_config_home = vim.fn.expand("$XDG_CONFIG_HOME")
-local xdg_cache_home  = vim.fn.expand("$XDG_CACHE_HOME")
-local xdg_data_home   = vim.fn.expand("$XDG_DATA_HOME")
+---Expands env path and reads symbolic link.
+---It's equivalent to readlink(2) syscall.
+---
+---@param env string
+---@return string|nil
+local function readlink(env)
+  local expenv = os.getenv(env)
+  return expenv and vim.loop.fs_readlink(expenv) or ""
+end
+
+local homedir         = vim.loop.os_homedir()
+local xdg_config_home = readlink("XDG_CONFIG_HOME")
+local xdg_cache_home  = os.getenv("XDG_CACHE_HOME")
+local xdg_data_home   = readlink("XDG_DATA_HOME")
 
 vim.filetype.add({
   extension = {
     ["code-workspace"] = "json",
     actiongrap         = "json",
+    alfredappearance   = "json",
     apinotes           = "yaml",
     asm                = "nasm",
-    bazel              = "starlark",
-    BUILD              = "starlark",
-    bzl                = "starlark",
     conf               = "conf",
     defs               = "c",
     dockerfile         = "dockerfile",
@@ -19,12 +28,15 @@ vim.filetype.add({
     envrc              = "sh",
     es6                = "javascript",
     gcloudignore       = "gitignore",
+    go                 = "go",
     go2                = "go",
     gunk               = "gunk.go",
     hla                = "hla",
     i                  = "swig",
+    icls               = "xml",
     inc                = "masm",
     jsonc              = "jsonc",
+    jsonl              = "jsonl",
     mm                 = "objcpp",
     pbtxt              = "proto",
     pth                = "python",
@@ -46,18 +58,19 @@ vim.filetype.add({
     vmoptions          = "conf",
     y                  = "goyacc",
   },
-
   filename = {
     [".bash_profile"]    = "sh",
     [".bazelrc"]         = "bzl",
     [".boto"]            = "cfg",
     [".clang-format"]    = "yaml",
     [".clangd"]          = "yaml",
+    [".dockerignore"]    = "gitignore",
     [".env"]             = "sh",
     [".env.golden"]      = "sh",
     [".env.sample"]      = "sh",
     [".envrc"]           = "sh",
     [".firebaserc"]      = "json",
+    [".gcloudignore"]    = "gitignore",
     [".gunkconfig"]      = "cfg",
     [".markdownlintrc"]  = "json",
     [".pythonrc"]        = "python",
@@ -69,39 +82,44 @@ vim.filetype.add({
     ["Gopkg.lock"]       = "toml",
     ["kitty.conf"]       = "kitty",
     ["lsif.json"]        = "json5",
+    ["netrc"]            = "netrc",
     ["osquery.conf"]     = "json",
     ["poetry.lock"]      = "toml",
     ["proto.lock"]       = "json",
-    ["renovate.json"]    = "json5",
+    ["tsconfig%.json"]   = "json5",
     bash_profile         = "sh",
     boto                 = "cfg",
-    BUILD                = "bzl",
     manifest             = "json",
     PROJECT              = "yaml",
-    WORKSPACE            = "starlark",
   },
-
   pattern = {
-    [".*%.go%.tpl"]                                = "gotexttmpl",
-    [".*%.schema%.json"]                           = "jsonschema",
-    [".*%.xo%.go%.tpl"]                            = "go",
-    [".*/c%+%+/.*"]                                = "cpp",
-    [".*/funcs%.go%.tpl"]                          = "go",
-    [".*/git/config"]                              = "gitconfig",
-    [".*/google%-cloud%-sdk/properties"]           = "cfg",
-    [".*/kitty/.*%.conf"]                          = "kitty",
-    [".*/kube/config"]                             = "yaml",
-    [".*/makedefs/.*"]                             = "make",
-    [".*/testdata/.*/.*%.go%.golden"]              = "go",
-    ["/private/etc/sudoers%.d/.*"]                 = "sudoers",
-    ["/usr/local/share/zsh/.*"]                    = "zsh",
-    ["[Dd]ockerfile.*[^.vim]"]                     = "dockerfile",
-    [xdg_cache_home.."/go/go%-build/.*"]           = "go",
-    [xdg_config_home.."/direnv/direnvrc"]          = "sh",
-    [xdg_config_home.."/gcloud/configurations/.*"] = "cfg",
-    [xdg_config_home.."/go/env.*"]                 = "sh",
-    [xdg_config_home.."/jira%.d/templates/.*"]     = "gotexttmpl",
-    [xdg_config_home.."/zsh/.*"]                   = "zsh",
-    [xdg_data_home.."/token/.*"]                   = "sh",
+    [".*%.go%.tpl"]                                                = "gotexttmpl",
+    [".*%.schema%.json"]                                           = "jsonschema",
+    [".*%.tf%.tmpl"]                                               = "terraform",
+    [".*%.xo%.go%.tpl"]                                            = "go",
+    [".*%renovate%.json"]                                          = "json5",
+    [".*/.jira.d/templates/.*"]                                    = "gotexttmpl",
+    [".*/c%+%+/.*"]                                                = "cpp",
+    [".*/funcs%.go%.tpl"]                                          = "go",
+    [".*/git/config"]                                              = "gitconfig",
+    [".*/google%-cloud%-sdk/properties"]                           = "cfg",
+    [".*/kitty/.*%.conf"]                                          = "kitty",
+    [".*/kube/config"]                                             = "yaml",
+    [".*/kustomize/.*"]                                            = "yaml",
+    [".*/makedefs/.*"]                                             = "make",
+    [".*/testdata/.*/.*%.go%.golden"]                              = "go",
+    ["/private/etc/sudoers%.d/.*"]                                 = "sudoers",
+    ["/usr/local/share/zsh/.*"]                                    = "zsh",
+    ["[Dd]ockerfile.*[^.vim]"]                                     = "dockerfile",
+    [vim.fs.joinpath(homedir, ".ssh/config.d/.*")]                 = "sshconfig",
+    [vim.fs.joinpath(xdg_cache_home, "go/go-build/.*")]            = "go",
+    [vim.fs.joinpath(xdg_config_home, "direnv/direnvrc")]          = "sh",
+    [vim.fs.joinpath(xdg_config_home, "gcloud/configurations/.*")] = "cfg",
+    [vim.fs.joinpath(xdg_config_home, "git/config.d/.*")]          = "gitconfig",
+    [vim.fs.joinpath(xdg_config_home, "go/env/.*")]                = "sh",
+    [vim.fs.joinpath(xdg_config_home, "jira.d/templates/.*")]      = "gotexttmpl",
+    [vim.fs.joinpath(xdg_config_home, "op/config")]                = "json",
+    [vim.fs.joinpath(xdg_config_home, "zsh/.*")]                   = "zsh",
+    [vim.fs.joinpath(xdg_data_home, "token/.*")]                   = "sh",
   },
 })

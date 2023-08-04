@@ -14,10 +14,3 @@ vim.bo.comments = "s1:/*,mb:*,ex:*/,://"
 vim.bo.commentstring = "// %s"
 vim.opt.formatoptions:remove("t")
 vim.bo.expandtab = false
-
-vim.cmd([[
-augroup gotexttmplBuffer
-  autocmd! * <buffer>
-  autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync(nil, 1000)
-augroup end
-]])

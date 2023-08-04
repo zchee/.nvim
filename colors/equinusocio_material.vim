@@ -165,7 +165,6 @@ call s:hl('MatchParen',         s:p.material.black,        s:p.material.red, s:p
 
 call s:hl('ModeMsg',            s:p.material.foreground,   s:p.none, s:p.none, 0)
 call s:hl('MoreMsg',            s:p.material.red,          s:p.none, s:p.none, 0)
-" call s:hl('NonText',            s:p.material.indent_line,  s:p.none, s:p.none, 0)
 call s:hl('NonText',            s:p.none,                  s:p.none, s:p.none, 0)
 call s:hl('Normal',             s:p.material.foreground,   s:p.none, s:p.none, 0)
 call s:hl('TermCursor',         s:p.material.cursor,       s:p.material.cursor_bg, s:p.none, 0)
@@ -272,23 +271,7 @@ call s:hl('Error',              s:p.material.red,          s:p.none, s:p.bold.',
 call s:hl('Todo',               s:p.material.caret,        s:p.none, s:p.none, 0)
 
 " ------------------------------------------------------------------------------
-" ale
-
-call s:hl('ALEError',           s:p.none,                  s:p.none, s:p.underline, 0)
-call s:hl('ALEWarning',         s:p.none,                  s:p.none, s:p.underline, 0)
-call s:hl('ALEInfo',            s:p.none,                  s:p.none, s:p.underline, 0)
-call s:hl('ALEErrorSign',       s:p.material.red,          s:p.none, s:p.none, 0)
-call s:hl('ALEWarningSign',     s:p.material.yellow,       s:p.none, s:p.none, 0)
-call s:hl('ALEInfoSign',        s:p.material.cyan,         s:p.none, s:p.none, 0)
-
-" ------------------------------------------------------------------------------
-" echodoc
-
-call s:hl('EchoDocFloat',       s:p.material.foreground,   s:p.material.black, s:p.none, 0)
-call s:hl('EchoDocPopup',       s:p.material.foreground,   s:p.material.black, s:p.none, 0)
-
-" ------------------------------------------------------------------------------
-" vim-lsp
+" nvim-lspcnofig
 
 call s:hl('LspErrorText',            s:p.material.red,     s:p.none, s:p.none,      0)
 call s:hl('LspWarningText',          s:p.material.yellow,  s:p.none, s:p.none,      0)

@@ -8,9 +8,13 @@
 "                                                                                                 "
 " -------------------------------------------------------------------------------------------------
 
-lua require("impatient")
-lua require('zchee.nvim')
-lua require('init')
+if exists('g:vscode')
+  source 'vscode.vim'
+  finish
+endif
+
+lua require("zchee.nvim")
+lua require("init")
 
 let s:gopath         = expand('$HOME/go')
 let s:gopath_src     = s:gopath . '/src/'
@@ -25,55 +29,6 @@ augroup GlobalAutoCmd
 augroup END
 command! -nargs=* Gautocmd   autocmd GlobalAutoCmd <args>
 command! -nargs=* Gautocmdft autocmd GlobalAutoCmd FileType <args>
-
-" -------------------------------------------------------------------------------------------------
-" paths
-
-if has('mac')
-  set wildignore+=.DS_Store  " macOS only
-
-  function! s:path_add_macos_headers()
-    let s:developer_dir = '/Applications/Xcode.app/Contents/Developer'
-    if isdirectory('/Applications/Xcode-beta.app')
-      let s:developer_dir = '/Applications/Xcode-beta.app/Contents/Developer'
-    endif
-    let s:sdk_dir        = s:developer_dir . '/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk'
-    let s:toolchain_dir  = s:developer_dir . '/Toolchains/XcodeDefault.xctoolchain'
-
-    let s:macos_paths =
-          \ expand($HOME) . '/.local/include'
-          \ . ',/usr/local/include'
-          \ . ',' . s:sdk_dir . '/usr/include'
-          \ . ',' . s:toolchain_dir . '/usr/include/c++/v1'
-          \ . ',' . s:toolchain_dir . '/usr/include/swift'
-          \ . ',' . '/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include'
-          \ . ',' . s:toolchain_dir . '/usr/lib/clang/**/include'
-          \ . ',' . '/Users/zchee/src/github.com/apple-oss-distributions/xnu'
-
-    execute 'set path+=' . s:macos_paths
-
-    " macOS frameworks
-    if isdirectory(expand($XDG_CONFIG_HOME) . '/nvim/path/Frameworks')
-      execute 'set path+=' . expand($XDG_CONFIG_HOME) . '/nvim/path/Frameworks'
-    endif
-  endfunction
-
-  Gautocmdft c,cpp,objc,objcpp,go call s:path_add_macos_headers()  " only Go and C family filetypes
-endif
-
-function! s:go_include()
-  if isdirectory('/usr/local/go/pkg/include')
-    set path+=/usr/local/go/pkg/include
-  endif
-endfunction
-Gautocmdft go,goasm call s:go_include()  " only Go filetype
-
-function! s:path_add_python_headers()
-  if isdirectory('/usr/local/Frameworks/Python.framework/Headers')
-    set path+=/usr/local/Frameworks/Python.framework/Headers
-  endif
-endfunction
-Gautocmdft c,cpp,objc,objcpp call s:path_add_python_headers()  " only Go and C family filetypes
 
 " -------------------------------------------------------------------------------------------------
 "" Neovim:
@@ -101,50 +56,7 @@ Gautocmd BufNewFile,BufRead,BufEnter term://* startinsert
 Gautocmd BufLeave term://* stopinsert
 
 " -------------------------------------------------------------------------------------------------
-" Color:
-
-"" Go:
-let g:go_highlight_error = 1
-let g:go_highlight_return = 0
-
-"" C:
-let g:c_ansi_constants = 1
-let g:c_ansi_typedefs = 1
-let g:c_comment_strings = 1
-let g:c_gnu = 0
-let g:c_no_curly_error = 1
-let g:c_no_tab_space_error = 1
-let g:c_no_trail_space_error = 1
-let g:c_syntax_for_h = 0
-
-" CPP:
-let g:cpp_class_scope_highlight = 1
-let g:cpp_experimental_template_highlight = 1
-let g:cpp_concepts_highlight = 1
-
-" Perl:
-let perl_include_pod = 1
-let perl_no_scope_in_variables = 0
-let perl_no_extended_vars = 0
-let perl_string_as_statement = 1
-let perl_no_sync_on_sub = 0
-let perl_no_sync_on_global_var = 0
-let perl_sync_dist = 100
-
-" -------------------------------------------------------------------------------------------------
 " Gautocmd:
-
-" Global:
-Gautocmd InsertLeave * setlocal nopaste
-
-" always jump to the last known cursor position
-" - https://github.com/neovim/neovim/blob/master/runtime/vimrc_example.vim
-function! s:autoJump()
-  if line("'\"") > 1 && line("'\"") <= line("$") && &filetype != 'gitcommit' && &filetype != 'gitrebase'
-    execute "silent! keepjumps normal! g`\"zz"
-  endif
-endfunction
-Gautocmd BufWinEnter * call s:autoJump()
 
 " automatically close window
 " - http://stackoverflow.com/questions/7476126/how-to-automatically-close-the-quick-fix-window-when-leaving-a-file
@@ -164,7 +76,6 @@ Gautocmd BufNewFile,BufReadPost /System/Library/*,/Applications/Xcode*,/usr/incl
 "" less like mapping:
 function! LessMap()
   setlocal colorcolumn=""
-  let b:gitgutter_enabled = 0
   nnoremap <silent><buffer>u <C-u>
   nnoremap <silent><buffer>d <C-d>
   nnoremap <silent><buffer>q :q<CR>
@@ -181,233 +92,17 @@ Gautocmdft man://* nmap  <buffer><nowait>k  <Plug>(accelerated_jk_gk_position)
 
 
 " Language:
-"" Go:
-
-"" C:
-
-"" Protobuf:
-
-"" Dockerfile:
-
-" Python:
-
 " Vim:
 "" nested autoload
-Gautocmdft vim setlocal tags+=$XDG_DATA_HOME/nvim/tags/runtime.tags
 Gautocmdft qf hi Search  gui=None  guifg=None  guibg=#373b41
-
-"" Gitcommit:
-Gautocmd BufEnter COMMIT_EDITMSG  startinsert
-
-"" Misc:
-Gautocmdft jsp,asp,php,xml,perl syntax sync minlines=500 maxlines=1000
 
 " -------------------------------------------------------------------------------------------------
 " Plugin Setting:
 
-"" LSP:
-" LLVM Library Path
-if isdirectory('/opt/llvm/devel')
-  let s:llvm_base_path = '/opt/llvm/devel'
-  let s:llvm_clang_version = '14.0.0'
-elseif isdirectory('/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr')
-  let s:llvm_base_path = '/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr'
-  let s:llvm_clang_version = '13.0.0'
-elseif isdirectory('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr')
-  let s:llvm_base_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr'
-  let s:llvm_clang_version = '13.0.0'
-elseif isdirectory('/Library/Developer/CommandLineTools/usr')
-  let s:llvm_base_path = '/Library/Developer/CommandLineTools/usr'
-  let s:llvm_clang_version = '13.0.0'
-else
-  echoerr 'not found s:llvm_base_path and s:llvm_clang_version'
-endif
-
-if isdirectory('/Applications/Xcode-beta.app')
-  let s:developer_dir = '/Applications/Xcode-beta.app'
-elseif isdirectory('/Applications/Xcode.app')
-  let s:developer_dir = '/Applications/Xcode.app'
-endif
-
-let s:clang_flags = [
-      \ '-I'.s:llvm_base_path.'/include/c++/v1',
-      \ '-I'.s:llvm_base_path.'/lib/clang'.s:llvm_clang_version.'/include',
-      \ '-I/usr/local/include',
-      \ '-I'.$SDKROOT.'/usr/include',
-      \ '-F'.s:developer_dir.'/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks',
-      \ '-F'.s:developer_dir.'/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/PrivateFrameworks',
-      \
-      \ '-isystem '.s:llvm_base_path.'/lib/clang/14.0.0',
-      \ '-isysroot'.$SDKROOT,
-      \
-      \ '-mmacosx-version-min=12.0',
-      \ ]  " clang++ -v -E -x c++ - -v < /dev/null
-      "\ '-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include',
-      "\ '-I' . s:llvm_base_path . '/include/c++/v1',
-      "\ '-I' . s:llvm_base_path . '/include/c++/v1',
-      "\ '-isystem/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3',
-      "\ '-isysroot/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk',
-      "\ '-isystem ' . s:llvm_base_path . '/lib/clang/' . s:llvm_clang_version,
-
-let g:clangd_commands_cfamily = [
-      \ '/opt/llvm/devel/bin/clangd',
-      \
-      \ '--all-scopes-completion',
-      \ '--clang-tidy',
-      \ '--compile_args_from=filesystem',
-      \ '--completion-parse=auto',
-      \ '--completion-style=detailed',
-      \ '--folding-ranges',
-      \ '--ranking-model=decision_forest',
-      \ '--function-arg-placeholders',
-      \ '--header-insertion-decorators',
-      \ '--header-insertion=iwyu',
-      \ '--include-ineligible-results',
-      \ '--j=20',
-      \ '--offset-encoding=utf-16',
-      \ '--pch-storage=memory',
-      \ '--static-func-full-module-prefix',
-      \ '--resource-dir=/opt/llvm/devel/lib/clang/14.0.0',
-      \ ]  " --resource-dir: $ /opt/llvm/devel/bin/clang -print-resource-dir
-      "\ '--resource-dir='.s:llvm_base_path.'/lib/clang/'.s:llvm_clang_version,
-      "\ '--info-output-file=/tmp/clangd.info.log', '--input-mirror-file=/tmp/clangd.lsp.log', '--log=verbose', '--pretty', '--input-style=standard', '--offset-encoding=utf-8',
-
-let g:c_cpp_root_path = ''
-Gautocmdft c,cpp,objc,objcpp ++once let g:c_cpp_root_path = fnamemodify(trim(finddir('.git', '.;'), '.git'), ':p:h')
-
-let g:did_server_commands_cfamily_setup = v:false
-function! s:clangd_commands_cfamily_setup() abort
-  if g:did_server_commands_cfamily_setup
-    return
-  endif
-  let g:did_server_commands_cfamily_setup = v:true
-
-  " clangd.dex
-  if filereadable(getcwd() . 'clangd.dex')
-    let g:clangd_commands_cfamily += ['--index-file=' . getcwd() . '/clangd.idx']
-  elseif filereadable(g:c_cpp_root_path . '/clangd.idx')
-    let g:clangd_commands_cfamily += ['--index-file=' . g:c_cpp_root_path . '/clangd.idx']
-  elseif filereadable(g:c_cpp_root_path . '/build/clangd.idx')
-    let g:clangd_commands_cfamily += ['--index-file=' . g:c_cpp_root_path . '/build/clangd.idx']
-  elseif filereadable(getcwd() . '/../build/clangd.idx')
-    let g:clangd_commands_cfamily += ['--index-file=' . getcwd() . '/../build/clangd.dex']
-
-  " compile_commands.json
-  elseif filereadable(glob("`find " . getcwd() . " -maxdepth 1 -type d -iwholename '*build*' `").'/compile_commands.json')
-    let g:clangd_commands_cfamily += ['--compile-commands-dir=' . glob("`find " . getcwd() . " -maxdepth 1 -type d -iwholename '*build*' `")]
-  elseif filereadable(getcwd() . '/../build/compile_commands.json')
-    let g:clangd_commands_cfamily += ['--compile-commands-dir=' . getcwd() . '/../build']
-  elseif filereadable('compile_commands.json')
-    let g:clangd_commands_cfamily += ['--compile-commands-dir=' . getcwd()]
-  elseif filereadable(g:c_cpp_root_path . '/compile_commands.json')
-    let g:clangd_commands_cfamily += ['--compile-commands-dir=' . g:c_cpp_root_path]
-  elseif filereadable(g:c_cpp_root_path . '/build/compile_commands.json')
-    let g:clangd_commands_cfamily += ['--compile-commands-dir=' . g:c_cpp_root_path . '/build']
-  elseif filereadable(g:c_cpp_root_path . '/out/Release/compile_commands.json')
-    let g:clangd_commands_cfamily += ['--compile-commands-dir=' . g:c_cpp_root_path . '/out/Release']
-  else
-    let g:clangd_commands_cfamily += ['--index']
-  endif
-endfunction
-Gautocmdft c,cpp,objc,objcpp,cuda call s:clangd_commands_cfamily_setup()
-
-let s:lsp_root_markers_cfamily = ['WORKSPACE', '.clang-format', 'autogen.sh', 'configure', 'compile_commands.json']
-let s:lsp_root_markers_go = ['go.mod', 'vendor']
-let s:lsp_root_markers_js = ['package.json', 'yarn.lock']
-let s:lsp_root_markers_python = ['setup.py', 'pyproject.toml', 'tox.ini', '.flake8']
-let s:lsp_root_markers_rust = ['Cargo.toml', 'build.rs', 'rustfmt.toml']
-let s:lsp_root_markers = {
-      \ 'c': s:lsp_root_markers_cfamily,
-      \ 'cpp': s:lsp_root_markers_cfamily,
-      \ 'go': s:lsp_root_markers_go,
-      \ 'javascript': s:lsp_root_markers_js,
-      \ 'lua': ['.git/'],
-      \ 'objc': s:lsp_root_markers_cfamily,
-      \ 'objcpp': s:lsp_root_markers_cfamily,
-      \ 'python': s:lsp_root_markers_python,
-      \ 'ruby': ['Gemfile', '.git'],
-      \ 'rust': s:lsp_root_markers_rust,
-      \ 'typescript': s:lsp_root_markers_js,
-      \ 'yaml': ['.git'],
-      \ }
-
-"" GoNvimSP:
-let g:nvim_lsp_server_commands = {
-      \ 'go': [s:gopath . '/bin/gopls', '-remote=unix;/tmp/gopls.sock'],
-      \ 'gomod': [s:gopath . '/bin/gopls', '-remote=unix;/tmp/gopls.sock'],
-      \ 'gowork': [s:gopath . '/bin/gopls', '-remote=unix;/tmp/gopls.sock'],
-      \ }
-      " \ 'go': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-logfile=/tmp/gopls.log', '-remote=unix;/tmp/gopls.sock'],
-      " \ 'gomod': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-logfile=/tmp/gopls.log', '-remote=unix;/tmp/gopls.sock'],
-      " \ 'gowork': [s:gopath . '/bin/gopls', '-vv', '-rpc.trace', '-logfile=/tmp/gopls.log', '-remote=unix;/tmp/gopls.sock'],
-let g:nvim_lsp#server_options = {
-     \ 'go': {
-     \   'env': [
-     \     'GOPRIVATE="github.com/kouzoh"',
-     \   ]}
-     \ }
-Gautocmd BufRead $HOME/go/src/gvisor.dev/gvisor/* let g:nvim_lsp#server_options = { 'go': { 'env': [ 'GOOS=linux'] }}
-" Gautocmd BufRead $HOME/go/src/go-darwin.dev/tools/**/* let g:nvim_lsp#server_options = { 'go': { 'env': [ 'CGO_CFLAGS=-march=native -isysroot/Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -I/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/13.0.0/include -Wno-deprecated-declarations', 'GOFLAGS=-tags=', 'CGO_LDFLAGS=-lc++ ' . system("find /opt/llvm/devel/lib -type f -name '*.a' | tr '\n' ' '") . ' -L/usr/lib -lz -lncurses.5.4' ] }}
-let g:nvim_lsp_server_auto_start = v:true
-let g:nvim_lsp_server_restart_on_crash = v:true
-let g:nvim_lsp_server_stderr = v:false
-let g:nvim_lsp_change_throttle = 0.5
-let g:nvim_lsp_diagnostics_list = 'location-list'
-let g:nvim_lsp_enable_diagnostics = v:true
-let g:nvim_lsp_hover_highlight = 'Normal:NormalFloat'
-let g:nvim_lsp_logLevel = 'debug'
-let g:nvim_lsp_root_markers = s:lsp_root_markers
-let g:nvim_lsp_selection_ui_auto_open = v:true
-let g:nvim_lsp_selection_ui_type = 'quickfix'
-let g:nvim_lsp_settings_paths = [ '.nvim/settings.json', $XDG_CONFIG_HOME.'/nvim/lsp/settings.json' ]
-let g:nvim_lsp_trace = 'verbose'
-let g:nvim_lsp_use_virtual_text = v:true
-" debug
-let g:nvim_lsp_debug = v:false
-let g:nvim_lsp_enable_otel = v:true
-let g:nvim_lsp_enable_datadog_profile = v:true
-let g:nvim_lsp_enable_gops = v:false
-
-"" FloatTerm:
-" let g:floaterm_keymap_toggle = '<F10>'
-" let g:floaterm_width = 0.9
-" let g:floaterm_height = 0.9
-
-
-" Caw:
-" let g:caw_hatpos_skip_blank_line = 0
-" let g:caw_no_default_keymappings = 1
-" let g:caw_operator_keymappings = 0
-
-
-" VimDevIcons:
-let g:webdevicons_enable = 1
-let g:webdevicons_enable_nerdtree = 0
-let g:webdevicons_enable_denite = 1
-let g:webdevicons_enable_unite = 0
-let g:webdevicons_enable_vimfiler = 0
-let g:webdevicons_enable_ctrlp = 0
-let g:webdevicons_enable_airline_statusline = 0
-let g:webdevicons_enable_airline_statusline_fileformat_symbols = 0
-let g:webdevicons_enable_airline_tabline = 0
-let g:webdevicons_enable_flagship_statusline = 0
-let g:webdevicons_enable_flagship_statusline_fileformat_symbols = 0
-let g:webdevicons_enable_startify = 0
-let g:webdevicons_conceal_nerdtree_brackets = 0
-let g:DevIconsAppendArtifactFix = 1
-let g:WebDevIconsUnicodeDecorateFileNodes = 1
-let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-let g:DevIconsEnableFoldersOpenClose = 1
-let g:DevIconsEnableFolderPatternMatching = 0
-let g:DevIconsEnableFolderExtensionPatternMatching = 1
-let g:WebDevIconsUnicodeDecorateFolderNodesExactMatches = 1
-let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
-
-
 " LightLine:
 " https://donniewest.com/a-guide-to-basic-neovim-plugins
 let g:lightline = {}
-let g:lightline.colorscheme = g:colors_name
+let g:lightline.colorscheme = 'equinusocio_material'
 
 function! s:quickfix_get_type()
   if exists("*win_getid") && exists("*getwininfo")
@@ -543,37 +238,8 @@ let g:lightline#bufferline#shorten_path = 1
 let g:lightline#bufferline#enable_devicons = 1
 
 
-" GitGutter:
-let g:gitgutter_async = 1
-let g:gitgutter_diff_args = ' '
-let g:gitgutter_enabled = 1
-let g:gItgutter_highlight_lines = 0
-let g:gitgutter_map_keys = 0
-let g:gitgutter_max_signs = 100000
-let g:gitgutter_override_sign_column_highlight = 1
-let g:gitgutter_terminal_reports_focus = 1
-let g:gitgutter_sign_added              = '+'
-let g:gitgutter_sign_modified           = '~'
-let g:gitgutter_sign_removed            = '_'
-let g:gitgutter_sign_removed_first_line = '‾'
-let g:gitgutter_sign_modified_removed   = '~_'
-
-
 " Wakatime:
-let g:wakatime_PythonBinary = g:python3_host_prog
-let g:wakatime_OverrideCommandPrefix = 'wakatime'
-let s:redraw_setting = 'auto'
-
-
-" Editorconfig:
-let g:EditorConfig_core_mode = 'python_external'
-
-
-" Trans:
-let g:trans_lang_credentials_file = $XDG_CONFIG_HOME.'/gcloud/credentials/kouzoh-p-zchee/trans-nvim.json'
-let g:trans_lang_locale = 'ja'
-let g:trans_lang_output = 'float'  " 'preview'
-let g:trans_lang_cutset = ['//', '#']
+let g:wakatime_CLIPath = '/usr/local/bin/wakatime'
 
 
 " OpenBrowser:
@@ -600,141 +266,127 @@ let g:switch_custom_definitions = [ [1, 0], ['v:true', 'v:false'], ['yes', 'no']
 
 " Go:
 "" NvimGo:
-let g:go#build#appengine = v:false
+" let g:go#build#appengine = v:false
 let g:go#build#autosave = v:false
-let g:go#build#is_not_gb = v:false
-" let g:go#build#flags = ['-tags', 'gojay']
+" let g:go#build#is_not_gb = v:false
+" " let g:go#build#flags = ['-tags', 'gojay']
 let g:go#build#force = v:false
-let g:go#fmt#autosave  = v:true
+let g:go#fmt#autosave  = v:false
 let g:go#fmt#mode = 'goimports'
-let g:go#guru#keep_cursor = {
-      \ 'callees'    : v:false,
-      \ 'callers'    : v:false,
-      \ 'callstack'  : v:false,
-      \ 'definition' : v:true,
-      \ 'describe'   : v:false,
-      \ 'freevars'   : v:false,
-      \ 'implements' : v:false,
-      \ 'peers'      : v:false,
-      \ 'pointsto'   : v:false,
-      \ 'referrers'  : v:false,
-      \ 'whicherrs'  : v:false
-      \ }
-let g:go#generate#test#subtest = v:true
-let g:go#generate#test#parallel = v:true
-let g:go#generate#test#template_dir = $XDG_CONFIG_HOME . '/go/template/gotests'
-let g:go#generate#test#template_params_path = ''
-let g:go#guru#reflection = v:false
-let g:go#highlight#cgo = v:true
-let g:go#iferr#autosave = v:false
-let g:go#lint#golint#autosave = v:false
-let g:go#lint#golint#ignore = ['internal', 'vendor', 'pb', 'fbs']
-let g:go#lint#golint#mode = 'root'
-let g:go#lint#govet#autosave = v:false
-let g:go#lint#govet#flags = ['-v', '-all']
-let g:go#lint#govet#ignore = ['vendor', 'testdata', '_tmp']
-let g:go#lint#metalinter#autosave = v:false
-let g:go#lint#metalinter#autosave#tools = ['vet', 'golint']
-let g:go#lint#metalinter#deadline = '20s'
-let g:go#lint#metalinter#skip_dir = ['internal', 'vendor', 'testdata', '__*.go', '*_test.go']
-let g:go#lint#metalinter#tools = ['vet', 'golint']
-let g:go#rename#prefill = v:false
-let g:go#loaded#gosnippets = v:false
-let g:go#terminal#height = 120
-let g:go#terminal#start_insert = v:false
-let g:go#terminal#width = 150
-let g:go#test#all_package = v:false
-let g:go#test#autosave = v:false
-let g:go#test#flags = ['-v']
-let g:go#debug = v:false
-let g:go#debug#pprof = v:false
-let g:go#loaded#gosnippets = 1
-""" highlight
-let g:go#highlight#terminal#test               = 1  " default : 0
-let g:go_highlight_fold_enable_comment         = 1  " default : 0
-let g:go_highlight_generate_tags               = 1  " default : 0
-let g:go_highlight_string_spellcheck           = 0  " default : 1
-let g:go_highlight_format_strings              = 1  " default : 1
-let g:go_highlight_fold_enable_package_comment = 1  " default : 0
-let g:go_highlight_fold_enable_block           = 1  " default : 0
-let g:go_highlight_import                      = 1  " default : 0
-let g:go_highlight_fold_enable_varconst        = 1  " default : 0
-let g:go_highlight_array_whitespace_error      = 0  " default : 1
-let g:go_highlight_trailing_whitespace_error   = 0  " default : 1
-let g:go_highlight_chan_whitespace_error       = 0  " default : 1
-let g:go_highlight_extra_types                 = 0  " default : 1
-let g:go_highlight_space_tab_error             = 0  " default : 1
-let g:go_highlight_operators                   = 1  " default : 0
-let g:go_highlight_functions                   = 1  " default : 0
-let g:go_highlight_function_parameters         = 0  " default : 0
-let g:go_highlight_function_calls              = 1  " default : 0
-let g:go_highlight_fields                      = 1  " default : 0
-let g:go_highlight_types                       = 0  " default : 0
-let g:go_highlight_variable_assignments        = 0  " default : 0
-let g:go_highlight_variable_declarations       = 0  " default : 0
-let g:go_highlight_build_constraints           = 1  " default : 0
+" let g:go#guru#keep_cursor = {
+"       \ 'callees'    : v:false,
+"       \ 'callers'    : v:false,
+"       \ 'callstack'  : v:false,
+"       \ 'definition' : v:true,
+"       \ 'describe'   : v:false,
+"       \ 'freevars'   : v:false,
+"       \ 'implements' : v:false,
+"       \ 'peers'      : v:false,
+"       \ 'pointsto'   : v:false,
+"       \ 'referrers'  : v:false,
+"       \ 'whicherrs'  : v:false
+"       \ }
+" let g:go#generate#test#subtest = v:true
+" let g:go#generate#test#parallel = v:true
+" let g:go#generate#test#template_dir = $XDG_CONFIG_HOME . '/go/template/gotests'
+" let g:go#generate#test#template_params_path = ''
+" let g:go#guru#reflection = v:false
+" let g:go#highlight#cgo = v:true
+" let g:go#iferr#autosave = v:false
+" let g:go#lint#golint#autosave = v:false
+" let g:go#lint#golint#ignore = ['internal', 'vendor', 'pb', 'fbs']
+" let g:go#lint#golint#mode = 'root'
+" let g:go#lint#govet#autosave = v:false
+" let g:go#lint#govet#flags = ['-v', '-all']
+" let g:go#lint#govet#ignore = ['vendor', 'testdata', '_tmp']
+" let g:go#lint#metalinter#autosave = v:false
+" let g:go#lint#metalinter#autosave#tools = ['vet', 'golint']
+" let g:go#lint#metalinter#deadline = '20s'
+" let g:go#lint#metalinter#skip_dir = ['internal', 'vendor', 'testdata', '__*.go', '*_test.go']
+" let g:go#lint#metalinter#tools = ['vet', 'golint']
+" let g:go#rename#prefill = v:false
+" let g:go#loaded#gosnippets = v:false
+" let g:go#terminal#height = 120
+" let g:go#terminal#start_insert = v:false
+" let g:go#terminal#width = 150
+" let g:go#test#all_package = v:false
+" let g:go#test#autosave = v:false
+" let g:go#test#flags = ['-v']
+" let g:go#debug = v:false
+" let g:go#debug#pprof = v:false
+" let g:go#loaded#gosnippets = 1
+" """ highlight
+" let g:go#highlight#terminal#test               = 1  " default : 0
+" let g:go_highlight_fold_enable_comment         = 1  " default : 0
+" let g:go_highlight_generate_tags               = 1  " default : 0
+" let g:go_highlight_string_spellcheck           = 0  " default : 1
+" let g:go_highlight_format_strings              = 1  " default : 1
+" let g:go_highlight_fold_enable_package_comment = 1  " default : 0
+" let g:go_highlight_fold_enable_block           = 1  " default : 0
+" let g:go_highlight_import                      = 1  " default : 0
+" let g:go_highlight_fold_enable_varconst        = 1  " default : 0
+" let g:go_highlight_array_whitespace_error      = 0  " default : 1
+" let g:go_highlight_trailing_whitespace_error   = 0  " default : 1
+" let g:go_highlight_chan_whitespace_error       = 0  " default : 1
+" let g:go_highlight_extra_types                 = 0  " default : 1
+" let g:go_highlight_space_tab_error             = 0  " default : 1
+" let g:go_highlight_operators                   = 1  " default : 0
+" let g:go_highlight_functions                   = 1  " default : 0
+" let g:go_highlight_function_parameters         = 0  " default : 0
+" let g:go_highlight_function_calls              = 1  " default : 0
+" let g:go_highlight_fields                      = 1  " default : 0
+" let g:go_highlight_types                       = 0  " default : 0
+" let g:go_highlight_variable_assignments        = 0  " default : 0
+" let g:go_highlight_variable_declarations       = 0  " default : 0
+" let g:go_highlight_build_constraints           = 1  " default : 0
 
 " C CXX:
-let c_no_curly_error = 1
+" let c_no_curly_error = 1
 
 
 " Asm:
-let g:nasm_loose_syntax = 1
-let g:nasm_ctx_outside_macro = 1
+" let g:nasm_loose_syntax = 1
+" let g:nasm_ctx_outside_macro = 1
 
 
 "" TypeScript:
-let g:yats_host_keyword = 1
+" let g:yats_host_keyword = 1
 
 
 "" Binary:
-let g:vinarise_enable_auto_detect = 1
-if isdirectory('/usr/local/opt/binutils')
-  let g:vinarise_objdump_command = '/usr/local/opt/binutils/bin/gobjdump'
-endif
+" let g:vinarise_enable_auto_detect = 1
+" if isdirectory('/usr/local/opt/binutils')
+"   let g:vinarise_objdump_command = '/usr/local/opt/binutils/bin/gobjdump'
+" endif
 
 
 "" Markdown:
-let g:markdown_fenced_languages = [
-      \ 'c',
-      \ 'console=sh',
-      \ 'cpp',
-      \ 'dockerfile',
-      \ 'go',
-      \ 'graphql',
-      \ 'help',
-      \ 'mermaid',
-      \ 'mysql',
-      \ 'objective-c',
-      \ 'proto',
-      \ 'python',
-      \ 'sh',
-      \ 'sql',
-      \ 'typescript',
-      \ 'vim'
-      \]
+" let g:markdown_fenced_languages = [
+"       \ 'c',
+"       \ 'console=sh',
+"       \ 'cpp',
+"       \ 'dockerfile',
+"       \ 'go',
+"       \ 'graphql',
+"       \ 'help',
+"       \ 'mermaid',
+"       \ 'mysql',
+"       \ 'objective-c',
+"       \ 'proto',
+"       \ 'python',
+"       \ 'sh',
+"       \ 'sql',
+"       \ 'typescript',
+"       \ 'vim'
+"       \]
 "" VimMarkdownfmt:
-let g:markdownfmt_command = 'markdownfmt'
-let g:markdownfmt_options = ''
-let g:markdownfmt_autosave = 0
-let g:markdownfmt_fail_silently = 0
-
-" -------------------------------------------------------------------------------------------------
-" testing plugins
+" let g:markdownfmt_command = 'markdownfmt'
+" let g:markdownfmt_options = ''
+" let g:markdownfmt_autosave = 0
+" let g:markdownfmt_fail_silently = 0
 
 " -------------------------------------------------------------------------------------------------
 " Functions:
-
-"" Filetye:
-" TODO(zchee): unused
-function! s:is_filetype(args)
-  let l:ft = &filetype
-  if (index(a:args, l:ft) >= 0)
-    return v:true
-  endif
-  return v:false
-endfunction
-
 
 "" Help:
 " https://github.com/rhysd/dogfiles/blob/69529ec4a22c/vimrc#L318-L341
@@ -754,26 +406,6 @@ function! s:smart_help(args)
   endtry
 endfunction
 command! -nargs=* -complete=help Help call s:smart_help(<q-args>)
-
-"" HelpGrep:
-function! s:smart_helpgrep(args)
-  if winwidth(0) > winheight(0) * 2
-    let l:help_args = 'vertical rightbelow helpgrep ' . a:args
-  else
-    let l:help_args = 'rightbelow helpgrep ' . a:args
-  endif
-
-  try
-    execute l:help_args
-  catch /^Vim\%((\a\+)\)\=:E149/
-    echohl ErrorMsg
-    echomsg "E149: Sorry, no help for " . a:args
-    echohl None
-  endtry
-
-  silent! copen
-endfunction
-command! -nargs=* -complete=help HelpGrep call s:smart_helpgrep(<q-args>)
 
 
 "" SyntaxInfo:
@@ -824,57 +456,6 @@ endfunction
 command! SyntaxInfo call s:get_syn_info(expand('<cword>'))
 
 
-"" Binary Edit Mode:
-" need open nvim with `-b` flag
-function! BinaryMode() abort
-  if !has('binary')
-    echoerr "BinaryMode must be 'binary' option"
-    return
-  endif
-
-  execute '%!xxd'
-endfunction
-
-
-"" Open the C/C++ Online Document:
-" https://github.com/rhysd/dogfiles/blob/926f2b9c1856bbf3a8090f430831f2c94d7cc410/vimrc#L1399-L1423
-function! s:open_online_cfamily_doc()
-  " call dein#source('open-browser.vim')
-  let l:l = getline('.')
-
-  if l:l =~# '^\s*#\s*include\s\+<.\+>'
-    let l:header = matchstr(l, '^\s*#\s*include\s\+<\zs.\+\ze>')
-    if header =~# '^boost'
-      "https://www.google.co.jp/search?hl=en&as_q=int64_max&as_sitesearch=cpprefjp.github.io
-      execute 'OpenBrowser' 'http://www.google.com/cse?cx=011577717147771266991:jigzgqluebe&q='.matchstr(header, 'boost/\zs[^/>]\+\ze')
-      return
-    else
-      execute 'OpenBrowser' 'http://ja.cppreference.com/mwiki/index.php?title=Special:Search&search='.matchstr(header, '\zs[^/>]\+\ze')
-      return
-    endif
-  else
-    let l:cword = expand('<cword>')
-    if cword ==# ''
-      return
-    endif
-    let l:line_head = getline('.')[:col('.')-1]
-    if line_head =~# 'boost::[[:alnum:]:]*$'
-      execute 'OpenBrowser' 'http://www.google.com/cse?cx=011577717147771266991:jigzgqluebe&q='.l:cword
-    elseif line_head =~# 'std::[[:alnum:]:]*$'
-      execute 'OpenBrowser' 'https://www.google.co.jp/search?hl=en&as_sitesearch=cpprefjp.github.io&as_q='.l:cword
-      execute 'OpenBrowser' 'http://ja.cppreference.com/mwiki/index.php?title=Special:Search&search='.l:cword
-    else
-      let l:name = synIDattr(synIDtrans(synID(line("."), col("."), 1)), 'name')
-      if l:name == 'Statement'
-        execute 'OpenBrowser' 'http://ja.cppreference.com/w/c/language/'.l:cword
-      else
-        execute 'OpenBrowser' 'http://ja.cppreference.com/mwiki/index.php?title=Special:Search&search='.l:cword
-      endif
-    endif
-  endif
-endfunction
-
-
 "" Trim Whitespace:
 function! s:trimSpace()
   if !&binary && &filetype !=# 'diff' && &filetype !=# 'markdown'
@@ -887,32 +468,6 @@ function! s:trimSpace()
 endfunction
 command! TrimSpace call s:trimSpace()
 
-
-"" Lr:
-" <lr-args> to browse lr(1) results in a new window, press return to open file in new window.
-command! -nargs=* -complete=file Lr
-      \ new | setl bt=nofile noswf | silent exe '0r!lr -Q ' <q-args> |
-      \ 0 | res | map <buffer><C-M> $<C-W>F<C-W>_
-
-
-"" LSPYamlSetSchema:
-function! s:lsp_set_schema(args)
-  if &filetype !=? "yaml" || !len(a:args)
-    return
-  endif
-
-  let l:filepath = expand('%:p')
-  let l:filename = fnamemodify(l:filepath, ':t')
-
-  let l:schema = a:args
-  let l:config_file = expand($XDG_CONFIG_HOME . '/nvim/lsp/schema/' . l:schema . '.schema.json')
-  let l:config = json_decode(readfile(l:config_file))
-
-  echom 'yaml-language-server: schema: ' . l:schema . ', config_file: ' . l:config_file
-  call LanguageClient#Notify('workspace/didChangeConfiguration', { 'settings': l:config })
-endfunction
-command! -nargs=* LSPYamlSetSchema call <SID>lsp_set_schema(<q-args>)
-
 " -------------------------------------------------------------------------------------------------
 " Command:
 
@@ -924,27 +479,27 @@ command! -complete=lua -nargs=* LuaVimInspect lua print(vim.inspect(<args>))
 command! -bang -bar -range=-1 -complete=customlist,man#complete -nargs=* ManV vertical Man <args>
 
 "" CheckColor:
-function s:check_colorscheme() abort
-  call nvim_command("edit ~/.nvim/colors/".g:colors_name.".vim | source $VIMRUNTIME/tools/check_colors.vim")
-  wincmd x
-  setlocal filetype=vim
-endfunction
-command! CheckColorScheme call s:check_colorscheme()
+" function s:check_colorscheme() abort
+"   call nvim_command("edit ~/.nvim/colors/".g:colors_name.".vim | source $VIMRUNTIME/tools/check_colors.vim")
+"   wincmd x
+"   setlocal filetype=vim
+" endfunction
+" command! CheckColorScheme call s:check_colorscheme()
 
 "" TerminalV:
 command! -nargs=* TerminalV vsplit | terminal <args>
 
 " TODO(zchee): unused
-function! TextEntered(text)
-  if a:text == 'exit' || a:text == 'quit'
-    stopinsert
-    close
-  else
-    call append(line('$') - 1, 'Entered: "' . a:text . '"')
-    " Reset 'modified' to allow the buffer to be closed.
-    set nomodified
-  endif
-endfunc
+" function! TextEntered(text)
+"   if a:text == 'exit' || a:text == 'quit'
+"     stopinsert
+"     close
+"   else
+"     call append(line('$') - 1, 'Entered: "' . a:text . '"')
+"     " Reset 'modified' to allow the buffer to be closed.
+"     set nomodified
+"   endif
+" endfunc
 " call prompt_setcallback(bufnr(''), function('TextEntered'))
 
 " -------------------------------------------------------------------------------------------------
@@ -988,34 +543,34 @@ endif
 " nnoremap              <Leader>gc        :<C-u>Gina commit<CR>
 " nnoremap              <Leader>gp        :<C-u>Gina push<CR>
 " nnoremap              <Leader>gs        :<C-u>Gina status<CR>
-     map           <Leader><Leader>     <Plug>(easymotion-prefix)
+     " map           <Leader><Leader>     <Plug>(easymotion-prefix)
 
 "" <LocalLeader>
 " nnoremap <silent><LocalLeader>*         :<C-u>DeniteCursorWord grep -buffer-name='grep/rg'<CR>
-nnoremap <silent><LocalLeader>-         :<C-u>split<CR>
-nnoremap <silent><LocalLeader>\         :<C-u>vsplit<CR>
+" nnoremap <silent><LocalLeader>-         :<C-u>split<CR>
+" nnoremap <silent><LocalLeader>\         :<C-u>vsplit<CR>
 " nnoremap <silent><LocalLeader>b         :<C-u>Denite buffer -buffer-name='buffer'<CR>
 " nnoremap <silent><LocalLeader>g         :<C-u>Denite line -buffer-name='line'<CR>
-nnoremap <silent><LocalLeader>gs        :<C-u>call switch#Switch()<CR>
-nnoremap <silent><LocalLeader>q         :<C-u>q<CR>
-nnoremap <silent><LocalLeader>w         :<C-u>w<CR>
+" nnoremap <silent><LocalLeader>gs        :<C-u>call switch#Switch()<CR>
+" nnoremap <silent><LocalLeader>q         :<C-u>q<CR>
+" nnoremap <silent><LocalLeader>w         :<C-u>w<CR>
 
 "" ,
-nnoremap              <silent>,m        <C-w>W
-nnoremap              <silent>,n        <C-w>w
-nnoremap              <silent>,p        <C-w>W
-nnoremap              <silent>,r        <C-w>x
-nnoremap              <silent>,s        :<C-u>bNext<CR>
-nnoremap              <silent>,t        :<C-u>tabnew<CR>
-nnoremap              <silent>,w        <C-w>w
+" nnoremap              <silent>,m        <C-w>W
+" nnoremap              <silent>,n        <C-w>w
+" nnoremap              <silent>,p        <C-w>W
+" nnoremap              <silent>,r        <C-w>x
+" nnoremap              <silent>,s        :<C-u>bNext<CR>
+" nnoremap              <silent>,t        :<C-u>tabnew<CR>
+" nnoremap              <silent>,w        <C-w>w
 
 " -------------------------------------------------------------------------------------------------
 " Map: (m)
 
 "" Operator:
-map <silent>ti  <Plug>(operator-surround-append)
-map <silent>td  <Plug>(operator-surround-delete)
-map <silent>tr  <Plug>(operator-surround-replace)
+" map <silent>ti  <Plug>(operator-surround-append)
+" map <silent>td  <Plug>(operator-surround-delete)
+" map <silent>tr  <Plug>(operator-surround-replace)
 
 " -------------------------------------------------------------------------------------------------
 " Normal: (n)
@@ -1042,45 +597,45 @@ map <silent>tr  <Plug>(operator-surround-replace)
 " <S-Down>) <Nop>
 "   <S-Up>) <Nop>
 
-nmap     <silent><nowait>*        <Plug>(asterisk-gz*)
-nnoremap         <silent>-        :<C-u>Defx -auto-cd -direction=topleft -split=vertical -search=`expand('%:p')` `expand('%:p:h')`<CR>
-" nnoremap         <silent>-        :<C-u>CHADopen<CR>
-
-nnoremap         <nowait>@        ^
-nnoremap         <nowait>^        @
-
-nmap                     ga       <Plug>(LiveEasyAlign)
-" nmap             <silent>gc       <Plug>(caw:hatpos:toggle)
-nnoremap         <silent>gs       :<C-u>Switch<CR>
-nmap             <silent>gx       <Plug>(openbrowser-smart-search)
-" nmap     <silent><nowait>j        <Plug>(accelerated_jk_j)
-" nmap     <silent><nowait>k        <Plug>(accelerated_jk_k)
-" accelerated <Left>
-" nmap     <silent><nowait><Left>   :<C-u>call accelerated#time_driven#command('h')<CR>
-" accelerated <Right>
-" nmap     <silent><nowait><Right>  :<C-u>call accelerated#time_driven#command('l')<CR>
-
-nnoremap                 Q        gq
-nnoremap         <nowait>s        A
-nnoremap         <nowait>x        "_x
-nnoremap                 zj       zjzt
-nnoremap                 zk       2zkzjzt
-nnoremap                 ZQ       <Nop>
-nnoremap         <nowait><Up>     <Up>
-nnoremap         <nowait><Down>   <Down>
-
-nnoremap         <silent><C-e>    <C-e><C-e><C-e><C-e>
-" nnoremap         <silent><C-g>    :<C-u>DeniteProjectDir grep/rg -buffer-name='grep' -path=`expand('%:p:h')` -winheight=40 -preview-height=200 -sorters=sorter/path -empty<CR>
-nnoremap         <silent><C-g>    :<C-u>Telescope live_grep<CR>
-nnoremap         <silent><C-p>    <cmd>lua require('telescope.builtin').find_files()<CR>
-nnoremap         <silent><C-q>    :<C-u>nohlsearch<CR>
-nmap             <silent><C-w>z   <Plug>(zoom-toggle)
-nnoremap         <silent><C-y>    <C-y><C-y><C-y><C-y>
-
-nnoremap              <S-Down>    <Nop>
-nnoremap               <S-Tab>    %
-" nnoremap         <nowait><S-Tab>  %
-nnoremap                 <S-Up>   <Nop>
+" nmap     <silent><nowait>*        <Plug>(asterisk-gz*)
+" " nnoremap         <silent>-        :<C-u>Defx -auto-cd -direction=topleft -split=vertical -search=`expand('%:p')` `expand('%:p:h')`<CR>
+" " nnoremap         <silent>-        :<C-u>CHADopen<CR>
+"
+" nnoremap         <nowait>@        ^
+" nnoremap         <nowait>^        @
+"
+" nmap                     ga       <Plug>(LiveEasyAlign)
+" " nmap             <silent>gc       <Plug>(caw:hatpos:toggle)
+" nnoremap         <silent>gs       :<C-u>Switch<CR>
+" nmap             <silent>gx       <Plug>(openbrowser-smart-search)
+" " nmap     <silent><nowait>j        <Plug>(accelerated_jk_j)
+" " nmap     <silent><nowait>k        <Plug>(accelerated_jk_k)
+" " accelerated <Left>
+" " nmap     <silent><nowait><Left>   :<C-u>call accelerated#time_driven#command('h')<CR>
+" " accelerated <Right>
+" " nmap     <silent><nowait><Right>  :<C-u>call accelerated#time_driven#command('l')<CR>
+"
+" nnoremap                 Q        gq
+" nnoremap         <nowait>s        A
+" nnoremap         <nowait>x        "_x
+" nnoremap                 zj       zjzt
+" nnoremap                 zk       2zkzjzt
+" nnoremap                 ZQ       <Nop>
+" nnoremap         <nowait><Up>     <Up>
+" nnoremap         <nowait><Down>   <Down>
+"
+" nnoremap         <silent><C-e>    <C-e><C-e><C-e><C-e>
+" " nnoremap         <silent><C-g>    :<C-u>DeniteProjectDir grep/rg -buffer-name='grep' -path=`expand('%:p:h')` -winheight=40 -preview-height=200 -sorters=sorter/path -empty<CR>
+" nnoremap         <silent><C-g>    <cmd>lua require('telescope.builtin').live_grep({cwd = require('telescope.utils').buffer_dir()})<CR>
+" nnoremap         <silent><C-p>    <cmd>lua require('telescope.builtin').find_files()<CR>
+" nnoremap         <silent><C-q>    :<C-u>nohlsearch<CR>
+" nmap             <silent><C-w>z   <Plug>(zoom-toggle)
+" nnoremap         <silent><C-y>    <C-y><C-y><C-y><C-y>
+"
+" nnoremap              <S-Down>    <Nop>
+" nnoremap               <S-Tab>    %
+" " nnoremap         <nowait><S-Tab>  %
+" nnoremap                 <S-Up>   <Nop>
 
 
 " Language:
@@ -1142,7 +697,7 @@ inoremap <silent><C-j>  <C-r>*
 
 " Plugins:
 "" Neosnippet:
-imap     <silent><expr><C-k>    neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<C-k>"
+" imap     <silent><expr><C-k>    neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<C-k>"
 
 
 "" GitHub Copilot
@@ -1198,7 +753,7 @@ Gautocmdft c,cpp,objc,objcpp,proto vnoremap <buffer><Leader>cf  :<C-u>ClangForma
 " Visual: (x)
 
 " xmap                <LocalLeader>    <Plug>(operator-replace)
-xnoremap            <silent><C-t>    :<C-u>Trans<CR>
+" xnoremap            <silent><C-t>    <Plug>Translate
 
 xnoremap               <silent>nu :lua require"treesitter-unit".select()<CR>
 xnoremap               <silent>tu :lua require"treesitter-unit".select(true)<CR>
@@ -1215,7 +770,7 @@ onoremap au :<c-u>lua require"treesitter-unit".select(true)<CR>
 " Select: (s)
 
 " neosnippet
-smap  <nowait><silent><expr><C-k>    neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<C-k>"
+" smap  <nowait><silent><expr><C-k>    neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<C-k>"
 
 " Language:
 

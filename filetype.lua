@@ -77,6 +77,7 @@ vim.filetype.add({
     [".renovaterc"]      = "json5",
     [".renovaterc.json"] = "json5",
     [".tern-config"]     = "json",
+    [".tfvars"]          = "teraterm",
     [".yamllint"]        = "yaml",
     ["glide.lock"]       = "yaml",
     ["Gopkg.lock"]       = "toml",

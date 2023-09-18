@@ -5,6 +5,8 @@ if vim.b.did_ftplugin then
 end
 vim.b.did_ftplugin = true
 
+vim.cmd("runtime! syntax/go.vim")
+
 vim.opt_local.shiftwidth = 4
 vim.opt_local.tabstop = 4
 vim.opt_local.softtabstop = 4

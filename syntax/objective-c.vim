@@ -1,0 +1,1 @@
+/usr/local/share/nvim/runtime/syntax/objc.vim

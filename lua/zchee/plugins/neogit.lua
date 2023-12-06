@@ -1,5 +1,5 @@
 local neogit = require("neogit")
-neogit.setup {
+neogit.setup({
   disable_commit_confirmation = true,
   disable_signs = false,
   signs = {
@@ -15,4 +15,4 @@ neogit.setup {
   --     ["c"] = "CommitPopup -s",
   --   }
   -- }
-}
+})

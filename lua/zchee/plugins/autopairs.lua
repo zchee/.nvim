@@ -1,40 +1,40 @@
 local npairs = require("nvim-autopairs")
+local npairs_rule = require('nvim-autopairs.rule')
+local ts_conds = require('nvim-autopairs.ts-conds')
+local remap = vim.api.nvim_set_keymap
 
 npairs.setup({
-  check_ts = true,
   disable_filetype = {
     "TelescopePrompt",
   },
   fast_wrap = {},
   map_bs = false,
   map_cr = false,
+  check_ts = true,
   ts_config = {
     lua = { "string" },
     go = { "string" },
   },
+  disable_in_macro = false,
+  ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
+  enable_moveright = true,
+  enable_afterquote = true,
+  disable_in_visualblock = false,
 })
-
-_G.MUtils = {}
-local remap = vim.api.nvim_set_keymap
-local npairs_rule = require("nvim-autopairs.rule")
-local ts_conds = require("nvim-autopairs.ts-conds")
 
 -- go
 npairs.add_rules({
-  npairs_rule('"', "'", "'", 'go')
-    :with_pair(ts_conds.is_ts_node({ 'string' })),
-  npairs_rule("'", '"', '"', 'go')
-    :with_pair(ts_conds.is_ts_node({ 'string' })),
+  npairs_rule('"', "'", "'", "go"):with_pair(ts_conds.is_ts_node({ "string" })),
+  npairs_rule("'", '"', '"', "go"):with_pair(ts_conds.is_ts_node({ "string" })),
 })
 
 -- lua
 npairs.add_rules({
-  npairs_rule("%", "%", "lua")
-    :with_pair(ts_conds.is_ts_node({ "string", "comment" })),
-  npairs_rule("$", "$", "lua")
-    :with_pair(ts_conds.is_not_ts_node({ "function" }))
+  npairs_rule("%", "%", "lua"):with_pair(ts_conds.is_ts_node({ "string", "comment" })),
+  npairs_rule("$", "$", "lua"):with_pair(ts_conds.is_not_ts_node({ "function" })),
 })
 
+_G.MUtils = {}
 MUtils.BS = function()
   if vim.fn.pumvisible() ~= 0 and vim.fn.complete_info({ "mode" }).mode == "eval" then
     return npairs.esc("<C-e>") .. npairs.autopairs_bs()
@@ -57,13 +57,9 @@ end
 
 remap("i", "<BS>", "v:lua.MUtils.BS()", { expr = true, noremap = true })
 remap("i", "<CR>", "v:lua.MUtils.CR()", { expr = true, noremap = true })
--- ms-jpq/coq_nvim default
--- remap("i", "<BS>", "pumvisible() ? "<c-e><bs>" : "<bs>"", { expr = true, noremap = true })
--- remap("i", "<CR>", "pumvisible() ? (complete_info(["selected"]).selected == -1 ? "<c-e><cr>" : "<c-y>") : "<cr>"", { expr = true, noremap = true })
 remap("i", "<ESC>", [[pumvisible() ? "<C-e><ESC>" : "<ESC>"]], { expr = true, noremap = true })
 remap("i", "<Tab>", [[pumvisible() ? "<C-n>" : "<Tab>"]], { expr = true, noremap = true })
 remap("i", "<S-Tab>", [[pumvisible() ? "<C-p>" : "<BS>"]], { expr = true, noremap = true })
 remap("i", "<C-c>", [[pumvisible() ? "<C-e><C-c>" : "<C-c>"]], { expr = true, noremap = true })
--- ms-jpq/coq_nvim default
 remap("i", "<C-u>", "pumvisible() ? '<C-e><C-u>' : '<C-u>'", { expr = true, noremap = true })
 remap("i", "<C-w>", "pumvisible() ? '<C-e><C-w>' : '<C-w>'", { expr = true, noremap = true })

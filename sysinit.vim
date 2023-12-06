@@ -11,41 +11,27 @@ let g:loaded_sysinit = 1
 
 " Environment Variables:
 
-let $LANG            = 'C'
-let $XDG_RUNTIME_DIR = expand('/run/user/502')
-let $XDG_CACHE_HOME  = expand($HOME.'/.cache')
-let $XDG_CONFIG_DIRS = expand('/etc/xdg')
-let $XDG_CONFIG_HOME = expand($HOME.'/.config')
-let $XDG_DATA_DIRS   = expand('/usr/local/share:/usr/share')
-let $XDG_DATA_HOME   = expand($HOME.'/.local/share')
-let $NVIM_LOG_FILE   = expand($HOME.'/.local/share/nvim/log')
+" let $TERM            = 'xterm-direct256'
+" let $LANG            = 'en_US.UTF-8'
+" let $XDG_RUNTIME_DIR = expand($XDG_RUNTIME_DIR)
+" let $XDG_CACHE_HOME  = expand($HOME.'/.cache')
+" let $XDG_CONFIG_DIRS = expand('/etc/xdg')
+" let $XDG_CONFIG_HOME = expand($HOME.'/.config')
+" let $XDG_DATA_DIRS   = expand('/usr/local/share:/usr/share')
+" let $XDG_DATA_HOME   = expand($HOME.'/.local/share')
 let $MANWIDTH        = 999
-
-
-let g:clipboard = {
-      \   'name': 'mac',
-      \   'copy': {
-      \      '+': ['pbcopy'],
-      \      '*': ['pbcopy'],
-      \    },
-      \   'paste': {
-      \      '+': ['pbpaste'],
-      \      '*': ['pbpaste'],
-      \   },
-      \   'cache_enabled': 0,
-      \ }
 
 " -------------------------------------------------------------------------------------------------
 " Neovim Configs:
 
 "" Remote Plugins:
 let g:loaded_python_provider = 1                              " $VIMRUNTIME/autoload/provider/python.vim
-let g:python3_host_prog      = '/usr/local/opt/python@3.10/bin/python3.10'
+let g:python3_host_prog      = '/usr/local/opt/python@3.11/bin/python3.11'
 let g:loaded_node_provider   = 1                              " $VIMRUNTIME/autoload/provider/node.vim
 let g:loaded_ruby_provider   = 1                              " $VIMRUNTIME/autoload/provider/ruby.vim
 let g:loaded_perl_provider   = 1                              " $VIMRUNTIME/autoload/provider/perl.vim
 
-let g:no_man_maps = 0
+let g:no_man_maps = 1
 let g:ft_man_folding_enable = 0
 let g:man_hardwrap = v:false
 

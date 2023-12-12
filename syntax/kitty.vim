@@ -9,15 +9,16 @@ syn match kittyNumber '\s[+-]\?\d\+\.\?\d*\(%\|px\|pt\|em\)\?'ms=s+1 contained c
 syn match kittyUnit '\(px\|pt\|em\)' contained
 syn match kittyKW '^\s*\S*' contains=kittyKeyword,kittyInvalidKeyword nextgroup=kittySt
 syn match kittyComment /^\s*#.*$/ contains=kittyTodo
-syn match kittyInclude /^\s*include/ display
+syn match kittyInclude '^\s*\(env\|glob\)\?include' display
 syn match kittyMap '^\s*\(mouse_\)\?map' nextgroup=kittyKeybind
 syn match kittyInvalidKeyword '\S*' contained
-syn match kittyActionKW '\s*\S*' contained contains=kittyAction,kittyInvalidAction
+syn match kittyActionKW '\s*\S*' contained contains=kittyAction,kittyEvent,kittyInvalidAction
 syn match kittyInvalidAction '\S*' contained
 
 hi def link kittyAction Function
 hi def link kittyColor Number
 hi def link kittyComment Comment
+hi def link kittyEvent Function
 hi def link kittyInclude Include
 hi def link kittyInvalidAction Error
 hi def link kittyInvalidKeyword Error
@@ -34,6 +35,8 @@ let b:current_syntax = "kitty"
 
 syn keyword kittyMod contained ctrl alt shift cmd super hyper meta kitty_mod
 syn keyword kittyTodo contained TODO FIXME XXX contained
+syn keyword kittyEvent contained
+ \ press release doublepress triplepress click doubleclick
 
 " START GENERATED CODE
 syn keyword kittyKeyword contained

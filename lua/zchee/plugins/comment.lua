@@ -7,6 +7,8 @@ if loaded and ts_comment then
   ts_pre_hook = ts_comment.create_pre_hook()
 end
 
+---@type CommentConfig
+
 comment.setup({
   padding = true,
   on_config_done = nil,
@@ -30,6 +32,7 @@ comment.setup({
     eol = "gcA",
   },
   pre_hook = ts_pre_hook,
+  ignore = function() end,
   -- pre_hook = function(ctx)
   --   -- Only calculate commentstring for tsx filetypes
   --   if not vim.bo.filetype == 'typescriptreact' then
@@ -62,13 +65,13 @@ comment.setup({
 
   -- Post-hook, called after commenting is done
   -- fun(ctx: Ctx)
-  post_hook = function(ctx)
-    if ctx.range.srow == ctx.range.erow then
-      return
-    else
-      return
-    end
-  end,
+  -- post_hook = function(ctx)
+  --   if ctx.range.srow == ctx.range.erow then
+  --     return
+  --   else
+  --     return
+  --   end
+  -- end,
 })
 
 comment_ft.terraform = "//%s"

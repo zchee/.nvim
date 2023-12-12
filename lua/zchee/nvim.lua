@@ -25,12 +25,6 @@ vim.g.clipboard = {
   cache_enabled = 0,
 }
 
--- :help lua-filetype
-
--- vim.g.do_legacy_filetype = 1
--- vim.g.did_load_filetypes = 0
-vim.cmd("colorscheme equinusocio_material")
-
 -- disable built-in plugins
 vim.g.loaded_gzip = 1
 vim.g.loaded_zip = 1
@@ -88,7 +82,7 @@ vim.opt.conceallevel = 0
 vim.opt.copyindent = true
 vim.opt.cpoptions:remove("_")
 vim.opt.diffopt:append("hiddenoff")
-vim.opt.directory = vim.fs.joinpath(vim.fn.stdpath("state"), "swap")
+vim.opt.directory = vim.fs.joinpath(string.format("%s", vim.fn.stdpath("state")), "swap")
 vim.opt.display:remove("msgsep")
 vim.opt.emoji = true
 vim.opt.encoding = "utf-8"
@@ -159,7 +153,7 @@ vim.opt.showfulltag = true
 vim.opt.showtabline = 2
 vim.opt.sidescroll = 1     -- 0
 vim.opt.sidescrolloff = 15 -- 0
-vim.opt.signcolumn = "yes:2"
+vim.opt.signcolumn = "yes:3"
 vim.opt.sessionoptions = {
   "blank",
   "buffers",
@@ -242,7 +236,7 @@ vim.opt.swapfile = false
 vim.opt.visualbell = false
 vim.opt.wrapscan = false
 
-vim.opt.termguicolors = true
+vim.cmd("colorscheme equinusocio_material")
 
 if vim.fn.has("mac") then
   vim.opt.wildignore:append("DS_Store") -- macOS only

@@ -7,11 +7,11 @@ error() { printf "\\x1b[1;31m[ERROR]\\x1b[0m %s\\n" "$1" >&2; exit 1; }
 xcode_path="$(xcode-select --print-path)"
 if [ $# == 1 ]; then
   xcode_path="$1"
-  info "Xcode path: $xcode_path"
 fi
+echo "Xcode path: $xcode_path"
 readonly xcode_path
 
-if [[ ! -d $xcode_path ]]; then
+if [[ ! -d $xcode_path ]] || [[ ! -L $xcode_path ]]; then
   error "
 Usage:
   $(basename "$0") [/Applications/Xcode.app | /Applications/Xcode-beta.app | \$(xcode-select --print-path)]"
@@ -25,7 +25,7 @@ fi
 clean_symlink() {
   for d in $(find ./Frameworks -type l);
   do
-    unlink $d
+    unlink "$d"
   done
 }
 

@@ -1,4 +1,4 @@
-" based by https://github.com/zchee/vim-equinusocio-material
+" based by https://github.com/yunlingz/equinusocio-material.vim
 
 if exists('g:colors_name')
   finish
@@ -50,7 +50,7 @@ let s:p.material.man_underline  = '#81a2be'
 
 let s:p.material.foreground     = '#f2f3f3'  " '#e8eae9', '#c7c8c8'  " '#eeffff'
 let s:p.material.background     = '#010101'  " '#0a0a0a', '#212121', '#040404'
-let s:p.material.comment        = '#838c93'  " '#79828a', '#6c7a80', '#838c93', '#878f96'
+let s:p.material.comment        = '#8f979d'  " '#838c93'  " '#a2a9ae', '#79828a', '#6c7a80', '#838c93', '#878f96'
 let s:p.material.nontext        = '#202122'
 let s:p.material.longlinewarn   = '#371f1c'
 let s:p.material.black          = '#000000'
@@ -189,6 +189,7 @@ call s:hl('PmenuThumb',         s:p.material.foreground,   s:p.material.foregrou
 call s:hl('Question',           s:p.material.red,          s:p.none, s:p.none, 0)
 call s:hl('QuickFixLine',       s:p.material.foreground,   s:p.material.background, s:p.none, 0)
 call s:hl('Search',             s:p.none,                  s:p.material.selection, s:p.none, 0)
+call s:hl('CurSearch',          s:p.none,                  s:p.material.selection, s:p.none, 0)
 call s:hl('SpecialKey',         s:p.material.gray,         s:p.none, s:p.none, 0)
 
 " ------------------------------------------------------------------------------
@@ -281,3 +282,7 @@ call s:hl('LspErrorHighlight',       s:p.none,             s:p.none, s:p.underli
 call s:hl('LspWarningHighlight',     s:p.none,             s:p.none, s:p.underline, 0)
 call s:hl('LspInformationHighlight', s:p.none,             s:p.none, s:p.underline, 0)
 call s:hl('LspHintHighlight',        s:p.none,             s:p.none, s:p.underline, 0)
+
+call s:hl('DiagnosticError',         s:p.material.red,     s:p.none, s:p.none,      0)
+call s:hl('DiagnosticWarn',          s:p.material.yellow,  s:p.none, s:p.none,      0)
+call s:hl('DiagnosticInfo',          s:p.material.orange,  s:p.none, s:p.none,      0)

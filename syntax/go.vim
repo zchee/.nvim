@@ -150,7 +150,7 @@ hi def link     goLabel             Label
 hi def link     goRepeat            Repeat
 
 " Predefined types
-syn keyword     goType              chan map bool string error any comparable
+syn keyword     goType              chan map bool string error comparable
 syn keyword     goSignedInts        int int8 int16 int32 int64 rune
 syn keyword     goUnsignedInts      byte uint uint8 uint16 uint32 uint64 uintptr
 syn keyword     goFloats            float32 float64
@@ -166,7 +166,7 @@ hi def link     goComplexes         Type
 syn keyword     goBuiltins                 append cap clear close complex copy delete imag len
 syn keyword     goBuiltins                 make min max new panic print println real recover
 syn keyword     goBoolean                  true false
-syn keyword     goPredefinedIdentifiers    nil iota
+syn keyword     goPredefinedIdentifiers    nil iota any
 
 hi def link     goBuiltins                 Identifier
 hi def link     goPredefinedIdentifiers    Constant
@@ -588,7 +588,7 @@ highlight            goErrorType       gui=bold  guifg=#ff5370 guibg=None
 
 " There's a bug in the implementation of grouphere. For now, use the
 " following as a more expensive/less precise workaround.
-syn sync minlines=500
+syn sync minlines=6000
 
 let b:current_syntax = "go"
 

@@ -1,12 +1,11 @@
+local util = require("util")
+
 local cmp = require("cmp")
 local npairs = require("nvim-autopairs")
 local npairs_cmp = require("nvim-autopairs.completion.cmp")
 local npairs_handlers = require("nvim-autopairs.completion.handlers")
 local npairs_rule = require("nvim-autopairs.rule")
 local npairs_treesitter_node = require("nvim-autopairs.ts-conds")
-
--- local inlay_hints = require("inlay-hints")
--- inlay_hints.setup()
 
 npairs.setup({
   disable_filetype = {
@@ -26,14 +25,12 @@ npairs.setup({
   enable_afterquote = true,
   disable_in_visualblock = false,
 })
-
--- go
+-- Go
 npairs.add_rules({
   npairs_rule('"', "'", "'", "go"):with_pair(npairs_treesitter_node.is_ts_node({ "string" })),
   npairs_rule("'", '"', '"', "go"):with_pair(npairs_treesitter_node.is_ts_node({ "string" })),
 })
-
--- lua
+-- Lua
 npairs.add_rules({
   npairs_rule("%", "%", "lua"):with_pair(npairs_treesitter_node.is_ts_node({ "string", "comment" })),
   npairs_rule("$", "$", "lua"):with_pair(npairs_treesitter_node.is_not_ts_node({ "function" })),
@@ -47,7 +44,6 @@ MUtils.BS = function()
     return npairs.autopairs_bs()
   end
 end
-
 MUtils.CR = function()
   if vim.fn.pumvisible() ~= 0 then
     if vim.fn.complete_info({ "selected" }).selected ~= -1 then
@@ -82,7 +78,11 @@ luasnip.config.set_config({
   store_selection_keys = "<Tab>",
 })
 luasnip_loaders_from_lua.lazy_load({
-  lazy_paths = { "~/.config/nvim/lua/snippets/luasnip/" }, fs_event_providers = { libuv = true },
+  -- "~/.config/nvim/lua/snippets/luasnip/"
+  lazy_paths = {
+    vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "lua/snippets/luasnip"),
+  },
+  fs_event_providers = { libuv = true },
 })
 vim.cmd([[silent command! LuaSnipEdit :lua require("luasnip.loaders").edit_snippet_files()]])
 
@@ -233,7 +233,6 @@ cmp.setup({
 
   ---@class cmp.SourceConfig
   sources = cmp.config.sources({
-    -- { name = "copilot" }, -- , group_index = 2
     {
       name = "nvim_lsp",
       priority = 100,
@@ -416,7 +415,13 @@ cmp.event:on(
                 end
               end
             end
-            npairs_cmp.filetypes["*"]["("].handler(char, item, bufnr, rules, commit_character)
+            npairs_cmp.filetypes["*"]["("].handler(
+              char,
+              item,
+              bufnr,
+              rules,
+              commit_character
+            )
           end,
         },
       },

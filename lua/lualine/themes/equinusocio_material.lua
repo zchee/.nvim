@@ -1,11 +1,11 @@
 local colors = {
-  color0  = "#000000",
-  color1  = "#c3e88d",
-  color2  = "#eeffff",
-  color3  = "#545454",
-  color4  = "#2f2f2f",
-  color5  = "#89ddff",
-  color8  = "#ff5370",
+  color0 = "#000000",
+  color1 = "#c3e88d",
+  color2 = "#eeffff",
+  color3 = "#545454",
+  color4 = "#2f2f2f",
+  color5 = "#89ddff",
+  color8 = "#ff5370",
   color11 = "#ffcb6b",
 }
 

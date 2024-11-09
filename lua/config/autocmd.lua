@@ -108,9 +108,8 @@ vim.api.nvim_create_autocmd({ "WinEnter" }, {
 })
 
 -- BufWritePre
--- local lsp_format_augroup = vim.api.nvim_create_augroup("LspFormat", { clear = true })
 -- vim.api.nvim_create_autocmd({ "BufWritePre" }, {
---   group = lsp_format_augroup,
+--   group = vim.api.nvim_create_augroup("LspFormat", { clear = true }),
 --   pattern = {
 --     "*.lua",
 --     "*.tf",

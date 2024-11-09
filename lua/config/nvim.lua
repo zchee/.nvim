@@ -10,18 +10,14 @@
 --                                                                                                                 --
 -- --------------------------------------------------------------------------------------------------------------- --
 
--- vim.lsp.set_level("OFF") -- "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
 local util                      = require("util")
 
 -- Environment Variables:
 
-vim.env.MANPATH                 =
-"/usr/local/google-cloud-sdk/help/man:/usr/local/opt/bison/share/man:/usr/local/opt/coreutils/share/man:/usr/local/opt/file-head/share/man:/usr/local/opt/findutils/share/man:/usr/local/opt/gettext/share/man:/usr/local/opt/git-head/share/man:/usr/local/opt/gnu-sed/share/man:/usr/local/opt/gnu-tar/share/man:/usr/local/opt/grep/share/man:/usr/local/opt/libxml2/share/man:/usr/local/opt/lsof/share/man:/usr/local/opt/make/share/man:/usr/local/opt/ncurses-head/share/man:/usr/local/opt/openssl/share/man:/usr/local/opt/sqlite3/share/man:/usr/local/opt/texinfo/share/man:/usr/local/opt/unzip/share/man:/usr/local/opt/zip/share/man:/usr/share/man:/usr/local/share/man:/Applications/Xcode-15.4.0.app/Contents/Developer/usr/share/man:/Applications/Xcode-15.4.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/man:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man:/Applications/Wireshark.app/Contents/Resources/share/man"
 vim.env.MANWIDTH                = 999
 
 -- Remote Plugins:
 vim.g.loaded_python_provider    = 1 -- $VIMRUNTIME/autoload/provider/python.vim
-vim.g.python3_host_prog         = '/usr/local/opt/python@3.13t/bin/python3.13t'
 vim.g.loaded_node_provider      = 1 -- $VIMRUNTIME/autoload/provider/node.vim
 vim.g.loaded_ruby_provider      = 1 -- $VIMRUNTIME/autoload/provider/ruby.vim
 vim.g.loaded_perl_provider      = 1 -- $VIMRUNTIME/autoload/provider/perl.vim
@@ -29,19 +25,6 @@ vim.g.no_man_maps               = 1
 vim.g.ft_man_folding_enable     = 0
 vim.g.man_hardwrap              = false
 vim.g.vimsyn_embed              = 'lP'
-
-vim.g.clipboard                 = {
-  name = "mac",
-  copy = {
-    ["+"] = { "pbcopy" },
-    ["*"] = { "pbcopy" },
-  },
-  paste = {
-    ["+"] = { "pbpaste" },
-    ["*"] = { "pbpaste" },
-  },
-  cache_enabled = 0,
-}
 
 -- disable built-in plugins
 vim.g.loaded_gzip               = 1
@@ -58,12 +41,9 @@ vim.g.loaded_matchit            = 1
 vim.g.loaded_matchparen         = 1
 vim.g.loaded_logiPat            = 1
 vim.g.loaded_rrhelper           = 1
--- $VIMRUNTIME
 vim.g.did_install_default_menus = 1    -- $VIMRUNTIME/menu.vim
 vim.g.skip_loading_mswin        = true -- $VIMRUNTIME/mswin.vim
--- $VIMRUNTIME/pack/dist/opt
 vim.g.loaded_cfilter            = 1    -- $VIMRUNTIME/pack/dist/opt/cfilter/plugin/cfilter.vim
--- $VIMRUNTIME/autoload
 vim.g.loaded_netrw              = 1    -- $VIMRUNTIME/autoload/netrw.vim
 vim.g.loaded_netrwFileHandlers  = 1    -- $VIMRUNTIME/autoload/netrwFileHandlers.vim
 vim.g.loaded_netrwSettings      = 1    -- $VIMRUNTIME/autoload/netrwSettings.vim
@@ -78,13 +58,10 @@ vim.g.loaded_tutor_mode_plugin  = 1    -- $VIMRUNTIME/plugin/tutor.vim
 
 -- Global Settings:
 
--- local state_dir = vim.fn.stdpath("state")
-
 vim.opt.autoindent              = true
 vim.opt.autoread                = true
 vim.opt.backup                  = true
--- vim.opt.backupdir = vim.fs.joinpath(string.format("%s", vim.fn.stdpath("state")), "backup") -- vim.fs.joinpath(tostring(vim.fn.stdpath("state"), "backup"))
-vim.opt.backupdir               = vim.fn.stdpath("state") .. "/backup/"
+vim.opt.backupdir               = vim.fn.stdpath("state") .. "/backup/" -- NOTE(zchee): can't use `vim.fs.joinpath`
 vim.opt.backupcopy              = "yes"
 vim.opt.belloff                 = "all"
 vim.opt.cindent                 = true
@@ -93,7 +70,7 @@ vim.opt.cinoptions = ""      -- See :h cinoptions-values
 vim.opt.clipboard = "unnamedplus"
 vim.opt.cmdheight = 2
 vim.opt.cmdwinheight = 50
-vim.opt.complete = "." -- .,w,b,u,t  -- default: .,w,b,u,t, .
+vim.opt.complete = "." -- default: .,w,b,u,t, .
 -- vim.opt.completeopt = { "noinsert", "noselect", "menuone" } -- noinsert,noselect,longest,menu,menuone,preview
 vim.opt.completeopt = { "menu", "menuone", "noinsert" }
 vim.opt.concealcursor = "niv"
@@ -101,8 +78,7 @@ vim.opt.conceallevel = 0
 vim.opt.copyindent = true
 vim.opt.cpoptions:remove("_")
 vim.opt.diffopt:append("hiddenoff")
--- vim.opt.directory = vim.fs.joinpath(string.format("%s", vim.fn.stdpath("state")), "swap") -- vim.fs.joinpath(tostring(state_dir), "swap")
-vim.opt.directory = vim.fn.stdpath("state") .. "/swap/"
+vim.opt.directory = vim.fn.stdpath("state") .. "/swap/" -- NOTE(zchee): can't use `vim.fs.joinpath`
 vim.opt.display:remove("msgsep")
 vim.opt.emoji = true
 vim.opt.encoding = "utf-8"
@@ -110,7 +86,6 @@ vim.opt.expandtab = true
 vim.opt.fillchars:append("diff:/")
 vim.opt.fileformats = { "unix", "mac", "dos" }
 vim.opt.foldcolumn = "0"
--- vim.opt.foldexpr = vim.treesitter.foldexpr
 vim.opt.foldlevel = 0
 vim.opt.foldlevelstart = 99       -- open all folds by default
 vim.opt.foldmethod = "expr"
@@ -127,10 +102,6 @@ vim.opt.foldnestmax = 1           -- maximum fold depth
 vim.opt.grepformat = "%f:%l:%c:%m"
 if vim.fn.executable('rg') == 1 then
   vim.o.grepprg = "rg --vimgrep --hidden --glob ‘!.git’"
-end
-if vim.fn.executable("ugrep") == 1 then
-  vim.o.grepprg = "ugrep -RInk -j -u --tabs=1 --ignore-files"
-  vim.o.grepformat = "%f:%l:%c:%m,%f+%l+%c+%m,%-G%f|%l|%c|%m"
 end
 vim.opt.helplang = { "en" }
 vim.opt.hidden = true
@@ -402,4 +373,4 @@ vim.g.vista_executive_nvim_lsp_fetching = true
 
 -- vim-wakatime
 vim.g.wakatime_CLIPath = util.homebrew_binary("wakatime-cli-head", "wakatime-cli")
-vim.g.wakatime_PythonBinary = util.homebrew_binary("python", "python3")
+vim.g.wakatime_PythonBinary = util.homebrew_binary("python3.13t", "python3t")

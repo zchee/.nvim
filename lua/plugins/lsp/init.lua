@@ -8,6 +8,7 @@ local lsp_format = require("lsp-format")
 
 lsp_format.setup({
   go = {
+    -- sync = true,
     exclude = { "gopls" }
   },
   c = {
@@ -18,11 +19,9 @@ lsp_format.setup({
   },
   lua = {
     sync = true,
-    -- force = true,
   },
   sh = {
     sync = true,
-    -- force = true,
   },
 })
 
@@ -75,7 +74,6 @@ end
 --- @param bufnr integer
 local on_attach = function(client, bufnr)
   vim.lsp.set_log_level("OFF") -- "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
-  -- vim.lsp._watchfunc = util_watch.fswatch
   vim.lsp._watchfunc = vim._watch.watch
 
   --- @diagnostic disable-next-line

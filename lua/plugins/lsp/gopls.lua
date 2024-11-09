@@ -1,5 +1,4 @@
 local util = require("util")
-local gopath = vim.fs.joinpath(vim.uv.os_homedir(), "go")
 
 local lspconfig = require("lspconfig")
 local lspconfig_async = require("lspconfig.async")
@@ -118,6 +117,7 @@ return {
     usePlaceholders = true,
     deepCompletion = true,
     completeUnimported = true,
+    addTestSourceCodeAction = true,
     completionBudget = "100ms",
     matcher = "fuzzy",             -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
     symbolMatcher = "fastFuzzy",   -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
@@ -240,6 +240,7 @@ return {
     linkifyShowMessage = true,
     includeReplaceInWorkspace = true,
     zeroConfig = false,
+    pullDiagnostics = true,
   },
   handlers = {
     ["textDocument/rangeFormatting"] = function(...)

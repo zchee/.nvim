@@ -1,17 +1,69 @@
 local M = {}
 
----Expands env path and reads symbolic link.
----It's equivalent to readlink(2) syscall.
 ---
----@param env string
----@return string | nil
-function M.readlink(env)
-  local expenv = os.getenv(env)
-  return vim.uv.fs_readlink(tostring(expenv)) or ""
+---Return XDG_CACHE_HOME
+---
+---@return string
+function M.xdg_cache_home()
+  return tostring(os.getenv("XDG_CACHE_HOME"))
 end
 
----@param formula string The url to request
----@param binary string
+---
+---Return XDG_CONFIG_HOME
+---
+---@return string
+function M.xdg_config_home()
+  return tostring(os.getenv("XDG_CONFIG_HOME"))
+end
+
+---
+---Return XDG_DATA_HOME
+---
+---@return string
+function M.xdg_data_home()
+  return tostring(os.getenv("XDG_DATA_HOME"))
+end
+
+---
+---Return XDG_STATE_HOME
+---
+---@return string
+function M.xdg_state_home()
+  return tostring(os.getenv("XDG_STATE_HOME"))
+end
+
+---@param ...string
+---@return string
+function M.go_path(...)
+  return vim.fs.joinpath(vim.uv.os_homedir(), "go", ...)
+end
+
+---@param ...string
+---@return string
+function M.src_path(...)
+  return vim.fs.joinpath(vim.uv.os_homedir(), "src", ...)
+end
+
+---@param ...string
+---@return string
+function M.src_path(...)
+  return vim.fs.joinpath(vim.uv.os_homedir(), "src", ...)
+end
+
+---
+---expands env path and reads symbolic link.
+---
+---@param path string? | nil
+---@return string
+function M.readlink(path)
+  if path == nil then
+    return ""
+  end
+  return vim.uv.fs_readlink(path) or ""
+end
+
+---@param formula string homebrew formula name
+---@param binary string binary name
 ---@return string
 function M.homebrew_binary(formula, binary)
   local prefix = os.getenv("HOMEBREW_PREFIX")
@@ -26,18 +78,6 @@ function M.homebrew_binary(formula, binary)
   end
 
   return vim.fs.joinpath(prefix, "opt", formula, "bin", binary)
-end
-
----@param ...string
----@return string
-function M.go_path(...)
-  return vim.fs.joinpath(vim.uv.os_homedir(), "go", ...)
-end
-
----@param ...string
----@return string
-function M.src_path(...)
-  return vim.fs.joinpath(vim.uv.os_homedir(), "src", ...)
 end
 
 return M

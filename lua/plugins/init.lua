@@ -48,6 +48,7 @@ return {
         "zchee/lsp-setup.nvim",
         "nvimdev/lspsaga.nvim",
         "lukas-reineke/lsp-format.nvim",
+        "hrsh7th/nvim-gtd",
       },
       lazy = false,
       config = function()
@@ -125,22 +126,6 @@ return {
       "rafamadriz/friendly-snippets",
       "ray-x/cmp-treesitter",
       "windwp/nvim-autopairs",
-      {
-        "Bilal2453/luvit-meta",
-        lazy = true
-      },
-      {
-        "folke/lazydev.nvim",
-        ft = "lua", -- only load on lua files
-        opts = {
-          library = {
-            {
-              path = "luvit-meta/library",
-              words = { "vim%.uv" },
-            },
-          },
-        },
-      },
       {
         "L3MON4D3/LuaSnip",
         dependencies = {
@@ -520,13 +505,6 @@ return {
 
   -- Language
   {
-    {
-      "nvimdev/hlsearch.nvim",
-      event = "BufReadPost",
-      config = function()
-        require("hlsearch").setup()
-      end
-    },
     -- {
     --   "ray-x/go.nvim",
     --   dependencies = { -- optional packages
@@ -544,6 +522,23 @@ return {
     --   -- ft = { "go", "gomod" },
     --   -- build = ':lua require("go.install").update_all_sync()'
     -- },
+    {
+      "jparise/vim-graphql",
+      ft = "graphql",
+    },
+    {
+      "folke/lazydev.nvim",
+      ft = "lua",
+      config = function()
+        require("plugins.lazydev")
+      end,
+      dependencies = {
+        {
+          "Bilal2453/luvit-meta",
+          lazy = true
+        },
+      },
+    },
     {
       "nvim-java/nvim-java",
       dependencies = {
@@ -586,6 +581,13 @@ return {
 
   -- Utilities
   {
+    {
+      "nvimdev/hlsearch.nvim",
+      event = "BufReadPost",
+      config = function()
+        require("hlsearch").setup()
+      end
+    },
     {
       "monkoose/matchparen.nvim",
       event = "VeryLazy",

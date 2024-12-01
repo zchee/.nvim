@@ -285,6 +285,23 @@ vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
   end,
 })
 
+vim.api.nvim_create_autocmd('SearchWrapped', {
+  callback = function()
+    local group = vim.api.nvim_create_augroup('search_wrap', { clear = false })
+    vim.api.nvim_set_hl(0, 'CurSearch', { link = 'CurSearchWrap' })
+    vim.api.nvim_clear_autocmds({ event = 'CursorMoved', group = group })
+    vim.schedule(function()
+      vim.api.nvim_create_autocmd({ 'CursorMoved' }, {
+        group = group,
+        once = true,
+        callback = function()
+          vim.api.nvim_set_hl(0, 'CurSearch', { link = 'CurSearchMain' })
+        end,
+      })
+    end)
+  end
+})
+
 -- Debug:
 -- vim.api.nvim_create_autocmd(
 --   {

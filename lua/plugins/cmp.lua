@@ -78,9 +78,8 @@ luasnip.config.set_config({
   store_selection_keys = "<Tab>",
 })
 luasnip_loaders_from_lua.lazy_load({
-  -- "~/.config/nvim/lua/snippets/luasnip/"
   lazy_paths = {
-    vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "lua/snippets/luasnip"),
+    vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "lua", "luasnip"),
   },
   fs_event_providers = { libuv = true },
 })

@@ -7,7 +7,7 @@ local lspconfig_async = require("lspconfig.async")
 local is_goos_linux = function(cwd)
   return
       string.find(cwd, "gvisor")
-      or string.find(cwd, "buildkit")
+      -- or string.find(cwd, "buildkit")
       or string.find(cwd, "chaos%-mesh/chaos%-mesh")
       or string.find(cwd, "go%-cloud%-debug%-agent")
       or string.find(cwd, "GoogleCloudPlatform/grpc%-gcp%-tools")
@@ -257,6 +257,16 @@ return {
     end,
   },
   on_new_config = function(new_config, new_root_dir)
+    if is_goos_linux(new_root_dir) then
+      new_config.settings.env = {
+        GOOS = { "linux" },
+      }
+    end
+
+    if is_goos_linux(new_root_dir) then
+      new_config.settings.buildFlags = vim.tbl_deep_extend("keep", new_config.settings.buildFlags, { "-tags=linux" })
+    end
+
     -- print(is_goos_linux(new_root_dir))
     -- _ = new_root_dir
     -- local cwd = new_root_dir
@@ -292,12 +302,6 @@ return {
     -- end
     -- new_config.settings.env = update_env()
 
-    if is_goos_linux(new_root_dir) then
-      new_config.settings.env = {
-        GOOS = { "linux" },
-      }
-    end
-
     -- local is_large_workspace = function()
     --   return string.find(new_root_dir, "cloud.google.com/") > 0
     -- end
@@ -307,9 +311,5 @@ return {
     --   }
     --   new_config.capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
     -- end
-
-    if is_goos_linux(new_root_dir) then
-      new_config.settings.buildFlags = vim.tbl_deep_extend("keep", new_config.settings.buildFlags, { "-tags=linux" })
-    end
   end,
 }

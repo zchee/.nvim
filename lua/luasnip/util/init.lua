@@ -234,7 +234,7 @@ function M.is_in_test_file()
 end
 
 function M.is_in_test_function()
-  local ok, in_func = require('snippets.luasnip.util.ts.go').in_func()
+  local ok, in_func = require('luasnip.util.ts.go').in_func()
   if not ok then
     return false
   end

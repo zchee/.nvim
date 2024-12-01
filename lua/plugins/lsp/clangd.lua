@@ -27,10 +27,9 @@ return {
     "--input-style=standard",
     "--offset-encoding=utf-16",
   },
-
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
-
   capabilities = require('cmp_nvim_lsp').default_capabilities(),
+  offsetEncoding = { 'utf-16' },
 
   -- on_new_config = function(new_config, _)
   --   local cwd = vim.fn.getcwd()

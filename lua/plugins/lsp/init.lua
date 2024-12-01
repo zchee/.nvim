@@ -5,6 +5,26 @@ local lspconfig_configs = require("lspconfig.configs")
 local lsp_setup = require("lsp-setup")
 local lspkind = require("lspkind")
 local lsp_format = require("lsp-format")
+local gtd = require('gtd')
+
+lspconfig.util.default_config = vim.tbl_extend(
+  "force",
+  lspconfig.util.default_config,
+  {
+    -- handlers = {
+    --   ["window/logMessage"] = function(err, method, params, client_id)
+    --     if params and params.type <= vim.lsp.protocol.MessageType.Log then
+    --       vim.lsp.handlers["window/logMessage"](err, method, params, client_id)
+    --     end
+    --   end,
+    --   ["window/showMessage"] = function(err, method, params, client_id)
+    --     if params and params.type <= vim.lsp.protocol.MessageType.Error then
+    --       vim.lsp.handlers["window/showMessage"](err, method, params, client_id)
+    --     end
+    --   end,
+    -- }
+  }
+)
 
 lsp_format.setup({
   go = {
@@ -266,7 +286,6 @@ lspconfig.sourcekit.setup(require("plugins.lsp.sourcekit"))
 -- ["cmake"] = cmake_config,
 -- ["docker_compose_language_service"] = {},
 -- ["flow"] = {},
--- ["neocmake"] = neocmake_config,
 -- ["pls"] = require("plugins.lsp.pls"),
 -- ["pyright"] = require("plugins.lsp.pyright"),
 -- ["vimls"] = vimls_config,
@@ -286,6 +305,7 @@ local servers = {
   ["helm_ls"] = require("plugins.lsp.helm_ls"),
   ["jsonls"] = require("plugins.lsp.jsonls"),
   ["lua_ls"] = require("plugins.lsp.lua_ls"),
+  ["neocmake"] = require("plugins.lsp.neocmake"),
   -- ["ruff_lsp"] = require("plugins.lsp.ruff_lsp"),
   ["rust_analyzer"] = require("plugins.lsp.rust_analyzer"),
   -- ["sourcekit"] = require("plugins.lsp.sourcekit"),
@@ -294,6 +314,27 @@ local servers = {
   ["ts_ls"] = require("plugins.lsp.ts_ls"),
   ["yamlls"] = require("plugins.lsp.yamlls"),
 }
+
+---@class gtd.kit.App.Config.Schema
+--@param sources { name: string, option?: table }[] # Specify the source that will be used to search for the definition
+--@param get_buffer_path fun(): string # Specify the function to get the current buffer path. It's useful for searching path from terminal buffer etc.
+--@param on_event fun(event: gtd.Event)
+--@param on_context fun(context: gtd.Context) # Modify context on user-land.
+--@param on_cancel fun(params: gtd.Params)
+--@param on_nothing fun(params: gtd.Params)
+--@param on_location fun(params: gtd.Params, location: gtd.kit.LSP.LocationLink)
+--@param on_locations fun(params: gtd.Params, locations: gtd.kit.LSP.LocationLink[])
+gtd.setup({})
+
+vim.keymap.set('n', 'gf', function()
+  gtd.exec({ command = 'edit' })
+end)
+vim.keymap.set('n', 'gs', function()
+  gtd.exec({ command = 'split' })
+end)
+vim.keymap.set('n', 'gv', function()
+  gtd.exec({ command = 'vsplit' })
+end)
 
 lsp_setup.setup({
   default_mappings = false,

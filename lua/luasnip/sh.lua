@@ -5,7 +5,7 @@ local fmta = ls_ext_fmt.fmta
 local rep = require("luasnip.extras").rep
 -- local ai = require("luasnip.nodes.absolute_indexer")
 -- local partial = require("luasnip.extras").partial
-local luasnip_util = require("snippets.luasnip.util")
+local luasnip_util = require("luasnip.util")
 -- local events = require("luasnip.util.events")
 
 local in_test_fn = {

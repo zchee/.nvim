@@ -1,6 +1,7 @@
 local chatgpt = require("chatgpt")
 
 chatgpt.setup({
+  api_key_cmd = "op read op://gaudiy/OpenAI/credential --no-newline",
   yank_register = "+",
   edit_with_instructions = {
     diff = false,

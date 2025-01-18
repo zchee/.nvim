@@ -1,21 +1,27 @@
 local lazydev = require("lazydev")
 
----@class lazydev.Config
+vim.g.lazydev_enabled = true
+
+---@type lazydev.Config
 lazydev.setup({
   runtime = vim.env.VIMRUNTIME,
+  ---@type lazydev.Library.spec[]
   library = {
     {
-      "folke/lazydev.nvim",
+      "lazy.nvim",
       {
-        path = "luvit-meta/library",
-        words = { "vim%.uv" },
+        path = "${3rd}/luv/library",
+        words = { "vim.uv" },
       },
-      "L3MON4D3/LuaSnip",
+      "plenary.nvim",
     },
   },
   integrations = {
     lspconfig = true,
     cmp = true,
   },
-  enabled = true,
+  enabled = function()
+    return vim.g.lazydev_enabled == nil and true or vim.g.lazydev_enabled
+  end,
+  debug = false,
 })

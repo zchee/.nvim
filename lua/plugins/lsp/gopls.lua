@@ -7,19 +7,34 @@ local lspconfig_async = require("lspconfig.async")
 local is_goos_linux = function(cwd)
   return
       string.find(cwd, "gvisor")
-      -- or string.find(cwd, "buildkit")
       or string.find(cwd, "chaos%-mesh/chaos%-mesh")
       or string.find(cwd, "go%-cloud%-debug%-agent")
       or string.find(cwd, "GoogleCloudPlatform/grpc%-gcp%-tools")
       or string.find(cwd, "go.opentelemetry.io/auto")
+  -- or string.find(cwd, "buildkit")
 end
+
+-- --- @param workspace_folders string|lsp.WorkspaceFolder[]?
+-- --- @return lsp.WorkspaceFolder[]?
+-- local function get_workspace_folders(workspace_folders)
+--   if type(workspace_folders) == 'table' then
+--     return workspace_folders
+--   elseif type(workspace_folders) == 'string' then
+--     return {
+--       {
+--         uri = vim.uri_from_fname(workspace_folders),
+--         name = workspace_folders,
+--       },
+--     }
+--   end
+-- end
 
 local mod_cache = nil
 
 --- @class lspconfig.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.go_path("bin", "gopls") },            -- , "-remote=unix;/tmp/gopls.sock", cmd = { vim.fs.joinpath(gopath, "bin", "gopls"), "-remote=unix;/tmp/gopls.sock" },
-  filetypes = { "go", "gotmpl", "gomod", "gowork" }, -- ,"gomod", "gowork"
+  cmd = { util.go_path("bin", "gopls") }, -- , "-remote=unix;/tmp/gopls.sock"
+  filetypes = { "go", "gomod", "gowork", "gotmpl" },
 
   ---@class lsp.ClientCapabilities
   capabilities = function()
@@ -80,17 +95,17 @@ return {
     return capabilities
   end,
 
-  -- root_dir = lspconfig.util.root_pattern("go.mod", "go.work", ".git"),
-  --- @type function | string
-  root_dir = function(fname)
+  root_dir = function(filename, _)
     -- see: https://github.com/neovim/nvim-lspconfig/issues/804
     if not mod_cache then
       local result = lspconfig_async.run_command { 'go', 'env', 'GOMODCACHE' }
       if result and result[1] then
         mod_cache = vim.trim(result[1])
+      else
+        mod_cache = vim.fn.system 'go env GOMODCACHE'
       end
     end
-    if fname:sub(1, #mod_cache) == mod_cache then
+    if mod_cache and fname:sub(1, #mod_cache) == mod_cache then
       local clients = lspconfig.util.get_lsp_clients { name = 'gopls' }
       if #clients > 0 then
         return clients[#clients].config.root_dir
@@ -98,6 +113,7 @@ return {
     end
     return lspconfig.util.root_pattern('go.work', 'go.mod', '.git')(fname)
   end,
+
   settings = {
     env = {},
     buildFlags = {},
@@ -114,11 +130,12 @@ return {
       "-generic_test",          -- bytedance/sonic
     },
     completionDocumentation = true,
+    importsSource = "gopls",
     usePlaceholders = true,
     deepCompletion = true,
     completeUnimported = true,
     addTestSourceCodeAction = true,
-    completionBudget = "100ms",
+    completionBudget = "0s",       -- "100ms",
     matcher = "fuzzy",             -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
     symbolMatcher = "fastFuzzy",   -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
     symbolStyle = "package",       -- "Package", "Full", "Dynamic"
@@ -223,7 +240,7 @@ return {
     expandWorkspaceToModule = false,
     experimentalPostfixCompletions = true,
     templateExtensions = { "tmpl", "tpl", "gotmpl" },
-    diagnosticsDelay = "1s",
+    diagnosticsDelay = "500ms",
     diagnosticsTrigger = "Edit", -- "Save",
     analysisProgressReporting = true,
     standaloneTags = {
@@ -231,85 +248,51 @@ return {
       "tools",
       "integration",
       "wireinject",
+      "nikandfor_loc_unsafe",
+      "kubeapiserver",
     },
-    allExperiments = true,
+    allExperiments = false,
     chattyDiagnostics = false,
-    subdirWatchPatterns = "on", -- "off", "auto"
-    reportAnalysisProgressAfter = "1s",
+    subdirWatchPatterns = "auto", -- "on", "off", "auto"
+    reportAnalysisProgressAfter = "500ms",
     telemetryPrompt = false,
     linkifyShowMessage = true,
     includeReplaceInWorkspace = true,
     zeroConfig = false,
     pullDiagnostics = true,
   },
-  handlers = {
-    ["textDocument/rangeFormatting"] = function(...)
-      vim.lsp.handlers["textDocument/rangeFormatting"](...)
-      if vim.fn.getbufinfo("%")[1].changed == 1 then
-        vim.cmd("noautocmd write")
-      end
-    end,
-    ["textDocument/formatting"] = function(...)
-      vim.lsp.handlers["textDocument/formatting"](...)
-      if vim.fn.getbufinfo("%")[1].changed == 1 then
-        vim.cmd("noautocmd write")
-      end
-    end,
-  },
+  -- handlers = {
+  --   ["textDocument/rangeFormatting"] = function(...)
+  --     vim.lsp.handlers["textDocument/rangeFormatting"](...)
+  --     if vim.fn.getbufinfo("%")[1].changed == 1 then
+  --       vim.cmd("noautocmd write")
+  --     end
+  --   end,
+  --   ["textDocument/formatting"] = function(...)
+  --     vim.lsp.handlers["textDocument/formatting"](...)
+  --     if vim.fn.getbufinfo("%")[1].changed == 1 then
+  --       vim.cmd("noautocmd write")
+  --     end
+  --   end,
+  -- },
   on_new_config = function(new_config, new_root_dir)
     if is_goos_linux(new_root_dir) then
       new_config.settings.env = {
         GOOS = { "linux" },
       }
     end
-
-    if is_goos_linux(new_root_dir) then
-      new_config.settings.buildFlags = vim.tbl_deep_extend("keep", new_config.settings.buildFlags, { "-tags=linux" })
+    if string.find(new_root_dir, "DataDog/datadog%-agent") then
+      new_config.settings.env = {
+        GOFLAGS = { "-tags=kubeapiserver" },
+      }
+      -- new_config.settings.buildFlags = {
+      --   "-tags=kubeapiserver",
+      -- }
     end
 
-    -- print(is_goos_linux(new_root_dir))
-    -- _ = new_root_dir
-    -- local cwd = new_root_dir
-    -- local cwd = tostring(vim.fn.getcwd())
-
-    -- local update_env = function()
-    --   local envs = table()
-    --
-    --   local is_large_workspace = function()
-    --     return string.find(new_root_dir, "cloud.google.com/") > 0
-    --   end
-    --
-    --   print(is_goos_linux(new_root_dir))
-    --   if is_goos_linux(new_root_dir) then
-    --     print("is_goos_linux is true")
-    --     -- envs = vim.tbl_deep_extend("keep", envs, {
-    --     --   GOOS = { "linux" },
-    --     -- })
-    --     envs = {
-    --       GOOS = { "linux" },
-    --     }
-    --   end
-    --   if is_large_workspace(new_root_dir) then
-    --     -- envs = vim.tbl_deep_extend("keep", envs, {
-    --     --   GOWORK = { "off" },
-    --     -- })
-    --     envs = {
-    --       GOWORK = { "off" },
-    --     }
-    --   end
-    --
-    --   return envs
-    -- end
-    -- new_config.settings.env = update_env()
-
-    -- local is_large_workspace = function()
-    --   return string.find(new_root_dir, "cloud.google.com/") > 0
-    -- end
-    -- if is_large_workspace(new_root_dir) then
-    --   new_config.settings.env = {
-    --     GOWORK = { "off" },
-    --   }
-    --   new_config.capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
-    -- end
+    if is_goos_linux(new_root_dir) then
+      -- table.insert(new_config.settings.buildFlags, { "-tags=linux" })
+      -- new_config.settings.buildFlags = vim.tbl_deep_extend("keep", new_config.settings.buildFlags, { "-tags=linux" })
+    end
   end,
 }

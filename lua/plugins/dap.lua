@@ -2,6 +2,40 @@ local util = require("util")
 -- local go_path = join_path(vim.uv.os_homedir(), "go")
 
 local mason_core_path = require("mason-core.path")
+local mason_dap = require("mason-nvim-dap")
+
+---@class mason_dap.config all sources with no handler get passed here
+---@field public name string All the items below are looked up by the adapter name.
+---@field public adapters table adapters mapping
+---@field public configurations table configurations mapping
+---@field public filetypes table filetypes mapping
+
+-- https://github.com/jay-babu/mason-nvim-dap.nvim/blob/main/lua/mason-nvim-dap/mappings/source.lua
+mason_dap.setup({
+  ensure_installed = {
+    "delve",
+    "js",
+    "node2",
+    "python",
+  },
+  handlers = {
+    ---@param config mason_dap.config
+    function(config)
+      mason_dap.default_setup(config)
+    end,
+    -- python = function(config)
+    --   config.adapters = {
+    --     type = "executable",
+    --     command = "/usr/bin/python3",
+    --     args = {
+    --       "-m",
+    --       "debugpy.adapter",
+    --     },
+    --   }
+    --   mason_dap.default_setup(config)
+    -- end,
+  },
+})
 
 -- https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation
 local dap = require("dap")

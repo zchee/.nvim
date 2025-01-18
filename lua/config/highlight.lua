@@ -1,14 +1,14 @@
--- :help group-name
--- :help highlight-groups
--- :help treesitter-highlight-groups
--- :help lsp-semantic-highlight
+-- :Help group-name
+-- :Help highlight-groups
+-- :Help treesitter-highlight-groups
+-- :Help lsp-semantic-highlight
 
 -- :help vim.highlight.priorities
-vim.highlight.priorities.syntax = 50
-vim.highlight.priorities.treesitter = 130
-vim.highlight.priorities.semantic_tokens = 125
-vim.highlight.priorities.diagnostics = 150
-vim.highlight.priorities.user = 200
+vim.hl.priorities.syntax = 50
+vim.hl.priorities.treesitter = 130
+vim.hl.priorities.semantic_tokens = 125
+vim.hl.priorities.diagnostics = 150
+vim.hl.priorities.user = 200
 
 --- @param name string Highlight group name
 --- @param val vim.api.keyset.highlight Highlight definition map
@@ -87,6 +87,9 @@ hi("@lsp.type.variable.go", { link = "None" })
 hi("@lsp.type.string.go", { link = "None" })
 hi("@lsp.typemod.type.definition.go", { link = "Normal" })
 hi("@lsp.type.parameter.go", { link = "None" })
+
+--- GoMod
+hi("@string.special.gomod", { link = "String" })
 
 -- Python
 hi("@constant.python", { fg = "#f2f3f3", bg = "None", blend = 50 })

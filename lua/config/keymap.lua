@@ -140,32 +140,29 @@ vim.keymap.set({ "n" }, "ZQ", "<Nop>", { noremap = true, silent = true })
 -- Language:
 --- Vim:
 --- http://ku.ido.nu/post/90355094974/how-to-grep-a-word-under-the-cursor-on-vim
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  pattern = {
+    "*",
+  },
+  callback = function()
+    if vim.bo.filetype == "help" then
+      vim.keymap.set({ "n" },
+        "<C-]>", ":<C-u>Help<Space><C-r><C-w><CR>",
+        { noremap = true, silent = true, buffer = true })
+    end
+  end,
+})
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
   pattern = {
     "*.vim",
   },
   callback = function()
-    vim.keymap.set({ "n" }, "K", ":<C-u>Help<Space><C-r><C-w><CR>",
-      { noremap = true, silent = true, buffer = true })
-  end,
-})
-vim.api.nvim_create_autocmd({ "FileType" }, {
-  pattern = {
-    "help",
-  },
-  callback = function()
-    vim.keymap.set({ "n" }, "<C-]>", ":<C-u>Help<Space><C-r><C-w><CR>",
+    vim.keymap.set({ "n" },
+      "K", ":<C-u>Help<Space><C-r><C-w><CR>",
       { noremap = true, silent = true, buffer = true })
   end,
 })
 
--- "" Ouickfix:
--- Gautocmdft qf  nnoremap <buffer><CR>      <CR>zz
---
--- "" Help:
--- Gautocmdft help nnoremap <silent><buffer><C-n> :<C-u>cnext<CR>
--- Gautocmdft help nnoremap <silent><buffer><C-p> :<C-u>cprevious<CR>
---
 -- " -------------------------------------------------------------------------------------------------
 -- " Insert: (i)
 

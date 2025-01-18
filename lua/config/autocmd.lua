@@ -1,3 +1,5 @@
+local async = require("plenary.async")
+
 local autocmd_user = vim.api.nvim_create_augroup("AutocmdUser", { clear = false })
 
 -- FileType
@@ -16,6 +18,50 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     vim.api.nvim_buf_set_keymap(0, "n", "u", "<C-u>", { silent = true })
     vim.api.nvim_buf_set_keymap(0, "n", "d", "<C-d>", { silent = true })
     vim.api.nvim_buf_set_keymap(0, "n", "q", ":q<CR>", { silent = true })
+  end,
+})
+--- macOS
+if vim.fn.has("mac") then
+  vim.opt.wildignore:append("DS_Store") -- macOS only
+
+  local path_add_macos_headers = function()
+    local developer_dir = vim.fn.system("xcode-select -p")
+    local sdk_dir = vim.fs.joinpath(developer_dir, "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk")
+    local toolchain_dir = vim.fs.joinpath(developer_dir, "/Toolchains/XcodeDefault.xctoolchain")
+
+    vim.opt.path:append("/usr/local/include")
+    vim.opt.path:append(vim.fs.joinpath(sdk_dir, "/usr/include"))
+    vim.opt.path:append(vim.fs.joinpath(toolchain_dir .. "/usr/include/c++/v1"))
+    vim.opt.path:append(vim.fs.joinpath(toolchain_dir .. "/usr/include/swift"))
+    vim.opt.path:append("/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include")
+    vim.opt.path:append(vim.fs.joinpath(toolchain_dir .. "/usr/lib/clang/**/include"))
+
+    -- macOS frameworks
+    local frameworks_dir = vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "/path/Frameworks")
+    if vim.fn.isdirectory(frameworks_dir) then
+      vim.opt.path:append(frameworks_dir)
+    end
+  end
+
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "c", "cpp", "objc", "objcpp", "go" },
+    callback = path_add_macos_headers
+  })
+end
+-- C familly
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "c", "cpp", "objc", "objcpp", "go" },
+  callback = function()
+    if vim.fn.isdirectory("/usr/local/Frameworks/Python.framework/Headers") then
+      vim.opt.path:append("/usr/local/Frameworks/Python.framework/Headers")
+    end
+  end,
+})
+--- Go
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "go" },
+  callback = function()
+    vim.opt.path:append("/usr/local/go/pkg/include")
   end,
 })
 
@@ -107,7 +153,6 @@ vim.api.nvim_create_autocmd({ "WinEnter" }, {
   end,
 })
 
--- BufWritePre
 -- vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 --   group = vim.api.nvim_create_augroup("LspFormat", { clear = true }),
 --   pattern = {
@@ -126,14 +171,68 @@ vim.api.nvim_create_autocmd({ "WinEnter" }, {
 --   end,
 -- })
 
-local tableContains = function(tbl, value)
-  for i = 1, #tbl do
-    if (tbl[i] == value) then
-      return true
-    end
-  end
-  return false
-end
+-- -- https://github.com/golang/tools/blob/gopls/v0.11.0/gopls/doc/vim.md#imports
+-- ---@param client vim.lsp.Client
+-- ---@param bufnr integer
+-- ---@param cmd string
+-- local function code_action_sync(client, bufnr, cmd)
+--   local params = {}
+--   params = vim.lsp.util.make_range_params(0, "utf-16")
+--   params.context = { only = { cmd }, diagnostics = {} } --- @diagnostic disable-line
+--
+--   local resp = client.request_sync("textDocument/codeAction", params, 3000, bufnr) --- @diagnostic disable-line
+--   for cid, r in pairs(resp and resp.result or {}) do
+--     if r.edit then
+--       local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
+--       vim.lsp.util.apply_workspace_edit(r.edit, enc)
+--     end
+--   end
+-- end
+--
+-- ---@param client vim.lsp.Client
+-- ---@param bufnr integer
+-- local function organize_imports_sync(client, bufnr)
+--   code_action_sync(client, bufnr, "source.organizeImports")
+-- end
+--
+-- ---@param client vim.lsp.Client
+-- ---@param bufnr integer
+-- local function fix_all_sync(client, bufnr)
+--   code_action_sync(client, bufnr, "source.fixAll")
+-- end
+--
+-- ---@type table<string, fun(client: vim.lsp.Client, bufnr: integer)[]>
+-- local save_handlers_by_client_name = {
+--   gopls = { organize_imports_sync, format_sync },
+--   biome = { fix_all_sync, organize_imports_sync, format_sync },
+-- }
+--
+-- -- none-ls を含むすべての Language Server の保存時の処理をまとめてしまう
+-- --
+-- -- Language Server の処理を連続で呼び出すと意図通りの動作をしないことがある
+-- -- Server 側の内部状態の更新が間に合わないのか？
+-- -- その回避のために sleep が必要
+-- --
+-- -- かつ、複数 Language Server にリクエストを送るときにも sleep を入れるために
+-- -- 1つの BufWritePre にまとめている
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   ---@param args { buf: integer }
+--   callback = function(args)
+--     local bufnr = args.buf
+--     local shouldSleep = false
+--     for _, client in pairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+--       local save_handlers = save_handlers_by_client_name[client.name]
+--       for _, f in pairs(save_handlers or {}) do
+--         if shouldSleep then
+--           vim.api.nvim_command("sleep 10ms")
+--         else
+--           shouldSleep = true
+--         end
+--         f(client, bufnr)
+--       end
+--     end
+--   end,
+-- })
 
 -- Codelenses:
 -- AddDependency           Command = "add_dependency"
@@ -169,30 +268,67 @@ end
 -- Vendor                  Command = "vendor"
 -- Views                   Command = "views"
 -- WorkspaceStats          Command = "workspace_stats"
+
+--- @diagnostic disable-next-line
+-- local function is_ft_go()
+--   local function table_contains(tbl, contains)
+--     for i = 1, #tbl do
+--       if (tbl[i] == contains) then
+--         return true
+--       end
+--     end
+--     return false
+--   end
+--   local ft = vim.api.nvim_get_option_value("filetype", { buf = vim.api.nvim_get_current_buf() })
+--   local ft_list = {
+--     "go",
+--     "yaml",
+--   }
+--   if not table_contains(ft_list, ft) then
+--     return
+--   end
+-- end
+-- local augroup_organize_imports = vim.api.nvim_create_augroup("LspOrganizeImports", { clear = false })
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   group = augroup_organize_imports,
+--   pattern = "*.go",
+--   callback = function()
+--     organize_imports_sync()
+--   end,
+-- })
+
+-- BufWritePre
+local augroup_code_action_format = vim.api.nvim_create_augroup("LspCodeActionFormat", { clear = false })
+local code_action_kinds = {
+  "quickfix",
+  "refactor",
+  "refactor.extract",
+  "refactor.inline",
+  "refactor.rewrite",
+  "source",
+  "source.organizeImports",
+  "source.fixAll",
+}
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-  group = vim.api.nvim_create_augroup("LspOrganizeImports", { clear = false }),
+  group = augroup_code_action_format,
   pattern = {
-    "*",
+    "*.go",
   },
   callback = function(e)
-    local ft = vim.api.nvim_get_option_value("filetype", { buf = vim.api.nvim_get_current_buf() })
-    local ft_list = {
-      "go",
+    if string.find(tostring(async.uv.fs_realpath(vim.api.nvim_buf_get_name(e.buf))), "bytedance/sonic") then -- ignore bytedance/sonic
+      return
+    end
+
+    ---@type vim.lsp.buf.code_action.Opts
+    local params = vim.lsp.util.make_range_params(vim.api.nvim_get_current_win(), "utf-16")
+    params.context = {
+      diagnostics = {},
+      only = { "source.organizeImports" },
+      triggerKind = 2,
     }
-    if not tableContains(ft_list, ft) then
-      return
-    end
 
-    if
-        string.find(tostring(vim.uv.fs_realpath(vim.api.nvim_buf_get_name(e.buf))), "bytedance/sonic") -- ignore bytedance/sonic
-    then
-      return
-    end
-
-    local params = vim.lsp.util.make_range_params()
-    params.context = { only = { "source.organizeImports" } }
-
-    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
+    ---@type table<integer, {error: lsp.ResponseError?, result: any}>?
+    local result = vim.lsp.buf_request_sync(e.buf, "textDocument/codeAction", params)
     for cid, res in pairs(result or {}) do
       for _, r in pairs(res.result or {}) do
         if r.edit then
@@ -202,15 +338,19 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
       end
     end
 
-    vim.lsp.buf.format({
+    --- @type vim.lsp.buf.format.Opts
+    local opts = {
+      async = false,
       -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#formattingOptions
       formatting_options = {
+        tabSize = 1,
+        insertSpaces = false,
         trimTrailingWhitespace = true,
         insertFinalNewline = true,
         trimFinalNewlines = true,
       },
-      async = false,
-    })
+    }
+    vim.lsp.buf.format(opts)
   end,
 })
 
@@ -244,12 +384,12 @@ vim.api.nvim_create_autocmd({ "TermOpen" }, {
   end,
 })
 
+---Lanuage
 -- Go
---- gomod
 vim.api.nvim_create_autocmd("BufEnter", {
   pattern = "go.mod",
-  callback = function()
-    vim.api.nvim_buf_create_user_command(0, "GomodPinReplace",
+  callback = function(e)
+    vim.api.nvim_buf_create_user_command(e.buf, "GomodPinReplace",
       function()
         vim.cmd("'<,'>s/^\\t\\(.*\\)\\s\\(.*\\)/\\t\\1 => \\1 \\2/g | nohlsearch")
       end,
@@ -258,7 +398,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
         desc = "substitutes gomod replace packages",
       }
     )
-    vim.api.nvim_buf_create_user_command(0, "GomodLatest",
+    vim.api.nvim_buf_create_user_command(e.buf, "GomodLatest",
       function()
         vim.cmd("'<,'>s/ v[a-z0-9.-]*/ latest/g | nohlsearch")
       end,
@@ -271,35 +411,18 @@ vim.api.nvim_create_autocmd("BufEnter", {
 })
 
 -- kitty
+local kitty_group = vim.api.nvim_create_augroup("Kitty", { clear = true })
 vim.api.nvim_create_autocmd({ "VimEnter", "VimResume" }, {
-  group = vim.api.nvim_create_augroup("KittySetVarVimEnter", { clear = true }),
+  group = kitty_group,
   callback = function()
     io.stdout:write("\x1b]1337;SetUserVar=in_editor=MQo\007")
   end,
 })
-
 vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
-  group = vim.api.nvim_create_augroup("KittyUnsetVarVimLeave", { clear = true }),
+  group = kitty_group,
   callback = function()
     io.stdout:write("\x1b]1337;SetUserVar=in_editor\007")
   end,
-})
-
-vim.api.nvim_create_autocmd('SearchWrapped', {
-  callback = function()
-    local group = vim.api.nvim_create_augroup('search_wrap', { clear = false })
-    vim.api.nvim_set_hl(0, 'CurSearch', { link = 'CurSearchWrap' })
-    vim.api.nvim_clear_autocmds({ event = 'CursorMoved', group = group })
-    vim.schedule(function()
-      vim.api.nvim_create_autocmd({ 'CursorMoved' }, {
-        group = group,
-        once = true,
-        callback = function()
-          vim.api.nvim_set_hl(0, 'CurSearch', { link = 'CurSearchMain' })
-        end,
-      })
-    end)
-  end
 })
 
 -- Debug:

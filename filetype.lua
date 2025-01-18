@@ -1,6 +1,7 @@
 local util    = require("util")
+local async   = require("plenary.async")
 
-local homedir = vim.uv.os_homedir()
+local homedir = async.uv.os_homedir()
 
 vim.filetype.add({
   extension = {

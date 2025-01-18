@@ -1,9 +1,36 @@
 local util = require("util")
 
+local lazydev = require("lazydev")
+vim.g.lazydev_enabled = true
+
+---@type lazydev.Config
+lazydev.setup({
+  runtime = vim.env.VIMRUNTIME,
+  ---@type lazydev.Library.spec[]
+  library = {
+    {
+      "lazy.nvim",
+      {
+        path = "${3rd}/luv/library",
+        words = { "vim.uv" },
+      },
+      "plenary.nvim",
+      "nvim-treesitter",
+    },
+  },
+  integrations = {
+    lspconfig = true,
+    cmp = true,
+  },
+  enabled = function()
+    return vim.g.lazydev_enabled == nil and true or vim.g.lazydev_enabled
+  end,
+  debug = false,
+})
+
 -- https://github.com/LuaLS/lua-language-server/blob/master/doc/en-us/config.md
 -- https://github.com/LuaLS/lua-language-server/blob/master/locale/en-us/setting.lua
 -- https://github.com/LuaLS/lua-language-server/blob/master/script/config/template.lua
-
 --- @class lspconfig.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.homebrew_binary("lua-language-server", "lua-language-server") },
@@ -98,3 +125,12 @@ return {
     end
   end,
 }
+
+-- library = {
+--   vim.env.VIMRUNTIME
+--   -- Depending on the usage, you might want to add additional paths here.
+--   -- "${3rd}/luv/library"
+--   -- "${3rd}/busted/library",
+-- }
+-- -- or pull in all of 'runtimepath'. NOTE: this is a lot slower and will cause issues when working on your own configuration (see https://github.com/neovim/nvim-lspconfig/issues/3189)
+-- -- library = vim.api.nvim_get_runtime_file("", true)

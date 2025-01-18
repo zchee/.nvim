@@ -2,13 +2,18 @@ local util = require("util")
 
 --- @class lspconfig.Config : vim.lsp.ClientConfig
 return {
-  cmd = { "/usr/local/bin/node", vim.fs.joinpath(util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server")), "--stdio" }, -- disabled "Matches multiple schemas when only one must validate." error
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
+  -- NOTE(zchee): use self-compiled for disabled "Matches multiple schemas when only one must validate." error
+  cmd = {
+    "/usr/local/bin/node",
+    vim.fs.joinpath(util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server")),
+    "--stdio",
+  },
+  capabilities = require("cmp_nvim_lsp").default_capabilities(),
   settings = {
     yaml = {
       yamlVersion = 1.2,
       format = {
-        enable = true,
+        enable = false,
         singleQuote = false,
         bracketSpacing = true,
         proseWrap = "preserve",
@@ -17,7 +22,7 @@ return {
       validate = true,
       hover = true,
       completion = true,
-      maxItemsComputed = 50000,
+      maxItemsComputed = 5000,
       suggest = {
         parentSkeletonSelectedFirst = true,
       },
@@ -26,20 +31,11 @@ return {
         url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
       },
       disableAdditionalProperties = false,
-      customTags = {
-        -- for mkdocs
-        "tag:yaml.org,2002:python/name:pymdownx.slugs.uslugify",
-        "tag:yaml.org,2002:python/name:pymdownx.superfences.fence_code_format",
-        "tag:yaml.org,2002:python/object/apply:pymdownx.arithmatex.arithmatex_fenced_format",
-        "tag:yaml.org,2002:python/object/apply:pymdownx.arithmatex.arithmatex_inline_format",
-        "tag:yaml.org,2002:python/name:material.extensions.emoji.twemoji",
-        "tag:yaml.org,2002:python/name:material.extensions.emoji.to_svg",
-      },
       schemas = {
         -- local : zchee/schema
         --- Buf
         ["file:///Users/zchee/src/github.com/zchee/schema/buf.schema.json"] = {
-          "buf*.yaml",
+          "**/buf.yaml",
           "!buf.gen.*.yaml",
         },
         ["file:///Users/zchee/src/github.com/zchee/schema/buf.gen.schema.json"] = {
@@ -97,7 +93,7 @@ return {
           "*discovery.yaml",
         },
         -- OpenAPI
-        ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json"] = {
+        ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.1.schema.json"] = {
           "*openapi*.yaml",
           "**/openapi-spec/*.yaml",
         },
@@ -142,7 +138,7 @@ return {
           "*clangd/config.yaml",
           -- vim.fs.joinpath(vim.fn.resolve(os.getenv("$XDG_CONFIG_HOME")), "clangd/config.yaml"),
         },
-        -- cloudbuild
+        -- CloudBuild
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/cloudbuild.json"] = {
           "*cloudbuild.yaml",
           "*cloudbuild.*.yaml",
@@ -177,6 +173,8 @@ return {
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow-template-properties.json"] = {
           ".github/workflow-templates/*.yml",
           ".github/workflow-templates/*.yaml",
+          "action/**/*.yaml",
+          "actions/**/*.yaml",
         },
         -- github-workflow
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
@@ -185,9 +183,6 @@ return {
         },
         -- golangci-lint
         -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/golangci-lint.json"] = {
-        --   ".golangci.yml",
-        --   ".golangci.yaml",
-        -- },
         ["https://raw.githubusercontent.com/golangci/golangci-lint/master/jsonschema/golangci.next.jsonschema.json"] = {
           ".golangci.yml",
           ".golangci.yaml",
@@ -195,7 +190,7 @@ return {
         -- kustomize
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/kustomization.json"] = {
           "kustomization.yaml",
-          "kustomizeconfig.yaml",
+          -- "kustomizeconfig.yaml",
         },
         -- mkdocs
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/mkdocs-1.0.json"] = {

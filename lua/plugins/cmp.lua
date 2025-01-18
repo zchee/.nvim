@@ -1,11 +1,10 @@
-local util = require("util")
-
 local cmp = require("cmp")
 local npairs = require("nvim-autopairs")
 local npairs_cmp = require("nvim-autopairs.completion.cmp")
 local npairs_handlers = require("nvim-autopairs.completion.handlers")
 local npairs_rule = require("nvim-autopairs.rule")
 local npairs_treesitter_node = require("nvim-autopairs.ts-conds")
+local lspkind = require("lspkind")
 
 npairs.setup({
   disable_filetype = {
@@ -90,6 +89,31 @@ local has_words_before = function()
   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
+-- cp.setup({
+-- 	snippet = {
+-- 		expand = function(args)
+-- 			require("luasnip").lsp_expand(args.body)
+-- 		end,
+-- 	},
+--
+-- 	mapping = {
+-- 		["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
+-- 		["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
+-- 		["<C-e>"] = cmp.mapping({
+-- 			i = cmp.mapping.abort(),
+-- 			c = cmp.mapping.close(),
+-- 		}),
+-- 	},
+--
+-- 	sources = cmp.config.sources({
+-- 		{ name = "nvim_lsp" },
+-- 	}),
+--
+-- 	experimental = {
+-- 		native_menu = true,
+-- 	},
+-- })
+
 -- https://github.com/hrsh7th/nvim-cmp/blob/main/lua/cmp/config/default.lua
 ---@class cmp.ConfigSchema
 cmp.setup({
@@ -98,7 +122,9 @@ cmp.setup({
     debounce = 60,                    -- default: 60
     throttle = 30,                    -- default: 30
     fetching_timeout = 500,           -- default: 500
-    async_budget = 1,
+    filtering_context_budget = 3,     -- default: 3
+    confirm_resolve_timeout = 80,     -- default: 80
+    async_budget = 1,                 -- default: 1
     max_view_entries = 350,           -- default: 200
   },
   preselect = cmp.PreselectMode.Item, -- "item", "none"
@@ -122,7 +148,10 @@ cmp.setup({
     ["<C-f>"] = cmp.config.disable, -- cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
     ["<C-Space>"] = cmp.mapping(cmp.mapping.complete({}), { "i", "c" }),
     ["<C-y>"] = cmp.config.disable,
-    ["<C-e>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
+    ["<C-e>"] = cmp.mapping({
+      i = cmp.mapping.abort(),
+      c = cmp.mapping.close(),
+    }),
     ["<C-k>"] = cmp.mapping(function(fallback)
       if luasnip.expand_or_jumpable() then
         luasnip.expand_or_jump()
@@ -167,10 +196,10 @@ cmp.setup({
     autocomplete = {
       cmp.TriggerEvent.InsertEnter,
       cmp.TriggerEvent.TextChanged,
-      "TextChangedI",
-      "TextChangedP",
+      -- "TextChangedI",
+      -- "TextChangedP",
     },
-    completeopt = "menu,menuone,noinsert",                            -- default, ,noinsert
+    completeopt = "menu,menuone,noinsert",                            -- default
     keyword_pattern = [[\%(-\?\d\+\%(\.\d\+\)\?\|\h\w*\%(-\w*\)*\)]], -- default
     keyword_length = 1,                                               -- default
   },
@@ -182,8 +211,13 @@ cmp.setup({
       "kind",
       "menu",
     },
-    format = require("lspkind").cmp_format({
-      mode = "text_symbol", -- "symbol_text",
+    format = lspkind.cmp_format({
+      mode = "text_symbol", -- "text", "text_symbol", "symbol_text", "symbol"
+      -- maxwidth = 150,
+      maxwidth = {
+        menu = function() return math.floor(0.45 * vim.o.columns) end,
+        abbr = 50,
+      },
       menu = {
         buffer = "[Buffer]",
         nvim_lsp = "[LSP]",
@@ -191,18 +225,19 @@ cmp.setup({
         nvim_lua = "[Lua]",
         compilot = "[Compilot]",
       },
-      preset = "codicons",
-      before = function(entry, vim_item)
-        _ = entry
-        return vim_item
-      end,
-      maxwidth = 150,
+      preset = "default", -- "codicons",
       duplicates = {
         buffer = 1,
         path = 1,
         nvim_lsp = 0,
         luasnip = 1,
       },
+      ellipsis_char = "...",
+      show_labelDetails = true,
+      before = function(entry, vim_item)
+        _ = entry
+        return vim_item
+      end,
     }),
   },
   ---@class cmp.MatchingConfig

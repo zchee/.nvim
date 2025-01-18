@@ -5,45 +5,45 @@ local lspconfig_configs = require("lspconfig.configs")
 local lsp_setup = require("lsp-setup")
 local lspkind = require("lspkind")
 local lsp_format = require("lsp-format")
-local gtd = require('gtd')
+-- local gtd = require('gtd')
 
-lspconfig.util.default_config = vim.tbl_extend(
-  "force",
-  lspconfig.util.default_config,
-  {
-    -- handlers = {
-    --   ["window/logMessage"] = function(err, method, params, client_id)
-    --     if params and params.type <= vim.lsp.protocol.MessageType.Log then
-    --       vim.lsp.handlers["window/logMessage"](err, method, params, client_id)
-    --     end
-    --   end,
-    --   ["window/showMessage"] = function(err, method, params, client_id)
-    --     if params and params.type <= vim.lsp.protocol.MessageType.Error then
-    --       vim.lsp.handlers["window/showMessage"](err, method, params, client_id)
-    --     end
-    --   end,
-    -- }
-  }
-)
+-- lspconfig.util.default_config = vim.tbl_extend(
+--   "force",
+--   lspconfig.util.default_config,
+--   {
+--     -- handlers = {
+--     --   ["window/logMessage"] = function(err, method, params, client_id)
+--     --     if params and params.type <= vim.lsp.protocol.MessageType.Log then
+--     --       vim.lsp.handlers["window/logMessage"](err, method, params, client_id)
+--     --     end
+--     --   end,
+--     --   ["window/showMessage"] = function(err, method, params, client_id)
+--     --     if params and params.type <= vim.lsp.protocol.MessageType.Error then
+--     --       vim.lsp.handlers["window/showMessage"](err, method, params, client_id)
+--     --     end
+--     --   end,
+--     -- }
+--   }
+-- )
 
-lsp_format.setup({
-  go = {
-    -- sync = true,
-    exclude = { "gopls" }
-  },
-  c = {
-    exclude = { "clangd" }
-  },
-  cpp = {
-    exclude = { "clangd" }
-  },
-  lua = {
-    sync = true,
-  },
-  sh = {
-    sync = true,
-  },
-})
+-- lsp_format.setup({
+--   go = {
+--     -- sync = true,
+--     exclude = { "gopls" }
+--   },
+--   c = {
+--     exclude = { "clangd" }
+--   },
+--   cpp = {
+--     exclude = { "clangd" }
+--   },
+--   lua = {
+--     sync = true,
+--   },
+--   sh = {
+--     sync = true,
+--   },
+-- })
 
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#clientCapabilities
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentClientCapabilities
@@ -324,7 +324,7 @@ local servers = {
 --@param on_nothing fun(params: gtd.Params)
 --@param on_location fun(params: gtd.Params, location: gtd.kit.LSP.LocationLink)
 --@param on_locations fun(params: gtd.Params, locations: gtd.kit.LSP.LocationLink[])
-gtd.setup({})
+-- gtd.setup({})
 
 vim.keymap.set('n', 'gf', function()
   gtd.exec({ command = 'edit' })
@@ -339,15 +339,10 @@ end)
 lsp_setup.setup({
   default_mappings = false,
   mappings = {
-    -- ["<C-]>"] = "lua vim.lsp.buf.definition()",
+    K = "<Cmd>Lspsaga hover_doc<CR>",
     ["<C-]>"] = "<Cmd>Lspsaga goto_definition<CR>",
-
-    -- ["<C-k>"] = "lua vim.lsp.buf.signature_help()",
     ["<C-k>"] = "<Cmd>Lspsaga signature_help<CR>",
-
-    -- ["<BS>ca"] = "lua vim.lsp.buf.code_action()",
     ["<BS>ca"] = "<Cmd>Lspsaga code_action<CR>",
-
     ["<BS>f"] = "lua vim.lsp.buf.format()",
     ["<BS>gci"] = "<Cmd>Lspsaga incoming_calls<CR>",
     ["<BS>gco"] = "<Cmd>Lspsaga outgoing_calls<CR>",
@@ -357,12 +352,7 @@ lsp_setup.setup({
     ["<BS>gp"] = "<Cmd>Lspsaga peek_definition<CR>",
     ["<BS>gr"] = "lua vim.lsp.buf.references()",
     ["<BS>gt"] = "<Cmd>Lspsaga goto_type_definition<CR>",
-
-    -- ["<Space>e"] = "lua vim.lsp.buf.rename()",
     ["<Space>e"] = "<Cmd>Lspsaga rename<CR>",
-
-    -- K = "lua vim.lsp.buf.hover()",
-    K = "<Cmd>Lspsaga hover_doc<CR>",
   },
   capabilities = default_capabilities_config(),
   on_attach = on_attach,

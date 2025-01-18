@@ -8,7 +8,7 @@ return {
     basedpyright = {
       disableLanguageServices = false,
       disableOrganizeImports = false,
-      openFilesOnly = true,
+      openFilesOnly = false,
       analysis = {
         autoImportCompletions = true,
         autoSearchPaths = true,
@@ -31,7 +31,7 @@ return {
         include = {},
         logLevel = "Error",
         -- stubPath = "",
-        typeCheckingMode = "basic", -- "basic", -- "strict"
+        typeCheckingMode = "none", -- "basic", -- "strict"
         -- typeshedPaths = {},
       },
       useLibraryCodeForTypes = true,

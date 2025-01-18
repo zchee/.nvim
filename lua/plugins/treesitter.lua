@@ -1,9 +1,9 @@
 local ts_config = require("nvim-treesitter.configs")
-local ts_install = require("nvim-treesitter.shell_command_selectors")
-local ts_utils = require("nvim-treesitter.utils")
+-- local ts_utils = require("nvim-treesitter.utils")
 local ts_parsers = require("nvim-treesitter.parsers")
 local ts_context_commentstring = require("ts_context_commentstring")
 
+-- local ts_install = require("nvim-treesitter.shell_command_selectors")
 -- ts_install.select_compile_command = function(_, _, compile_location)
 --   return {
 --     cmd = vim.fn.exepath("tree-sitter"),
@@ -18,22 +18,14 @@ local ts_context_commentstring = require("ts_context_commentstring")
 
 vim.treesitter.language.register("starlark", "tiltfile")
 vim.treesitter.language.register("json", "jsonschema")
-vim.treesitter.language.register("bash", "zsh")
+-- vim.treesitter.language.register("bash", "zsh")
+vim.treesitter.language.register("gotmpl", "helm")
 
 ---@class ParserInfo[]
-local treesitter_parsers_config = ts_parsers.get_parser_configs()
-
--- asm
--- treesitter_parsers_config.asm = {
---   install_info = {
---     url = "https://github.com/RubixDev/tree-sitter-asm",
---     files = { "src/parser.c" },
---     branch = "main",
---   },
--- }
-
--- CEL
-treesitter_parsers_config.cel = {
+local parsers_config = ts_parsers.get_parser_configs()
+--- cel
+parsers_config.cel = {
+  ---@type InstallInfo
   install_info = {
     url = "https://github.com/bufbuild/tree-sitter-cel",
     branch = "main",
@@ -42,9 +34,18 @@ treesitter_parsers_config.cel = {
     requires_generate_from_grammar = false,
   },
 }
-
--- go fork
+--- func
+parsers_config.func = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/tree-sitter-grammars/tree-sitter-func",
+    files = { "src/parser.c" },
+    branch = "main",
+  },
+}
+--- go fork
 -- treesitter_parsers_config.go = {
+--   ---@type InstallInfo
 --   install_info = {
 --     url = vim.fs.joinpath(src_dir, "github.com/tree-sitter/tree-sitter-go"),
 --     files = { "src/parser.c" },
@@ -53,9 +54,9 @@ treesitter_parsers_config.cel = {
 --     requires_generate_from_grammar = false,
 --   },
 -- }
-
--- goasm
+--- goasm
 -- treesitter_parsers_config.goasm = {
+--   ---@type InstallInfo
 --   install_info = {
 --     url = vim.fs.joinpath(src_dir, "github.com/zchee/nvim-goasm"),
 --     files = { "src/parser.c" },
@@ -66,18 +67,25 @@ treesitter_parsers_config.cel = {
 --   -- filetype = "goasm",
 --   maintainers = { "@zchee" },
 -- }
-
-treesitter_parsers_config.gotmpl = {
+--- make
+parsers_config.make = {
+  ---@type InstallInfo
   install_info = {
-    url = "https://github.com/ngalaiko/tree-sitter-go-template",
-    files = { "src/parser.c" }
+    url = "https://github.com/tree-sitter-grammars/tree-sitter-make",
+    files = { "src/parser.c" },
+    branch = "main",
   },
-  filetype = "gotmpl",
-  used_by = { "gohtmltmpl", "gotexttmpl", "gotmpl", "yaml" }
 }
-
+--- printf
+parsers_config.printf = {
+  ---@type InstallInfo
+  install_info = {
+    url = "github.com/tree-sitter-grammars/tree-sitter-printf",
+    files = { "src/parser.c" },
+  },
+}
 -- protobuf
-treesitter_parsers_config.protobuf = {
+parsers_config.protobuf = {
   ---@class InstallInfo
   install_info = {
     url = "https://github.com/Clement-Jean/tree-sitter-proto",
@@ -90,11 +98,26 @@ treesitter_parsers_config.protobuf = {
   maintainers = { "@Clement-Jean" },
 }
 
+--- zsh
+---@class ParserInfo
+parsers_config.zsh = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/tree-sitter-grammars/tree-sitter-zsh",
+    files = { "src/parser.c" },
+    branch = "master",
+    generate_requires_npm = true,
+    requires_generate_from_grammar = true,
+  },
+}
+
 ts_context_commentstring.setup {
   commentary_integration = {},
   enable_autocmd = true,
   config = {},
-  languages = {},
+  languages = {
+    "go",
+  },
 }
 vim.g.skip_ts_context_commentstring_module = true
 
@@ -407,6 +430,7 @@ local parsers = {
   "zig", -- [✓] installed
   -- "ziggy",              -- [✗] not installed
   -- "ziggy_schema",       -- [✗] not installed
+  -- "zsh", -- [✓] installed
 }
 
 ---------- old? config ----------

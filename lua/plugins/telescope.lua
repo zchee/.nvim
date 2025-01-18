@@ -1,3 +1,5 @@
+local async = require("plenary.async")
+
 local icons = require("nvim-nonicons")
 local lga_actions = require("telescope-live-grep-args.actions")
 local telescope = require("telescope")
@@ -245,8 +247,8 @@ telescope.setup({
       case_mode = "smart_case", -- "smart_case", "ignore_case", "respect_case"
     },
     ghq = {
-      bin = vim.fs.joinpath(vim.uv.os_homedir(), "go", "bin", "ghq"),
-      cwd = vim.uv.cwd(),
+      bin = vim.fs.joinpath(async.uv.os_homedir(), "go", "bin", "ghq"),
+      cwd = async.uv.cwd(),
     },
     grep_app = {
       open_browser_cmd = "chrome",

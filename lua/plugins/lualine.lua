@@ -1,5 +1,11 @@
 local lualine = require("lualine")
 
+local function gitsigns_branch()
+  if vim.b.gitsigns_head then
+    return vim.b.gitsigns_head
+  end
+end
+
 lualine.setup({
   options = {
     icons_enabled = true,
@@ -44,10 +50,10 @@ lualine.setup({
         },
       },
       {
-        "branch",
+        gitsigns_branch,
         padding = {
           left = 0,
-          right = 1,
+          right = 2,
         },
       },
       {

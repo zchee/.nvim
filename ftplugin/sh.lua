@@ -1,4 +1,4 @@
--- zsh.lua: Neovim filetype plugin for Sh.
+-- sh.lua: Neovim filetype plugin for Sh.
 
 if vim.b.did_ftplugin then
   return

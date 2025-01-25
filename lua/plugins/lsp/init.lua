@@ -4,8 +4,9 @@ local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
 local lsp_setup = require("lsp-setup")
 local lspkind = require("lspkind")
-local lsp_format = require("lsp-format")
--- local gtd = require('gtd')
+
+-- vim.lsp.set_log_level("OFF") -- "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+-- vim.lsp._watchfunc = vim._watch.watch
 
 -- lspconfig.util.default_config = vim.tbl_extend(
 --   "force",
@@ -26,30 +27,14 @@ local lsp_format = require("lsp-format")
 --   }
 -- )
 
--- lsp_format.setup({
---   go = {
---     -- sync = true,
---     exclude = { "gopls" }
---   },
---   c = {
---     exclude = { "clangd" }
---   },
---   cpp = {
---     exclude = { "clangd" }
---   },
---   lua = {
---     sync = true,
---   },
---   sh = {
---     sync = true,
---   },
--- })
-
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#clientCapabilities
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentClientCapabilities
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#serverCapabilities
 local default_capabilities_config = function()
   local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+  capabilities.textDocument.diagnostic.dynamicRegistration = true
+  capabilities.textDocument.diagnostic.relatedDocumentSupport = true
 
   capabilities.textDocument.formatting.dynamicRegistration = true
   capabilities.textDocument.semanticTokens.augmentsSyntaxTokens = true
@@ -93,12 +78,6 @@ end
 --- @param client vim.lsp.Client
 --- @param bufnr integer
 local on_attach = function(client, bufnr)
-  vim.lsp.set_log_level("OFF") -- "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
-  vim.lsp._watchfunc = vim._watch.watch
-
-  --- @diagnostic disable-next-line
-  lsp_format.on_attach(client, bufnr)
-
   if client.name == "bashls" or client.name == "lua_ls" then
     return
   end
@@ -128,7 +107,6 @@ local on_attach = function(client, bufnr)
       end
       vim.lsp.diagnostic.on_publish_diagnostics(_, result, ctx, config)
     end
-
     vim.lsp.handlers["textDocument/publishDiagnostics"] = filter_tsserver_diagnostics
   end
 
@@ -140,19 +118,6 @@ local on_attach = function(client, bufnr)
   end
 end
 
--- local inlayHint = function()
---   local enabled = true
---   local ft = vim.api.nvim_get_option_value("filetype", { buf = 0 })
---   if ft ~= "go" or ft ~= "gotmpl" then
---     enabled = false
---   end
---
---   return {
---     enabled = enabled, -- TODO(zchee): use inlayHint?
---     highlight = "Comment",
---   }
--- end
-
 ---@param name string
 ---@param default_config any
 local register_lsp = function(name, default_config)
@@ -162,32 +127,6 @@ local register_lsp = function(name, default_config)
     }
   end
 end
-
-register_lsp(
-  "bufls",
-  {
-    cmd = { "bufls", "serve" },
-    filetypes = { "proto" },
-    root_dir = function()
-      return lspconfig.util.find_git_ancestor
-    end,
-    settings = {},
-  }
-)
-lspconfig.bufls.setup(require("plugins.lsp.bufls"))
-
-register_lsp(
-  "bzl",
-  {
-    cmd = { "bzl", "lsp", "serve" },
-    filetypes = { "bzl" },
-    root_dir = function()
-      return lspconfig.util.find_git_ancestor
-    end,
-    settings = {},
-  }
-)
-lspconfig.bzl.setup(require("plugins.lsp.bzl"))
 
 register_lsp(
   "neocmake",
@@ -214,19 +153,6 @@ register_lsp(
 )
 lspconfig.neocmake.setup({})
 
--- register_lsp(
---   "cuepls",
---   {
---     cmd = { "cuepls", "serve" },
---     filetypes = { "cue" },
---     root_dir = function(fname)
---       return lspconfig.util.find_git_ancestor(fname)
---     end,
---     settings = {},
---   }
--- )
--- lspconfig.cuepls.setup(require("plugins.lsp.cuepls"))
-
 register_lsp(
   "tilt_ls",
   {
@@ -239,31 +165,6 @@ register_lsp(
   }
 )
 lspconfig.tilt_ls.setup(require("plugins.lsp.tilt_ls"))
-
-register_lsp(
-  "grammarly_lsp",
-  {
-    cmd = { "node", vim.fs.joinpath(util.src_path("github.com/emacs-grammarly/grammarly-language-server/packages/grammarly-languageserver/bin/server.js")), "--stdio" },
-    filetypes = { "markdown" },
-    root_dir = function()
-      return lspconfig.util.find_git_ancestor
-    end,
-    settings = {},
-  }
-)
--- lspconfig.grammarly_lsp.setup(require("plugins.lsp.grammarly_lsp"))
-
--- register_lsp(
---   "flowtype",
---   {
---     cmd = { "/usr/local/var/nodenv/versions/16.20.2/bin/node", "/usr/local/var/nodenv/versions/16.20.2/bin/flow-language-server", "--stdio" },
---     filetypes = { "javascript" },
---     root_dir = function()
---       return lspconfig.util.find_git_ancestor
---     end,
---   }
--- )
--- lspconfig.flowtype.setup()
 
 register_lsp(
   "sourcekit",
@@ -287,54 +188,31 @@ lspconfig.sourcekit.setup(require("plugins.lsp.sourcekit"))
 -- ["docker_compose_language_service"] = {},
 -- ["flow"] = {},
 -- ["pls"] = require("plugins.lsp.pls"),
--- ["pyright"] = require("plugins.lsp.pyright"),
 -- ["vimls"] = vimls_config,
 -- ["vtsls"] = vtsls_config,
 -- ["zls"] = zls_config,
 local servers = {
   ["asm_lsp"] = require("plugins.lsp.asm_lsp"),
-  ["basedpyright"] = require("plugins.lsp.basedpyright"),
+  -- ["basedpyright"] = require("plugins.lsp.basedpyright"),
+  ["pyright"] = require("plugins.lsp.pyright"),
   ["bashls"] = require("plugins.lsp.bashls"),
   ["bzl"] = require("plugins.lsp.bzl"),
   ["clangd"] = require("plugins.lsp.clangd"),
-  ["dagger"] = {},
+  -- ["dagger"] = {},
   ["dockerls"] = require("plugins.lsp.dockerls"),
-  ["golangci_lint_ls"] = require("plugins.lsp.golangci_lint_ls"),
+  -- ["golangci_lint_ls"] = require("plugins.lsp.golangci_lint_ls"),
   ["gopls"] = require("plugins.lsp.gopls"),
   ["graphql"] = require("plugins.lsp.graphql"),
   ["helm_ls"] = require("plugins.lsp.helm_ls"),
   ["jsonls"] = require("plugins.lsp.jsonls"),
   ["lua_ls"] = require("plugins.lsp.lua_ls"),
   ["neocmake"] = require("plugins.lsp.neocmake"),
-  -- ["ruff_lsp"] = require("plugins.lsp.ruff_lsp"),
   ["rust_analyzer"] = require("plugins.lsp.rust_analyzer"),
-  -- ["sourcekit"] = require("plugins.lsp.sourcekit"),
   ["taplo"] = require("plugins.lsp.taplo"),
   ["terraformls"] = require("plugins.lsp.terraformls"),
   ["ts_ls"] = require("plugins.lsp.ts_ls"),
   ["yamlls"] = require("plugins.lsp.yamlls"),
 }
-
----@class gtd.kit.App.Config.Schema
---@param sources { name: string, option?: table }[] # Specify the source that will be used to search for the definition
---@param get_buffer_path fun(): string # Specify the function to get the current buffer path. It's useful for searching path from terminal buffer etc.
---@param on_event fun(event: gtd.Event)
---@param on_context fun(context: gtd.Context) # Modify context on user-land.
---@param on_cancel fun(params: gtd.Params)
---@param on_nothing fun(params: gtd.Params)
---@param on_location fun(params: gtd.Params, location: gtd.kit.LSP.LocationLink)
---@param on_locations fun(params: gtd.Params, locations: gtd.kit.LSP.LocationLink[])
--- gtd.setup({})
-
-vim.keymap.set('n', 'gf', function()
-  gtd.exec({ command = 'edit' })
-end)
-vim.keymap.set('n', 'gs', function()
-  gtd.exec({ command = 'split' })
-end)
-vim.keymap.set('n', 'gv', function()
-  gtd.exec({ command = 'vsplit' })
-end)
 
 lsp_setup.setup({
   default_mappings = false,
@@ -357,7 +235,6 @@ lsp_setup.setup({
   capabilities = default_capabilities_config(),
   on_attach = on_attach,
   servers = servers,
-  -- inlay_hints = inlayHint(),
 })
 
 lspkind.init()

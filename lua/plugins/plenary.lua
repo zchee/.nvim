@@ -12,3 +12,4 @@ end
 add("cwd", 0)
 add("os_homedir", 0)
 add("os_uname", 0)
+add("available_parallelism", 0)

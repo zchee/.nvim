@@ -1,5 +1,6 @@
 local bufferline = require("bufferline")
 
+---@type bufferline.Options
 bufferline.setup({
   options = {
     mode = "buffers",                    -- "tabs"

@@ -1,5 +1,4 @@
 local util = require("util")
--- local go_path = join_path(vim.uv.os_homedir(), "go")
 
 local mason_core_path = require("mason-core.path")
 local mason_dap = require("mason-nvim-dap")

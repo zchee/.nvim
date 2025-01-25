@@ -1,4 +1,4 @@
-; extends
+;; extends
 
 ; ((identifier) @conditional.case (#eq? @conditional.case "case"))
 ; ((identifier) @conditional.default (#eq? @conditional.default "default"))

@@ -1,6 +1,6 @@
 ; Code token from: https://github.com/ray-x/go.nvim/blob/master/after/queries/go/locals.scm
 
-; extends
+;; extends
 
 (var_spec) @local.scope
 

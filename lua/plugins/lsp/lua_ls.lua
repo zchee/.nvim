@@ -12,7 +12,7 @@ lazydev.setup({
       "lazy.nvim",
       {
         path = "${3rd}/luv/library",
-        words = { "vim.uv" },
+        words = { "vim%.uv" },
       },
       "plenary.nvim",
       "nvim-treesitter",

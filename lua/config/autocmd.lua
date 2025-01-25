@@ -1,5 +1,3 @@
-local async = require("plenary.async")
-
 local autocmd_user = vim.api.nvim_create_augroup("AutocmdUser", { clear = false })
 
 -- FileType
@@ -25,7 +23,7 @@ if vim.fn.has("mac") then
   vim.opt.wildignore:append("DS_Store") -- macOS only
 
   local path_add_macos_headers = function()
-    local developer_dir = vim.fn.system("xcode-select -p")
+    local developer_dir = "/Applications/Xcode.app/Contents/Developer" -- vim.fn.system("xcode-select -p")
     local sdk_dir = vim.fs.joinpath(developer_dir, "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk")
     local toolchain_dir = vim.fs.joinpath(developer_dir, "/Toolchains/XcodeDefault.xctoolchain")
 
@@ -153,23 +151,23 @@ vim.api.nvim_create_autocmd({ "WinEnter" }, {
   end,
 })
 
--- vim.api.nvim_create_autocmd({ "BufWritePre" }, {
---   group = vim.api.nvim_create_augroup("LspFormat", { clear = true }),
---   pattern = {
---     "*.lua",
---     "*.tf",
---     "*.tfvars",
---     "*.ts",
---   },
---   callback = function()
---     vim.lsp.buf.format({
---       async = false,
---       trimTrailingWhitespace = true,
---       insertFinalNewline = true,
---       trimFinalNewlines = true,
---     })
---   end,
--- })
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  group = vim.api.nvim_create_augroup("LspFormat", { clear = true }),
+  pattern = {
+    "*.lua",
+    "*.tf",
+    "*.tfvars",
+    "*.ts",
+  },
+  callback = function()
+    vim.lsp.buf.format({
+      async = false,
+      trimTrailingWhitespace = true,
+      insertFinalNewline = true,
+      trimFinalNewlines = true,
+    })
+  end,
+})
 
 -- -- https://github.com/golang/tools/blob/gopls/v0.11.0/gopls/doc/vim.md#imports
 -- ---@param client vim.lsp.Client
@@ -315,7 +313,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
     "*.go",
   },
   callback = function(e)
-    if string.find(tostring(async.uv.fs_realpath(vim.api.nvim_buf_get_name(e.buf))), "bytedance/sonic") then -- ignore bytedance/sonic
+    if string.find(tostring(vim.uv.fs_realpath(vim.api.nvim_buf_get_name(e.buf))), "bytedance/sonic") then -- ignore bytedance/sonic
       return
     end
 

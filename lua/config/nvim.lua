@@ -10,7 +10,6 @@
 --                                                                                                                 --
 -- --------------------------------------------------------------------------------------------------------------- --
 
--- vim.lsp.set_log_level("OFF")
 local util                      = require("util")
 
 -- Environment Variables:
@@ -177,16 +176,16 @@ vim.opt.switchbuf = "uselast" -- useopen
 vim.opt.synmaxcol = 0         -- default: 3000, 0: unlimited, 400, 1500, 5000
 vim.opt.tabstop = 2
 vim.opt.tagcase = "smart"
-vim.opt.tags = "./tags;" -- http://d.hatena.ne.jp/thinca/20090723/1248286959
+vim.opt.tags = "./tags;"                              -- http://d.hatena.ne.jp/thinca/20090723/1248286959
 vim.opt.textwidth = 0
-vim.opt.timeout = true   -- mappnig timeout
-vim.opt.timeoutlen = 250 -- default: 1000
-vim.opt.ttimeout = true  -- keycode timeout
-vim.opt.ttimeoutlen = 30 -- default: 50
-vim.opt.undodir = vim.fs.joinpath(tostring(vim.fn.stdpath("state")), "undo")
+vim.opt.timeout = true                                -- mappnig timeout
+vim.opt.timeoutlen = 250                              -- default: 1000
+vim.opt.ttimeout = true                               -- keycode timeout
+vim.opt.ttimeoutlen = 30                              -- default: 50
+vim.opt.undodir = vim.fn.stdpath("state") .. "/undo/" -- NOTE(zchee): can't use `vim.fs.joinpath`
 vim.opt.undofile = true
-vim.opt.undolevels = 10000 -- default: 1000
-vim.opt.updatetime = 100   -- default: 4000
+vim.opt.undolevels = 10000                            -- default: 1000
+vim.opt.updatetime = 100                              -- default: 4000
 vim.opt.pumblend = 15
 vim.opt.pumheight = 30
 vim.opt.virtualedit = "block"
@@ -237,32 +236,6 @@ vim.opt.wrapscan = false
 
 vim.cmd.colorscheme("equinusocio_material")
 
-if vim.fn.has("mac") then
-  vim.opt.wildignore:append("DS_Store") -- macOS only
-
-  local path_add_macos_headers = function()
-    local developer_dir = vim.fn.system("xcode-select -p")
-    local sdk_dir = developer_dir .. "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
-    local toolchain_dir = developer_dir .. "/Toolchains/XcodeDefault.xctoolchain"
-
-    vim.opt.path:append("/usr/local/include")
-    vim.opt.path:append(sdk_dir .. "/usr/include")
-    vim.opt.path:append(toolchain_dir .. "/usr/include/c++/v1")
-    vim.opt.path:append(toolchain_dir .. "/usr/include/swift")
-    vim.opt.path:append("/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include")
-    vim.opt.path:append(toolchain_dir .. "/usr/lib/clang/**/include")
-    vim.opt.path:append("/Users/zchee/src/github.com/apple-oss-distributions/xnu")
-
-    -- macOS frameworks
-    if vim.fn.isdirectory(vim.fn.stdpath("config") .. "/path/Frameworks") then
-      vim.opt.path:append(vim.fn.stdpath("config") .. "/path/Frameworks")
-    end
-  end
-
-  vim.api.nvim_create_autocmd("Filetype",
-    { pattern = "c, cpp, objc, objcpp, go", callback = path_add_macos_headers })
-end
-
 local go_include = function()
   vim.opt.path:append("/usr/local/go/pkg/include")
 end
@@ -300,10 +273,8 @@ vim.g.go_highlight_diagnostic_errors = 1         -- default : 0
 vim.g.go_highlight_diagnostic_warnings = 1       -- default : 1
 vim.g.go_highlight_debug = 1                     -- default : 1
 vim.g.go_fold_enable = { "block", "import", "varconst", "comment", "package_comment" }
-
 vim.g.go_highlight_error = 1
 vim.g.go_highlight_return = 1
-
 vim.api.nvim_set_hl(0, "goImportString", { link = "Comment", force = true })
 vim.api.nvim_set_hl(0, "goPredefinedIdentifiers", { link = "Keyword", force = true })
 vim.api.nvim_set_hl(0, "goReceiverType", { link = "Keyword", force = true })
@@ -374,4 +345,4 @@ vim.g.vista_executive_nvim_lsp_fetching = true
 
 -- vim-wakatime
 vim.g.wakatime_CLIPath = util.homebrew_binary("wakatime-cli-head", "wakatime-cli")
-vim.g.wakatime_PythonBinary = util.homebrew_binary("python3.13t", "python3t")
+vim.g.wakatime_PythonBinary = util.homebrew_binary("python3.13", "python3")

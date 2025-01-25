@@ -51,7 +51,7 @@ vim.filetype.add({
     y                  = "goyacc",
   },
   filename = {
-    [".bash_profile"]    = "sh",
+    [".bash_profile"]    = "bash",
     [".bazelrc"]         = "bzl",
     [".boto"]            = "cfg",
     [".clang-format"]    = "yaml",
@@ -108,6 +108,7 @@ vim.filetype.add({
     [".*/makedefs/.*"]                                                    = "make",
     [".*/share/zsh/(site-)?functions/.*"]                                 = "zsh",
     [".*/testdata/.*/.*.go.golden"]                                       = "go",
+    [".*bashrc.*"]                                                        = "bash",
     [".*renovate.json"]                                                   = "json5",
     ["/private/etc/sudoers.d/.*"]                                         = "sudoers",
     ["[Dd]ockerfile.*[^.vim]"]                                            = "dockerfile",

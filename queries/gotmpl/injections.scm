@@ -1,4 +1,7 @@
-; (text) @yaml
+;; (text) @yaml
+
+;; extends
+
 ((text) @injection.content
  (#set! injection.language "html")
  (#set! injection.combined))

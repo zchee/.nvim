@@ -103,11 +103,11 @@ parsers_config.protobuf = {
 parsers_config.zsh = {
   ---@type InstallInfo
   install_info = {
-    url = "https://github.com/tree-sitter-grammars/tree-sitter-zsh",
-    files = { "src/parser.c" },
-    branch = "master",
+    url = "https://github.com/zchee/tree-sitter-zsh",
+    files = { "src/parser.c", "src/scanner.c" },
+    branch = "devel",
     generate_requires_npm = true,
-    requires_generate_from_grammar = true,
+    requires_generate_from_grammar = false,
   },
 }
 
@@ -117,6 +117,7 @@ ts_context_commentstring.setup {
   config = {},
   languages = {
     "go",
+    "lua",
   },
 }
 vim.g.skip_ts_context_commentstring_module = true
@@ -126,6 +127,9 @@ vim.g.skip_ts_context_commentstring_module = true
 -- :'<,'>s/\(\w*\)\s*\(\[\(✓\|✗\)\]\)/  "\1",  -- \2/g
 -- :'<,'>s/  \("\w*"\,  -- \[✗\] not installed\)/  -- \1
 -- :'<,'>EasyAlign /-- \[✗\]/
+
+-- :'<,'>s/\("\w*",\)\( *\)  -- \[\(✗\|✓\)\]\( not installed\)/-- \1\2-- [\3]\4/g
+-- :lua vim.lsp.buf.format({ async = false, bufnr = 0 })
 local parsers = {
   -- "ada",                -- [✗] not installed
   -- "agda",               -- [✗] not installed
@@ -150,6 +154,7 @@ local parsers = {
   "capnp", -- [✓] installed
   "cel",   -- [✓] installed
   -- "chatito",            -- [✗] not installed
+  -- "circom",             -- [✗] not installed
   -- "clojure",            -- [✗] not installed
   "cmake",   -- [✓] installed
   "comment", -- [✓] installed
@@ -162,8 +167,10 @@ local parsers = {
   "csv",  -- [✓] installed
   "cuda", -- [✓] installed
   "cue",  -- [✓] installed
+  -- "cylc",               -- [✗] not installed
   -- "d",                  -- [✗] not installed
   -- "dart",               -- [✗] not installed
+  -- "desktop",            -- [✗] not installed
   "devicetree",   -- [✓] installed
   -- "dhall",              -- [✗] not installed
   "diff",         -- [✓] installed
@@ -243,8 +250,10 @@ local parsers = {
   -- "hurl",               -- [✗] not installed
   -- "hyprlang",           -- [✗] not installed
   -- "idl",                -- [✗] not installed
-  "ini",        -- [✓] installed
+  -- "idris",              -- [✗] not installed
+  "ini", -- [✓] installed
   -- "inko",               -- [✗] not installed
+  -- "ipkg",               -- [✗] not installed
   "ispc",       -- [✓] installed
   -- "janet_simple",       -- [✗] not installed
   "java",       -- [✓] installed
@@ -293,6 +302,7 @@ local parsers = {
   "nix",               -- [✓] installed
   -- "norg",               -- [✗] not installed
   -- "nqc",                -- [✗] not installed
+  -- "nu",                 -- [✗] not installed
   "objc",    -- [✓] installed
   "objdump", -- [✓] installed
   -- "ocaml",              -- [✗] not installed
@@ -350,6 +360,7 @@ local parsers = {
   -- "ron",                -- [✗] not installed
   "rst",  -- [✓] installed
   "ruby", -- [✓] installed
+  -- "runescript",         -- [✗] not installed
   "rust", -- [✓] installed
   -- "scala",              -- [✗] not installed
   -- "scfg",               -- [✗] not installed
@@ -376,6 +387,7 @@ local parsers = {
   -- "superhtml",          -- [✗] not installed
   -- "surface",            -- [✗] not installed
   -- "svelte",             -- [✗] not installed
+  -- "sway",               -- [✗] not installed
   "swift", -- [✓] installed
   -- "sxhkdrc",            -- [✗] not installed
   -- "systemtap",          -- [✗] not installed
@@ -430,7 +442,7 @@ local parsers = {
   "zig", -- [✓] installed
   -- "ziggy",              -- [✗] not installed
   -- "ziggy_schema",       -- [✗] not installed
-  -- "zsh", -- [✓] installed
+  "zsh", -- [✓] installed
 }
 
 ---------- old? config ----------

@@ -334,30 +334,3 @@ cnoremap       <S-Tab>  <C-p>
 " tnoremap <buffer><S-Right>         <C-[>f
 " tnoremap <buffer><C-Right>         <C-[>f
 " tnoremap <nowait><buffer><BS>      <BS>
-
-" -------------------------------------------------------------------------------------------------
-
-" Highlight:
-
-"" Python:
-highlight! pythonSpaceError            gui=NONE      guifg=#787f86  guibg=#787f86
-highlight! link                        pythonDelimiter              Special
-highlight! link                        pythonNONE                   pythonFunction
-highlight! link                        pythonSelf                   pythonOperator
-
-" CPP:
-highlight! doxygenBrief                gui=NONE      guifg=#81a2be  guibg=NONE
-highlight! doxygenSpecialMultilineDesc gui=NONE      guifg=#81a2be  guibg=NONE
-highlight! doxygenSpecialOnelineDesc   gui=NONE      guifg=#81a2be  guibg=NONE
-
-"" Vim:
-Gautocmdft qf hi Search                gui=NONE      guifg=NONE     guibg=#373b41
-
-"" Plugin:
-
-"" VimIlluminate:
-highlight! illuminatedWord             gui=underline guifg=NONE     guibg=NONE
-
-"" MatchUp:
-highlight! MatchParen                  gui=NONE      guifg=NONE     guibg=#343941
-highlight! MatchWord                   gui=NONE      guifg=NONE     guibg=#343941

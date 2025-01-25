@@ -88,6 +88,9 @@ hi("@lsp.type.string.go", { link = "None" })
 hi("@lsp.typemod.type.definition.go", { link = "Normal" })
 hi("@lsp.type.parameter.go", { link = "None" })
 
+-- printf
+hi("@character.printf", { link = "PreProc" })
+
 --- GoMod
 hi("@string.special.gomod", { link = "String" })
 
@@ -96,13 +99,10 @@ hi("@constant.python", { fg = "#f2f3f3", bg = "None", blend = 50 })
 hi("@comment.python", { fg = "#9ba3a8", bg = "None", bold = false, italic = true })
 hi("@spell.python", { link = "Commment" })
 hi("@string.documentation.python", { link = "SpecialComment" })
-
---- third-party
-hi("LspSignatureActiveParameter", { fg = "None", bg = "#343941", blend = 10 })
-hi("LspInlayHint", { fg = "#d8d8d8", bg = "#3a3a3a" })
-
--- printf
-hi("@character.printf", { link = "PreProc" })
+hi("pythonSpaceError", { fg = "#787f86", bg = "#787f86" })
+hi("pythonDelimiter", { link = "Special" })
+hi("pythonNONE", { link = "pythonFunction" })
+hi("pythonSelf", { link = "pythonOperator" })
 
 -- GraphQL
 hi("@spell.graphql", { link = "Comment" })
@@ -111,3 +111,19 @@ hi("@attribute.graphql", { link = "Macro" })
 -- Diff
 hi("@diff.plus", { fg = "#bae57d", bg = "None" })
 hi("@diff.minus", { fg = "#ff5370", bg = "None" })
+
+-- CPP
+hi("doxygenBrief", { fg = "#81a2be", bg = "NONE" })
+hi("doxygenSpecialMultilineDesc", { fg = "#81a2be", bg = "NONE" })
+hi("doxygenSpecialOnelineDesc", { fg = "#81a2be", bg = "NONE" })
+
+--- third-party
+hi("LspSignatureActiveParameter", { fg = "None", bg = "#343941", blend = 10 })
+hi("LspInlayHint", { fg = "#d8d8d8", bg = "#3a3a3a" })
+
+--- VimIlluminate:
+hi("illuminatedWord", { fg = "NONE", bg = "NONE", underline = true })
+
+--- MatchUp
+hi("MatchParen", { fg = "NONE", bg = "#343941" })
+hi("MatchWord", { fg = "NONE", bg = "#343941" })

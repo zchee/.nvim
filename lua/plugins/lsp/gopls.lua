@@ -11,7 +11,7 @@ local is_goos_linux = function(cwd)
       or string.find(cwd, "go%-cloud%-debug%-agent")
       or string.find(cwd, "GoogleCloudPlatform/grpc%-gcp%-tools")
       or string.find(cwd, "go.opentelemetry.io/auto")
-  -- or string.find(cwd, "buildkit")
+      or string.find(cwd, "buildkit")
 end
 
 -- --- @param workspace_folders string|lsp.WorkspaceFolder[]?
@@ -28,6 +28,15 @@ end
 --     }
 --   end
 -- end
+
+local function organize_imports()
+  local params = {
+    command = "source.organizeImports",
+    arguments = { vim.uri_from_bufnr(0) },
+  }
+  vim.lsp.buf.execute_command(params)
+end
+
 
 local mod_cache = nil
 
@@ -105,13 +114,13 @@ return {
         mod_cache = vim.fn.system 'go env GOMODCACHE'
       end
     end
-    if mod_cache and fname:sub(1, #mod_cache) == mod_cache then
+    if mod_cache and filename:sub(1, #mod_cache) == mod_cache then
       local clients = lspconfig.util.get_lsp_clients { name = 'gopls' }
       if #clients > 0 then
         return clients[#clients].config.root_dir
       end
     end
-    return lspconfig.util.root_pattern('go.work', 'go.mod', '.git')(fname)
+    return lspconfig.util.root_pattern('go.work', 'go.mod', '.git')(filename)
   end,
 
   settings = {
@@ -227,7 +236,7 @@ return {
       upgrade_dependency = true,
       vendor = true,
     },
-    staticcheck = false,
+    staticcheck = true,
     ["local"] = "",
     verboseOutput = false,
     verboseWorkDoneProgress = false,
@@ -235,12 +244,11 @@ return {
     gofumpt = true,
     completeFunctionCalls = true,
     semanticTokens = true,
-    noSemanticString = true,
-    noSemanticNumber = true,
-    expandWorkspaceToModule = false,
+    semanticTokenTypes = true,
+    expandWorkspaceToModule = true,
     experimentalPostfixCompletions = true,
     templateExtensions = { "tmpl", "tpl", "gotmpl" },
-    diagnosticsDelay = "500ms",
+    diagnosticsDelay = "1s",
     diagnosticsTrigger = "Edit", -- "Save",
     analysisProgressReporting = true,
     standaloneTags = {
@@ -251,14 +259,12 @@ return {
       "nikandfor_loc_unsafe",
       "kubeapiserver",
     },
-    allExperiments = false,
-    chattyDiagnostics = false,
-    subdirWatchPatterns = "auto", -- "on", "off", "auto"
-    reportAnalysisProgressAfter = "500ms",
+    subdirWatchPatterns = "on", -- "on", "off", "auto"
+    reportAnalysisProgressAfter = "1s",
     telemetryPrompt = false,
     linkifyShowMessage = true,
     includeReplaceInWorkspace = true,
-    zeroConfig = false,
+    zeroConfig = true,
     pullDiagnostics = true,
   },
   -- handlers = {
@@ -281,18 +287,16 @@ return {
         GOOS = { "linux" },
       }
     end
-    if string.find(new_root_dir, "DataDog/datadog%-agent") then
-      new_config.settings.env = {
-        GOFLAGS = { "-tags=kubeapiserver" },
-      }
-      -- new_config.settings.buildFlags = {
-      --   "-tags=kubeapiserver",
-      -- }
-    end
 
     if is_goos_linux(new_root_dir) then
-      -- table.insert(new_config.settings.buildFlags, { "-tags=linux" })
-      -- new_config.settings.buildFlags = vim.tbl_deep_extend("keep", new_config.settings.buildFlags, { "-tags=linux" })
+      table.insert(new_config.settings.buildFlags, { "-tags=linux" })
     end
   end,
+
+  -- commands = {
+  --   GoOrganizeImports = {
+  --     organize_imports,
+  --     description = 'Organize Imports',
+  --   },
+  -- },
 }

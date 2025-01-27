@@ -14,7 +14,7 @@ lspsaga.setup({
     lines = { '┗', '┣', '┃', '━', '┏' },
     kind = {},
     button = { '', '' },
-    imp_sign = '󰳛 ',
+    imp_sign = " ", -- '󰳛 ',
     use_nerd = true,
   },
   hover = {

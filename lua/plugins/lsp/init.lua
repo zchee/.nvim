@@ -5,7 +5,8 @@ local lspconfig_configs = require("lspconfig.configs")
 local lsp_setup = require("lsp-setup")
 local lspkind = require("lspkind")
 
--- vim.lsp.set_log_level("OFF") -- "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+vim.lsp.set_log_level("OFF") -- "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+vim.diagnostic.config({ virtual_text = true, severity_sort = true })
 -- vim.lsp._watchfunc = vim._watch.watch
 
 -- lspconfig.util.default_config = vim.tbl_extend(
@@ -231,6 +232,10 @@ lsp_setup.setup({
     ["<BS>gr"] = "lua vim.lsp.buf.references()",
     ["<BS>gt"] = "<Cmd>Lspsaga goto_type_definition<CR>",
     ["<Space>e"] = "<Cmd>Lspsaga rename<CR>",
+    ["gK"] = function()
+      local new_config = not vim.diagnostic.config().virtual_lines
+      vim.diagnostic.config({ virtual_lines = new_config })
+    end,
   },
   capabilities = default_capabilities_config(),
   on_attach = on_attach,

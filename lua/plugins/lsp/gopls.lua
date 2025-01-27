@@ -139,20 +139,19 @@ return {
       "-generic_test",          -- bytedance/sonic
     },
     completionDocumentation = true,
-    importsSource = "gopls",
     usePlaceholders = true,
     deepCompletion = true,
     completeUnimported = true,
-    addTestSourceCodeAction = true,
-    completionBudget = "0s",       -- "100ms",
-    matcher = "fuzzy",             -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
-    symbolMatcher = "fastFuzzy",   -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
-    symbolStyle = "package",       -- "Package", "Full", "Dynamic"
-    symbolScope = "workspace",     -- "workspace", "all",
-    hoverKind = "structured",      -- "FullDocumentation",
-    linkTarget = "",               -- "pkg.go.dev",
-    linksInHover = true,           -- true, false, "gopls"
-    importShortcut = "definition", -- "Link", "Both",
+    completionBudget = "50ms",       -- "100ms",
+    importsSource = "gopls",
+    matcher = "fuzzy",               -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
+    symbolMatcher = "fastFuzzy",     -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
+    symbolStyle = "Full",            -- "Package", "Full", "Dynamic"
+    symbolScope = "workspace",       -- "workspace", "all",
+    hoverKind = "FullDocumentation", -- "FullDocumentation",
+    linkTarget = "",                 -- "pkg.go.dev",
+    linksInHover = "gopls",          -- true, false, "gopls"
+    importShortcut = "Both",         -- "Link", "Both", "Definition"
     analyses = {
       appends = true,
       asmdecl = true,
@@ -219,17 +218,17 @@ return {
       compositeLiteralFields = true,
       functionTypeParameters = true,
     },
-    annotations = {
-      ["nil"] = true,
-      escape = true,
-      inline = true,
-      bounds = true,
-    },
-    vulncheck = "off", -- "imports",
+    -- annotations = {
+    --   ["nil"] = true,
+    --   escape = true,
+    --   inline = true,
+    --   bounds = true,
+    -- },
+    vulncheck = "imports", -- "off", "imports",
     codelenses = {
-      gc_details = true,
       generate = true,
       regenerate_cgo = true,
+      vulncheck = true,
       run_govulncheck = true,
       test = true,
       tidy = true,
@@ -259,7 +258,7 @@ return {
       "nikandfor_loc_unsafe",
       "kubeapiserver",
     },
-    subdirWatchPatterns = "on", -- "on", "off", "auto"
+    subdirWatchPatterns = "auto", -- "on", "off", "auto"
     reportAnalysisProgressAfter = "1s",
     telemetryPrompt = false,
     linkifyShowMessage = true,

@@ -1,3 +1,5 @@
+local a = require("plenary.async.async")
+
 -- https://github.com/DetachHead/basedpyright/blob/main/packages/pyright-internal/src/common/configOptions.ts
 
 --- @class lspconfig.Config : vim.lsp.ClientConfig
@@ -15,23 +17,23 @@ return {
         diagnosticMode = "openFilesOnly", -- "workspace", -- "openFilesOnly"
         diagnosticSeverityOverrides = {},
         exclude = {},
-        -- extraPaths = function()
-        --   local paths = {}
-        --   if not vim.uv.fs_stat(vim.fs.joinpath(vim.fn.getcwd(), "third_party")) then
-        --     paths = { vim.fs.joinpath(vim.fn.getcwd(), "third_party") }
-        --   end
-        --   return paths
-        -- end,
-        -- extraPaths = {
-        --   -- "/usr/local/google-cloud-sdk/lib",
-        --   -- "/usr/local/google-cloud-sdk/lib/third_party",
-        --   vim.fn.getcwd() .. "/third_party",
-        -- },
+        extraPaths = function()
+          local paths = {
+            "/usr/local/google-cloud-sdk/lib",
+            "/usr/local/google-cloud-sdk/lib/third_party",
+            vim.fn.getcwd() .. "/third_party",
+          }
+          local third_party_path = vim.fs.joinpath(vim.fn.getcwd(), "third_party")
+          if not a.uv.fs_stat(third_party_path) then
+            paths:add(third_party_path)
+          end
+          return paths
+        end,
         ignore = {},
         include = {},
         logLevel = "Error",
         -- stubPath = "",
-        typeCheckingMode = "none", -- "basic", -- "strict"
+        typeCheckingMode = "off", -- "off", "basic", "standard", "strict", "recommended", or "all"
         -- typeshedPaths = {},
       },
       useLibraryCodeForTypes = true,

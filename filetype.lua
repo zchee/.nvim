@@ -1,7 +1,11 @@
-local util    = require("util")
-local async   = require("plenary.async")
+local util        = require("util")
+local async       = require("plenary.async")
 
-local homedir = async.uv.os_homedir()
+local join        = vim.fs.joinpath
+
+local homedir     = async.uv.os_homedir()
+local cache_home  = util.xdg_cache_home()
+local config_home = util.xdg_config_home()
 
 vim.filetype.add({
   extension = {
@@ -58,10 +62,6 @@ vim.filetype.add({
     [".clang-format"]    = "yaml",
     [".clangd"]          = "yaml",
     [".dockerignore"]    = "gitignore",
-    [".env"]             = "sh",
-    [".env.golden"]      = "sh",
-    [".env.sample"]      = "sh",
-    [".envrc"]           = "sh",
     [".eslintignore"]    = "gitignore",
     [".firebaserc"]      = "json",
     [".gcloudignore"]    = "gitignore",
@@ -90,40 +90,48 @@ vim.filetype.add({
     PROJECT              = "yaml",
     Tiltfile             = "tiltfile",
   },
+  -- [".*/kustomize/.*.yaml"]                                       = "yaml",
   pattern = {
-    -- [".*/kustomize/.*.yaml"]                                       = "yaml",
-    [".*.go.tpl"]                                                         = "gotmpl",
-    [".*.keymap"]                                                         = "devicetree",
-    [".*.py.tmpl"]                                                        = "python",
-    [".*.schema.json"]                                                    = "jsonschema",
-    [".*.tf.tmpl"]                                                        = "terraform",
-    [".*.xo.go.tpl"]                                                      = "go",
-    [".*/.?git/config"]                                                   = "gitconfig",
-    [".*/.?kube/config"]                                                  = "yaml",
-    [".*/.jira.d/templates/.*"]                                           = "gotmpl",
-    [".*/.vscode/.*.json"]                                                = "json5",
-    [".*/argocd/config"]                                                  = "yaml",
-    [".*/c%+%+/.*"]                                                       = "cpp",
-    [".*/google%-cloud%-sdk/properties"]                                  = "cfg",
-    [".*/kitty/.*.conf"]                                                  = "kitty",
-    [".*/makedefs/.*"]                                                    = "make",
-    [".*/share/zsh/(site-)?functions/.*"]                                 = "zsh",
-    [".*/testdata/.*/.*.go.golden"]                                       = "go",
-    [".*bashrc.*"]                                                        = "bash",
-    [".*renovate.json"]                                                   = "json5",
-    ["/private/etc/sudoers.d/.*"]                                         = "sudoers",
-    ["[Dd]ockerfile.*[^.vim]"]                                            = "dockerfile",
-    [vim.fs.joinpath(homedir, ".ssh/config.d/.*")]                        = "sshconfig",
-    [vim.fs.joinpath(util.xdg_cache_home(), "go/go-build/.*")]            = "go",
-    [vim.fs.joinpath(util.xdg_cache_home(), "go/go-build/.*/.*")]         = "go",
-    [vim.fs.joinpath(util.xdg_config_home(), "cabal")]                    = "cabalconfig",
-    [vim.fs.joinpath(util.xdg_config_home(), "direnv/direnvrc")]          = "sh",
-    [vim.fs.joinpath(util.xdg_config_home(), "gcloud/configurations/.*")] = "cfg",
-    [vim.fs.joinpath(util.xdg_config_home(), "git/config.d/.*")]          = "gitconfig",
-    [vim.fs.joinpath(util.xdg_config_home(), "go/env/.*")]                = "sh",
-    [vim.fs.joinpath(util.xdg_config_home(), "jira.d/templates/.*")]      = "gotmpl",
-    [vim.fs.joinpath(util.xdg_config_home(), "op/config")]                = "json",
-    [vim.fs.joinpath(util.xdg_config_home(), "zsh/.*")]                   = "zsh",
-    [util.readlink(vim.fs.joinpath(util.xdg_data_home(), "token/token"))] = "sh",
+    [".*%.go%.tpl"]                                            = "gotmpl",
+    [".*%.keymap"]                                             = "devicetree",
+    [".*%.py%.tmpl"]                                           = "python",
+    [".*.schema%.json"]                                        = "jsonschema",
+    [".*%.tf%.tmpl"]                                           = "terraform",
+    [".*%.xo%.go%.tpl"]                                        = "go",
+    [".*/.?git/config"]                                        = "gitconfig",
+    [".*/.?kube/config"]                                       = "yaml",
+    [".*/.jira.d/templates/.*"]                                = "gotmpl",
+    [".*/.vscode/.*%.json"]                                    = "json5",
+    [".*/argocd/config"]                                       = "yaml",
+    [".*/c%+%+/.*"]                                            = "cpp",
+    [".*/google%-cloud%-sdk/properties"]                       = "cfg",
+    [".*/kitty/.*%.conf"]                                      = "kitty",
+    [".*/makedefs/.*"]                                         = "make",
+    [".*/share/zsh/(site-)?functions/.*"]                      = "zsh",
+    [".*/testdata/.*/.*%.go%.golden"]                          = "go",
+    [".*bashrc.*"]                                             = "bash",
+    [".*renovate%.json"]                                       = "json5",
+    [".env.*"]                                                 = "bash",
+    [".envrc.*"]                                               = "bash",
+    ["/private/etc/sudoers.d/.*"]                              = "sudoers",
+    ["[Dd]ockerfile.*[^.vim]"]                                 = "dockerfile",
+    ['.*README.(%a+)']                                         = function(_, _, ext)
+      util.switch(ext) {
+        ["md"] = function() return "markdown" end,
+        ["rst"] = function() return "rst" end,
+      }
+    end,
+    [join(homedir, "%.ssh/config.d/.*")]                       = "sshconfig",
+    [join(cache_home, "go/go-build/.*")]                       = "go",
+    [join(cache_home, "go/go-build/.*/.*")]                    = "go",
+    [join(config_home, "cabal")]                               = "cabalconfig",
+    [join(config_home, "direnv/direnvrc")]                     = "sh",
+    [join(config_home, "gcloud/configurations/.*")]            = "cfg",
+    [join(config_home, "git/config.d/.*")]                     = "gitconfig",
+    [join(config_home, "go/env/.*")]                           = "sh",
+    [join(config_home, "jira.d/templates/.*")]                 = "gotmpl",
+    [join(config_home, "op/config")]                           = "json",
+    [join(config_home, "zsh/.*")]                              = "zsh",
+    [util.readlink(join(util.xdg_data_home(), "token/token"))] = "sh",
   },
 })

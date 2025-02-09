@@ -12,7 +12,7 @@ local lazy_config = {
   spec = nil,
   lockfile = vim.fs.joinpath(cache_dir, "lazy-lock.json"),
   ---@diagnostic disable-next-line
-  concurrency = vim.uv.available_parallelism() * 2,
+  concurrency = (vim.uv.available_parallelism() * 2) or nil,
   git = {
     log = { "-8" },
     timeout = 120,

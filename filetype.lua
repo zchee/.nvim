@@ -5,11 +5,13 @@ local homedir = async.uv.os_homedir()
 
 vim.filetype.add({
   extension = {
+    -- s                  = "goasm",
     ["code-workspace"] = "json",
     actiongrap         = "json",
     alfredappearance   = "json",
     apinotes           = "yaml",
     asm                = "nasm",
+    bttpreset          = "json",
     cnf                = "ini",
     conf               = "conf",
     defs               = "c",
@@ -35,7 +37,6 @@ vim.filetype.add({
     pyd                = "python",
     pyx                = "python",
     replay             = "json",
-    -- s                  = "goasm",
     sb                 = "scheme",
     slide              = "goslide",
     sql                = "mysql",

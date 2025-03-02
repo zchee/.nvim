@@ -258,7 +258,7 @@ call s:hl('PreCondit',          s:p.material.cyan,         s:p.none, s:p.none, 0
 call s:hl('Type',               s:p.material.yellow,       s:p.none, s:p.none, 0)
 call s:hl('StorageClass',       s:p.material.yellow,       s:p.none, s:p.none, 0)
 call s:hl('Structure',          s:p.material.magenta,      s:p.none, s:p.none, 0)
-call s:hl('Typedef',            s:p.material.yellow,       s:p.none, s:p.none, 0)
+call s:hl('Typedef',            s:p.material.cyan,         s:p.none, s:p.none, 0)
 
 " ------------------------------------------------------------------------------
 

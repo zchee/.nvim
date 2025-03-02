@@ -1,11 +1,11 @@
+local a           = require("plenary.async")
 local util        = require("util")
-local async       = require("plenary.async")
 
 local join        = vim.fs.joinpath
-
-local homedir     = async.uv.os_homedir()
+local homedir     = a.uv.os_homedir()
 local cache_home  = util.xdg_cache_home()
 local config_home = util.xdg_config_home()
+local data_home   = util.xdg_data_home()
 
 vim.filetype.add({
   extension = {
@@ -76,6 +76,7 @@ vim.filetype.add({
     [".yamlfmt"]         = "yaml",
     [".yamllint"]        = "yaml",
     ["glide.lock"]       = "yaml",
+    ["go.tool.mod"]      = "gomod",
     ["Gopkg.lock"]       = "toml",
     ["kitty.conf"]       = "kitty",
     ["lsif.json"]        = "json5",
@@ -90,48 +91,47 @@ vim.filetype.add({
     PROJECT              = "yaml",
     Tiltfile             = "tiltfile",
   },
-  -- [".*/kustomize/.*.yaml"]                                       = "yaml",
   pattern = {
-    [".*%.go%.tpl"]                                            = "gotmpl",
-    [".*%.keymap"]                                             = "devicetree",
-    [".*%.py%.tmpl"]                                           = "python",
-    [".*.schema%.json"]                                        = "jsonschema",
-    [".*%.tf%.tmpl"]                                           = "terraform",
-    [".*%.xo%.go%.tpl"]                                        = "go",
-    [".*/.?git/config"]                                        = "gitconfig",
-    [".*/.?kube/config"]                                       = "yaml",
-    [".*/.jira.d/templates/.*"]                                = "gotmpl",
-    [".*/.vscode/.*%.json"]                                    = "json5",
-    [".*/argocd/config"]                                       = "yaml",
-    [".*/c%+%+/.*"]                                            = "cpp",
-    [".*/google%-cloud%-sdk/properties"]                       = "cfg",
-    [".*/kitty/.*%.conf"]                                      = "kitty",
-    [".*/makedefs/.*"]                                         = "make",
-    [".*/share/zsh/(site-)?functions/.*"]                      = "zsh",
-    [".*/testdata/.*/.*%.go%.golden"]                          = "go",
-    [".*bashrc.*"]                                             = "bash",
-    [".*renovate%.json"]                                       = "json5",
-    [".env.*"]                                                 = "bash",
-    [".envrc.*"]                                               = "bash",
-    ["/private/etc/sudoers.d/.*"]                              = "sudoers",
-    ["[Dd]ockerfile.*[^.vim]"]                                 = "dockerfile",
-    ['.*README.(%a+)']                                         = function(_, _, ext)
+    [".*%.go%.tpl"]                                 = "gotmpl",
+    [".*%.keymap"]                                  = "devicetree",
+    [".*%.py%.tmpl"]                                = "python",
+    [".*%.tf%.tmpl"]                                = "terraform",
+    [".*%.xo%.go%.tpl"]                             = "go",
+    [".*.schema%.json"]                             = "jsonschema",
+    [".*/.?git/config"]                             = "gitconfig",
+    [".*/.?kube/config"]                            = "yaml",
+    [".*/.jira.d/templates/.*"]                     = "gotmpl",
+    [".*/.vscode/.*%.json"]                         = "json5",
+    [".*/argocd/config"]                            = "yaml",
+    [".*/c%+%+/.*"]                                 = "cpp",
+    [".*/google%-cloud%-sdk/properties"]            = "cfg",
+    [".*/kitty/.*%.conf"]                           = "kitty",
+    [".*/makedefs/.*"]                              = "make",
+    [".*/share/zsh/(site-)?functions/.*"]           = "zsh",
+    [".*/testdata/.*/.*%.go%.golden"]               = "go",
+    [".*bashrc.*"]                                  = "bash",
+    [".*lima%-editor%-.*"]                          = "yaml", -- for limactl edit
+    [".*renovate%.json"]                            = "json5",
+    [".env.*"]                                      = "bash",
+    [".envrc.*"]                                    = "bash",
+    ["/private/etc/sudoers.d/.*"]                   = "sudoers",
+    ["[Dd]ockerfile.*[^.vim]"]                      = "dockerfile",
+    ['.*README.(%a+)']                              = function(_, _, ext)
       util.switch(ext) {
         ["md"] = function() return "markdown" end,
         ["rst"] = function() return "rst" end,
       }
     end,
-    [join(homedir, "%.ssh/config.d/.*")]                       = "sshconfig",
-    [join(cache_home, "go/go-build/.*")]                       = "go",
-    [join(cache_home, "go/go-build/.*/.*")]                    = "go",
-    [join(config_home, "cabal")]                               = "cabalconfig",
-    [join(config_home, "direnv/direnvrc")]                     = "sh",
-    [join(config_home, "gcloud/configurations/.*")]            = "cfg",
-    [join(config_home, "git/config.d/.*")]                     = "gitconfig",
-    [join(config_home, "go/env/.*")]                           = "sh",
-    [join(config_home, "jira.d/templates/.*")]                 = "gotmpl",
-    [join(config_home, "op/config")]                           = "json",
-    [join(config_home, "zsh/.*")]                              = "zsh",
-    [util.readlink(join(util.xdg_data_home(), "token/token"))] = "sh",
+    [join(homedir, "%.ssh/config.d/.*")]            = "sshconfig",
+    [join(cache_home, "go/go-build/**")]            = "go", -- [join(cache_home, "go/go-build/.*/.*")]         = "go",
+    [join(config_home, "cabal")]                    = "cabalconfig",
+    [join(config_home, "direnv/direnvrc")]          = "sh",
+    [join(config_home, "gcloud/configurations/.*")] = "cfg",
+    [join(config_home, "git/config.d/.*")]          = "gitconfig",
+    [join(config_home, "go/env/.*")]                = "sh",
+    [join(config_home, "jira.d/templates/.*")]      = "gotmpl",
+    [join(config_home, "op/config")]                = "json",
+    [join(config_home, "zsh/.*")]                   = "zsh",
+    [".*/local/share/token/token/.*"]               = "bash",
   },
 })

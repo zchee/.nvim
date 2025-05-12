@@ -1,8 +1,8 @@
 -- https://github.com/ray-x/go.nvim/blob/master/lua/go/ts/go.lua
 
-local nodes = require('plugins.luasnip.ts.nodes')
+local nodes = require("luasnippets.util.ts.nodes")
 
-local tsutil = require('nvim-treesitter.ts_utils')
+local tsutil = require("nvim-treesitter.ts_utils")
 -- local log = require('go.utils').log
 -- local warn = require('go.utils').warn
 -- local info = require('go.utils').info

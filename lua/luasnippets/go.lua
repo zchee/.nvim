@@ -5,8 +5,15 @@ local fmta = ls_ext_fmt.fmta
 local rep = require("luasnip.extras").rep
 -- local ai = require("luasnip.nodes.absolute_indexer")
 -- local partial = require("luasnip.extras").partial
-local luasnip_util = require("luasnip.util")
--- local events = require("luasnip.util.events")
+
+local luasnip_util = require("luasnippets.util")
+-- local events = require("luasnippets.util.events")
+
+-- return func(yield func(*T, error) bool) {
+-- 	if !yield(nil, err) {
+-- 		return
+-- 	}
+-- }
 
 local in_test_fn = {
   show_condition = luasnip_util.in_test_function,
@@ -30,6 +37,80 @@ local not_in_fn = {
 
 --- Function
 local func_snippets = {
+  -- fmt
+  ls.s(
+    {
+      trig = "ff",
+      dscr = "fmt.Printf(...)",
+    },
+    fmt([[fmt.Printf("{}: %#v\n", {})]],
+      {
+        ls.i(1, ""),
+        rep(1),
+      }
+    ),
+    in_fn
+  ),
+  ls.s(
+    {
+      trig = "ft",
+      dscr = "fmt.Printf(%T = %#v)",
+    },
+    fmt([[fmt.Printf("{}: %[1]T = %#[1]v\n", {})]],
+      {
+        ls.i(1, ""),
+        rep(1),
+      }
+    ),
+    in_fn
+  ),
+
+  -- error handling
+  ls.s(
+    {
+      trig = "ife",
+      dscr = "if err != nil",
+    },
+    fmta([[
+				if err != nil {
+					<>
+				}
+				]],
+      {
+        ls.i(1, "return err"),
+      }
+    ),
+    in_fn
+  ),
+  ls.s(
+    {
+      trig = "efa",
+      dscr = "err != nil {return err}",
+    },
+    fmta([[
+				; err != nil {
+					<>
+				}
+				]],
+      {
+        ls.i(1, "return err"),
+      }
+    ),
+    in_fn
+  ),
+
+  -- # testing
+  --
+  -- snippet     tf
+  -- abbr        t.Logf(...)
+  -- 	t.Logf("$1: %#v", ${1})
+  -- snippet     tdiff
+  -- abbr        cmp.Diff(1, 2); t.Fatalf("(+want, -got)", diff)
+  -- 	if diff := cmp.Diff(${1}, ${2}); diff != "" {
+  -- 		t.Fatalf("(-want +got):\n%s", diff)
+  -- 	}
+  -- 	${0}
+
   ls.s(
     {
       trig = "tabwriter",
@@ -49,7 +130,6 @@ local doc_snippets = {
   ls.s(
     {
       trig = "doc_string",
-      name = "String method documentations",
       dscr = "String returns a string representation of the $1",
     },
     fmt([[// String returns a string representation of the {}.]],
@@ -63,10 +143,9 @@ local doc_snippets = {
   ls.s(
     {
       trig = "doc_error",
-      name = "Error method documentations",
-      dscr = "Error returns a string representation of the $1",
+      dscr = "Error returns a string representation of the ...",
     },
-    fmt([[// Error returns a string representation of the {}.]],
+    fmt([[// Error returns a string representation of the [{}].]],
       {
         ls.i(1, "type name"),
       }
@@ -79,10 +158,9 @@ local doc_snippets = {
       name = "... implements [...]",
       dscr = "... implements [...]",
     },
-    fmt([[{} implements {}]],
+    fmt([[ implements [{}].]],
       {
-        ls.i(1, "type name"),
-        ls.i(2),
+        ls.i(1),
       }
     ),
     not_in_fn
@@ -95,7 +173,6 @@ local doc_snippets = {
     },
     fmt([[ represents a {}]],
       {
-        -- ls.insert_node(1, "type name"),
         ls.i(1),
       }
     ),
@@ -120,11 +197,10 @@ local doc_snippets = {
       trig = "doc_drop-in",
       name = "drop-in replacement",
     },
-    fmt([[// {} is a drop-in replacement for [{}] with {}.]],
+    fmt([[ is a drop-in replacement for [{}] with {}.]],
       {
-        ls.i(1, "type name"),
-        ls.i(2, "target type name"),
-        ls.i(3, "what"),
+        ls.i(1, "target type name"),
+        ls.i(2, "what"),
       }
     ),
     not_in_fn
@@ -134,11 +210,10 @@ local doc_snippets = {
       trig = "doc_equivalent",
       name = "equivalent to",
     },
-    fmt([[// {} is equivalent to [{}] with {}.]],
+    fmt([[ is equivalent to [{}] with {}.]],
       {
-        ls.i(1, "type name"),
-        ls.i(2, "target type name"),
-        ls.i(3, "what"),
+        ls.i(1, "target type name"),
+        ls.i(2, "what"),
       }
     ),
     not_in_fn

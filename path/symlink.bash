@@ -11,7 +11,7 @@ fi
 echo "Xcode path: $xcode_path"
 readonly xcode_path
 
-if [[ ! -d $xcode_path ]] || [[ ! -L $xcode_path ]]; then
+if [[ ! -d $xcode_path ]]; then
   error "
 Usage:
   $(basename "$0") [/Applications/Xcode.app | /Applications/Xcode-beta.app | \$(xcode-select --print-path)]"

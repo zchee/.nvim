@@ -4,39 +4,46 @@ local util = require("util")
 return {
   -- NOTE(zchee): use self-compiled for disabled "Matches multiple schemas when only one must validate." error
   cmd = {
-    "/usr/local/bin/node",
+    util.homebrew_binary("node", "node"),
     vim.fs.joinpath(util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server")),
     "--stdio",
   },
-  capabilities = require("cmp_nvim_lsp").default_capabilities(),
   settings = {
     yaml = {
       yamlVersion = 1.2,
       format = {
-        enable = false,
-        singleQuote = false,
+        enable = true,
+        singleQuote = true,
         bracketSpacing = true,
+        trailingComma = true,
         proseWrap = "preserve",
         printWidth = 150,
       },
       validate = true,
       hover = true,
       completion = true,
-      maxItemsComputed = 5000,
+      disableDefaultProperties = false,
+      disableAdditionalProperties = false,
       suggest = {
         parentSkeletonSelectedFirst = true,
       },
+      style = {
+        flowMapping = "allow",  -- "allow" | "forbid"
+        flowSequence = "allow", -- "allow" | "forbid"
+      },
+      keyOrdering = false,
+      maxItemsComputed = 5000,
       schemaStore = {
         enbale = true,
         url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
       },
-      disableAdditionalProperties = false,
       schemas = {
         -- local : zchee/schema
         --- Buf
         ["file:///Users/zchee/src/github.com/zchee/schema/buf.schema.json"] = {
           "**/buf.yaml",
           "!buf.gen.*.yaml",
+          "!.github/workflows//buf.yaml",
         },
         ["file:///Users/zchee/src/github.com/zchee/schema/buf.gen.schema.json"] = {
           "buf.gen.yaml",
@@ -72,6 +79,8 @@ return {
         --   "mkdocs.yml",
         -- },
 
+        -- remote
+
         -- apko
         ["https://raw.githubusercontent.com/chainguard-dev/apko/main/pkg/build/types/schema.json"] = {
           "*.apko.yaml",
@@ -82,7 +91,7 @@ return {
           "azure-pipelines.yml",
         },
         -- compose
-        ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = {
+        ["https://raw.githubusercontent.com/compose-spec/compose-spec/main/schema/compose-spec.json"] = {
           "*compose*.yaml",
           "*compose*.yml",
           "*docker-compose*.yaml",
@@ -94,6 +103,7 @@ return {
         },
         -- OpenAPI
         ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.1.schema.json"] = {
+          -- ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.0.4.schema.json"] = {
           "*openapi*.yaml",
           "**/openapi-spec/*.yaml",
         },
@@ -116,6 +126,15 @@ return {
         -- helm charts
         ["https://raw.githubusercontent.com/open-telemetry/opentelemetry-helm-charts/main/charts/opentelemetry-operator/values.schema.json"] = {
           "opentelemetry-operator/values.yaml",
+        },
+        -- Taskfile
+        ["https://next.taskfile.dev/schema.json"] = {
+          "Taskfile.yml",
+          "Taskfile.yaml",
+          "Taskfile.dist.yml",
+          "Taskfile.dist.yaml",
+          "*.taskfile.yml",
+          "*.Taskfile.yaml",
         },
 
         -- SchemaStore
@@ -173,8 +192,6 @@ return {
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow-template-properties.json"] = {
           ".github/workflow-templates/*.yml",
           ".github/workflow-templates/*.yaml",
-          "action/**/*.yaml",
-          "actions/**/*.yaml",
         },
         -- github-workflow
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
@@ -183,7 +200,7 @@ return {
         },
         -- golangci-lint
         -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/golangci-lint.json"] = {
-        ["https://raw.githubusercontent.com/golangci/golangci-lint/master/jsonschema/golangci.next.jsonschema.json"] = {
+        ["https://raw.githubusercontent.com/golangci/golangci-lint/main/jsonschema/golangci.jsonschema.json"] = {
           ".golangci.yml",
           ".golangci.yaml",
         },
@@ -195,6 +212,11 @@ return {
         -- mkdocs
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/mkdocs-1.0.json"] = {
           "mkdocs.yml",
+        },
+        -- oapi-codegen
+        ["https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/main/configuration-schema.json"] = {
+          "oapi-codegen.yml",
+          "oapi-codegen.yaml",
         },
         -- yamllint
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/yamllint.json"] = {
@@ -249,7 +271,7 @@ return {
   on_new_config = function(new_config, _)
     -- disable format on kustomization.yaml
     if string.find(vim.api.nvim_buf_get_name(0), "kustomization.yaml") then
-      new_config.settings.yaml.format.enable = false
+      new_config.settings.yaml.format.enable = true
     end
   end,
 }

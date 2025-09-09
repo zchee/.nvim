@@ -3,7 +3,7 @@ local lspconfig = require("lspconfig")
 --- @class lspconfig.Config : vim.lsp.ClientConfig
 return {
   autostart = true,
-  cmd = { require("mason-core.path").bin_prefix("taplo"), "lsp", "stdio" },
+  cmd = { vim.fn.exepath("taplo"), "lsp", "stdio" },
   filetypes = { "toml" },
   root_dir = lspconfig.util.root_pattern("*.toml", ".git"),
 

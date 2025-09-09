@@ -20,6 +20,6 @@ return {
       enable = false
     },
     scan_cmake_in_package = true,
-    semantic_token = false,
+    semantic_token = true,
   }
 }

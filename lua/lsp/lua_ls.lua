@@ -1,30 +1,55 @@
 local util = require("util")
+-- local mason_path = require("mason-core.path")
 
 local lazydev = require("lazydev")
-vim.g.lazydev_enabled = true
+
+-- ---@type LuaDevOptions
+-- require("neodev").setup({
+--   library = {
+--     enabled = true,
+--     runtime = true,
+--     types = false,
+--     plugins = false, -- you can also specify the list of plugins to make available as a workspace library: plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
+--   },
+--   setup_jsonls = true,
+--   override = function(root_dir, options)
+--     _, _ = root_dir, options
+--   end,
+--   -- With lspconfig, Neodev will automatically setup your lua-language-server
+--   -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
+--   -- in your lsp start options
+--   lspconfig = false,
+--   pathStrict = true,
+--   debug = false,
+-- })
 
 ---@type lazydev.Config
 lazydev.setup({
   runtime = vim.env.VIMRUNTIME,
   ---@type lazydev.Library.spec[]
   library = {
+    "lazy.nvim",
     {
-      "lazy.nvim",
+      path = "${3rd}/luv/library",
+      words = { "vim%.uv" }
+    },
+    {
+      -- {
+      --   path = vim.env.VIMRUNTIME .. "lua/vim/_meta",
+      -- },
       {
-        path = "${3rd}/luv/library",
-        words = { "vim%.uv" },
+        -- path = util.homebrew_prefix() .. "/opt/lua-language-server/libexec/meta/3rd/luv/library",
+        -- path = mason_path.package_prefix("lua-language-server") .. "libexec/meta/3rd/luv/library"
       },
-      "plenary.nvim",
-      "nvim-treesitter",
+      -- "plenary.nvim",
+      -- "nvim-treesitter",
     },
   },
   integrations = {
     lspconfig = true,
     cmp = true,
   },
-  enabled = function()
-    return vim.g.lazydev_enabled == nil and true or vim.g.lazydev_enabled
-  end,
+  enabled = true,
   debug = false,
 })
 
@@ -33,21 +58,23 @@ lazydev.setup({
 -- https://github.com/LuaLS/lua-language-server/blob/master/script/config/template.lua
 --- @class lspconfig.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.homebrew_binary("lua-language-server", "lua-language-server") },
+  cmd = { util.homebrew_binary("lua-language-server-head", "lua-language-server") },
   settings = {
     Lua = {
       completion = {
-        autoRequire = true,
-        callSnippet = "Diasble",
-        displayContext = 1,
         enable = true,
-        keywordSnippet = "Replace",
-        showWord = "Enable",
+        autoRequire = true,
+        callSnippet = "Both",
+        displayContext = 1,
+        keywordSnippet = "Both",
+        showWord = "Fallback",
       },
       diagnostics = {
         enable = true,
         globals = {
           "vim",            -- neovim builtin
+          "vim.uv",         -- neovim builtin
+          "vim%.uv",        -- neovim builtin
           "package",        -- neovim builtin
           "packer_plugins", -- packer.nvim
           "describe",
@@ -61,11 +88,11 @@ return {
         disable = {
           "redundant-parameter",
           "duplicate-set-field",
-          -- "undefined-field",
         },
-        -- workspaceDelay = 3000,
+        libraryFiles = "Opened",
+        workspaceDelay = 3000,
+        workspaceEvent = "OnSave",
         workspaceRate = 100,
-        libraryFiles = "Enable",
       },
       format = {
         enable = true,
@@ -75,25 +102,33 @@ return {
         },
       },
       hint = {
-        arrayIndex = "Disable",
         enable = true,
+        arrayIndex = "Disable",
         paramName = "Disable",
         paramType = true,
         setType = false,
       },
+      hover = {
+        enable = true,
+        previewFields = 100,
+      },
       runtime = {
+        builtin = "enable",
         version = "LuaJIT",
         pathStrict = true,
-        builtin = "defalut",
-        -- path = lua_ls_runtime_path,
-        path = { "?.lua", "?/init.lua" },
-        unicodeName = true,
+        path = {
+          '?.lua',
+          '?/init.lua',
+        },
       },
       semantic = {
         enabled = true,
         variable = true,
         annotation = true,
         keyword = true,
+      },
+      signatureHelp = {
+        enable = false,
       },
       telemetry = {
         enable = false,
@@ -103,6 +138,7 @@ return {
         progressBar = true,
       },
       workspace = {
+        checkThirdParty = "Disable",
         ignoreDir = {
           ".*_tmp/.*",
         },
@@ -111,26 +147,16 @@ return {
         --   "${3rd}/busted/library",
         --   "${3rd}/luassert/library",
         -- }),
-        useGitIgnore = true,
         maxPreload = 500000,     -- default: 5000, 500000
         preloadFileSize = 50000, -- default: 500, 50000
-        checkThirdParty = "Disable",
+        useGitIgnore = true,
       },
     },
   },
   offsetEncodings = { "utf-16" },
   on_init = function(client)
     if client.server_capabilities then
-      -- client.server_capabilities.semanticTokensProvider = false -- turn off semantic tokens
+      client.server_capabilities.semanticTokensProvider = nil -- turn off semantic tokens
     end
   end,
 }
-
--- library = {
---   vim.env.VIMRUNTIME
---   -- Depending on the usage, you might want to add additional paths here.
---   -- "${3rd}/luv/library"
---   -- "${3rd}/busted/library",
--- }
--- -- or pull in all of 'runtimepath'. NOTE: this is a lot slower and will cause issues when working on your own configuration (see https://github.com/neovim/nvim-lspconfig/issues/3189)
--- -- library = vim.api.nvim_get_runtime_file("", true)

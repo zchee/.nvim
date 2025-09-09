@@ -1,7 +1,7 @@
 --- @class lspconfig.Config : vim.lsp.ClientConfig
 return {
   cmd = { vim.fs.joinpath(os.getenv("RUST_HOME"), "cargo", "bin", "rust-analyzer") },
-  settings = {
+  init_options = {
     server = {
       extraEnv = {
         ["RUSTUP_TOOLCHAIN"] = "nightly",
@@ -23,9 +23,9 @@ return {
         ["SKIP_WASM_BUILD"] = "1",
       },
       loadOutDirsFromCheck = true,
-      -- buildScripts = {
-      --   enable = true,
-      -- },
+      buildScripts = {
+        enable = true,
+      },
     },
     rustfmt = {
       -- extraArgs = { "+nightly-2023-11-01" },

@@ -32,7 +32,7 @@ return {
     "--hidden-features",
   },
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
+  -- capabilities = require('cmp_nvim_lsp').default_capabilities(),
   offsetEncoding = { 'utf-16' },
 
   -- on_new_config = function(new_config, _)

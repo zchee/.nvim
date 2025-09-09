@@ -1,0 +1,408 @@
+local util = require("util")
+-- local gopls_util = require("plugins.lsp.gopls.util")
+
+---
+---For gvisor, moby/buildkit, chaos%-mesh/chaos%-mesh, zchee/go-cloud-debug-agent, go.opentelemetry.io/auto
+---
+local is_goos_linux = function(cwd)
+  return
+      string.find(cwd, "gvisor")
+      or string.find(cwd, "chaos%-mesh/chaos%-mesh")
+      or string.find(cwd, "go%-cloud%-debug%-agent")
+      or string.find(cwd, "GoogleCloudPlatform/grpc%-gcp%-tools")
+      or string.find(cwd, "go.opentelemetry.io/auto")
+      or string.find(cwd, "buildkit")
+end
+
+local function organize_imports()
+  local params = {
+    command = "source.organizeImports",
+    arguments = { vim.uri_from_bufnr(0) },
+  }
+  vim.lsp.buf.exec_cmd(params)
+end
+
+--- @class go_dir_custom_args
+--- @field envvar_id string
+--- @field custom_subdir string?
+
+local mod_cache = nil
+local std_lib = nil
+
+---@param custom_args go_dir_custom_args
+---@param on_complete fun(dir: string | nil)
+local function identify_go_dir(custom_args, on_complete)
+  local cmd = { 'go', 'env', custom_args.envvar_id }
+  vim.system(cmd, { text = true }, function(output)
+    local res = vim.trim(output.stdout or '')
+    if output.code == 0 and res ~= '' then
+      if custom_args.custom_subdir and custom_args.custom_subdir ~= '' then
+        res = res .. custom_args.custom_subdir
+      end
+      on_complete(res)
+    else
+      vim.schedule(function()
+        vim.notify(
+          ('[gopls] identify ' .. custom_args.envvar_id .. ' dir cmd failed with code %d: %s\n%s'):format(
+            output.code,
+            vim.inspect(cmd),
+            output.stderr
+          )
+        )
+      end)
+      on_complete(nil)
+    end
+  end)
+end
+
+---@return string?
+local function get_std_lib_dir()
+  if std_lib and std_lib ~= '' then
+    return std_lib
+  end
+
+  identify_go_dir({ envvar_id = 'GOROOT', custom_subdir = '/src' }, function(dir)
+    if dir then
+      std_lib = dir
+    end
+  end)
+  return std_lib
+end
+
+---@return string?
+local function get_mod_cache_dir()
+  if mod_cache and mod_cache ~= '' then
+    return mod_cache
+  end
+
+  identify_go_dir({ envvar_id = 'GOMODCACHE' }, function(dir)
+    if dir then
+      mod_cache = dir
+    end
+  end)
+  return mod_cache
+end
+
+---@param fname string
+---@return string?
+local function get_root_dir(fname)
+  if mod_cache and fname:sub(1, #mod_cache) == mod_cache then
+    local clients = vim.lsp.get_clients({ name = 'gopls' })
+    if #clients > 0 then
+      return clients[#clients].config.root_dir
+    end
+  end
+  if std_lib and fname:sub(1, #std_lib) == std_lib then
+    local clients = vim.lsp.get_clients({ name = 'gopls' })
+    if #clients > 0 then
+      return clients[#clients].config.root_dir
+    end
+  end
+  return vim.fs.root(fname, 'go.work') or vim.fs.root(fname, 'go.mod') or vim.fs.root(fname, '.git')
+end
+
+--- @type vim.lsp.Config
+return {
+  cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" }, -- , "-mcp-listen=localhost:12215" m:12, c:5, p:15  --[[, "-remote=unix;/tmp/gopls.sock" --]]
+  filetypes = { "go", "gotmpl", "gomod", "gowork" },                               -- , "gomod", "gowork"
+  root_dir = function(bufnr, on_dir)
+    -- local fname = vim.api.nvim_buf_get_name(bufnr)
+    local fname = tostring(bufnr)
+    get_mod_cache_dir()
+    get_std_lib_dir()
+    -- see: https://github.com/neovim/nvim-lspconfig/issues/804
+    print(fname)
+    print(type(on_dir))
+    print(on_dir)
+    on_dir(get_root_dir(fname))
+    -- lspconfig unhandled error: /Users/zchee/.config/nvim/lua/plugins/lsp/gopls/init.lua:115: attempt to call local 'on_dir' (a number value)
+  end,
+  -- root_dir = function(bufnr, on_dir)
+  --   local fname = tostring(bufnr)
+  --   gopls_util.get_mod_cache_dir()
+  --   gopls_util.get_std_lib_dir()
+  --   -- see: https://github.com/neovim/nvim-lspconfig/issues/804
+  --   print(fname)
+  --   on_dir(gopls_util.get_root_dir(fname))
+  -- end,
+  -- root_dir = function(fname)
+  --   -- see: https://github.com/neovim/nvim-lspconfig/issues/804
+  --   if fname:sub(1, #mod_cache) == mod_cache then
+  --     local clients = vim.lsp.get_clients({ name = 'gopls' })
+  --     if #clients > 0 then
+  --       ---@diagnostic disable-next-line
+  --       return clients[#clients].config.root_dir
+  --     end
+  --   end
+  --   ---@diagnostic disable-next-line
+  --   return lspconfig.util.root_pattern("go.work", "go.mod", ".git")(filename)
+  -- end,
+  -- root_dir = function(filename, _)
+  --   -- see: https://github.com/neovim/nvim-lspconfig/issues/804
+  --   if not mod_cache then
+  --     local result = lspconfig_async.run_command { "go", "env", "GOMODCACHE" }
+  --     if result and result[1] then
+  --       mod_cache = vim.trim(result[1])
+  --     else
+  --       mod_cache = vim.fn.system "go env GOMODCACHE"
+  --     end
+  --   end
+  --   if mod_cache and filename:sub(1, #mod_cache) == mod_cache then
+  --     local clients = vim.lsp.get_clients({ name = "gopls" })
+  --     if #clients > 0 then
+  --       ---@diagnostic disable-next-line
+  --       return clients[#clients].config.root_dir
+  --     end
+  --   end
+  --   ---@diagnostic disable-next-line
+  --   return lspconfig.util.root_pattern("go.work", "go.mod", ".git")(filename)
+  -- end,
+
+  commands = {
+    -- GoOrganizeImports = {
+    --   organize_imports,
+    --   description = "Organize Imports",
+    -- },
+    ---@type fun(command: lsp.Command, ctx: table)
+    GoOrganizeImports = function(_, _)
+      organize_imports()
+    end,
+  },
+
+  -- handlers = {
+  --   ["textDocument/rangeFormatting"] = function(...)
+  --     vim.lsp.handlers["textDocument/rangeFormatting"](...)
+  --     if vim.fn.getbufinfo("%")[1].changed == 1 then
+  --       vim.cmd("noautocmd write")
+  --     end
+  --   end,
+  --   ["textDocument/formatting"] = function(...)
+  --     vim.lsp.handlers["textDocument/formatting"](...)
+  --     if vim.fn.getbufinfo("%")[1].changed == 1 then
+  --       vim.cmd("noautocmd write")
+  --     end
+  --   end,
+  -- },
+
+  init_options = {
+    -- env = {},
+    -- buildFlags = {},
+    directoryFilters = {
+      "-**/asm", -- mmcloughlin/avo
+      -- "-**/example",
+      -- "-**/examples",
+      "-**/sample",
+      "-**/samples",
+      "-**/kokoro",             -- Google kokoro
+      "-**/node_modules",       -- Node.js
+      "-external_jsonlib_test", -- bytedance/sonic
+      "-fuzz",                  -- bytedance/sonic
+      "-generic_test",          -- bytedance/sonic
+    },
+    completionDocumentation = true,
+    usePlaceholders = true,
+    deepCompletion = true,
+    completeUnimported = true,
+    completionBudget = "0",          -- "100ms",
+    importsSource = "gopls",
+    matcher = "fuzzy",               -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
+    symbolMatcher = "fastFuzzy",     -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
+    symbolStyle = "full",            -- "Package", "Full", "Dynamic"
+    symbolScope = "workspace",       -- "workspace", "all",
+    hoverKind = "fulldocumentation", -- "FullDocumentation",
+    linkTarget = "",                 -- "pkg.go.dev",
+    linksInHover = "gopls",          -- true, false, "gopls"
+    importShortcut = "both",         -- "Link", "Both", "Definition"
+    analyses = {
+      appends = true,
+      asmdecl = true,
+      assign = true,
+      atomic = true,
+      atomicalign = true,
+      bools = true,
+      buildtag = true,
+      cgocall = true,
+      composite = true,
+      copylock = true,
+      deepequalerrors = true,
+      defers = true,
+      deprecated = false,
+      directive = true,
+      embeddirective = true,
+      errorsas = true,
+      fillreturns = true,
+      framepointer = true,
+      hostport = true,
+      httpresponse = true,
+      ifaceassert = true,
+      infertypeargs = true,
+      loopclosure = true,
+      lostcancel = true,
+      modernize = true,
+      nilfunc = true,
+      nilness = true,
+      nonewvars = true,
+      noresultvalues = true,
+      printf = true,
+      shadow = false,
+      shift = true,
+      sigchanyzer = true,
+      simplifycompositelit = true,
+      simplifyrange = true,
+      simplifyslice = true,
+      slog = true,
+      sortslice = true,
+      stdmethods = true,
+      stdversion = true,
+      stringintconv = true,
+      structtag = true,
+      testinggoroutine = true,
+      tests = true,
+      timeformat = true,
+      unmarshal = true,
+      unreachable = true,
+      unsafeptr = true,
+      unusedfunc = true,
+      unusedparams = true,
+      unusedresult = true,
+      unusedvariable = true,
+      unusedwrite = true,
+      waitgroup = true,
+      yield = true,
+    },
+    hints = {
+      parameterNames = true,
+      assignVariableTypes = true,
+      constantValues = true,
+      rangeVariableTypes = true,
+      compositeLiteralTypes = true,
+      compositeLiteralFields = true,
+      functionTypeParameters = true,
+      ignoredError = true,
+    },
+    vulncheck = "imports", -- "off", "imports",
+    codelenses = {
+      generate = true,
+      regenerate_cgo = true,
+      vulncheck = true,
+      run_govulncheck = true,
+      test = true,
+      tidy = true,
+      upgrade_dependency = true,
+      vendor = true,
+    },
+    staticcheck = false,
+    ["local"] = "",
+    verboseOutput = true,
+    verboseWorkDoneProgress = false,
+    showBugReports = false,
+    gofumpt = false,
+    completeFunctionCalls = true,
+    semanticTokens = true,
+    semanticTokenTypes = {
+      comment = true,
+      ["function"] = true,
+      keyword = true,
+      label = true,
+      macro = true,
+      method = true,
+      namespace = true,
+      number = true,
+      operator = true,
+      parameter = true,
+      string = true,
+      type = true,
+      typeParameter = true,
+      ariable = true,
+    },
+    semanticTokenModifiers = {
+      defaultLibrary = true,
+      definition = true,
+      readonly = true,
+      array = true,
+      bool = true,
+      chan = true,
+      format = true,
+      interface = true,
+      map = true,
+      number = true,
+      pointer = true,
+      signature = true,
+      slice = true,
+      string = true,
+      struct = true,
+    },
+    newGoFileHeader = true,
+    expandWorkspaceToModule = true,
+    experimentalPostfixCompletions = true,
+    templateExtensions = { "tmpl", "tpl", "gotmpl" },
+    diagnosticsDelay = "0ms",    -- "300ms",  -- "0ms", -- "500ms",
+    diagnosticsTrigger = "edit", -- "save", "edit",
+    analysisProgressReporting = true,
+    standaloneTags = {
+      "ignore",
+      "tools",
+      "integration",
+      "wireinject",
+    },
+    subdirWatchPatterns = "on", -- "on", "off", "auto"
+    reportAnalysisProgressAfter = "1s",
+    telemetryPrompt = false,
+    linkifyShowMessage = true,
+    includeReplaceInWorkspace = true,
+    zeroConfig = true,
+    pullDiagnostics = true,
+    mcpTools = {
+      go_workspace = true,
+      go_package_api = true,
+      go_diagnostics = true,
+      go_symbol_references = true,
+      go_search = true,
+      go_file_context = true,
+    },
+    testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
+  },
+
+  on_new_config = function(new_config, new_root_dir)
+    if is_goos_linux(new_root_dir) then
+      new_config.settings.env = {
+        GOOS = { "linux" },
+      }
+    end
+
+    if string.find(new_root_dir, "go/src") then
+      new_config.settings.env = {
+        GOEXPERIMENTAL = { "arenas,cgocheck2,loopvar,cacheprog,newinliner,rangefunc,aliastypeparams,swissmap,synchashtriemap,synctest,dwarf5,jsonv2,greenteagc" },
+      }
+      new_config.settings.buildFlags = {
+        "goexperiment.arenas", "goexperiment.cgocheck2", "goexperiment.loopvar", "goexperiment.cacheprog",
+        "goexperiment.newinliner", "goexperiment.rangefunc", "goexperiment.aliastypeparams",
+        "goexperiment.swissmap", "goexperiment.synchashtriemap", "goexperiment.synctest", "goexperiment.dwarf5",
+        "goexperiment.jsonv2", "goexperiment.greenteagc"
+      }
+    end
+  end,
+
+  on_attach = function(client, bufnr)
+    local bufname = vim.api.nvim_buf_get_name(bufnr)
+    if string.match(bufname, 'go%.mod') then
+      vim.diagnostic.enable(false)
+      vim.diagnostic.hide(nil, bufnr)
+      vim.diagnostic.reset(nil, bufnr)
+      vim.lsp.buf_detach_client(bufnr, client.id)
+      return
+    end
+
+    if not client.server_capabilities.semanticTokensProvider then
+      local semantic = client.config.capabilities.textDocument.semanticTokens
+      client.server_capabilities.semanticTokensProvider = {
+        full = true,
+        legend = {
+          tokenTypes = semantic.tokenTypes,
+          tokenModifiers = semantic.tokenModifiers,
+        },
+        range = true,
+      }
+    end
+  end
+}

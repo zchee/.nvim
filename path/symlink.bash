@@ -2,11 +2,20 @@
 set -eo pipefail
 
 warn() { printf "\x1b[1;33m[WARN]\x1b[0m %s\\n" "$1" >&2; }
-error() { printf "\\x1b[1;31m[ERROR]\\x1b[0m %s\\n" "$1" >&2; exit 1; }
+error() {
+  printf "\\x1b[1;31m[ERROR]\\x1b[0m %s\\n" "$1" >&2
+  exit 1
+}
 
-xcode_path="$(xcode-select --print-path)"
-if [ $# == 1 ]; then
-  xcode_path="$1"
+xcode_path="$1"
+if [[ -z $xcode_path ]]; then
+  if [[ -d '/Applications/Xcode-beta.app' ]]; then
+    xcode_path='/Applications/Xcode-beta.app'
+  elif [[ -d '/Applications/Xcode.app' ]]; then
+    xcode_path='/Applications/Xcode.app'
+  else
+    xcode_path="$(xcode-select --print-path)"
+  fi
 fi
 echo "Xcode path: $xcode_path"
 readonly xcode_path
@@ -23,8 +32,7 @@ if [[ ! -d "$DST_DIR" ]]; then
 fi
 
 clean_symlink() {
-  for d in $(find ./Frameworks -type l);
-  do
+  for d in $(find ./Frameworks -type l); do
     unlink "$d"
   done
 }
@@ -72,7 +80,7 @@ find_framework_header "$xcode_path"
 # find_framework_header "${XCODE_PATH}/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Apple/System/Library/Frameworks"
 # find_framework_header "${XCODE_PATH}/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
 # find_framework_header "${XCODE_PATH}/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks"
-# 
+#
 # find_framework_header "${XCODE_PATH}/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/PrivateFrameworks"
 # find_framework_header "${XCODE_PATH}/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks"
 # find_framework_header "${XCODE_PATH}/Contents/Developer/Library/PrivateFrameworks"

@@ -8,8 +8,10 @@ local lazy_config = {
   root = vim.fs.joinpath(data_dir, "lazy"),
   defaults = {
     lazy = true,
+    version = nil,
+    cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
   },
-  spec = nil,
+  spec = nil, ---@type LazySpec
   lockfile = vim.fs.joinpath(cache_dir, "lazy-lock.json"),
   ---@diagnostic disable-next-line
   concurrency = (vim.uv.available_parallelism() * 2) or nil,
@@ -20,11 +22,16 @@ local lazy_config = {
     filter = true,
     throttle = {
       enabled = false,
+      rate = 2,
+      duration = 5 * 1000, -- in ms
     },
   },
   pkg = {
     enabled = false,
   },
+  -- rocks = {
+  --   hererocks = true, -- recommended if you do not have global installation of Lua 5.1.
+  -- },
   rocks = {
     enabled = false,
   },

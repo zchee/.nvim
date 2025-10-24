@@ -18,9 +18,9 @@ local hi = function(name, val)
 end
 
 hi("WinBar", { fg = "None", bg = "None" })
--- hi("diffRemoved", { fg = "red", bg = "None" })
+hi("diffRemoved", { fg = "red", bg = "None" })
 
-hi("@namespace.builtin.lua", { link = "@type.builtin" })
+hi("BlinkCmpMenuSelection", { link = "WildMenu" })
 
 -- Go
 --- Literals
@@ -30,9 +30,11 @@ hi("@rune_literal.go", { link = "String" })
 
 --- Keywords
 hi("@type.builtin.go", { fg = "#ffbf6b", bg = "None", bold = false })
+-- hi("@lsp.mod.defaultLibrary.go", { fg = "#ffbf6b", bg = "None", bold = false })
 hi("@keyword.return.go", { link = "Statement" }) -- TODO(zchee): consider to use "Keyword" or "Statement"
 hi("@keyword.defer.go", { link = "Keyword" })    -- TODO(zchee): consider to use "Keyword" or "Statement"
 hi("@keyword.function.go", { link = "Keyword" }) -- TODO(zchee): consider to use "Keyword" or "Statement"
+hi("@number.go", { link = "None" })              -- TODO(zchee): consider to use "Keyword" or "Statement"
 
 --- Comment
 hi("@comment.documentation.go", { fg = "#9ba3a8", bg = "None", bold = false, italic = true })
@@ -59,7 +61,8 @@ hi("@property.go", { fg = "#ffbf6b", bg = "None" }) -- TODO(zchee): link = "Stat
 hi("@variable.member.go", { link = "Normal" })
 hi("@function.call.builtin_type.go", { link = "Type" })
 hi("@function.call.builtin_type.any.go", { link = "Keyword" })
-hi("@function.method.call.go", { link = "Type" })
+-- hi("@lsp.mod.interface.go", { link = "Keyword" })
+hi("@function.method.call.go", { link = "None" }) -- remove
 -- hi("@spell.const_string_literal.go", { link = "String" })
 
 --- Constant decl
@@ -81,7 +84,8 @@ hi("goImportedPkg", { fg = "#769ae7", bg = "None", italic = true, blend = 10 })
 hi("@format_verb.go", { link = "PreProc" })
 
 hi("@lsp.type.namespace.go", { fg = "#769ae7", bg = "None", italic = true })
--- hi("@lsp.type.type.go", { link = "Normal" })
+hi("@lsp.type.type.go", { link = "Normal" })
+hi("@lsp.type.typeParameter.go", { link = "Typedef" })
 hi("@lsp.type.function.go", { link = "Type" })
 hi("@lsp.type.variable.go", { link = "None" })
 hi("@lsp.type.string.go", { link = "None" })
@@ -91,18 +95,33 @@ hi("@lsp.type.parameter.go", { link = "None" })
 -- printf
 hi("@character.printf", { link = "PreProc" })
 
---- GoMod
+--- gomod
 hi("@string.special.gomod", { link = "String" })
+
+--- Lua
+hi("@namespace.builtin.lua", { link = "@type.builtin" })
+
+-- TypeScript
+hi("@keyword.modifier.typescript", { fg = "#c792ea", bg = "None", bold = true })
+
+-- dockerfile
+-- hi("@keyword.dockerfile", { blend = 100 })
 
 -- Python
 hi("@constant.python", { fg = "#f2f3f3", bg = "None", blend = 50 })
 hi("@comment.python", { fg = "#9ba3a8", bg = "None", bold = false, italic = true })
 hi("@spell.python", { link = "Commment" })
-hi("@string.documentation.python", { link = "SpecialComment" })
+hi("@string.documentation.python", { link = "Comment" })
 hi("pythonSpaceError", { fg = "#787f86", bg = "#787f86" })
 hi("pythonDelimiter", { link = "Special" })
 hi("pythonNONE", { link = "pythonFunction" })
 hi("pythonSelf", { link = "pythonOperator" })
+hi("@lsp.type.variable.python", { link = "None" })
+hi("@variable.python", { link = "None" })
+hi("@lsp.type.namespace.python", { fg = "#769ae7", bg = "None", italic = true })
+
+-- YAML
+hi("@property.yaml", { fg = "#81a2be", bg = "NONE", bold = false })
 
 -- GraphQL
 hi("@spell.graphql", { link = "Comment" })
@@ -119,10 +138,11 @@ hi("doxygenSpecialOnelineDesc", { fg = "#81a2be", bg = "NONE" })
 
 --- third-party
 hi("LspSignatureActiveParameter", { fg = "None", bg = "#343941", blend = 10 })
-hi("LspInlayHint", { fg = "#d8d8d8", bg = "#3a3a3a" })
+hi("LspInlayHint", { fg = "#9ba3a8", bg = "None", bold = false, italic = true, blend = 50 })
 
 --- VimIlluminate:
 hi("illuminatedWord", { fg = "NONE", bg = "NONE", underline = true })
+-- hi("LspReferenceText", { fg = "NONE", bg = "NONE", underline = true })
 
 --- MatchUp
 hi("MatchParen", { fg = "NONE", bg = "#343941" })

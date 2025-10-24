@@ -1,11 +1,20 @@
 vim.api.nvim_create_user_command("LuaVimInspect",
   function(opts)
-    print(vim.inspect(opts.args))
+    vim.print(vim.inspect(opts.fargs))
   end,
   {
     nargs = "*",
     desc = "Gets a human-readable representation of the given object.",
     complete = "lua",
+  }
+)
+
+vim.api.nvim_create_user_command("LuaSnipEdit",
+  function()
+    vim.cmd([[ silent command! LuaSnipEdit :lua require("luasnip.loaders").edit_snippet_files() ]])
+  end,
+  {
+    desc = "Edit LuaSnip source.",
   }
 )
 
@@ -96,6 +105,15 @@ vim.api.nvim_create_user_command("TSInspectTree",
   {
     desc = 'Inspect treesitter language tree for buffer',
     count = true,
+  }
+)
+
+vim.api.nvim_create_user_command("DiagramToggle",
+  function()
+    vim.cmd("Lazy load diagram.nvim")
+  end,
+  {
+    desc = "Toggle diagram.nvim.",
   }
 )
 

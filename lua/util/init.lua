@@ -1,5 +1,14 @@
 local M = {}
 
+function _G.dump(...)
+  vim.print(vim.inspect(...))
+end
+
+function M.cmp_or(val, default)
+  if val == nil then return default end
+  return val
+end
+
 ---Switch returns function instead of table
 ---http://lua-users.org/wiki/SwitchStatement
 ---
@@ -27,36 +36,55 @@ function M.switch(case)
   end
 end
 
-----@param condition any
-----@return function
--- function M.switch(condition)
---   return {
---     var = condition,
---
---     of = function(self, code)
---       local f
---       if (self.var) then
---         f = code[self.var] or code.default
---       else
---         f = code.default
---       end
---       if f then
---         if type(f) == "function" then
---           return f(self.var, self)
---         else
---           error("case " .. tostring(self.var) .. " not a function")
---         end
---       end
---     end
---   }
--- end
+---@param path string
+---@return boolean
+function M.is_exists(path)
+  local file = io.open(path, "r")
+  if (file ~= nil) then
+    io.close(file)
+    return true
+  else
+    return false
+  end
+end
+
+---@param tbl string[]
+---@param element string
+---@return boolean
+function M.contains(tbl, element)
+  for _, value in pairs(tbl) do
+    if value == element then
+      return true
+    end
+  end
+  return false
+end
+
+---
+---Returns the value of the process environment variable `varname`.
+---
+---@param varname string
+---@return string?
+---@nodiscard
+function M.getenv(varname)
+  return tostring(os.getenv(varname))
+end
+
+---
+---expands env path and reads symbolic link.
+---
+---@param path string
+---@return string
+function M.readlink(path)
+  return vim.uv.fs_readlink(path) or ""
+end
 
 ---
 ---Return XDG_CACHE_HOME
 ---
 ---@return string
 function M.xdg_cache_home()
-  return M.readlink(tostring(os.getenv("XDG_CACHE_HOME")))
+  return tostring(M.readlink(tostring(os.getenv("XDG_CACHE_HOME"))))
 end
 
 ---
@@ -64,7 +92,7 @@ end
 ---
 ---@return string
 function M.xdg_config_home()
-  return M.readlink(tostring(os.getenv("XDG_CONFIG_HOME")))
+  return tostring(M.readlink(tostring(os.getenv("XDG_CONFIG_HOME"))))
 end
 
 ---
@@ -72,7 +100,7 @@ end
 ---
 ---@return string
 function M.xdg_data_home()
-  return M.readlink(tostring(os.getenv("XDG_DATA_HOME")))
+  return tostring(M.readlink(tostring(os.getenv("XDG_DATA_HOME"))))
 end
 
 ---
@@ -80,7 +108,7 @@ end
 ---
 ---@return string
 function M.xdg_state_home()
-  return M.readlink(tostring(os.getenv("XDG_STATE_HOME")))
+  return tostring(M.readlink(tostring(os.getenv("XDG_STATE_HOME"))))
 end
 
 ---@param ... string
@@ -102,19 +130,28 @@ function M.src_path(...)
 end
 
 ---
----expands env path and reads symbolic link.
+---Returns the UNIX prefix directory according to the macOS cpu architecture.
 ---
----@param path string
 ---@return string
-function M.readlink(path)
-  return vim.uv.fs_readlink(path) or ""
+function M.prefix()
+  local machine = vim.uv.os_uname()["machine"]
+  local prefix
+  if machine == "x86_64" then
+    prefix = "/usr/local"
+  elseif machine == "arm64" then
+    prefix = "/opt/local"
+  end
+
+  return tostring(prefix)
 end
 
----@param formula string homebrew formula name
----@param binary string binary name
+---
+---Returns the Homebrew prefix directory according to the macOS cpu architecture.
+---
 ---@return string
-function M.homebrew_binary(formula, binary)
+function M.homebrew_prefix()
   local prefix = os.getenv("HOMEBREW_PREFIX")
+
   -- fallback
   if not prefix then
     local machine = vim.uv.os_uname()["machine"]
@@ -125,7 +162,72 @@ function M.homebrew_binary(formula, binary)
     end
   end
 
-  return vim.fs.joinpath(prefix, "opt", formula, "bin", binary)
+  return tostring(prefix)
+end
+
+---@param binary string binary name
+---@return string
+function M.homebrew_portable_ruby(binary)
+  local prefix = M.homebrew_prefix()
+  if vim.uv.os_uname()["machine"] == "arm64" then
+    prefix = tostring(vim.fs.dirname(prefix))
+  end
+
+  return vim.fs.joinpath(prefix, "Homebrew/Library/Homebrew/vendor/portable-ruby/current/bin", binary)
+end
+
+---@param formula string homebrew formula name
+---@param binary string binary name
+---@return string
+function M.homebrew_binary(formula, binary)
+  return vim.fs.joinpath(M.homebrew_prefix(), "opt", formula, "bin", binary)
+end
+
+---@param binary string binary name
+---@return string
+function M.pnpm_prefix(binary)
+  return tostring(vim.fs.joinpath(os.getenv("PNPM_HOME"), binary))
+end
+
+---@param fn fun()
+M.on_very_lazy = function(fn)
+  vim.api.nvim_create_autocmd("User", {
+    group = vim.api.nvim_create_augroup("Lazy", { clear = true }),
+    pattern = "VeryLazy",
+    callback = function()
+      fn()
+    end,
+  })
+end
+
+---@param modules string[] modules like "autocmds" | "options" | "keymaps"
+M.lazy_load = function(modules)
+  -- when no file is opened at startup
+  if vim.fn.argc(-1) == 0 then
+    -- autocmds and keymaps can wait to load
+    -- always load lazyvim, then user file
+    M.on_very_lazy(function()
+      for i = 1, #modules do
+        require(modules[i])
+      end
+    end)
+  else
+    -- load them now so they affect the opened buffers
+    for i = 1, #modules do
+      require(modules[i])
+    end
+  end
+end
+
+---@param on_attach fun(client, bufnr)
+function M.on_attach(on_attach)
+  vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(args)
+      local bufnr = args.buf
+      local client = vim.lsp.get_client_by_id(args.data.client_id)
+      on_attach(client, bufnr)
+    end,
+  })
 end
 
 return M

@@ -1,4 +1,4 @@
--- local autocmd_user = vim.api.nvim_create_augroup("AutocmdUser", { clear = true })
+local autocmd_user = vim.api.nvim_create_augroup("AutocmdUser", { clear = true })
 
 -- " Map Leader:
 --
@@ -89,7 +89,8 @@ vim.keymap.set({ "n" }, "<BS>", "<Nop>", { noremap = true })
 
 -- vim.keymap.set({ "n" }, "*", "<Plug>(asterisk-gz*)", { nowait = true, silent = true })
 -- vim.keymap.set({ "n" }, "-", "<Cmd>NvimTreeToggle<CR>", { noremap = true, silent = true, nowait = true })
-vim.keymap.set({ "n" }, "-", "<Cmd>NvimTreeToggle<CR>", { noremap = true, silent = true, nowait = true })
+-- vim.keymap.set({ "n" }, "-", "<Cmd>NvimTreeToggle<CR>", { noremap = true, silent = true, nowait = true })
+vim.keymap.set({ "n" }, "-", "<Cmd>Neotree toggle dir=%:p:h:h<CR>", { noremap = true, silent = true, nowait = true })
 local live_grep_from_project_git_root = function()
   local function is_git_repo()
     vim.fn.system("git rev-parse --is-inside-work-tree")
@@ -97,7 +98,7 @@ local live_grep_from_project_git_root = function()
   end
 
   local function get_git_root()
-    local dot_git_path = vim.fn.finddir(".git", ".;")
+    local dot_git_path = tostring(vim.fn.finddir(".git", ".;"))
     return vim.fn.fnamemodify(dot_git_path, ":h")
   end
 
@@ -110,6 +111,7 @@ local live_grep_from_project_git_root = function()
 
   require("telescope.builtin").live_grep(opts)
 end
+vim.keymap.set({ "n" }, "<BS>cc", "<cmd>set cursorcolumn!<CR>", { noremap = true })
 vim.keymap.set({ "n" }, "<BS>ci", "<cmd>Inspect<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "<C-g>", live_grep_from_project_git_root, { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "<C-p>", "<cmd>Telescope find_files<CR>", { noremap = true, silent = true })
@@ -123,8 +125,8 @@ vim.keymap.set({ "n" }, "@", "^", { nowait = true, silent = true })
 vim.keymap.set({ "n" }, "^", "@", { nowait = true, silent = true })
 vim.keymap.set({ "n" }, "b", "b", { nowait = true, silent = true })
 vim.keymap.del("n", "gcc")
-vim.keymap.set({ "n" }, "gc",
-  "<Plug>(comment_toggle_linewise_current)", { noremap = false, silent = true, nowait = true })
+vim.keymap.set({ "n" }, "gc", "<Plug>(comment_toggle_linewise_current)",
+  { noremap = false, silent = true, nowait = true })
 vim.keymap.set({ "n" }, "gs", "<cmd>Switch<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "gx", "<Plug>(openbrowser-smart-search)", { silent = true })
 vim.keymap.set({ "n" }, "j", "<Plug>(accelerated_jk_gj)", { nowait = true, silent = true })
@@ -141,6 +143,7 @@ vim.keymap.set({ "n" }, "ZQ", "<Nop>", { noremap = true, silent = true })
 --- Vim:
 --- http://ku.ido.nu/post/90355094974/how-to-grep-a-word-under-the-cursor-on-vim
 vim.api.nvim_create_autocmd({ "FileType" }, {
+  group = autocmd_user,
   pattern = {
     "*",
   },
@@ -153,6 +156,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   end,
 })
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+  group = autocmd_user,
   pattern = {
     "*.vim",
   },
@@ -267,12 +271,9 @@ vim.keymap.set({ "v" }, "V", "^", { noremap = true, nowait = true })
 --   "<Plug>(comment_toggle_linewise_visual)",
 --   { noremap = true, silent = true, nowait = true, desc = "Comment toggle linewise" }
 -- )
-vim.keymap.set(
-  { "x" },
-  "gb",
+vim.keymap.set({ "x" }, "gb",
   "<Plug>(comment_toggle_blockwise_visual)",
-  { noremap = true, silent = true, desc = "Comment toggle blockwise (visual)" }
-)
+  { noremap = true, silent = true, desc = "Comment toggle blockwise (visual)" })
 -- vim.keymap.set({ "x" }, "<C-t>", "<cmd>Trans<CR>", { noremap = true, silent = true })
 -- vim.keymap.set(
 --   { "x" },
@@ -316,7 +317,7 @@ vim.keymap.set(
 -- Gautocmdft go,yaml,json,jsonschema snoremap <buffer> '    "
 
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-  -- group = autocmd_user,
+  group = autocmd_user,
   pattern = {
     "*.go",
     "*.yaml",

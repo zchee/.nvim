@@ -1,7 +1,27 @@
+local util = require("util")
+
 local autocmd_user = vim.api.nvim_create_augroup("AutocmdUser", { clear = false })
 
+vim.api.nvim_create_autocmd("FileType", {
+  group = autocmd_user,
+  pattern = "go",
+  callback = function()
+    vim.opt.path:append("/usr/local/go/pkg/include")
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = autocmd_user,
+  pattern = "c, cpp, objc, objcpp",
+  callback = function()
+    if vim.fn.isdirectory("/usr/local/Frameworks/Python.framework/Headers") then
+      vim.opt.path:append("/usr/local/Frameworks/Python.framework/Headers")
+    end
+  end,
+})
+
 -- FileType
-vim.api.nvim_create_autocmd({ "FileType" }, {
+vim.api.nvim_create_autocmd("FileType", {
   group = autocmd_user,
   pattern = {
     "man",
@@ -18,6 +38,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     vim.api.nvim_buf_set_keymap(0, "n", "q", ":q<CR>", { silent = true })
   end,
 })
+
 --- macOS
 if vim.fn.has("mac") then
   vim.opt.wildignore:append("DS_Store") -- macOS only
@@ -59,27 +80,27 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "go" },
   callback = function()
-    vim.opt.path:append("/usr/local/go/pkg/include")
+    vim.opt.path:append(vim.fs.joinpath(util.prefix(), "go/pkg/include"))
   end,
 })
 
 -- BufNewFile, BufReadPost
-vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
-  group = autocmd_user,
-  pattern = {
-    "json",
-  },
-  callback = function()
-    local bufname = tostring(vim.fn.bufname())
-
-    if bufname == "package.json" or string.find(bufname, ".*%.schema%.json$") then
-      vim.opt_local.expandtab = true
-      vim.opt_local.shiftwidth = 2
-      vim.opt_local.softtabstop = 2
-      vim.opt_local.tabstop = 2
-    end
-  end,
-})
+-- vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
+--   group = autocmd_user,
+--   pattern = {
+--     "json",
+--   },
+--   callback = function()
+--     local bufname = tostring(vim.fn.bufname())
+--
+--     if bufname == "package.json" or string.find(bufname, ".*%.schema%.json$") then
+--       vim.opt_local.expandtab = true
+--       vim.opt_local.shiftwidth = 2
+--       vim.opt_local.softtabstop = 2
+--       vim.opt_local.tabstop = 2
+--     end
+--   end,
+-- })
 vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
   group = autocmd_user,
   pattern = {
@@ -125,7 +146,7 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
   callback = function()
     if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then --  and not vim.bo.filetype == "gitcommit" and not vim.bo.filetype == "gitrebase"
       vim.cmd([[
-        execute "silent! keepjumps normal! g`\"zz\""
+        execute "silent! keepjumps normal! g`\"zt\""
       ]])
     end
   end,
@@ -151,13 +172,12 @@ vim.api.nvim_create_autocmd({ "WinEnter" }, {
   end,
 })
 
+local autocmd_lsp_format = vim.api.nvim_create_augroup("LspFormat", { clear = true })
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-  group = vim.api.nvim_create_augroup("LspFormat", { clear = true }),
+  group = autocmd_lsp_format,
   pattern = {
     "*.lua",
-    "*.tf",
-    "*.tfvars",
-    "*.ts",
+    -- "*.ts",
   },
   callback = function()
     vim.lsp.buf.format({
@@ -168,6 +188,137 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
     })
   end,
 })
+
+vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+  group = autocmd_lsp_format,
+  pattern = {
+    "*.tf",
+    "*.tfvars",
+  },
+  callback = function()
+    vim.lsp.buf.format({
+      async = true,
+      trimTrailingWhitespace = true,
+      insertFinalNewline = true,
+      trimFinalNewlines = true,
+    })
+  end,
+})
+
+---@class PrioritySemanticTokens
+---@field type string semantic tokens type
+---@field hl_group string semantic tokens hl group name
+---@field priority number highlight priority
+
+---@type PrioritySemanticTokens[]
+local priority_semantic_tokens = {
+  -- { type = "namespace" },
+  -- { type = "variable" },
+  -- { modifier = "global" },
+  -- { modifier = "format" },
+  { type = "class", hl_group = "@lsp.type.class.python", priority = 200 },
+}
+
+vim.api.nvim_create_autocmd("LspTokenUpdate", {
+  callback = function(args)
+    --- @type SemanticToken
+    local token = args.data.token
+    -- local captures = vim.treesitter.get_captures_at_pos(args.buf, token.line, token.start_col)
+
+    for _, t in pairs(priority_semantic_tokens) do
+      local priority = t.priority or 105
+      if t.type and token.type == t.type then
+        vim.lsp.semantic_tokens.highlight_token(
+          token,
+          args.buf,
+          args.data.client_id,
+          t.hl_group,
+          { priority = priority }
+        )
+      end
+
+      -- if t.modifier and token.modifiers[t.modifier] then
+      --   vim.lsp.semantic_tokens.highlight_token(
+      --     token,
+      --     args.buf,
+      --     args.data.client_id,
+      --     t.modifier,
+      --     { priority = priority }
+      --   )
+      -- end
+
+      -- if t.treesitter then
+      --   for _, capture in pairs(captures) do
+      --     if capture.capture == t.treesitter then
+      --       vim.lsp.semantic_tokens.highlight_token(
+      --         token,
+      --         args.buf,
+      --         args.data.client_id,
+      --         t.treesitter,
+      --         { priority = priority }
+      --       )
+      --     end
+      --   end
+      -- end
+    end
+  end,
+})
+
+-- vim.api.nvim_create_autocmd('InsertEnter', {
+--   desc = 'Disable LSP semantic highlights',
+--   pattern = {
+--     "*.go",
+--   },
+--   callback = function(event)
+--     local id = vim.tbl_get(event, 'data', 'client_id')
+--     local client = id and vim.lsp.get_client_by_id(id)
+--     if client == nil then
+--       return
+--     end
+--
+--     client.server_capabilities.documentHighlightProvider = nil
+--     client.server_capabilities.documentSymbolProvider = nil
+--     client.server_capabilities.semanticTokensProvider = nil
+--     client.server_capabilities.semanticTokensProvider = nil
+--   end,
+-- })
+
+-- vim.api.nvim_create_autocmd('ModeChanged', {
+--   pattern = { 'n:i', 'v:s' },
+--   desc = 'Disable diagnostics in insert and select mode',
+--   callback = function(e) vim.diagnostic.enable(false, { bufnr = e.buf }) end
+-- })
+-- vim.api.nvim_create_autocmd('ModeChanged', {
+--   pattern = 'i:n',
+--   desc = 'Enable diagnostics when leaving insert mode',
+--   callback = function(e) vim.diagnostic.enable(true, { bufnr = e.buf }) end
+-- })
+--
+-- vim.opt.updatetime = 400
+-- local function highlight_symbol(event)
+--   local id = vim.tbl_get(event, "data", "client_id")
+--   local client = id and vim.lsp.get_client_by_id(id)
+--   ---@diagnostics disable
+--   if client == nil or not client.supports_method("textDocument/documentHighlight", event.buf) then
+--     return
+--   end
+--   local group = vim.api.nvim_create_augroup("highlight_symbol", { clear = false })
+--   vim.api.nvim_clear_autocmds({ buffer = event.buf, group = group })
+--   vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+--     group = group,
+--     buffer = event.buf,
+--     callback = vim.lsp.buf.document_highlight,
+--   })
+--   vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+--     group = group,
+--     buffer = event.buf,
+--     callback = vim.lsp.buf.clear_references,
+--   })
+-- end
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--   desc = "Setup highlight symbol",
+--   callback = highlight_symbol,
+-- })
 
 -- -- https://github.com/golang/tools/blob/gopls/v0.11.0/gopls/doc/vim.md#imports
 -- ---@param client vim.lsp.Client
@@ -398,7 +549,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
     )
     vim.api.nvim_buf_create_user_command(e.buf, "GomodLatest",
       function()
-        vim.cmd("'<,'>s/ v[a-z0-9.-]*/ latest/g | nohlsearch")
+        vim.cmd("'<,'>s/ v[a-z0-9.\\+-]*/ latest/g | nohlsearch")
       end,
       {
         range = true,
@@ -422,6 +573,34 @@ vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
     io.stdout:write("\x1b]1337;SetUserVar=in_editor\007")
   end,
 })
+
+local prev = { new_name = "", old_name = "" } -- Prevents duplicate events
+vim.api.nvim_create_autocmd("User", {
+  pattern = "NvimTreeSetup",
+  callback = function()
+    local events = require("nvim-tree.api").events
+    events.subscribe(events.Event.NodeRenamed, function(data)
+      if prev.new_name ~= data.new_name or prev.old_name ~= data.old_name then
+        data = data
+        require("snacks").rename.on_rename_file(data.old_name, data.new_name)
+      end
+    end)
+  end,
+})
+
+-- vim.api.nvim_create_autocmd("User", {
+--   pattern = "BlinkCmpMenuOpen",
+--   callback = function()
+--     vim.b.copilot_suggestion_hidden = true
+--   end,
+-- })
+--
+-- vim.api.nvim_create_autocmd("User", {
+--   pattern = "BlinkCmpMenuClose",
+--   callback = function()
+--     vim.b.copilot_suggestion_hidden = false
+--   end,
+-- })
 
 -- Debug:
 -- vim.api.nvim_create_autocmd(

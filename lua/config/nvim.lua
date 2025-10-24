@@ -10,71 +10,71 @@
 --                                                                                                                 --
 -- --------------------------------------------------------------------------------------------------------------- --
 
-local util                      = require("util")
+local util         = require("util")
 
 -- Environment Variables:
 
-vim.env.MANWIDTH                = 999
+vim.env.MANWIDTH   = 999
 
--- Remote Plugins:
-vim.g.loaded_python_provider    = 1 -- $VIMRUNTIME/autoload/provider/python.vim
-vim.g.loaded_node_provider      = 1 -- $VIMRUNTIME/autoload/provider/node.vim
-vim.g.loaded_ruby_provider      = 1 -- $VIMRUNTIME/autoload/provider/ruby.vim
-vim.g.loaded_perl_provider      = 1 -- $VIMRUNTIME/autoload/provider/perl.vim
-vim.g.no_man_maps               = 1
-vim.g.ft_man_folding_enable     = 0
-vim.g.man_hardwrap              = false
-vim.g.vimsyn_embed              = 'lP'
-
--- disable built-in plugins
-vim.g.loaded_gzip               = 1
-vim.g.loaded_zip                = 1
-vim.g.loaded_zipPlugin          = 1
-vim.g.loaded_tar                = 1 -- $VIMRUNTIME/autoload/tar.vim
-vim.g.loaded_tarPlugin          = 1 -- $VIMRUNTIME/plugin/tarPlugin.vim
-vim.g.loaded_getscript          = 1
-vim.g.loaded_getscriptPlugin    = 1
-vim.g.loaded_vimball            = 1 -- $VIMRUNTIME/pack/dist/opt/vimball/autoload/vimball.vim
-vim.g.loaded_vimballPlugin      = 1 -- $VIMRUNTIME/pack/dist/opt/vimball/plugin/vimballPlugin.vim
-vim.g.loaded_2html_plugin       = 1
-vim.g.loaded_matchit            = 1
-vim.g.loaded_matchparen         = 1
-vim.g.loaded_logiPat            = 1
-vim.g.loaded_rrhelper           = 1
-vim.g.did_install_default_menus = 1    -- $VIMRUNTIME/menu.vim
-vim.g.skip_loading_mswin        = true -- $VIMRUNTIME/mswin.vim
-vim.g.loaded_cfilter            = 1    -- $VIMRUNTIME/pack/dist/opt/cfilter/plugin/cfilter.vim
-vim.g.loaded_netrw              = 1    -- $VIMRUNTIME/autoload/netrw.vim
-vim.g.loaded_netrwFileHandlers  = 1    -- $VIMRUNTIME/autoload/netrwFileHandlers.vim
-vim.g.loaded_netrwSettings      = 1    -- $VIMRUNTIME/autoload/netrwSettings.vim
-vim.g.loaded_pythonx_provider   = 1    -- $VIMRUNTIME/autoload/provider/pythonx.vim
-vim.g.loaded_syntax_completion  = 130  -- $VIMRUNTIME/autoload/syntaxcomplete.vim
-vim.g.loaded_xmlformat          = 1    -- $VIMRUNTIME/autoload/xmlformat.vim
-vim.g.loaded_less               = 1    -- $VIMRUNTIME/macros/less.vim
-vim.g.loaded_netrwPlugin        = 1    -- $VIMRUNTIME/plugin/netrwPlugin.vim
-vim.g.netrw_nogx                = true -- $VIMRUNTIME/plugin/netrwPlugin.vim
-vim.g.loaded_spellfile_plugin   = 1    -- $VIMRUNTIME/plugin/spellfile.vim
-vim.g.loaded_tutor_mode_plugin  = 1    -- $VIMRUNTIME/plugin/tutor.vim
+-- -- Remote Plugins:
+-- vim.g.loaded_python_provider    = 1 -- $VIMRUNTIME/autoload/provider/python.vim
+-- vim.g.loaded_node_provider      = 1 -- $VIMRUNTIME/autoload/provider/node.vim
+-- vim.g.loaded_ruby_provider      = 1 -- $VIMRUNTIME/autoload/provider/ruby.vim
+-- vim.g.loaded_perl_provider      = 1 -- $VIMRUNTIME/autoload/provider/perl.vim
+-- vim.g.no_man_maps               = 1
+-- vim.g.ft_man_folding_enable     = 0
+-- vim.g.man_hardwrap              = false
+-- vim.g.vimsyn_embed              = 'lP'
+--
+-- -- disable built-in plugins
+-- vim.g.loaded_gzip               = 1
+-- vim.g.loaded_zip                = 1
+-- vim.g.loaded_zipPlugin          = 1
+-- vim.g.loaded_tar                = 1 -- $VIMRUNTIME/autoload/tar.vim
+-- vim.g.loaded_tarPlugin          = 1 -- $VIMRUNTIME/plugin/tarPlugin.vim
+-- vim.g.loaded_getscript          = 1
+-- vim.g.loaded_getscriptPlugin    = 1
+-- vim.g.loaded_vimball            = 1 -- $VIMRUNTIME/pack/dist/opt/vimball/autoload/vimball.vim
+-- vim.g.loaded_vimballPlugin      = 1 -- $VIMRUNTIME/pack/dist/opt/vimball/plugin/vimballPlugin.vim
+-- vim.g.loaded_2html_plugin       = 1
+-- vim.g.loaded_matchit            = 1
+-- vim.g.loaded_matchparen         = 1
+-- vim.g.loaded_logiPat            = 1
+-- vim.g.loaded_rrhelper           = 1
+-- vim.g.did_install_default_menus = 1    -- $VIMRUNTIME/menu.vim
+-- vim.g.skip_loading_mswin        = true -- $VIMRUNTIME/mswin.vim
+-- vim.g.loaded_cfilter            = 1    -- $VIMRUNTIME/pack/dist/opt/cfilter/plugin/cfilter.vim
+-- vim.g.loaded_netrw              = 1    -- $VIMRUNTIME/autoload/netrw.vim
+-- vim.g.loaded_netrwFileHandlers  = 1    -- $VIMRUNTIME/autoload/netrwFileHandlers.vim
+-- vim.g.loaded_netrwSettings      = 1    -- $VIMRUNTIME/autoload/netrwSettings.vim
+-- vim.g.loaded_pythonx_provider   = 1    -- $VIMRUNTIME/autoload/provider/pythonx.vim
+-- vim.g.loaded_syntax_completion  = 130  -- $VIMRUNTIME/autoload/syntaxcomplete.vim
+-- vim.g.loaded_xmlformat          = 1    -- $VIMRUNTIME/autoload/xmlformat.vim
+-- vim.g.loaded_less               = 1    -- $VIMRUNTIME/macros/less.vim
+-- vim.g.loaded_netrwPlugin        = 1    -- $VIMRUNTIME/plugin/netrwPlugin.vim
+-- vim.g.netrw_nogx                = true -- $VIMRUNTIME/plugin/netrwPlugin.vim
+-- vim.g.loaded_spellfile_plugin   = 1    -- $VIMRUNTIME/plugin/spellfile.vim
+-- vim.g.loaded_tutor_mode_plugin  = 1    -- $VIMRUNTIME/plugin/tutor.vim
 
 -- Global Settings:
 
-vim.opt.autoindent              = true
-vim.opt.autoread                = true
-vim.opt.backup                  = true
-vim.opt.backupdir               = vim.fn.stdpath("state") .. "/backup/" -- NOTE(zchee): can't use `vim.fs.joinpath`
-vim.opt.backupcopy              = "yes"
-vim.opt.belloff                 = "all"
-vim.opt.cindent                 = true
+vim.opt.autoindent = true
+vim.opt.autoread   = true
+vim.opt.backup     = true
+vim.opt.backupdir  = vim.fn.stdpath("state") .. "/backup/" -- NOTE(zchee): can't use `vim.fs.joinpath`
+vim.opt.backupcopy = "yes"
+vim.opt.belloff    = "all"
+vim.opt.cindent    = true
 vim.opt.cinkeys:remove("0#") -- comments don't fiddle with indenting
 vim.opt.cinoptions = ""      -- See :h cinoptions-values
-vim.opt.clipboard = "unnamedplus"
+-- vim.opt.clipboard = "unnamedplus"
 vim.opt.cmdheight = 2
 vim.opt.cmdwinheight = 50
 vim.opt.complete = "." -- default: .,w,b,u,t, .
 -- vim.opt.completeopt = { "noinsert", "noselect", "menuone" } -- noinsert,noselect,longest,menu,menuone,preview
 vim.opt.completeopt = { "menu", "menuone", "noinsert" }
 vim.opt.concealcursor = "niv"
-vim.opt.conceallevel = 0
+vim.opt.conceallevel = 1
 vim.opt.copyindent = true
 vim.opt.cpoptions:remove("_")
 vim.opt.diffopt:append("hiddenoff")
@@ -83,8 +83,8 @@ vim.opt.display:remove("msgsep")
 vim.opt.emoji = true
 vim.opt.encoding = "utf-8"
 vim.opt.expandtab = true
-vim.opt.fillchars:append("diff:/")
 vim.opt.fileformats = { "unix", "mac", "dos" }
+vim.opt.fillchars:append("diff:/")
 vim.opt.foldcolumn = "0"
 vim.opt.foldlevel = 0
 vim.opt.foldlevelstart = 99       -- open all folds by default
@@ -124,8 +124,8 @@ vim.opt.listchars = {
   precedes = "‹",
 }
 vim.opt.makeprg = "make"
-vim.opt.matchtime = 0           -- disable nvim matchparen
-vim.opt.maxmempattern = 2000000 -- default: 1000, max: 2000000
+vim.opt.matchtime = 0        -- disable nvim matchparen
+vim.opt.maxmempattern = 1000 -- default: 1000, max: 2000000
 vim.opt.modelines = 1
 vim.opt.mouse = "a"
 vim.opt.number = true
@@ -139,7 +139,7 @@ vim.opt.redrawtime = 20000
 vim.opt.regexpengine = 2
 vim.opt.ruler = true
 vim.opt.scrollback = 100000
-vim.opt.scrolljump = 5
+vim.opt.scrolljump = 6
 vim.opt.scrolloff = 8 -- default: 0
 vim.opt.secure = true
 vim.opt.shada = { "'20", "<50", "s10" }
@@ -151,7 +151,7 @@ vim.opt.showfulltag = true
 vim.opt.showtabline = 2
 vim.opt.sidescroll = 1     -- 0
 vim.opt.sidescrolloff = 15 -- 0
-vim.opt.signcolumn = "yes:4"
+vim.opt.signcolumn = "yes:5"
 vim.opt.sessionoptions = {
   "blank",
   "buffers",
@@ -179,7 +179,7 @@ vim.opt.tagcase = "smart"
 vim.opt.tags = "./tags;"                              -- http://d.hatena.ne.jp/thinca/20090723/1248286959
 vim.opt.textwidth = 0
 vim.opt.timeout = true                                -- mappnig timeout
-vim.opt.timeoutlen = 250                              -- default: 1000
+vim.opt.timeoutlen = 230                              -- default: 1000
 vim.opt.ttimeout = true                               -- keycode timeout
 vim.opt.ttimeoutlen = 30                              -- default: 50
 vim.opt.undodir = vim.fn.stdpath("state") .. "/undo/" -- NOTE(zchee): can't use `vim.fs.joinpath`
@@ -214,6 +214,7 @@ vim.opt.wildmenu = true
 vim.opt.wildmode = { "longest", "full" }
 vim.opt.wildoptions = "pum"
 vim.opt.winblend = 0
+vim.opt.winminwidth = 5
 vim.opt.wrap = true
 vim.opt.writebackup = true
 
@@ -235,18 +236,6 @@ vim.opt.visualbell = false
 vim.opt.wrapscan = false
 
 vim.cmd.colorscheme("equinusocio_material")
-
-local go_include = function()
-  vim.opt.path:append("/usr/local/go/pkg/include")
-end
-vim.api.nvim_create_autocmd("Filetype", { pattern = "go", callback = go_include })
-
-local path_add_python_headers = function()
-  if vim.fn.isdirectory("/usr/local/Frameworks/Python.framework/Headers") then
-    vim.opt.path:append("/usr/local/Frameworks/Python.framework/Headers")
-  end
-end
-vim.api.nvim_create_autocmd("Filetype", { pattern = "c, cpp, objc, objcpp", callback = path_add_python_headers })
 
 -- Color:
 

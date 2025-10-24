@@ -51,6 +51,7 @@ vim.filetype.add({
     vfj                = "jsonc",
     vmoptions          = "conf",
     y                  = "goyacc",
+    zsh                = "zsh",
   },
   filename = {
     [".aiderignore"]     = "gitignore",

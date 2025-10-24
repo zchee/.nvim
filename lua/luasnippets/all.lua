@@ -54,6 +54,14 @@ return {
     ls.t("NOTE(zchee): ")
   ),
 
+  --- Terminal
+  ls.s({
+      trig = "devnull",
+      dscr = "> /dev/null 2>&1",
+    },
+    ls.t("> /dev/null 2>&1")
+  ),
+
   -- ls.s("time", partial(vim.fn.strftime, "%H:%M:%S")),
   -- ls.s("date", partial(vim.fn.strftime, "%Y-%m-%d")),
   -- ls.s("pwd", { partial(utils.run_command, "pwd") }),

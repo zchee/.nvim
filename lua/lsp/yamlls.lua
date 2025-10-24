@@ -1,6 +1,6 @@
 local util = require("util")
 
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   -- NOTE(zchee): use self-compiled for disabled "Matches multiple schemas when only one must validate." error
   cmd = {
@@ -102,8 +102,8 @@ return {
           "*discovery.yaml",
         },
         -- OpenAPI
-        ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.1.schema.json"] = {
-          -- ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.0.4.schema.json"] = {
+        -- ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.1.schema.json"] = {
+        ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.0.4.schema.json"] = {
           "*openapi*.yaml",
           "**/openapi-spec/*.yaml",
         },

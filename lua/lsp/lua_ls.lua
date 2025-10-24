@@ -56,7 +56,7 @@ lazydev.setup({
 -- https://github.com/LuaLS/lua-language-server/blob/master/doc/en-us/config.md
 -- https://github.com/LuaLS/lua-language-server/blob/master/locale/en-us/setting.lua
 -- https://github.com/LuaLS/lua-language-server/blob/master/script/config/template.lua
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.homebrew_binary("lua-language-server-head", "lua-language-server") },
   settings = {

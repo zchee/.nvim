@@ -1,8 +1,7 @@
 local util = require("util")
 
-local lspconfig = require("lspconfig")
 
---- @type vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { vim.fs.joinpath(util.prefix(), "zig", "zls") },
   filetypes = { "zig", "zon" },

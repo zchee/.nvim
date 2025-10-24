@@ -30,13 +30,14 @@ local function add_ruby_deps_command(client, bufnr)
     { nargs = "?", complete = function() return { "all" } end })
 end
 
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = {
     util.homebrew_portable_ruby("ruby-lsp"), "--use-launcher",
   },
   filetypes = { "ruby", "eruby" },
-  root_dir = lspconfig_util.root_pattern("Gemfile", ".git"),
+  -- root_dir = lspconfig_util.root_pattern("Gemfile", ".git"),
+  root_markers = { "Gemfile", ".git" },
   init_options = {
     enabledFeatures = {
       codeActions = true,

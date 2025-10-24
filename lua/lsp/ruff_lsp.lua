@@ -1,4 +1,4 @@
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   on_attach = function(client, _)
     -- Disable hover in favor of Pyright

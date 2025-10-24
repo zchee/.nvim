@@ -1,4 +1,4 @@
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = {
     -- clangd version 18.0.0 (https://github.com/llvm/llvm-project 4b5366c9512aa273a5272af1d833961e1ed156e7)
@@ -31,7 +31,7 @@ return {
     "--offset-encoding=utf-16",
     "--hidden-features",
   },
-  filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
+  filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "metal" },
   -- capabilities = require('cmp_nvim_lsp').default_capabilities(),
   offsetEncoding = { 'utf-16' },
 

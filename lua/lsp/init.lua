@@ -1,112 +1,21 @@
-vim.lsp.set_log_level("OFF") -- "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
-
 local util = require("util")
-
-local actions_preview = require("actions-preview")
-
-local lspsaga = require("lspsaga")
-
--- local lsp_setup = require("lsp-setup")
 
 local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
--- local lspconfig_ui_windows = require('lspconfig.ui.windows')
 
-local lspkind = require("lspkind")
-
--- local tiny_inline_diagnostic = require('tiny-inline-diagnostic')
--- local lsp_endhints = require("lsp-endhints")
-
-local snacks = require("snacks")
-
+vim.lsp.log.set_level(vim.log.levels.OFF) -- "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
 vim.diagnostic.config({
-  virtual_text = true,
-  update_in_insert = true,
+  underline = false,
+  virtual_text = false,
+  virtual_lines = false,
+  signs = true,
+  float = nil,
+  update_in_insert = false,
   severity_sort = true,
+  jump = nil,
 })
 
-actions_preview.setup({
-  -- options for vim.diff(): https://neovim.io/doc/user/lua.html#vim.diff()
-  diff = {
-    ctxlen = 3,
-  },
-  highlight_command = {
-    require("actions-preview.highlight").delta(),
-    require("actions-preview.highlight").diff_so_fancy(),
-    require("actions-preview.highlight").diff_highlight(),
-  },
-  backend = {
-    "snacks",
-    "nui",
-    "telescope",
-  },
-  nui = {
-    -- component direction. "col" or "row"
-    dir = "col",
-    -- keymap for selection component: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/menu#keymap
-    keymap = nil,
-    -- options for nui Layout component: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/layout
-    layout = {
-      position = "50%",
-      size = {
-        width = "60%",
-        height = "90%",
-      },
-      min_width = 40,
-      min_height = 10,
-      relative = "editor",
-    },
-    -- options for preview area: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/popup
-    preview = {
-      size = "60%",
-      border = {
-        style = "rounded",
-        padding = { 0, 1 },
-      },
-    },
-    -- options for selection area: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/menu
-    select = {
-      size = "40%",
-      border = {
-        style = "rounded",
-        padding = { 0, 1 },
-      },
-    },
-  },
-  telescope = vim.tbl_extend(
-    "force",
-    -- telescope theme: https://github.com/nvim-telescope/telescope.nvim#themes
-    require("telescope.themes").get_dropdown(),
-    -- a table for customizing content
-    {
-      -- a function to make a table containing the values to be displayed.
-      -- fun(action: Action): { title: string, client_name: string|nil }
-      make_value = nil,
-
-      -- a function to make a function to be used in `display` of a entry.
-      -- see also `:h telescope.make_entry` and `:h telescope.pickers.entry_display`.
-      -- fun(values: { index: integer, action: Action, title: string, client_name: string }[]): function
-      make_make_display = nil,
-    }
-  ),
-  ---@type snacks.picker.Config
-  snacks = {
-    layout = {
-      preset = "default",
-    },
-  },
-})
-local code_actions = function()
-  ---@type vim.lsp.buf.code_action.Opts
-  local opts = {
-    context = nil,
-    filter = nil,
-    apply = nil,
-    range = nil,
-  }
-  actions_preview.code_actions(opts)
-end
-
+local lspsaga = require("lspsaga")
 lspsaga.setup({
   ui = {
     winbar_prefix = "",
@@ -300,87 +209,105 @@ lspsaga.setup({
   },
 })
 
+local lspkind = require("lspkind")
 lspkind.init({
   mode = "symbol_text",
   preset = "codicons",
 })
 
--- lsp_endhints.setup({
---   icons = {
---     type = "󰜁 ",
---     parameter = "󰏪 ",
---     offspec = " ",
---     unknown = " ",
---   },
---   label = {
---     truncateAtChars = 20,
---     padding = 1,
---     marginLeft = 3,
---     sameKindSeparator = ", ",
---   },
---   extmark = {
---     priority = 3000,
---   },
---   autoEnableHints = false,
--- })
+local lsp_endhints_pattern = {
+  "*.py",
+}
+vim.api.nvim_create_autocmd({ "LspAttach", "LspDetach" }, {
+  pattern = lsp_endhints_pattern,
+  callback = function()
+    local lsp_endhints = require("lsp-endhints")
+    lsp_endhints.setup({
+      icons = {
+        type = "󰜁  ",
+        parameter = "󰏪  ",
+        offspec = "  ",
+        unknown = "  ",
+      },
+      label = {
+        truncateAtChars = 100,
+        padding = 1,
+        marginLeft = 1,
+        sameKindSeparator = ", ",
+      },
+      extmark = {
+        priority = 3000,
+      },
+      autoEnableHints = true,
+    })
+  end,
+})
 
--- tiny_inline_diagnostic.setup({
---   preset = "modern", -- "modern", "classic", "minimal", "powerline", "ghost", "simple", "nonerdfont", "amongus"
---   transparent_bg = true,
---   hi = {
---     error = "DiagnosticError",
---     warn = "DiagnosticWarn",
---     info = "DiagnosticInfo",
---     hint = "DiagnosticHint",
---     arrow = "NonText",
---     background = "CursorLine", -- Background color for diagnostics. Can be a highlight group or a hexadecimal color (#RRGGBB)
---     mixing_color = "Normal",   -- Color blending option for the diagnostic background. Use "None" or a hexadecimal color (#RRGGBB) to blend with another color
---   },
---   options = {
---     show_source = true,
---     use_icons_from_diagnostic = true,
---     add_messages = true, -- Add messages to diagnostics when multiline diagnostics are enabled. If set to false, only signs will be displayed
---     throttle = 10,       -- milliseconds
---     softwrap = 200,      -- Minimum message length before wrapping to a new line
---     multilines = {
---       enabled = false,
---       always_show = false,
---     },
---     show_all_diags_on_cursorline = false,
---     enable_on_insert = false,
---     enable_on_select = false,
---     overflow = {
---       mode = "wrap", -- "wrap" - Split long messages into multiple lines, "none" - Do not truncate messages, "oneline" - Keep the message on a single line, even if it's long
---       padding = 5,   -- Trigger wrapping to occur this many characters earlier when mode == "wrap".
---     },
---     break_line = {
---       enabled = true,
---       after = 200, -- Number of characters after which to break the line
---     },
---     -- format = function(diagnostic)
---     --   return diagnostic.message .. " [" .. diagnostic.source .. "]"
---     -- end
---     format = nil,
---     virt_texts = {
---       priority = 2000,
---     },
---     severity = {
---       vim.diagnostic.severity.ERROR,
---       vim.diagnostic.severity.WARN,
---       vim.diagnostic.severity.INFO,
---       vim.diagnostic.severity.HINT,
---     },
---     overwrite_events = nil, -- Events to attach diagnostics to buffers. You should not change this unless the plugin does not work with your configuration
---   },
---   disabled_ft = {}          -- List of filetypes to disable the plugin
--- })
+local tiny_inline_diagnostic = require('tiny-inline-diagnostic')
+tiny_inline_diagnostic.setup({
+  preset = "modern", -- "modern", "classic", "minimal", "powerline", "ghost", "simple", "nonerdfont", "amongus"
+  transparent_bg = true,
+  transparent_cursorline = true,
+  hi = {
+    error = "DiagnosticError",
+    warn = "DiagnosticWarn",
+    info = "DiagnosticInfo",
+    hint = "DiagnosticHint",
+    arrow = "NonText",
+    background = "CursorLine", -- Background color for diagnostics. Can be a highlight group or a hexadecimal color (#RRGGBB)
+    mixing_color = "Normal",   -- Color blending option for the diagnostic background. Use "None" or a hexadecimal color (#RRGGBB) to blend with another color
+  },
+  options = {
+    show_source = {
+      enabled = true,
+      if_many = true,
+    },
+    use_icons_from_diagnostic = true,
+    set_arrow_to_diag_color = false,
+    add_messages = true, -- Add messages to diagnostics when multiline diagnostics are enabled. If set to false, only signs will be displayed
+    throttle = 20,       -- milliseconds
+    softwrap = 200,      -- Minimum message length before wrapping to a new line
+    multilines = {
+      enabled = true,
+      always_show = true,
+      trim_whitespaces = true,
+      tabstop = 4,
+    },
+    show_all_diags_on_cursorline = false,
+    enable_on_insert = false,
+    enable_on_select = false,
+    overflow = {
+      mode = "wrap", -- "wrap" - Split long messages into multiple lines, "none" - Do not truncate messages, "oneline" - Keep the message on a single line, even if it's long
+      padding = 5,   -- Trigger wrapping to occur this many characters earlier when mode == "wrap".
+    },
+    break_line = {
+      enabled = false,
+      after = 200, -- Number of characters after which to break the line
+    },
+    -- format = function(diagnostic)
+    --   return diagnostic.message .. " [" .. diagnostic.source .. "]"
+    -- end
+    format = nil,
+    virt_texts = {
+      priority = 2048,
+    },
+    severity = {
+      vim.diagnostic.severity.ERROR,
+      vim.diagnostic.severity.WARN,
+      vim.diagnostic.severity.INFO,
+      vim.diagnostic.severity.HINT,
+    },
+    overwrite_events = nil, -- Events to attach diagnostics to buffers. You should not change this unless the plugin does not work with your configuration
+  },
+  disabled_ft = {}          -- List of filetypes to disable the plugin
+})
 
 -- lspconfig.util.default_config = vim.tbl_extend(
 --   "force",
 --   lspconfig.util.default_config,
 --   {
 --     handlers = {
---       ["textDocument_inlayHint"] = function(err, result, ctx, config)
+--       ["textDocument/inlayHint"] = function(err, result, ctx)
 --         local client = vim.lsp.get_client_by_id(ctx.client_id)
 --         if client then
 --           local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
@@ -388,7 +315,7 @@ lspkind.init({
 --             return hint.position.line + 1 == row
 --           end):totable()
 --         end
---         vim.lsp.handlers["textDocument_inlayHint"](err, result, ctx, config)
+--         vim.lsp.handlers["textDocument/inlayHint"](err, result, ctx)
 --       end
 --       -- ["textDocument/references"] = function(err, method, params, client_id)
 --       -- end,
@@ -406,13 +333,74 @@ lspkind.init({
 --   }
 -- )
 
--- :Help lspconfig-setup-hook
--- lspconfig.util.on_setup = lspconfig.util.add_hook_before(lspconfig.util.on_setup, function(config)
---   if some_condition and config.name == "clangd" then
---     local custom_server_prefix = "/my/custom/server/prefix"
---     config.cmd = { custom_server_prefix .. "/bin/clangd" }
+-- handlers
+-- vim.lsp.handlers["textDocument/inlayHint"] = function(err, result, ctx)
+--   local client = vim.lsp.get_client_by_id(ctx.client_id)
+--   if client then
+--     local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+--     result = vim.iter(result):filter(function(hint)
+--       return hint.position.line + 1 == row
+--     end):totable()
 --   end
--- end)
+--   vim.lsp.handlers["textDocument/inlayHint"](err, result, ctx)
+-- end
+
+local actions_preview = require("actions-preview")
+actions_preview.setup({
+  -- options for vim.diff(): https://neovim.io/doc/user/lua.html#vim.diff()
+  diff = {
+    ctxlen = 3,
+  },
+  highlight_command = {
+    require("actions-preview.highlight").delta(),
+    require("actions-preview.highlight").diff_so_fancy(),
+    require("actions-preview.highlight").diff_highlight(),
+  },
+  backend = {
+    "snacks",
+    "nui",
+  },
+  ---@type snacks.picker.Config
+  snacks = {
+    layout = {
+      preset = "default",
+    },
+  },
+  nui = {
+    dir = "col", -- "col" or "row"
+    -- keymap for selection component: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/menu#keymap
+    keymap = nil,
+    -- options for nui Layout component: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/layout
+    layout = {
+      position = "50%",
+      size = {
+        width = "60%",
+        height = "90%",
+      },
+      min_width = 40,
+      min_height = 10,
+      relative = "editor",
+    },
+    -- options for preview area: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/popup
+    preview = {
+      size = "60%",
+      border = {
+        style = "rounded",
+        padding = { 0, 1 },
+      },
+    },
+    -- options for selection area: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/menu
+    select = {
+      size = "40%",
+      border = {
+        style = "rounded",
+        padding = { 0, 1 },
+      },
+    },
+  },
+})
+
+local protocol = require("lsp.protocol")
 
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#clientCapabilities
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentClientCapabilities
@@ -420,8 +408,10 @@ lspkind.init({
 local default_capabilities_config = function()
   ---@type lsp.ClientCapabilities
   local capabilities = vim.lsp.protocol.make_client_capabilities()
-  -- capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
+
+  -- merge cmp_nvim_lsp client capabilities
   capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+  -- capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
 
   ---@type lsp.ClientCapabilities
   local capabilities_override = {
@@ -431,22 +421,15 @@ local default_capabilities_config = function()
     textDocument = {
       completion = {
         completionItem = {
-          snippetSupport = false,
+          commitCharactersSupport = true,
+          preselectSupport = true,
+          documentationFormat = { protocol.constants.MarkupKind.Markdown },
         },
-        contextSupport = true,
-      },
-      foldingRange = {
-        dynamicRegistration = true,
-        lineFoldingOnly = true
-      }
-    },
-    workspace = {
-      didChangeWatchedFiles = {
-        dynamicRegistration = true,
       },
     },
   }
-  return vim.tbl_deep_extend('force', capabilities, capabilities_override)
+
+  return vim.tbl_deep_extend("force", capabilities, capabilities_override)
 end
 
 --- @param client vim.lsp.Client
@@ -575,29 +558,29 @@ register_lsp(
 )
 lspconfig.ruby_lsp.setup(require("lsp.ruby_lsp"))
 
-register_lsp(
-  "docker_language_server",
-  {
-    cmd = { "docker-language-server" },
-    filetypes = { "dockerfile", "eruby" },
-    root_dir = require("lspconfig").util.root_pattern("Dockerfile", "*.dockerfile", "Dockerfile*"),
-    single_file_support = true,
-    capabilities = default_capabilities_config(),
-  }
-)
-lspconfig.docker_language_server.setup(require("lsp.docker_language_server"))
+-- register_lsp(
+--   "docker_language_server",
+--   {
+--     cmd = { "docker-language-server", "start", "--stdio" },
+--     filetypes = { "dockerfile", "eruby" },
+--     root_markers = { "Dockerfile", "*.dockerfile", "Dockerfile*" },
+--     single_file_support = true,
+--     capabilities = default_capabilities_config(),
+--   }
+-- )
+-- lspconfig.docker_language_server.setup(require("lsp.docker_language_server"))
 
 register_lsp(
   "stainless",
   {
     cmd = { "stainless-language-server", "--stdio" },
     filetypes = { "stainless.yml", "stainless.yaml", "*.stainless.yml", "openapi.yaml", "openapi.yml" },
-    root_dir = lspconfig.util.root_pattern(".git"),
+    -- root_dir = lspconfig.util.root_pattern(".git"),
     single_file_support = true,
     capabilities = default_capabilities_config(),
   }
 )
-lspconfig.docker_language_server.setup({})
+lspconfig.stainless.setup({})
 
 -- register_lsp(
 --   "cmake_language_server",
@@ -613,17 +596,56 @@ lspconfig.docker_language_server.setup({})
 -- )
 -- lspconfig.cmake_language_server.setup(require("plugins.lsp.cmake-language-server"))
 
+register_lsp(
+  "tsgo",
+  {
+    cmd = { "tsgo" },
+    filetypes = { "typescript" },
+    -- root_dir = require("lspconfig").util.root_pattern("Dockerfile", "*.dockerfile", "Dockerfile*"),
+    single_file_support = true,
+    capabilities = default_capabilities_config(),
+  }
+)
+lspconfig.tsgo.setup(require("lsp.tsgo"))
+
 -- register_lsp(
---   "tsgo",
+--   "pyrefly",
 --   {
---     cmd = { "tsgo" },
---     filetypes = { "typescript" },
---     -- root_dir = require("lspconfig").util.root_pattern("Dockerfile", "*.dockerfile", "Dockerfile*"),
+--     cmd = { "pyrefly", "lsp" },
+--     filetypes = { "python" },
 --     single_file_support = true,
 --     capabilities = default_capabilities_config(),
 --   }
 -- )
--- lspconfig.tsgo.setup(require("plugins.lsp.tsgo"))
+-- lspconfig.pyrefly.setup({
+--   pyrefly = {
+--     init_config = {
+--       python_interpreter_path = ".venv/bin/python",
+--     },
+--   },
+-- })
+
+register_lsp(
+  "protols",
+  {
+    cmd = { "protols" },
+    filetypes = { "proto" },
+    single_file_support = true,
+    capabilities = default_capabilities_config(),
+  }
+)
+lspconfig.protols.setup(require("lsp.protols"))
+
+-- register_lsp(
+--   "phpactor",
+--   {
+--     cmd = { "/Users/zchee/src/github.com/phpactor/phpactor/bin/phpactor" },
+--     filetypes = { "php" },
+--     single_file_support = true,
+--     capabilities = default_capabilities_config(),
+--   }
+-- )
+-- lspconfig.phpactor.setup({})
 
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
@@ -633,21 +655,6 @@ vim.lsp.config("*", {
   root_markers = { ".git" },
 })
 
--- ["asm_lsp"] = require("plugins.lsp.asm_lsp"),
--- ["basedpyright"] = require("plugins.lsp.basedpyright"),
--- ["bashls"] = require("plugins.lsp.bashls"),
--- ["clangd"] = require("plugins.lsp.clangd"),
--- ["dockerls"] = require("plugins.lsp.dockerls"),
--- ["gopls"] = require("plugins.lsp.gopls"),
--- ["helm_ls"] = require("plugins.lsp.helm_ls"),
--- ["jsonls"] = require("plugins.lsp.jsonls"),
--- ["lua_ls"] = require("plugins.lsp.lua_ls"),
--- ["rust_analyzer"] = require("plugins.lsp.rust_analyzer"),
--- ["stainless"] = {},
--- ["taplo"] = require("plugins.lsp.taplo"),
--- ["terraformls"] = require("plugins.lsp.terraformls"),
--- ["ts_ls"] = require("plugins.lsp.ts_ls"),
--- ["yamlls"] = require("plugins.lsp.yamlls"),
 local servers = {
   ["asm_lsp"] = require("lsp.asm_lsp"),
   ["basedpyright"] = require("lsp.basedpyright"),
@@ -660,34 +667,57 @@ local servers = {
   ["lua_ls"] = require("lsp.lua_ls"),
   ["rust_analyzer"] = require("lsp.rust_analyzer"),
   ["stainless"] = {},
+  ["markdown_oxide"] = {
+    cmd = { util.homebrew_binary("markdown-oxide", "markdown-oxide") },
+    capabilities = vim.tbl_deep_extend(
+      'force',
+      default_capabilities_config(),
+      {
+        workspace = {
+          didChangeWatchedFiles = {
+            dynamicRegistration = true,
+          },
+        },
+      }
+    ),
+    on_attach = on_attach,
+  },
   ["taplo"] = require("lsp.taplo"),
   ["terraformls"] = require("lsp.terraformls"),
-  ["ts_ls"] = require("lsp.ts_ls"),
+  -- ["ts_ls"] = require("lsp.ts_ls"),
   ["yamlls"] = require("lsp.yamlls"),
   ["zls"] = require("lsp.zls"),
+  ["intelephense"] = {
+    cmd = { "/opt/local/var/pnpm/intelephense", "--stdio" },
+  }
+  -- ["phpactor"] = {
+  --   cmd = { "/Users/zchee/Downloads/phpactor" },
+  -- }
 }
 for server, config in pairs(servers) do
   vim.lsp.config(server, config)
-  vim.lsp.enable(server)
+  vim.lsp.enable(server, true)
 end
 
-vim.keymap.set({ "n" }, "K", "lua require('hover').hover()", { silent = true })
-vim.keymap.set({ "n" }, "<C-]>", function() snacks.picker.lsp_definitions() end, { silent = true })
+vim.keymap.set({ "n" }, "K", function() require('hover').open() end, { silent = true })
+-- vim.keymap.set({ "n" }, "K", "<Cmd>Lspsaga hover_doc<CR>", { silent = true })
+vim.keymap.set({ "n" }, "<C-]>", function() require("snacks").picker.lsp_definitions() end, { silent = true })
 vim.keymap.set({ "n" }, "<C-k>", "<Cmd>Lspsaga signature_help<CR>", { silent = true })
-vim.keymap.set({ "n", "v" }, "<BS>ac", code_actions)
+-- vim.keymap.set({ "n", "v" }, "<BS>ac", function() actions_preview.code_actions({}) end, { silent = true })
+vim.keymap.set({ "n", "v" }, "<BS>ac", function() require("snacks").picker.actions() end, { silent = true })
 vim.keymap.set({ "n" }, "<BS>ca", "<Cmd>Lspsaga code_action<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<BS>f", "lua vim.lsp.buf.format({ async = false })", { silent = true })
+vim.keymap.set({ "n" }, "<BS>f", "<Cmd>lua vim.lsp.buf.format({ async = false })<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>gci", "<Cmd>Lspsaga incoming_calls<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>gco", "<Cmd>Lspsaga outgoing_calls<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>ge", "<Cmd>Lspsaga show_line_diagnostics<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>gh", "<Cmd>Lspsaga lsp_finder<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<BS>gi", function() snacks.picker.lsp_implementations() end, { silent = true })
+vim.keymap.set({ "n" }, "<BS>gi", function() require("snacks").picker.lsp_implementations() end, { silent = true })
 vim.keymap.set({ "n" }, "<BS>gk", function()
   local new_virtual_lines = not vim.diagnostic.config().virtual_lines
   local new_virtual_text = not vim.diagnostic.config().virtual_text
   vim.diagnostic.config({ virtual_lines = new_virtual_lines, virtual_text = new_virtual_text })
 end, { silent = true })
 vim.keymap.set({ "n" }, "<BS>gp", "<Cmd>Lspsaga peek_definition<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<BS>gr", function() snacks.picker.lsp_references() end, { silent = true })
-vim.keymap.set({ "n" }, "<BS>gt", function() snacks.picker.lsp_type_definitions() end, { silent = true })
+vim.keymap.set({ "n" }, "<BS>gr", function() require("snacks").picker.lsp_references() end, { silent = true })
+vim.keymap.set({ "n" }, "<BS>gt", function() require("snacks").picker.lsp_type_definitions() end, { silent = true })
 vim.keymap.set({ "n" }, "<Space>e", "<Cmd>Lspsaga rename<CR>", { silent = true })

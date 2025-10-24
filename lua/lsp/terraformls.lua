@@ -1,6 +1,6 @@
 local util = require("util")
 
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   autostart = true,
   cmd = { util.homebrew_binary("terraform-ls-head", "terraform-ls"), "serve", "-req-concurrency=32" },

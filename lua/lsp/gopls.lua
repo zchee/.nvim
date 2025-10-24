@@ -1,5 +1,4 @@
 local util = require("util")
--- local gopls_util = require("plugins.lsp.gopls.util")
 
 ---
 ---For gvisor, moby/buildkit, chaos%-mesh/chaos%-mesh, zchee/go-cloud-debug-agent, go.opentelemetry.io/auto
@@ -28,7 +27,7 @@ local std_lib = nil
 ---@param custom_args go_dir_custom_args
 ---@param on_complete fun(dir: string | nil)
 local function identify_go_dir(custom_args, on_complete)
-  local cmd = { 'go', 'env', custom_args.envvar_id }
+  local cmd = { "go", "env", custom_args.envvar_id }
   vim.system(cmd, { text = true }, function(output)
     local res = vim.trim(output.stdout or '')
     if output.code == 0 and res ~= '' then
@@ -39,7 +38,7 @@ local function identify_go_dir(custom_args, on_complete)
     else
       vim.schedule(function()
         vim.notify(
-          ('[gopls] identify ' .. custom_args.envvar_id .. ' dir cmd failed with code %d: %s\n%s'):format(
+          ("[gopls] identify " .. custom_args.envvar_id .. " dir cmd failed with code %d: %s\n%s"):format(
             output.code,
             vim.inspect(cmd),
             output.stderr
@@ -57,7 +56,7 @@ local function get_std_lib_dir()
     return std_lib
   end
 
-  identify_go_dir({ envvar_id = 'GOROOT', custom_subdir = '/src' }, function(dir)
+  identify_go_dir({ envvar_id = "GOROOT", custom_subdir = "/src" }, function(dir)
     if dir then
       std_lib = dir
     end
@@ -71,7 +70,7 @@ local function get_mod_cache_dir()
     return mod_cache
   end
 
-  identify_go_dir({ envvar_id = 'GOMODCACHE' }, function(dir)
+  identify_go_dir({ envvar_id = "GOMODCACHE" }, function(dir)
     if dir then
       mod_cache = dir
     end
@@ -83,22 +82,21 @@ end
 ---@return string?
 local function get_root_dir(fname)
   if mod_cache and fname:sub(1, #mod_cache) == mod_cache then
-    local clients = vim.lsp.get_clients({ name = 'gopls' })
+    local clients = vim.lsp.get_clients({ name = "gopls" })
     if #clients > 0 then
       return clients[#clients].config.root_dir
     end
   end
   if std_lib and fname:sub(1, #std_lib) == std_lib then
-    local clients = vim.lsp.get_clients({ name = 'gopls' })
+    local clients = vim.lsp.get_clients({ name = "gopls" })
     if #clients > 0 then
       return clients[#clients].config.root_dir
     end
   end
-  -- print(vim.fs.root(fname, 'go.mod'))
-  return vim.fs.root(fname, 'go.work') or vim.fs.root(fname, 'go.mod') or vim.fs.root(fname, '.git')
+  return vim.fs.root(fname, "go.mod") or vim.fs.root(fname, "go.work") or vim.fs.root(fname, ".git")
 end
 
---- @type vim.lsp.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" }, -- , "-mcp-listen=localhost:12215" m:12, c:5, p:15  --[[, "-remote=unix;/tmp/gopls.sock" --]]
   filetypes = { "go", "gotmpl", "gomod", "gowork" },                               -- , "gomod", "gowork"
@@ -107,34 +105,74 @@ return {
     get_mod_cache_dir()
     get_std_lib_dir()
     -- see: https://github.com/neovim/nvim-lspconfig/issues/804
-    on_dir(get_root_dir(fname))
+    local rootdir = get_root_dir(fname)
+    on_dir(rootdir)
   end,
 
+  -- capabilities = {
+  --   textDocument = {
+  --     completion = {
+  --       completionItem = {
+  --         commitCharactersSupport = true,
+  --         deprecatedSupport = true,
+  --         documentationFormat = { "markdown", "plaintext" },
+  --         preselectSupport = true,
+  --         insertReplaceSupport = true,
+  --         labelDetailsSupport = true,
+  --         snippetSupport = true,
+  --         resolveSupport = {
+  --           properties = {
+  --             "edit",
+  --             "documentation",
+  --             "details",
+  --             "additionalTextEdits",
+  --           },
+  --         },
+  --       },
+  --       completionList = {
+  --         itemDefaults = {
+  --           "editRange",
+  --           "insertTextFormat",
+  --           "insertTextMode",
+  --           "data",
+  --         },
+  --       },
+  --       contextSupport = true,
+  --       dynamicRegistration = true,
+  --     },
+  --   },
+  -- },
+
+  flags = {
+    allow_incremental_sync = true,
+    debounce_text_changes = 500,
+    exit_timeout = false,
+  },
+
   commands = {
-    -- GoOrganizeImports = {
-    --   organize_imports,
-    --   description = "Organize Imports",
-    -- },
     ---@type fun(command: lsp.Command, ctx: table)
     GoOrganizeImports = function(_, _)
       organize_imports()
     end,
   },
 
-  -- handlers = {
-  --   ["textDocument/rangeFormatting"] = function(...)
-  --     vim.lsp.handlers["textDocument/rangeFormatting"](...)
-  --     if vim.fn.getbufinfo("%")[1].changed == 1 then
-  --       vim.cmd("noautocmd write")
-  --     end
-  --   end,
-  --   ["textDocument/formatting"] = function(...)
-  --     vim.lsp.handlers["textDocument/formatting"](...)
-  --     if vim.fn.getbufinfo("%")[1].changed == 1 then
-  --       vim.cmd("noautocmd write")
-  --     end
-  --   end,
-  -- },
+  handlers = {
+    -- for tiny_inline_diagnostic
+    ["textDocument/publishDiagnostics"] = function()
+    end,
+    -- ["textDocument/rangeFormatting"] = function(...)
+    --   vim.lsp.handlers["textDocument/rangeFormatting"](...)
+    --   if vim.fn.getbufinfo("%")[1].changed == 1 then
+    --     vim.cmd("noautocmd write")
+    --   end
+    -- end,
+    -- ["textDocument/formatting"] = function(...)
+    --   vim.lsp.handlers["textDocument/formatting"](...)
+    --   if vim.fn.getbufinfo("%")[1].changed == 1 then
+    --     vim.cmd("noautocmd write")
+    --   end
+    -- end,
+  },
 
   init_options = {
     -- env = {},
@@ -237,18 +275,17 @@ return {
       generate = true,
       regenerate_cgo = true,
       vulncheck = true,
-      run_govulncheck = true,
       test = true,
       tidy = true,
       upgrade_dependency = true,
       vendor = true,
     },
-    staticcheck = false,
+    staticcheck = true,
     ["local"] = "",
-    verboseOutput = true,
+    verboseOutput = false,
     verboseWorkDoneProgress = false,
     showBugReports = false,
-    gofumpt = false,
+    gofumpt = true,
     completeFunctionCalls = true,
     semanticTokens = true,
     semanticTokenTypes = {
@@ -285,33 +322,25 @@ return {
       struct = true,
     },
     newGoFileHeader = true,
-    expandWorkspaceToModule = false,
+    expandWorkspaceToModule = true,
     experimentalPostfixCompletions = true,
     templateExtensions = { "tmpl", "tpl", "gotmpl" },
-    diagnosticsDelay = "300ms",  -- "300ms",  -- "0ms", -- "500ms",
+    diagnosticsDelay = "500ms",  -- "300ms",  -- "0ms", -- "500ms",
     diagnosticsTrigger = "edit", -- "save", "edit",
-    analysisProgressReporting = true,
+    analysisProgressReporting = false,
     standaloneTags = {
       "ignore",
       "tools",
       "integration",
       "wireinject",
     },
-    subdirWatchPatterns = "on", -- "on", "off", "auto"
+    subdirWatchPatterns = "auto", -- "on", "off", "auto"
     reportAnalysisProgressAfter = "1s",
     telemetryPrompt = false,
     linkifyShowMessage = true,
-    includeReplaceInWorkspace = true,
+    includeReplaceInWorkspace = false,
     zeroConfig = true,
     pullDiagnostics = true,
-    mcpTools = {
-      go_workspace = true,
-      go_package_api = true,
-      go_diagnostics = true,
-      go_symbol_references = true,
-      go_search = true,
-      go_file_context = true,
-    },
     testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
   },
 
@@ -324,37 +353,13 @@ return {
 
     if string.find(new_root_dir, "go/src") then
       new_config.settings.env = {
-        GOEXPERIMENTAL = { "arenas,cgocheck2,loopvar,cacheprog,newinliner,rangefunc,aliastypeparams,swissmap,synchashtriemap,synctest,dwarf5,jsonv2,greenteagc" },
+        GOEXPERIMENTAL = { "arenas,cgocheck2,loopvar,newinliner,jsonv2,greenteagc,randomizedheapbase64,sizespecializedmalloc,goroutineleakprofile" },
       }
       new_config.settings.buildFlags = {
-        "goexperiment.arenas", "goexperiment.cgocheck2", "goexperiment.loopvar", "goexperiment.cacheprog",
-        "goexperiment.newinliner", "goexperiment.rangefunc", "goexperiment.aliastypeparams",
-        "goexperiment.swissmap", "goexperiment.synchashtriemap", "goexperiment.synctest", "goexperiment.dwarf5",
-        "goexperiment.jsonv2", "goexperiment.greenteagc"
+        "goexperiment.arenas", "goexperiment.cgocheck2", "goexperiment.loopvar",
+        "goexperiment.newinliner", "goexperiment.jsonv2", "goexperiment.greenteagc",
+        "goexperiment.randomizedheapbase64", "goexperiment.sizespecializedmalloc", "goexperiment.goroutineleakprofile"
       }
     end
   end,
-
-  on_attach = function(client, bufnr)
-    local bufname = vim.api.nvim_buf_get_name(bufnr)
-    if string.match(bufname, 'go%.mod') then
-      vim.diagnostic.enable(false)
-      vim.diagnostic.hide(nil, bufnr)
-      vim.diagnostic.reset(nil, bufnr)
-      vim.lsp.buf_detach_client(bufnr, client.id)
-      return
-    end
-
-    -- if not client.server_capabilities.semanticTokensProvider then
-    --   local semantic = client.config.capabilities.textDocument.semanticTokens
-    --   client.server_capabilities.semanticTokensProvider = {
-    --     full = true,
-    --     legend = {
-    --       tokenTypes = semantic.tokenTypes,
-    --       tokenModifiers = semantic.tokenModifiers,
-    --     },
-    --     range = true,
-    --   }
-    -- end
-  end
 }

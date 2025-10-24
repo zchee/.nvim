@@ -1,6 +1,6 @@
 local util = require("util")
 
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.homebrew_binary("metals", "metals") },
   settings = {

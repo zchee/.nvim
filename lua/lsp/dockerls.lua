@@ -1,9 +1,21 @@
 local util = require("util")
 
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.pnpm_prefix("docker-langserver"), "--stdio" },
-  root_dir = require("lspconfig").util.root_pattern("Dockerfile", "*.dockerfile", "Dockerfile*"),
+  cmd = { util.homebrew_binary("dockerfile-language-server", "docker-langserver"), "--stdio" },
+  -- root_dir = require("lspconfig").util.root_pattern("Dockerfile", "*.dockerfile", "Dockerfile*"),
+  -- root_dir = function(bufnr, on_dir)
+  --   local fname = vim.api.nvim_buf_get_name(bufnr)
+  --   local dir
+  --   for _, f in ipairs({ "Dockerfile", "*.dockerfile", "Dockerfile*" }) do
+  --     dir = vim.fs.root(fname, f)
+  --     if dir ~= nil then
+  --       on_dir(dir)
+  --       return
+  --     end
+  --   end
+  -- end,
+  root_markers = { "Dockerfile", "*.dockerfile", "Dockerfile*" },
   init_options = {
     docker = {
       languageserver = {

@@ -1,21 +1,21 @@
-local lspconfig = require("lspconfig")
+local util = require("util")
 
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  autostart = true,
-  cmd = { vim.fn.exepath("taplo"), "lsp", "stdio" },
+  cmd = { util.homebrew_binary("taplo", "taplo"), "lsp", "stdio" },
   filetypes = { "toml" },
-  root_dir = lspconfig.util.root_pattern("*.toml", ".git"),
 
   -- https://github.com/tamasfe/taplo/blob/master/editors/vscode/package.json
   settings = {
     evenBetterToml = {
       taplo = {
-        bundled = true,
+        bundled = false,
+        path = util.homebrew_binary("taplo", "taplo"),
       },
       semanticTokens = true,
       schema = {
         enabled = true,
+        links = true,
         catalogs = {
           "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
           "https://taplo.tamasfe.dev/schema_index.json",
@@ -33,13 +33,13 @@ return {
       },
       formatter = {
         alignEntries = false,
-        alignComments = true,
+        alignComments = false,
         arrayTrailingComma = true,
-        arrayAutoExpand = true,
+        arrayAutoExpand = false,
         arrayAutoCollapse = false,
-        compactArrays = false,
+        compactArrays = true,
         compactInlineTables = false,
-        inlineTableExpand = true,
+        inlineTableExpand = false,
         compactEntries = false,
         columnWidth = 120,
         indentTables = false,

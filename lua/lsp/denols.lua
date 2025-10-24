@@ -25,10 +25,22 @@ local lspconfig = require("lspconfig")
 -- deno.unsafelyIgnoreCertificateErrors
 -- deno.unstable
 
---- @class lspconfig.Config : vim.lsp.ClientConfig
+--- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.homebrew_binary("deno", "deno"), "lsp" },
-  root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc", "tsconfig.json", "package.json", ".git"),
+  -- root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc", "tsconfig.json", "package.json", ".git"),
+  -- root_dir = function(bufnr, on_dir)
+  --   local fname = vim.api.nvim_buf_get_name(bufnr)
+  --   local dir
+  --   for _, f in ipairs({ "deno.json", "deno.jsonc", "tsconfig.json", "package.json", ".git" }) do
+  --     dir = vim.fs.root(fname, f)
+  --     if dir ~= nil then
+  --       on_dir(dir)
+  --       return
+  --     end
+  --   end
+  -- end,
+  root_markers = { "deno.json", "deno.jsonc", "tsconfig.json", "package.json", ".git" },
   filetypes = {
     'javascript',
     'javascriptreact',
@@ -84,11 +96,4 @@ return {
       unstable = true,
     },
   },
-  -- ---@class lsp.ClientCapabilities
-  -- capabilities = function()
-  --   local capabilities = vim.lsp.protocol.make_client_capabilities()
-  --   capabilities.textDocument.semanticTokens.tokenTypes = {}
-  --
-  --   return capabilities
-  -- end,
 }

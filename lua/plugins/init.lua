@@ -43,7 +43,7 @@ return {
     opts = {
       port_range = { min = 10000, max = 65535 },
       auto_start = true,
-      log_level = "info",                                                    -- "trace", "debug", "info", "warn", "error"
+      log_level = "info",                                                 -- "trace", "debug", "info", "warn", "error"
       terminal_cmd = "/opt/local/bin/claude --dangerously-skip-permissions", -- Custom terminal command (default: "claude")
       -- Send/Focus Behavior
       -- When true, successful sends will focus the Claude terminal if already connected
@@ -239,43 +239,15 @@ return {
     },
     {
       "obsidian-nvim/obsidian.nvim",
-      event = {
-        "BufReadPre " .. vim.fn.expand("~") .. "/.obsidian/vaults/knowledge/*.md", -- "BufReadPre path/to/my-vault/*.md","BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
-      },
-      ---@module 'obsidian'
-      ---@type obsidian.config.ClientOpts
-      ---@diagnostic disable-next-line
-      opts = {
-        workspaces = {
-          {
-            name = "knowledge",
-            path = "~/.obsidian/vaults/knowledge",
-          },
-        },
-        ---@diagnostic disable-next-line
-        completion = {
-          nvim_cmp = true,
-          blink = true,
-          min_chars = 1,
-        },
-        ---@diagnostic disable-next-line
-        picker = {
-          name = "snacks.pick",
-          ---@diagnostic disable-next-line
-          note_mappings = {
-            new = "<C-x>",
-            insert_link = "<C-l>",
-          },
-          ---@diagnostic disable-next-line
-          tag_mappings = {
-            tag_note = "<C-x>",
-            insert_tag = "<C-l>",
-          },
-        },
-      },
       dependencies = {
         "nvim-lua/plenary.nvim",
       },
+      event = {
+        "BufReadPre " .. vim.fn.expand("~") .. "/.obsidian/vaults/knowledge/*.md", -- "BufReadPre path/to/my-vault/*.md","BufReadPre " .. vim.fn.expand "~" .. "/my-vault/*.md"
+      },
+      config = function()
+        require("plugins.obsidian")
+      end,
     },
   },
 
@@ -851,7 +823,7 @@ return {
   {
     {
       "nvim-neo-tree/neo-tree.nvim",
-      tag = "3.35.1",
+      branch = "main",
       lazy = false,
       dependencies = {
         "nvim-lua/plenary.nvim",
@@ -865,6 +837,7 @@ return {
     },
     {
       "folke/snacks.nvim",
+      branch = "main",
       lazy = false,
       config = function()
         require("plugins.snacks")
@@ -872,8 +845,8 @@ return {
     },
     {
       "nvim-lualine/lualine.nvim",
+      branch = "master",
       lazy = false,
-      -- event = "VeryLazy",
       dependencies = {
         "nvim-tree/nvim-web-devicons",
       },
@@ -885,7 +858,6 @@ return {
       "akinsho/bufferline.nvim",
       branch = "main",
       lazy = false,
-      -- event = "VeryLazy",
       dependencies = {
         "nvim-tree/nvim-web-devicons",
       },
@@ -896,7 +868,6 @@ return {
     {
       "SuperBo/fugit2.nvim",
       branch = "main",
-      -- disable = true,
       dependencies = {
         "MunifTanjim/nui.nvim",
         "nvim-tree/nvim-web-devicons",
@@ -963,22 +934,15 @@ return {
     },
     {
       "RRethy/vim-illuminate",
+      branch = "master",
       event = "BufRead",
       config = function()
         require("plugins.illuminate")
       end,
     },
     {
-      "nvim-focus/focus.nvim",
-      branch = "master",
-      disable = true,
-      -- event = "VeryLazy",
-      config = function()
-        require("plugins.focus")
-      end,
-    },
-    {
       "petertriho/nvim-scrollbar",
+      branch = "main",
       event = "VeryLazy",
       config = function()
         require("plugins.scrollbar")
@@ -986,6 +950,7 @@ return {
     },
     {
       "kevinhwang91/nvim-bqf",
+      branch = "main",
       ft = "qf",
       config = function()
         require("plugins.bqf")
@@ -993,6 +958,7 @@ return {
     },
     {
       "folke/todo-comments.nvim",
+      branch = "main",
       event = "BufRead",
       dependencies = {
         "nvim-lua/plenary.nvim",
@@ -1000,17 +966,13 @@ return {
       },
       opts = require("plugins.todo-comment")
     },
-    -- blink cursor is shit
-    -- {
-    --   "NeogitOrg/neogit",
-    --   event = "VeryLazy",
-    -- },
   },
 
   -- Operator
   {
     {
       "kana/vim-operator-replace",
+      branch = "master",
       event = "VeryLazy",
       dependencies = {
         "kana/vim-operator-user",
@@ -1018,6 +980,7 @@ return {
     },
     {
       "rhysd/vim-operator-surround",
+      branch = "master",
       event = "VeryLazy",
       dependencies = {
         "kana/vim-operator-user",
@@ -1025,6 +988,7 @@ return {
     },
     {
       "mopp/vim-operator-convert-case",
+      branch = "master",
       event = "VeryLazy",
       dependencies = {
         "kana/vim-operator-user",
@@ -1032,14 +996,19 @@ return {
     },
     {
       "AndrewRadev/switch.vim",
+      branch = "main",
       event = "VeryLazy",
     },
     {
       "junegunn/vim-easy-align",
-      cmd = { "EasyAlign" },
+      branch = "master",
+      cmd = {
+        "EasyAlign",
+      },
     },
     {
       "tyru/open-browser.vim",
+      branch = "master",
       event = "VeryLazy",
     },
     {
@@ -1205,6 +1174,7 @@ return {
     {
       {
         "ziglang/zig.vim",
+        branch = "master",
         lazy = false,
       },
     },
@@ -1213,6 +1183,7 @@ return {
     {
       {
         "jparise/vim-graphql",
+        branch = "master",
         ft = "graphql",
       },
     },
@@ -1221,13 +1192,15 @@ return {
     {
       {
         "towolf/vim-helm",
+        branch = "master",
         ft = "helm",
       },
     },
 
-    -- Vim
+    -- Git
     {
       "rhysd/vim-syntax-codeowners",
+      branch = "master",
       ft = "codeowners",
     },
 
@@ -1235,6 +1208,7 @@ return {
     {
       {
         "MeanderingProgrammer/render-markdown.nvim",
+        branch = "main",
         ft = {
           "markdown",
           "Avante",
@@ -1267,7 +1241,7 @@ return {
                   download_remote_images = true,
                   only_render_image_at_cursor = false,
                   only_render_image_at_cursor_mode = "popup",
-                  floating_windows = false,   -- if true, images will be rendered in floating markdown windows
+                  floating_windows = false, -- if true, images will be rendered in floating markdown windows
                   filetypes = { "markdown" }, -- markdown extensions (ie. quarto) can go here
                 },
               },
@@ -1290,10 +1264,10 @@ return {
             max_height = 600,
             max_width_window_percentage = nil,
             max_height_window_percentage = 50,
-            window_overlap_clear_enabled = false,                                               -- toggles images when windows are overlapped
+            window_overlap_clear_enabled = false,                                         -- toggles images when windows are overlapped
             window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
-            editor_only_render_when_focused = false,                                            -- auto show/hide images when the editor gains/looses focus
-            tmux_show_only_in_active_window = false,                                            -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+            editor_only_render_when_focused = false,                                      -- auto show/hide images when the editor gains/looses focus
+            tmux_show_only_in_active_window = false,                                      -- auto show/hide images in the correct Tmux window (needs visual-activity off)
             hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
           },
         },
@@ -1312,7 +1286,7 @@ return {
                 background = "#010101",
                 theme = "dark",
                 scale = 1,
-                width = 800,  -- nil | 800 | 400 | ...
+                width = 800, -- nil | 800 | 400 | ...
                 height = 600, -- nil | 600 | 300 | ...
               },
               plantuml = {
@@ -1686,6 +1660,22 @@ return {
       init = function()
         vim.g.startuptime_tries = 10
       end,
+    },
+    {
+      "potamides/pantran.nvim",
+      cmd = {
+        "Pantran",
+      },
+      opts = {
+        default_engine = "deepl",
+        engines = {
+          deepl = {
+            default_source = "EN",
+            default_target = "JA",
+            free_api = false,
+          },
+        },
+      },
     },
     {
       "folke/neoconf.nvim",

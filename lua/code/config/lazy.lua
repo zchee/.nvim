@@ -131,7 +131,7 @@ local lazy_config = {
         "zipPlugin",
         -- "man",
         -- "nvim",
-        -- "osc52",
+        "osc52",
       },
     },
   },

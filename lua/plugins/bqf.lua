@@ -1,22 +1,31 @@
 local bqf = require("bqf")
 
+---@type BqfConfig
 bqf.setup({
   auto_enable = true,
   magic_window = true,
   auto_resize_height = true,
+  previous_winid_ft_skip = {},
+
+  ---@type BqfConfigPreview
+  ---@diagnostic disable-next-line
   preview = {
     auto_preview = true,
     border = "rounded",
-    border_chars = { "│", "│", "─", "─", "╭", "╮", "╰", "╯", "█" },
-    buf_label = true,
-    delay_syntax = 50, -- defalut: 50
-    show_scroll_bar = true,
     show_title = true,
-    win_height = 60,  -- defalut: 15
-    win_vheight = 30, -- defalut: 15
+    show_scroll_bar = true,
+    delay_syntax = 50, -- defalut: 50
+    win_height = 60,   -- defalut: 15
+    win_vheight = 30,  -- defalut: 15
     winblend = 0,
-    wrap = true,      -- defalut: false
+    wrap = true,       -- defalut: false
+    buf_label = true,
+    -- should_preview_cb = function(bufnr, qwinid)
+    --   _, _ = bufnr, qwinid
+    --   return false
+    -- end,
   },
+
   func_map = {
     open = "<CR>",
     openc = "o",
@@ -47,6 +56,7 @@ bqf.setup({
     filterr = "zN",
     fzffilter = "zf",
   },
+
   filter = {
     fzf = {
       action_for = {

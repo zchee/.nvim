@@ -1,0 +1,98 @@
+-- local null_ls = require("null-ls")
+
+-- local is_null_ls_formatting_enabled = function()
+--   local file_type = vim.api.nvim_get_option_value("filetype", {scope = "local"})
+--   local generators = require("null-ls.generators").get_available(
+--     file_type,
+--     require("null-ls.methods").internal.FORMATTING
+--   )
+--   return #generators > 0
+-- end
+--
+-- local lsp_formatting = function(client, bufnr)
+--   print(client.name)
+--   local opts = {
+--     async = false,
+--     bufnr = bufnr,
+--   }
+--   if (client.name == "null-ls" and is_null_ls_formatting_enabled(bufnr)) or client.name == "null-ls" then
+--     opts.filter = function(c)
+--       return c.name == "null-ls"
+--     end
+--   end
+--
+--   vim.lsp.buf.ormat(opts)
+-- end
+
+-- local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+-- null_ls.setup({
+--   sources = {
+--     -- code_actions
+--     -- null_ls.builtins.code_actions.
+--
+--     -- completion
+--     -- null_ls.builtins.completion.
+--
+--     -- diagnostics
+--     -- null_ls.builtins.diagnostics.
+--
+--     -- formatting
+--     null_ls.builtins.formatting.gofumpt,
+--     null_ls.builtins.formatting.goimports_reviser,
+--     null_ls.builtins.formatting.prettier,
+--     null_ls.builtins.formatting.stylua,
+--     null_ls.builtins.formatting.terraform_fmt,
+--     null_ls.builtins.formatting.yamlfmt,
+--   },
+--   -- on_attach = on_attach,
+--   -- on_attach = function(client, bufnr)
+--   --   if client.supports_method("textDocument/formatting") then
+--   --     vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+--   --     vim.api.nvim_create_autocmd("BufWritePre", {
+--   --       group = augroup,
+--   --       buffer = bufnr,
+--   --       callback = function()
+--   --         lsp_formatting(bufnr)
+--   --       end,
+--   --     })
+--   --   end
+--   -- end,
+-- })
+
+-- local mason_null_ls = require("mason-null-ls")
+-- mason_null_ls.setup({
+--   ensure_installed = {
+--     { 'stylua', version = 'v0.14.2' },
+--   },
+--   automatic_installation = true,
+-- })
+-- mason_null_ls.check_install(true)
+-- local on_attach = function(client, bufnr)
+--   print("null_ls.on_attach")
+--   if client.supports_method("textDocument/formatting") then
+--     vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+--     vim.api.nvim_create_autocmd("BufWritePre", {
+--       group = augroup,
+--       buffer = bufnr,
+--       callback = function()
+--         lsp_formatting(bufnr)
+--       end,
+--     })
+--   end
+-- end
+-- on_attach = function(client, bufnr)
+--   if client.supports_method("textDocument/formatting") then
+--     vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+--     vim.api.nvim_create_autocmd("BufWritePre", {
+--       group = augroup,
+--       buffer = bufnr,
+--       callback = function()
+--         if client.name == "null-ls" then
+--           vim.lsp.buf.format({   async = false})
+--           return
+--         end
+--         vim.lsp.buf.format({  async = false })
+--       end,
+--     })
+--   end
+-- end,

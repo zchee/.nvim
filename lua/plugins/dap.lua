@@ -1,6 +1,6 @@
 local util = require("util")
 
-local mason_core_path = require("mason-core.path")
+-- local mason_core_path = require("mason-core.path")
 local mason_dap = require("mason-nvim-dap")
 
 ---@class mason_dap.config all sources with no handler get passed here
@@ -14,7 +14,6 @@ mason_dap.setup({
   ensure_installed = {
     "delve",
     "js",
-    "node2",
     "python",
   },
   handlers = {
@@ -124,7 +123,7 @@ dap.configurations.rust = dap.configurations.cpp
 dap.configurations.sh = {
   {
     type = "executable",
-    command = mason_core_path.bin_prefix("bash-debug-adapter"),
+    command = vim.fn.exepath("bash-debug-adapter"),
     request = "launch",
     name = "Bash-Debug (simplest configuration)",
     program = "${file}",

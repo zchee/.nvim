@@ -54,9 +54,9 @@ local fidget = require("fidget")
 fidget.setup({
   -- Options related to LSP progress subsystem
   progress = {
-    poll_rate = 0, -- How and when to poll for progress messages
-    suppress_on_insert = false, -- Suppress new messages while in insert mode
-    ignore_done_already = false, -- Ignore new tasks that are already complete
+    poll_rate = 0,                -- How and when to poll for progress messages
+    suppress_on_insert = false,   -- Suppress new messages while in insert mode
+    ignore_done_already = false,  -- Ignore new tasks that are already complete
     ignore_empty_message = false, -- Ignore new tasks that don't contain a message
     -- Clear notification group when LSP server detaches
     clear_on_detach = function(client_id)
@@ -102,31 +102,31 @@ fidget.setup({
 
   -- Options related to notification subsystem
   notification = {
-    poll_rate = 10, -- How frequently to update and render notifications
-    filter = vim.log.levels.INFO, -- Minimum notifications level
+    -- poll_rate = 10, -- How frequently to update and render notifications
+    -- filter = vim.log.levels.INFO, -- Minimum notifications level
     override_vim_notify = false, -- Automatically override vim.notify() with Fidget
-    configs = { default = require("fidget.notification").default_config }, -- How to configure notification groups when instantiated
+    -- configs = { default = require("fidget.notification").default_config }, -- How to configure notification groups when instantiated
 
     -- Options related to how notifications are rendered as text
     view = {
-      stack_upwards = true, -- Display notification items from bottom to top
-      icon_separator = " ", -- Separator between group name and icon
-      group_separator = "---", -- Separator between notification groups
+      stack_upwards = true,           -- Display notification items from bottom to top
+      icon_separator = " ",           -- Separator between group name and icon
+      group_separator = "---",        -- Separator between notification groups
       group_separator_hl = "Comment", -- Highlight group used for group separator
     },
 
     -- Options related to the notification window and buffer
     window = {
       normal_hl = "Comment", -- Base highlight group in the notification window
-      winblend = 100, -- Background color opacity in the notification window
-      border = "none", -- Border around the notification window
-      zindex = 45, -- Stacking priority of the notification window
-      max_width = 0, -- Maximum width of the notification window
-      max_height = 0, -- Maximum height of the notification window
-      x_padding = 1, -- Padding from right edge of window boundary
-      y_padding = 0, -- Padding from bottom edge of window boundary
-      align = "bottom", -- How to align the notification window
-      relative = "editor", -- What the notification window position is relative to
+      winblend = 100,        -- Background color opacity in the notification window
+      border = "none",       -- Border around the notification window
+      zindex = 45,           -- Stacking priority of the notification window
+      max_width = 0,         -- Maximum width of the notification window
+      max_height = 0,        -- Maximum height of the notification window
+      x_padding = 1,         -- Padding from right edge of window boundary
+      y_padding = 0,         -- Padding from bottom edge of window boundary
+      align = "bottom",      -- How to align the notification window
+      relative = "editor",   -- What the notification window position is relative to
     },
   },
 
@@ -140,7 +140,7 @@ fidget.setup({
   -- Options related to logging
   logger = {
     level = vim.log.levels.OFF, -- Minimum logging level
-    float_precision = 0.01, -- Limit the number of decimals displayed for floats
+    float_precision = 0.01,     -- Limit the number of decimals displayed for floats
     -- Where Fidget writes its logs to
     path = string.format("%s/fidget.nvim.log", vim.fn.stdpath("cache")),
   },

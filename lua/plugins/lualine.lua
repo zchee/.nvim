@@ -1,5 +1,17 @@
 local lualine = require("lualine")
 
+local get_branch = function()
+  -- return "foo"
+  local result
+  vim.system({ "git", "branch", "--show-current", "--no-color", "--omit-empty" }, { text = true },
+    function(obj)
+      result = obj.stdout
+    end
+  ):wait()
+  return result
+  -- return " " .. result
+end
+
 lualine.setup({
   options = {
     icons_enabled = true,
@@ -43,13 +55,13 @@ lualine.setup({
           newfile = "[New]",     -- Text to show for newly created file before first write
         },
       },
-      {
-        "branch",
-        padding = {
-          left = 0,
-          right = 2,
-        },
-      },
+      -- {
+      --   get_branch,
+      --   padding = {
+      --     left = 20,
+      --     right = 2,
+      --   },
+      -- },
       {
         "filetype",
         color = {
@@ -62,6 +74,9 @@ lualine.setup({
       },
       "diff",
       "diagnostics",
+      {
+        "copilot",
+      },
       "location",
     },
     lualine_c = {
@@ -71,7 +86,7 @@ lualine.setup({
       "encoding",
     },
     lualine_y = {
-      "location",
+      -- "location",
     },
     lualine_z = {
       "progress",

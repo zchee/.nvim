@@ -1,7 +1,69 @@
 local comment = require("Comment")
 local ft = require("Comment.ft")
+local ts_context_commentstring = require('ts_context_commentstring')
+local ts_context_commentstring_comment = require("ts_context_commentstring.integrations.comment_nvim")
 
-local ts_comment = require("ts_context_commentstring.integrations.comment_nvim")
+ts_context_commentstring.setup({
+  enable_autocmd = false,
+  custom_calculation = nil,
+  -- commentary_integration = {
+  --   Commentary = 'gc',
+  --   CommentaryLine = 'gcc',
+  --   ChangeCommentary = 'cgc',
+  --   CommentaryUndo = 'gcu',
+  -- },
+  languages = {
+    astro = '<!-- %s -->',
+    bash = '# %s',
+    c = '// %s',
+    cpp = { __default = '// %s', __multiline = '/* %s */' },
+    css = '/* %s */',
+    cue = '// %s',
+    gleam = '// %s',
+    glimmer = '{{! %s }}',
+    go = { __default = '// %s', __multiline = '/* %s */' },
+    graphql = '# %s',
+    handlebars = '{{! %s }}',
+    haskell = '-- %s',
+    hcl = { __default = '# %s', __multiline = '/* %s */' },
+    html = '<!-- %s -->',
+    ini = '; %s',
+    kotlin = { __default = '// %s', __multiline = '/* %s */' },
+    lua = { __default = '-- %s', __multiline = '--[[ %s ]]' },
+    nix = { __default = '# %s', __multiline = '/* %s */' },
+    php = { __default = '// %s', __multiline = '/* %s */' },
+    python = { __default = '# %s', __multiline = '""" %s """' },
+    rego = '# %s',
+    rescript = { __default = '// %s', __multiline = '/* %s */' },
+    roc = '# %s',
+    scss = { __default = '// %s', __multiline = '/* %s */' },
+    sh = '# %s',
+    solidity = { __default = '// %s', __multiline = '/* %s */' },
+    sql = '-- %s',
+    svelte = '<!-- %s -->',
+    templ = {
+      __default = '// %s',
+      component_block = '<!-- %s -->',
+    },
+    terraform = { __default = '# %s', __multiline = '/* %s */' },
+    tsx = {
+      twig = '{# %s #}',
+      typescript = { __default = '// %s', __multiline = '/* %s */' },
+      vim = '" %s',
+      vue = '<!-- %s -->',
+      zsh = '# %s',
+      __default = '// %s',
+      __multiline = '/* %s */',
+      jsx_element = '{/* %s */}',
+      jsx_fragment = '{/* %s */}',
+      jsx_attribute = { __default = '// %s', __multiline = '/* %s */' },
+      comment = { __default = '// %s', __multiline = '/* %s */' },
+      call_expression = { __default = '// %s', __multiline = '/* %s */' },
+      statement_block = { __default = '// %s', __multiline = '/* %s */' },
+      spread_element = { __default = '// %s', __multiline = '/* %s */' },
+    },
+  },
+})
 
 ---@class CommentConfig
 local comment_config = {
@@ -26,7 +88,7 @@ local comment_config = {
     extra = false,
     extended = false,
   },
-  pre_hook = ts_comment.create_pre_hook(),
+  pre_hook = ts_context_commentstring_comment.create_pre_hook(),
 }
 comment.setup(comment_config)
 
@@ -74,7 +136,7 @@ comment.setup(comment_config)
 
 -- local comment = require("Comment")
 -- local ft = require("Comment.ft")
--- local ts_comment = require("ts_context_commentstring.integrations.comment_nvim")
+-- local ts_context_commentstring_comment = require("ts_context_commentstring.integrations.comment_nvim")
 
 -- ---@class CommentConfig
 -- local comment_config = {
@@ -98,7 +160,7 @@ comment.setup(comment_config)
 --     basic = false,
 --     extra = false,
 --   },
---   pre_hook = ts_comment.create_pre_hook(),
+--   pre_hook = ts_context_commentstring_comment.create_pre_hook(),
 -- }
 --
 -- comment.setup(comment_config)

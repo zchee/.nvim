@@ -14,7 +14,7 @@ lspsaga.setup({
     lines = { '┗', '┣', '┃', '━', '┏' },
     kind = {},
     button = { '', '' },
-    imp_sign = " ", -- '󰳛 ',
+    imp_sign = "󰳛 ", -- " ", "󰳛 "
     use_nerd = true,
   },
   hover = {
@@ -48,7 +48,7 @@ lspsaga.setup({
     extend_gitsigns = true,
     only_in_cursor = true,
     max_height = 0.3,
-    cursorline = false,
+    cursorline = true,
     keys = {
       quit = "<C-c>",
       exec = "<CR>",
@@ -154,8 +154,8 @@ lspsaga.setup({
     left_width = 0.2,
     keys = {
       edit = "o",
-      vsplit = "s",
-      split = "i",
+      vsplit = "v",
+      split = "s",
       tabe = "t",
       close = "<Esc>",
       quit = "q",
@@ -181,7 +181,7 @@ lspsaga.setup({
     enable = true,
     sign = true,
     lang = {},
-    virtual_text = true,
+    virtual_text = false,
     priority = 100,
   },
   beacon = {

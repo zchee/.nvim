@@ -1,22 +1,21 @@
 local github_preview = require("github-preview")
 
+---@type github_preview_config
 github_preview.setup({
-  host = "localhost",
-  port = 15174,        -- p(15) r(17) e(4)
-  single_file = false, -- set to "true" to force single-file mode & disable repository mode
+  host = "127.0.0.1",
+  port = 6041, -- p(15) r(17) e(4)
   theme = {
-    name = "system",   -- "system" | "light" | "dark"
-    high_contrast = false,
+    name = "system",
+    high_contrast = true,
   },
+  single_file = false,
   details_tags_open = true, -- define how to render <details> tags on init/content-change. true: <details> tags are rendered open, false: <details> tags are rendered closed
   cursor_line = {
-    disable = false,
-    color = "#4c4e52", -- CSS color. if you provide an invalid value, cursorline will be invisible
+    color = "#4c4e52",
     opacity = 0.1,
   },
   scroll = {
-    disable = false,
-    top_offset_pct = 70, -- Between 0 and 100 VERY LOW and VERY HIGH numbers might result in cursorline out of screen
+    top_offset_pct = 30,
   },
-  log_level = nil,       -- nil | "debug" | "verbose"
+  log_level = nil, -- nil | "debug" | "verbose"
 })

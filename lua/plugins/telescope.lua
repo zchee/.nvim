@@ -1,12 +1,11 @@
-local async = require("plenary.async")
-
-local icons = require("nvim-nonicons")
-local lga_actions = require("telescope-live-grep-args.actions")
 local telescope = require("telescope")
+
+local nonicons = require("nvim-nonicons")
+local live_grep_args = require("telescope-live-grep-args.actions")
+
 -- local telescope_utils = require("telescope.utils")
 -- local project_actions = require("telescope._extensions.project.actions")
 -- local project_actions = require("telescope._extensions.project.actions")
--- local harpoon = require("harpoon")
 
 local function get_pickers(actions)
   return {
@@ -20,6 +19,8 @@ local function get_pickers(actions)
         "--strip-cwd-prefix",
         "--no-ignore",
         "--exclude=.git",
+        "--exclude=_tmp",
+        "--exclude=.aider.chat.history.md",
       },
       search_dirs = {
         vim.lsp.buf.list_workspace_folders()[0],
@@ -75,18 +76,12 @@ local function get_pickers(actions)
   }
 end
 
--- harpoon.setup(harpoon, {
---   menu = {
---     width = vim.api.nvim_win_get_width(0) - 4,
---   }
--- })
-
 local ok, actions = pcall(require, "telescope.actions")
 if not ok then
   return
 end
 
-local Layout = require "telescope.pickers.layout"
+-- local layout = require "telescope.pickers.layout"
 telescope.setup({
   defaults = {
     -- create_layout = function(picker)
@@ -178,7 +173,7 @@ telescope.setup({
         ["<C-Up>"] = actions.cycle_history_prev,
       },
     },
-    prompt_prefix = "  " .. icons.get("telescope") .. "  ",
+    prompt_prefix = "  " .. nonicons.get("telescope") .. "  ",
     selection_caret = " ❯ ",
     entry_prefix = "   ",
     set_env = { ["COLORTERM"] = "truecolor" },
@@ -206,6 +201,7 @@ telescope.setup({
       "--glob=!*.min.js",          -- minify
       "--glob=!*.bundle.js",       -- webpack
       "--glob=!*.recording",       -- asciinema
+      "--glob=!.aider*",           -- aider
     },
     -- vimgrep_arguments = {
     --   "ugrep",
@@ -240,15 +236,15 @@ telescope.setup({
       --   },
       -- },
     },
-    fzf = {
-      fuzzy = true,
-      override_generic_sorter = false,
-      override_file_sorter = false,
-      case_mode = "smart_case", -- "smart_case", "ignore_case", "respect_case"
-    },
+    -- fzf = {
+    --   fuzzy = true,
+    --   override_generic_sorter = false,
+    --   override_file_sorter = false,
+    --   case_mode = "smart_case", -- "smart_case", "ignore_case", "respect_case"
+    -- },
     ghq = {
-      bin = vim.fs.joinpath(async.uv.os_homedir(), "go", "bin", "ghq"),
-      cwd = async.uv.cwd(),
+      bin = vim.fs.joinpath(vim.uv.os_homedir(), "go", "bin", "ghq"),
+      cwd = vim.uv.cwd(),
     },
     grep_app = {
       open_browser_cmd = "chrome",
@@ -260,7 +256,7 @@ telescope.setup({
       auto_quoting = true,
       mappings = {
         i = {
-          ["<C-k>"] = lga_actions.quote_prompt(),
+          ["<C-k>"] = live_grep_args.quote_prompt(),
         },
       },
     },
@@ -307,9 +303,10 @@ telescope.setup({
 
 telescope.load_extension("dap")
 telescope.load_extension("file_browser")
-telescope.load_extension("fzf")
+-- telescope.load_extension("fzf")
 telescope.load_extension("ghq")
 telescope.load_extension("grep_app")
 telescope.load_extension("live_grep_args")
--- telescope.load_extension("project")
+telescope.load_extension("textcase")
 telescope.load_extension("ui-select")
+-- telescope.load_extension("project")

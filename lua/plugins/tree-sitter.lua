@@ -1,59 +1,19 @@
+local util = require("util")
+
 local ts_config = require("nvim-treesitter.configs")
--- local ts_utils = require("nvim-treesitter.utils")
 local ts_parsers = require("nvim-treesitter.parsers")
 local ts_context_commentstring = require("ts_context_commentstring")
 
--- local ts_install = require("nvim-treesitter.shell_command_selectors")
--- ts_install.select_compile_command = function(_, _, compile_location)
---   return {
---     cmd = vim.fn.exepath("tree-sitter"),
---     info = "Building wasm bindings...",
---     err = 'Error during "tree-sitter build --wasm"',
---     opts = {
---       args = { "build", "--wasm", "-o", "parser.so" },
---       cwd = compile_location,
---     },
---   }
--- end
-
 vim.treesitter.language.register("starlark", "tiltfile")
 vim.treesitter.language.register("json", "jsonschema")
--- vim.treesitter.language.register("bash", "zsh")
+vim.treesitter.language.register("json", "jsonl")
 vim.treesitter.language.register("gotmpl", "helm")
+vim.treesitter.language.register("docker-bake", "hcl")
+vim.treesitter.language.register("zsh", "zsh")
 
 ---@class ParserInfo[]
 local parsers_config = ts_parsers.get_parser_configs()
---- cel
-parsers_config.cel = {
-  ---@type InstallInfo
-  install_info = {
-    url = "https://github.com/bufbuild/tree-sitter-cel",
-    branch = "main",
-    files = { "src/parser.c" },
-    generate_requires_npm = true,
-    requires_generate_from_grammar = false,
-  },
-}
---- func
-parsers_config.func = {
-  ---@type InstallInfo
-  install_info = {
-    url = "https://github.com/tree-sitter-grammars/tree-sitter-func",
-    files = { "src/parser.c" },
-    branch = "main",
-  },
-}
---- go fork
--- treesitter_parsers_config.go = {
---   ---@type InstallInfo
---   install_info = {
---     url = vim.fs.joinpath(src_dir, "github.com/tree-sitter/tree-sitter-go"),
---     files = { "src/parser.c" },
---     -- branch = "format-verbs",
---     generate_requires_npm = false,
---     requires_generate_from_grammar = false,
---   },
--- }
+
 --- goasm
 -- treesitter_parsers_config.goasm = {
 --   ---@type InstallInfo
@@ -67,69 +27,117 @@ parsers_config.func = {
 --   -- filetype = "goasm",
 --   maintainers = { "@zchee" },
 -- }
---- make
-parsers_config.make = {
+
+--- cel
+parsers_config.cel = {
   ---@type InstallInfo
   install_info = {
-    url = "https://github.com/tree-sitter-grammars/tree-sitter-make",
-    files = { "src/parser.c" },
+    url = "https://github.com/bufbuild/tree-sitter-cel",
     branch = "main",
-  },
-}
---- printf
-parsers_config.printf = {
-  ---@type InstallInfo
-  install_info = {
-    url = "github.com/tree-sitter-grammars/tree-sitter-printf",
     files = { "src/parser.c" },
-  },
-}
--- protobuf
-parsers_config.protobuf = {
-  ---@class InstallInfo
-  install_info = {
-    url = "https://github.com/Clement-Jean/tree-sitter-proto",
-    files = { "src/parser.c" },
-    branch = "main",
     generate_requires_npm = true,
     requires_generate_from_grammar = false,
   },
-  filetype = "proto",
-  maintainers = { "@Clement-Jean" },
+}
+
+--- mustache
+parsers_config.mustache = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/TheLeoP/tree-sitter-mustache",
+    branch = "main",
+    files = { "src/parser.c", "src/scanner.c" },
+    generate_requires_npm = true,
+    requires_generate_from_grammar = true,
+  },
 }
 
 --- zsh
----@class ParserInfo
 parsers_config.zsh = {
   ---@type InstallInfo
   install_info = {
-    url = "https://github.com/zchee/tree-sitter-zsh",
+    url = util.src_path("github.com/zchee/tree-sitter-zsh"),
     files = { "src/parser.c", "src/scanner.c" },
-    branch = "devel",
     generate_requires_npm = true,
     requires_generate_from_grammar = false,
   },
 }
 
-ts_context_commentstring.setup {
-  commentary_integration = {},
-  enable_autocmd = true,
-  config = {},
-  languages = {
-    "go",
-    "lua",
+--- fork: dockerfile
+parsers_config.dockerfile = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/zchee/tree-sitter-dockerfile",
+    files = { "src/parser.c", "src/scanner.c" },
   },
+}
+
+--- fork: func
+parsers_config.func = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/tree-sitter-grammars/tree-sitter-func",
+    files = { "src/parser.c" },
+    branch = "main",
+  },
+}
+
+--- fork: make
+parsers_config.make = {
+  ---@type InstallInfo
+  install_info = {
+    -- url = "https://github.com/tree-sitter-grammars/tree-sitter-make",
+    url = util.src_path("github.com/tree-sitter-grammars/tree-sitter-make"),
+    files = { "src/parser.c" },
+    -- branch = "main",
+  },
+}
+
+--- fork: printf
+parsers_config.printf = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/tree-sitter-grammars/tree-sitter-printf",
+    files = { "src/parser.c" },
+    branch = "main",
+  },
+}
+
+parsers_config.wit = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/bytecodealliance/tree-sitter-wit",
+    files = { "src/parser.c" },
+    branch = "main",
+  },
+}
+
+parsers_config.x86asm = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/bearcove/tree-sitter-x86asm",
+    files = { "src/parser.c" },
+    branch = "main",
+  },
+}
+
+---@type ts_context_commentstring.Config
+ts_context_commentstring.setup {
+  enable_autocmd = true,
+  custom_calculation = nil,
+  languages = {
+    go = { __default = '// %s', __multiline = '/* %s */' },
+    lua = { __default = '-- %s', __multiline = '--[[ %s ]]' },
+  },
+  config = {},
+  commentary_integration = nil,
 }
 vim.g.skip_ts_context_commentstring_module = true
 
 -- $ nvim --headless -c 'lua vim.cmd[[TSInstallInfo]]' -c 'q'
--- :'<,'>s/^[]1337;SetUserVar=in_editor^G//g
 -- :'<,'>s/\(\w*\)\s*\(\[\(✓\|✗\)\]\)/  "\1",  -- \2/g
 -- :'<,'>s/  \("\w*"\,  -- \[✗\] not installed\)/  -- \1
 -- :'<,'>EasyAlign /-- \[✗\]/
-
--- :'<,'>s/\("\w*",\)\( *\)  -- \[\(✗\|✓\)\]\( not installed\)/-- \1\2-- [\3]\4/g
--- :lua vim.lsp.buf.format({ async = false, bufnr = 0 })
 local parsers = {
   -- "ada",                -- [✗] not installed
   -- "agda",               -- [✗] not installed
@@ -146,19 +154,22 @@ local parsers = {
   "bibtex", -- [✓] installed
   -- "bicep",              -- [✗] not installed
   -- "bitbake",            -- [✗] not installed
+  -- "blade",              -- [✗] not installed
   -- "blueprint",          -- [✗] not installed
   -- "bp",                 -- [✗] not installed
-  "c", -- [✓] installed
+  -- "brightscript",       -- [✗] not installed
+  "c",     -- [✓] installed
   -- "c_sharp",            -- [✗] not installed
+  "caddy", -- [✓] installed
   -- "cairo",              -- [✗] not installed
   "capnp", -- [✓] installed
   "cel",   -- [✓] installed
   -- "chatito",            -- [✗] not installed
   -- "circom",             -- [✗] not installed
   -- "clojure",            -- [✗] not installed
-  "cmake",   -- [✓] installed
-  "comment", -- [✓] installed
-  -- "commonlisp",         -- [✗] not installed
+  "cmake",      -- [✓] installed
+  "comment",    -- [✓] installed
+  "commonlisp", -- [✓] installed
   -- "cooklang",           -- [✗] not installed
   -- "corn",               -- [✗] not installed
   -- "cpon",               -- [✗] not installed
@@ -169,7 +180,7 @@ local parsers = {
   "cue",  -- [✓] installed
   -- "cylc",               -- [✗] not installed
   -- "d",                  -- [✗] not installed
-  -- "dart",               -- [✗] not installed
+  "dart",         -- [✓] installed
   -- "desktop",            -- [✗] not installed
   "devicetree",   -- [✓] installed
   -- "dhall",              -- [✗] not installed
@@ -190,6 +201,7 @@ local parsers = {
   -- "elsa",               -- [✗] not installed
   "elvish",            -- [✓] installed
   "embedded_template", -- [✓] installed
+  -- "enforce",            -- [✗] not installed
   -- "erlang",             -- [✗] not installed
   -- "facility",           -- [✗] not installed
   -- "faust",              -- [✗] not installed
@@ -208,7 +220,7 @@ local parsers = {
   -- "gaptst",             -- [✗] not installed
   -- "gdscript",           -- [✗] not installed
   -- "gdshader",           -- [✗] not installed
-  "git_config",    -- [✓] installed
+  -- "git_config",         -- [✗] not installed
   "git_rebase",    -- [✓] installed
   "gitattributes", -- [✓] installed
   "gitcommit",     -- [✓] installed
@@ -240,7 +252,7 @@ local parsers = {
   -- "heex",               -- [✗] not installed
   "helm",  -- [✓] installed
   "hjson", -- [✓] installed
-  -- "hlsl",               -- [✗] not installed
+  "hlsl",  -- [✓] installed
   -- "hlsplaylist",        -- [✗] not installed
   -- "hocon",              -- [✗] not installed
   -- "hoon",               -- [✗] not installed
@@ -254,18 +266,22 @@ local parsers = {
   "ini", -- [✓] installed
   -- "inko",               -- [✗] not installed
   -- "ipkg",               -- [✗] not installed
-  "ispc",       -- [✓] installed
+  "ispc",         -- [✓] installed
   -- "janet_simple",       -- [✗] not installed
-  "java",       -- [✓] installed
-  "javascript", -- [✓] installed
-  "jq",         -- [✓] installed
-  "jsdoc",      -- [✓] installed
-  "json",       -- [✓] installed
-  "json5",      -- [✓] installed
-  "jsonc",      -- [✓] installed
-  "jsonnet",    -- [✓] installed
+  "java",         -- [✓] installed
+  "javadoc",      -- [✓] installed
+  "javascript",   -- [✓] installed
+  "jinja",        -- [✓] installed
+  "jinja_inline", -- [✓] installed
+  "jq",           -- [✓] installed
+  "jsdoc",        -- [✓] installed
+  "json",         -- [✓] installed
+  "json5",        -- [✓] installed
+  "jsonc",        -- [✓] installed
+  "jsonnet",      -- [✓] installed
   -- "julia",              -- [✗] not installed
   -- "just",               -- [✗] not installed
+  -- "kcl",                -- [✗] not installed
   "kconfig", -- [✓] installed
   -- "kdl",                -- [✗] not installed
   "kotlin",  -- [✓] installed
@@ -275,26 +291,27 @@ local parsers = {
   "latex", -- [✓] installed
   -- "ledger",             -- [✗] not installed
   -- "leo",                -- [✗] not installed
-  -- "linkerscript",       -- [✗] not installed
+  "linkerscript", -- [✓] installed
   -- "liquid",             -- [✗] not installed
   -- "liquidsoap",         -- [✗] not installed
-  "llvm",            -- [✓] installed
-  "lua",             -- [✓] installed
-  "luadoc",          -- [✓] installed
-  "luap",            -- [✓] installed
-  "luau",            -- [✓] installed
+  "llvm",              -- [✓] installed
+  "lua",               -- [✓] installed
+  "luadoc",            -- [✓] installed
+  "luap",              -- [✓] installed
+  "luau",              -- [✓] installed
   -- "m68k",               -- [✗] not installed
-  "make",            -- [✓] installed
-  "markdown",        -- [✓] installed
-  "markdown_inline", -- [✓] installed
-  "matlab",          -- [✓] installed
+  "make",              -- [✓] installed
+  "markdown",          -- [✓] installed
+  "markdown_inline",   -- [✓] installed
+  "matlab",            -- [✓] installed
   -- "menhir",             -- [✗] not installed
-  "mermaid",         -- [✓] installed
-  "meson",           -- [✓] installed
-  "mlir",            -- [✓] installed
+  "mermaid",           -- [✓] installed
+  "meson",             -- [✓] installed
+  "mlir",              -- [✓] installed
+  "mustache",          -- [✓] installed
   -- "muttrc",             -- [✗] not installed
-  "nasm",            -- [✓] installed
-  -- "nginx",              -- [✗] not installed
+  "nasm",              -- [✓] installed
+  "nginx",             -- [✓] installed
   -- "nickel",             -- [✗] not installed
   "nim",               -- [✓] installed
   "nim_format_string", -- [✓] installed
@@ -309,15 +326,14 @@ local parsers = {
   -- "ocaml_interface",    -- [✗] not installed
   -- "ocamllex",           -- [✗] not installed
   -- "odin",               -- [✗] not installed
-  -- "org",                -- [✗] not installed
   -- "pascal",             -- [✗] not installed
-  "passwd", -- [✓] installed
-  "pem",    -- [✓] installed
-  "perl",   -- [✓] installed
-  -- "php",                -- [✗] not installed
-  -- "php_only",           -- [✗] not installed
-  -- "phpdoc",             -- [✗] not installed
-  "pioasm", -- [✓] installed
+  "passwd",   -- [✓] installed
+  "pem",      -- [✓] installed
+  "perl",     -- [✓] installed
+  "php",      -- [✓] installed
+  "php_only", -- [✓] installed
+  "phpdoc",   -- [✓] installed
+  "pioasm",   -- [✓] installed
   -- "po",                 -- [✗] not installed
   -- "pod",                -- [✗] not installed
   -- "poe_filter",         -- [✗] not installed
@@ -330,7 +346,6 @@ local parsers = {
   "promql",     -- [✓] installed
   "properties", -- [✓] installed
   "proto",      -- [✓] installed
-  -- "protobuf",           -- [✗] not installed
   -- "prql",               -- [✗] not installed
   -- "psv",                -- [✗] not installed
   "pug", -- [✓] installed
@@ -346,7 +361,8 @@ local parsers = {
   -- "racket",             -- [✗] not installed
   -- "ralph",              -- [✗] not installed
   -- "rasi",               -- [✗] not installed
-  -- "rbs",                -- [✗] not installed
+  -- "razor",              -- [✗] not installed
+  "rbs",          -- [✓] installed
   "re2c",         -- [✓] installed
   "readline",     -- [✓] installed
   "regex",        -- [✓] installed
@@ -368,6 +384,7 @@ local parsers = {
   -- "scss",               -- [✗] not installed
   -- "sflog",              -- [✗] not installed
   -- "slang",              -- [✗] not installed
+  -- "slim",               -- [✗] not installed
   -- "slint",              -- [✗] not installed
   -- "smali",              -- [✗] not installed
   "smithy",   -- [✓] installed
@@ -397,6 +414,7 @@ local parsers = {
   -- "tcl",                -- [✗] not installed
   "teal",      -- [✓] installed
   "templ",     -- [✓] installed
+  -- "tera",               -- [✗] not installed
   "terraform", -- [✓] installed
   "textproto", -- [✓] installed
   "thrift",    -- [✓] installed
@@ -431,11 +449,12 @@ local parsers = {
   -- "wgsl",               -- [✗] not installed
   -- "wgsl_bevy",          -- [✗] not installed
   -- "wing",               -- [✗] not installed
-  -- "wit",                -- [✗] not installed
+  "wit",    -- [✓] installed
+  "x86asm", -- [✓] installed
   -- "xcompose",           -- [✗] not installed
-  "xml",  -- [✓] installed
+  "xml",    -- [✓] installed
   -- "xresources",         -- [✗] not installed
-  "yaml", -- [✓] installed
+  "yaml",   -- [✓] installed
   -- "yang",               -- [✗] not installed
   -- "yuck",               -- [✗] not installed
   -- "zathurarc",          -- [✗] not installed
@@ -458,13 +477,16 @@ ts_config.setup({
     enable = true,
     disable = {
       "tmux",
-      "git_config",
+      "gitconfig",
+      -- "dockerfile",
       -- "diff",
       -- "make",
       -- "vim",
+      -- "zsh",
     },
-    -- additional_vim_regex_highlighting = false,
     additional_vim_regex_highlighting = {
+      -- "zsh",
+      -- "dockerfile",
       -- "gitconfig",
       -- "diff",
       -- "gitcommit",
@@ -478,7 +500,7 @@ ts_config.setup({
     disable = {
       -- "go",
       -- "gomod",
-      "json",
+      -- "json",
       -- "python",
       "yaml",
     },
@@ -552,9 +574,11 @@ ts_config.setup({
       },
     },
   },
+  -- https://github.com/windwp/nvim-autopairs
   autopairs = {
     enable = true,
   },
+  -- https://github.com/theHamsta/nvim-treesitter-pairs
   pairs = {
     enable = true,
     disable = {},
@@ -573,13 +597,21 @@ ts_config.setup({
       -- E.g. whether to delete the angle bracket or whole tag in  <pair> </pair>
     }
   },
-  -- matchup = {
-  --   enable = true,
-  --   disable = {},
-  --   disable_virtual_text = {},
-  --   -- include_match_wor = { "/* */" },
-  --   -- additional_vim_regex_highlighting = {
-  --   --   "go",
-  --   -- },
-  -- },
+  -- https://github.com/andymass/vim-matchup
+  matchup = {
+    enable = true,
+    disable = {},
+    disable_virtual_text = {},
+    -- include_match_wor = { "/* */" },
+    -- additional_vim_regex_highlighting = {
+    --   "go",
+    -- },
+  },
+})
+
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
+  pattern = { "*.dockerfile" },
+  callback = function()
+    vim.cmd([[ TSBufDisable highlight ]])
+  end,
 })

@@ -83,7 +83,7 @@ vim.opt.display:remove("msgsep")
 vim.opt.emoji = true
 vim.opt.encoding = "utf-8"
 vim.opt.expandtab = true
-vim.opt.fileformats = { "unix", "mac", "dos" }
+vim.opt.fileformats = { "unix" }
 vim.opt.fillchars:append("diff:/")
 vim.opt.foldcolumn = "0"
 vim.opt.foldlevel = 0

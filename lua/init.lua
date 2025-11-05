@@ -1,6 +1,6 @@
 jit.off()
 jit.opt.start(3)
-jit.opt.start("-fma")
+jit.opt.start("-fma", "maxtrace=10000", "maxrecord=40000", "maxirconst=10000", "loopunroll=100")
 jit.on(true, true)
 
 -- Make sure to setup `mapleader` and `maplocalleader` before

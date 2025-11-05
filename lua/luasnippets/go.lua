@@ -274,11 +274,11 @@ local test_snippets = {
   ls.s(
     {
       trig = "diff",
-      dscr = 'cmp.Equal(...); t.Fatalf("(+want, -got)", diff)',
+      dscr = 'if diff := cmp.Diff(sc, got); diff != "" {; t.Fatalf("(+want, -got)", diff)}',
     },
     fmta([[
-        if !cmp.Equal(<>, <>) {
-        	t.Fatalf("(+want, -got)\n%s", cmp.Diff(<1>, <2>))
+        if diff := cmp.Diff(<1>, <2>); diff != "" {
+        	t.Fatalf("(+want, -got)\n%s", diff)
         }
 				]],
       {

@@ -40,44 +40,9 @@ return {
     "coder/claudecode.nvim",
     branch = "main",
     dependencies = { "folke/snacks.nvim" },
-    opts = {
-      port_range = { min = 10000, max = 65535 },
-      auto_start = true,
-      log_level = "info",                                                 -- "trace", "debug", "info", "warn", "error"
-      terminal_cmd = "/opt/local/bin/claude --dangerously-skip-permissions", -- Custom terminal command (default: "claude")
-      -- Send/Focus Behavior
-      -- When true, successful sends will focus the Claude terminal if already connected
-      focus_after_send = false,
-      -- Selection Tracking
-      track_selection = true,
-      visual_demotion_delay_ms = 50,
-
-      -- Terminal Configuration
-      terminal = {
-        split_side = "right",
-        split_width_percentage = 0.4,
-        provider = "snacks", -- "auto", "snacks", "native", "external", "none"
-        auto_close = true,
-        ---@module 'snacks'
-        ---@class snacks.terminal.Opts: snacks.terminal.Config
-        snacks_win_opts = {}, -- Opts to pass to `Snacks.terminal.open()` - see Floating Window section below
-        -- Provider-specific options
-        provider_opts = {
-          -- Command for external terminal provider. Can be:
-          -- 1. String with %s placeholder: "alacritty -e %s" (backward compatible)
-          -- 2. String with two %s placeholders: "alacritty --working-directory %s -e %s" (cwd, command)
-          -- 3. Function returning command: function(cmd, env) return "alacritty -e " .. cmd end
-          external_terminal_cmd = nil,
-        },
-      },
-      -- Diff Integration
-      diff_opts = {
-        auto_close_on_accept = true,
-        vertical_split = true,
-        open_in_current_tab = true,
-        keep_terminal_focus = false, -- If true, moves focus back to terminal after diff opens
-      },
-    },
+    config = function()
+      require("plugins.claudecode")
+    end,
     cmd = {
       "ClaudeCode",
       "ClaudeCodeFocus",
@@ -88,18 +53,40 @@ return {
       "ClaudeCodeDiffDeny",
     },
     keys = {
-      { "<leader>a",  nil,                              desc = "AI/Claude Code" },
-      { "<leader>ac", "<cmd>ClaudeCode<cr>",            desc = "Toggle Claude" },
-      { "<leader>af", "<cmd>ClaudeCodeFocus<cr>",       desc = "Focus Claude" },
-      { "<leader>ar", "<cmd>ClaudeCode --resume<cr>",   desc = "Resume Claude" },
-      { "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
-      { "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
-      { "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>",       desc = "Add current buffer" },
-      { "<leader>as", "<cmd>ClaudeCodeSend<cr>",        mode = "v",                  desc = "Send to Claude" },
-      { "<leader>as", "<cmd>ClaudeCodeTreeAdd<cr>",     desc = "Add file",           ft = { "NvimTree", "neo-tree", "oil", "minifiles" } },
+      {
+        "<leader>a", nil, desc = "AI/Claude Code"
+      },
+      {
+        "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude"
+      },
+      {
+        "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude"
+      },
+      {
+        "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude"
+      },
+      {
+        "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude"
+      },
+      {
+        "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model"
+      },
+      {
+        "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer"
+      },
+      {
+        "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude"
+      },
+      {
+        "<leader>as", "<cmd>ClaudeCodeTreeAdd<cr>", desc = "Add file", ft = { "NvimTree", "neo-tree", "oil", "minifiles" }
+      },
       -- Diff management
-      { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>",  desc = "Accept diff" },
-      { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>",    desc = "Deny diff" },
+      {
+        "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff"
+      },
+      {
+        "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff"
+      },
     },
   },
   -- {
@@ -288,16 +275,13 @@ return {
           "rachartier/tiny-inline-diagnostic.nvim",
           event = "LspAttach",
         },
+        {
+          "lewis6991/hover.nvim",
+          event = "LspAttach",
+        },
       },
       config = function()
         require("lsp")
-      end,
-    },
-    {
-      "lewis6991/hover.nvim",
-      event = "LspAttach",
-      config = function()
-        require("plugins.hover")
       end,
     },
     {
@@ -889,7 +873,7 @@ return {
         "Fugit2Graph",
       },
       keys = {
-        { '<Space>g', mode = 'n', '<cmd>Fugit2<cr>' }
+        { "<Space>g", mode = "n", "<cmd>Fugit2<cr>" }
       },
       ---@module 'fugit2'
       ---@type Fugit2Config
@@ -1061,81 +1045,13 @@ return {
 
     -- Rust
     {
-      -- {
-      --   'mrcjkb/rustaceanvim',
-      --   lazy = false,
-      --   config = function()
-      --     vim.g.rustaceanvim = {
-      --       tools = {
-      --       },
-      --       ---@class rustaceanvim.lsp.ClientConfig: vim.lsp.ClientConfig
-      --       server = {
-      --         ---@type lsp.ClientCapabilities
-      --         capabilities = require('rustaceanvim.config.server')
-      --             .create_client_capabilities(),
-      --         -- ---@type boolean | fun(bufnr: integer):boolean Whether to automatically attach the LSP client.
-      --         -- ---Defaults to `true` if the `rust-analyzer` executable is found.
-      --         -- auto_attach = function(bufnr)
-      --         --   if #vim.bo[bufnr].buftype > 0 then
-      --         --     return false
-      --         --   end
-      --         --   local path = vim.api.nvim_buf_get_name(bufnr)
-      --         --   if not require('rustaceanvim.os').is_valid_file_path(path) then
-      --         --     return false
-      --         --   end
-      --         --   local cmd = require('rustaceanvim.types.internal').evaluate(RustaceanConfig.server.cmd)
-      --         --   if type(cmd) == 'function' then
-      --         --     -- This could be a function that connects via a TCP socket, so we don't want to evaluate it.
-      --         --     return true
-      --         --   end
-      --         --   ---@cast cmd string[]
-      --         --   local rs_bin = cmd[1]
-      --         --   return vim.fn.executable(rs_bin) == 1
-      --         -- end,
-      --         ---@type string[] | fun():(string[]|fun(dispatchers: vim.lsp.rpc.Dispatchers): vim.lsp.rpc.PublicClient)
-      --         cmd = function()
-      --           -- return { exepath_or_binary('rust-analyzer'), '--log-file', RustaceanConfig.server.logfile }
-      --           return { "rustup", "run", "nightly", "rust-analyzer" }
-      --         end,
-      --
-      --         -- --- Defaults to `nil`, which means rustaceanvim will use the built-in async root directory detection
-      --         -- ---@type nil | string | fun(filename: string, default: fun(filename: string):string|nil):string|nil
-      --         -- root_dir = nil,
-      --
-      --         -- ra_multiplex = {
-      --         --   ---@type boolean
-      --         --   enable = vim.tbl_get(rustaceanvim_opts, 'server', 'cmd') == nil,
-      --         --   ---@type string
-      --         --   host = '127.0.0.1',
-      --         --   ---@type integer
-      --         --   port = 27631,
-      --         -- },
-      --
-      --         ---@type boolean
-      --         standalone = true,
-      --         -- ---@type string The path to the rust-analyzer log file.
-      --         -- logfile = vim.fn.tempname() .. '-rust-analyzer.log',
-      --         -- ---@type table | (fun(project_root:string|nil, default_settings: table|nil):table) -- The rust-analyzer settings or a function that creates them.
-      --         -- settings = function(_, default_settings)
-      --         --   return server_config.load_rust_analyzer_settings(_, { default_settings = default_settings })
-      --         -- end,
-      --         --- @type table
-      --         default_settings = {
-      --           --- options to send to rust-analyzer
-      --           --- See: https://rust-analyzer.github.io/book/configuration
-      --           --- @type table
-      --           ['rust-analyzer'] = {},
-      --         },
-      --         ---@type boolean Whether to search (upward from the buffer) for rust-analyzer settings in .vscode/settings json.
-      --         -- load_vscode_settings = true,
-      --         ---@type rustaceanvim.server.status_notify_level
-      --         -- status_notify_level = 'error',
-      --       },
-      --       dap = {
-      --       },
-      --     }
-      --   end,
-      -- },
+      {
+        'mrcjkb/rustaceanvim',
+        lazy = false,
+        confio = function()
+          require("plugins.rustaceanvim")
+        end,
+      },
       {
         "saecki/crates.nvim",
         branch = "main",
@@ -1241,7 +1157,7 @@ return {
                   download_remote_images = true,
                   only_render_image_at_cursor = false,
                   only_render_image_at_cursor_mode = "popup",
-                  floating_windows = false, -- if true, images will be rendered in floating markdown windows
+                  floating_windows = false,   -- if true, images will be rendered in floating markdown windows
                   filetypes = { "markdown" }, -- markdown extensions (ie. quarto) can go here
                 },
               },
@@ -1264,10 +1180,10 @@ return {
             max_height = 600,
             max_width_window_percentage = nil,
             max_height_window_percentage = 50,
-            window_overlap_clear_enabled = false,                                         -- toggles images when windows are overlapped
+            window_overlap_clear_enabled = false,                                               -- toggles images when windows are overlapped
             window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
-            editor_only_render_when_focused = false,                                      -- auto show/hide images when the editor gains/looses focus
-            tmux_show_only_in_active_window = false,                                      -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+            editor_only_render_when_focused = false,                                            -- auto show/hide images when the editor gains/looses focus
+            tmux_show_only_in_active_window = false,                                            -- auto show/hide images in the correct Tmux window (needs visual-activity off)
             hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
           },
         },
@@ -1286,7 +1202,7 @@ return {
                 background = "#010101",
                 theme = "dark",
                 scale = 1,
-                width = 800, -- nil | 800 | 400 | ...
+                width = 800,  -- nil | 800 | 400 | ...
                 height = 600, -- nil | 600 | 300 | ...
               },
               plantuml = {
@@ -1342,23 +1258,21 @@ return {
   -- Utilities
   {
     {
-      "rainbowhxch/accelerated-jk.nvim",
+      "zchee/accelerated-jk.nvim", -- "rainbowhxch/accelerated-jk.nvim",
       branch = "main",
-      event = "VeryLazy",
-      config = function()
-        require("accelerated-jk").setup({
-          mode = "time_driven",
-          enable_deceleration = true,
-          acceleration_motions = {},
-          acceleration_limit = 500,
-          acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28, 30 },
-          deceleration_table = { { 200, 3 }, { 300, 7 }, { 450, 11 }, { 600, 15 }, { 750, 21 }, { 900, 9999 } },
-        })
-        vim.keymap.set({ "n" }, "j", "<Plug>(accelerated_jk_gj)",
-          { nowait = true, silent = true })
-        vim.keymap.set({ "n" }, "k", "<Plug>(accelerated_jk_gk)",
-          { nowait = true, silent = true })
-      end,
+      lazy = false,
+      keys = {
+        { "j", "<Plug>(accelerated_jk_gj)", mode = "n", nowait = true, silent = true },
+        { "k", "<Plug>(accelerated_jk_gk)", mode = "n", nowait = true, silent = true },
+      },
+      opts = {
+        mode = "time_driven",
+        enable_deceleration = true,
+        acceleration_motions = {},
+        acceleration_limit = 500, ---@default: 150
+        acceleration_table = { 1, 2, 7, 12, 17, 21, 24, 26, 28, 30 }, -- { 1, 2, 7, 12, 17, 21, 24, 26, 28, 30 }, { 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 },
+        deceleration_table = { { 200, 3 }, { 300, 7 }, { 450, 11 }, { 600, 15 }, { 750, 21 }, { 900, 9999 } }, ---@default
+      },
     },
     {
       "folke/which-key.nvim",

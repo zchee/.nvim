@@ -168,8 +168,8 @@ return {
         },
         -- dependabot
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/dependabot-2.0.json"] = {
-          ".github/dependabot.yaml",
-          ".github/dependabot.yml",
+          "*.github/dependabot.yaml",
+          "*.github/dependabot.yml",
         },
         -- github-action
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json"] = {
@@ -210,7 +210,8 @@ return {
           -- "kustomizeconfig.yaml",
         },
         -- mkdocs
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/mkdocs-1.0.json"] = {
+        -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/mkdocs-1.0.json"] = {
+        ["https://squidfunk.github.io/mkdocs-material/schema.jso"] = {
           "mkdocs.yml",
         },
         -- oapi-codegen

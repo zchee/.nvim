@@ -15,6 +15,37 @@ vim.diagnostic.config({
   jump = nil,
 })
 
+local hover = require("hover")
+hover.config({
+  --- @class Hover.UserConfig : Hover.Config
+  init = function()
+    require("hover.providers.dap")
+    require("hover.providers.diagnostic")
+    require("hover.providers.dictionary")
+    require("hover.providers.fold_preview")
+    require("hover.providers.gh")
+    require("hover.providers.gh_user")
+    require("hover.providers.highlight")
+    require("hover.providers.lsp")
+    require("hover.providers.man")
+  end,
+  providers = {
+    -- 'hover.providers.diagnostic',
+    'hover.providers.lsp',
+    'hover.providers.dap',
+    'hover.providers.man',
+    'hover.providers.dictionary',
+  },
+  ---@type vim.api.keyset.win_config
+  preview_opts = {
+    border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+  },
+  preview_window = false,
+  title = false,
+  mouse_providers = { 'hover.providers.lsp' },
+  mouse_delay = 1000
+})
+
 local lspsaga = require("lspsaga")
 lspsaga.setup({
   ui = {
@@ -665,7 +696,6 @@ local servers = {
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
-  ["rust_analyzer"] = require("lsp.rust_analyzer"),
   ["stainless"] = {},
   ["markdown_oxide"] = {
     cmd = { util.homebrew_binary("markdown-oxide", "markdown-oxide") },
@@ -699,7 +729,7 @@ for server, config in pairs(servers) do
   vim.lsp.enable(server, true)
 end
 
-vim.keymap.set({ "n" }, "K", function() require('hover').open() end, { silent = true })
+vim.keymap.set({ "n" }, "K", function() require("hover").open() end, { silent = true })
 -- vim.keymap.set({ "n" }, "K", "<Cmd>Lspsaga hover_doc<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<C-]>", function() require("snacks").picker.lsp_definitions() end, { silent = true })
 vim.keymap.set({ "n" }, "<C-k>", "<Cmd>Lspsaga signature_help<CR>", { silent = true })

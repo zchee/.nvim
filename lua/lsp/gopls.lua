@@ -270,7 +270,7 @@ return {
       functionTypeParameters = true,
       ignoredError = true,
     },
-    vulncheck = "imports", -- "off", "imports",
+    vulncheck = "imports", -- "off", "imports", "prompt"
     codelenses = {
       generate = true,
       regenerate_cgo = true,
@@ -280,7 +280,7 @@ return {
       upgrade_dependency = true,
       vendor = true,
     },
-    staticcheck = true,
+    staticcheck = false,
     ["local"] = "",
     verboseOutput = false,
     verboseWorkDoneProgress = false,

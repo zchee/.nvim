@@ -4,10 +4,10 @@ local util = require("util")
 return {
   -- NOTE(zchee): use self-compiled for disabled "Matches multiple schemas when only one must validate." error
   cmd = {
-    util.homebrew_binary("node", "node"),
-    vim.fs.joinpath(util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server")),
+    util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server"),
     "--stdio",
   },
+  root_markers = { ".git" },
   settings = {
     yaml = {
       yamlVersion = 1.2,

@@ -308,11 +308,11 @@ local parsers = {
   "linkerscript", -- [✓] installed
   -- "liquid",             -- [✗] not installed
   -- "liquidsoap",         -- [✗] not installed
-  "llvm",              -- [✓] installed
-  "lua",               -- [✓] installed
-  "luadoc",            -- [✓] installed
-  "luap",              -- [✓] installed
-  "luau",              -- [✓] installed
+  "llvm",   -- [✓] installed
+  "lua",    -- [✓] installed
+  "luadoc", -- [✓] installed
+  "luap",   -- [✓] installed
+  -- "luau",              -- [✗] not installed
   -- "m68k",               -- [✗] not installed
   "make",              -- [✓] installed
   "markdown",          -- [✓] installed

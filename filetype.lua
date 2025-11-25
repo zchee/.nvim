@@ -1,7 +1,6 @@
 local util       = require("util")
 
 local joinpath   = vim.fs.joinpath
-local homedir    = vim.uv.os_homedir()
 local cache_home = util.xdg_cache_home()
 
 vim.filetype.add({
@@ -109,6 +108,7 @@ vim.filetype.add({
     [".*/.config/jira.d/templates/.*"]       = "gotmpl",
     [".*/.config/op/config"]                 = "json",
     [".*/.config/tig/config*"]               = "tigrc",
+    [".*/.config/zsh/completions/.*"]        = "zsh",
     [".*/.jira.d/templates/.*"]              = "gotmpl",
     [".*/.vscode/.*%.json"]                  = "json5",
     [".*/argocd/config"]                     = "yaml",

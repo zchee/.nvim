@@ -103,10 +103,14 @@ return {
       },
       hint = {
         enable = true,
+        semicolon = "Disable",
         arrayIndex = "Disable",
         paramName = "Disable",
         paramType = true,
         setType = false,
+      },
+      codeLens = {
+        enable = true,
       },
       hover = {
         enable = true,
@@ -115,7 +119,7 @@ return {
       runtime = {
         builtin = "enable",
         version = "LuaJIT",
-        pathStrict = true,
+        pathStrict = false,
         path = {
           '?.lua',
           '?/init.lua',
@@ -136,6 +140,11 @@ return {
       window = {
         statusBar = true,
         progressBar = true,
+      },
+      typeFormat = {
+        auto_complete_end = true,
+        auto_complete_table_sep = true,
+        format_line = true,
       },
       workspace = {
         checkThirdParty = "Disable",

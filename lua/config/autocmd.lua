@@ -83,6 +83,16 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt.path:append(vim.fs.joinpath(util.prefix(), "go/pkg/include"))
   end,
 })
+--- Zsh
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "zsh" },
+  callback = function()
+    vim.cmd([[
+    filetype plugin indent on
+    syntax enable
+    ]])
+  end,
+})
 
 -- BufNewFile, BufReadPost
 -- vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
@@ -179,7 +189,12 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
     "*.lua",
     -- "*.ts",
   },
-  callback = function()
+  callback = function(args)
+    local file = vim.fs.abspath(args.file)
+    if string.find(file, "neovim/neovim") then
+      return
+    end
+
     vim.lsp.buf.format({
       async = false,
       trimTrailingWhitespace = true,

@@ -1,11 +1,8 @@
-local util = require("util")
-
-local lspconfig = require("lspconfig")
+local util = require "util"
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  -- cmd = { require("mason-core.path").bin_prefix("typescript-language-server"), "--stdio" },
-  cmd = { util.go_path("bin", "tsgo"), "--lsp", "-stdio" },
+  cmd = { util.bun_prefix("tsgo"), "--lsp", "-stdio" },
   filetypes = {
     "javascript",
     "javascriptreact",
@@ -14,7 +11,6 @@ return {
     "typescriptreact",
     "typescript.tsx",
   },
-  -- root_dir = lspconfig.util.root_pattern("tsconfig.json", "package.json", "jsconfig.json", ".git"),
   root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
   -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md
   init_options = {
@@ -86,7 +82,5 @@ return {
         },
       },
     }
-    -- client.notify("workspace/didChangeConfiguration")
-    -- return true
   end,
 }

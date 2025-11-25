@@ -14,6 +14,7 @@ return {
     "typescriptreact",
     "typescript.tsx",
   },
+  root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
   -- root_dir = lspconfig.util.root_pattern("tsconfig.json", "package.json", "jsconfig.json", ".git"),
   -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md
   init_options = {

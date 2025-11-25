@@ -295,7 +295,13 @@ snacks.setup({
   scratch      = { enabled = false },
   scroll       = { enabled = false },
   statuscolumn = { enabled = false },
-  terminal     = { enabled = false },
+  terminal     = {
+    win = {
+      max_width = 300,
+      max_height = 300,
+      position = "float",
+    },
+  },
   toggle       = { enabled = false },
   win          = { enabled = false },
   words        = { enabled = false },

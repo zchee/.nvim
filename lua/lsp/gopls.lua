@@ -280,7 +280,7 @@ return {
       upgrade_dependency = true,
       vendor = true,
     },
-    staticcheck = false,
+    staticcheck = true,
     ["local"] = "",
     verboseOutput = false,
     verboseWorkDoneProgress = false,
@@ -302,7 +302,7 @@ return {
       string = true,
       type = true,
       typeParameter = true,
-      ariable = true,
+      variable = true,
     },
     semanticTokenModifiers = {
       defaultLibrary = true,

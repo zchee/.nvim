@@ -53,4 +53,10 @@ return {
       },
     },
   },
+  on_attach = function(client, bufnr)
+    local bufname = vim.api.nvim_buf_get_name(bufnr)
+    if string.find(bufname, "pyproject.toml") then
+      client.settings.evenBetterToml.formatter.indentString = "    "
+    end
+  end,
 }

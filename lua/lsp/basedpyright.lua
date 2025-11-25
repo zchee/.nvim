@@ -24,7 +24,7 @@ end
 return {
   cmd = { util.homebrew_binary("basedpyright-head", "basedpyright-langserver"), "--stdio" },
   single_file_support = true,
-  root_markers = { ".venv", "pyproject.toml", ".git" },
+  root_markers = { ".venv", "pyproject.toml", "setup.py", ".git" },
   settings = {
     basedpyright = {
       disableOrganizeImports = false,
@@ -32,8 +32,8 @@ return {
       analysis = {
         autoImportCompletions = true,
         autoSearchPaths = true,
-        diagnosticMode = "workspace", -- "openFilesOnly",
-        logLevel = "Error",
+        diagnosticMode = "openFilesOnly", -- "workspace",
+        -- logLevel = "Error",
         inlayHints = {
           variableTypes = true,
           callArgumentNames = true,
@@ -52,5 +52,8 @@ return {
         typeCheckingMode = "off", -- "off", "basic", "standard", "strict", "recommended", "all"
       },
     },
+    -- python = {
+    --   venvPath = vim.fs.joinpath(vim.fn.getcwd(), ".venv"),
+    -- },
   },
 }

@@ -557,22 +557,17 @@ register_lsp(
 )
 lspconfig.tilt_ls.setup(require("lsp.tilt_ls"))
 
-register_lsp(
-  "sourcekit",
-  {
-    cmd = { 'sourcekit-lsp' },
-    filetypes = { 'swift', 'c', 'cpp', 'objective-c', 'objective-cpp' },
-    root_dir = function(filename, _)
-      return util.root_pattern 'buildServer.json' (filename)
-          or util.root_pattern('*.xcodeproj', '*.xcworkspace')(filename)
-          -- better to keep it at the end, because some modularized apps contain multiple Package.swift files
-          or util.root_pattern('compile_commands.json', 'Package.swift')(filename)
-          or util.find_git_ancestor(filename)
-    end,
-    capabilities = default_capabilities_config(),
-  }
-)
-lspconfig.sourcekit.setup(require("lsp.sourcekit"))
+-- register_lsp(
+--   "sourcekit",
+--   {
+--     cmd = { "xcrun", "-f", "sourcekit-lsp", "--configuration=release" },
+--     filetypes = { "swift" },
+--     -- root_markers = { 'buildServer.json', '*.xcodeproj', '*.xcworkspace', 'compile_commands.json', 'Package.swift', '.git' },
+--     root_markers = { "Package.swift", "compile_commands.json" },
+--     capabilities = default_capabilities_config(),
+--   }
+-- )
+-- lspconfig.sourcekit.setup(require("lsp.sourcekit"))
 
 register_lsp(
   "ruby_lsp",
@@ -601,17 +596,17 @@ lspconfig.ruby_lsp.setup(require("lsp.ruby_lsp"))
 -- )
 -- lspconfig.docker_language_server.setup(require("lsp.docker_language_server"))
 
-register_lsp(
-  "stainless",
-  {
-    cmd = { "stainless-language-server", "--stdio" },
-    filetypes = { "stainless.yml", "stainless.yaml", "*.stainless.yml", "openapi.yaml", "openapi.yml" },
-    -- root_dir = lspconfig.util.root_pattern(".git"),
-    single_file_support = true,
-    capabilities = default_capabilities_config(),
-  }
-)
-lspconfig.stainless.setup({})
+-- register_lsp(
+--   "stainless",
+--   {
+--     cmd = { "stainless-language-server", "--stdio" },
+--     filetypes = { "stainless.yml", "stainless.yaml", "*.stainless.yml", "openapi.yaml", "openapi.yml" },
+--     -- root_dir = lspconfig.util.root_pattern(".git"),
+--     single_file_support = true,
+--     capabilities = default_capabilities_config(),
+--   }
+-- )
+-- lspconfig.stainless.setup({})
 
 -- register_lsp(
 --   "cmake_language_server",
@@ -630,8 +625,9 @@ lspconfig.stainless.setup({})
 register_lsp(
   "tsgo",
   {
-    cmd = { "tsgo" },
+    -- cmd = { "tsgo" },
     filetypes = { "typescript" },
+    -- root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
     -- root_dir = require("lspconfig").util.root_pattern("Dockerfile", "*.dockerfile", "Dockerfile*"),
     single_file_support = true,
     capabilities = default_capabilities_config(),
@@ -687,6 +683,7 @@ vim.lsp.config("*", {
 })
 
 local servers = {
+  ["sourcekit"] = require("lsp.sourcekit"),
   ["asm_lsp"] = require("lsp.asm_lsp"),
   ["basedpyright"] = require("lsp.basedpyright"),
   ["bashls"] = require("lsp.bashls"),
@@ -697,32 +694,26 @@ local servers = {
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
   ["stainless"] = {},
-  ["markdown_oxide"] = {
-    cmd = { util.homebrew_binary("markdown-oxide", "markdown-oxide") },
-    capabilities = vim.tbl_deep_extend(
-      'force',
-      default_capabilities_config(),
-      {
-        workspace = {
-          didChangeWatchedFiles = {
-            dynamicRegistration = true,
-          },
-        },
-      }
-    ),
-    on_attach = on_attach,
-  },
+  -- ["markdown_oxide"] = {
+  --   cmd = { util.homebrew_binary("markdown-oxide", "markdown-oxide") },
+  --   capabilities = vim.tbl_deep_extend(
+  --     'force',
+  --     default_capabilities_config(),
+  --     {
+  --       workspace = {
+  --         didChangeWatchedFiles = {
+  --           dynamicRegistration = true,
+  --         },
+  --       },
+  --     }
+  --   ),
+  --   on_attach = on_attach,
+  -- },
   ["taplo"] = require("lsp.taplo"),
   ["terraformls"] = require("lsp.terraformls"),
-  -- ["ts_ls"] = require("lsp.ts_ls"),
+  ["ts_ls"] = require("lsp.ts_ls"),
   ["yamlls"] = require("lsp.yamlls"),
   ["zls"] = require("lsp.zls"),
-  ["intelephense"] = {
-    cmd = { "/opt/local/var/pnpm/intelephense", "--stdio" },
-  }
-  -- ["phpactor"] = {
-  --   cmd = { "/Users/zchee/Downloads/phpactor" },
-  -- }
 }
 for server, config in pairs(servers) do
   vim.lsp.config(server, config)

@@ -1,7 +1,5 @@
 local util = require("util")
 
-local lspconfig_util = require 'lspconfig.util'
-
 local function add_ruby_deps_command(client, bufnr)
   vim.api.nvim_buf_create_user_command(bufnr, "ShowRubyDeps", function(opts)
       local params = vim.lsp.util.make_text_document_params()

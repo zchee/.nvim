@@ -4,19 +4,19 @@ local util = require("util")
 return {
   -- Local
   {
-    dir = vim.fs.joinpath(util.src_path("github.com/zchee/vim-flatbuffers")),
+    dir = util.src_path("github.com/zchee/vim-flatbuffers"),
     ft = "fbs",
   },
   {
-    dir = vim.fs.joinpath(util.src_path("github.com/zchee/vim-gn")),
+    dir = util.src_path("github.com/zchee/vim-gn"),
     ft = "gn",
   },
   {
-    dir = vim.fs.joinpath(util.src_path("github.com/zchee/vim-go-testscript")),
+    dir = util.src_path("github.com/zchee/vim-go-testscript"),
     ft = "testscript",
   },
   {
-    dir = vim.fs.joinpath(util.src_path("github.com/zchee/nvim-goasm")),
+    dir = util.src_path("github.com/zchee/nvim-goasm"),
     ft = "goasm",
   },
   -- {
@@ -26,10 +26,6 @@ return {
   --     return {}
   --   end,
   -- },
-  {
-    dir = vim.fs.joinpath(util.src_path("github.com/zchee/tree-sitter-zsh")),
-    ft = "zsh",
-  },
   -- {
   --   dir = vim.fs.joinpath(util.go_path("src/github.com/zchee/trans.nvim")),
   --   cmd = { "TransNvim" },
@@ -90,69 +86,11 @@ return {
     },
   },
   -- {
-  --   "greggh/claude-code.nvim",
-  --   dependencies = {
-  --     "nvim-lua/plenary.nvim",
-  --   },
-  --   cmd = {
-  --     "ClaudeCode",
-  --     "ClaudeCodeContinue",
-  --     "ClaudeCodeResume",
-  --     "ClaudeCodeVerbose",
-  --   },
+  --   "kiddos/gemini.nvim",
+  --   branch = "master",
+  --   event = "VeryLazy",
   --   config = function()
-  --     require("claude-code").setup({
-  --       window = {
-  --         split_ratio = 0.4,            -- Percentage of screen for the terminal window (height for horizontal, width for vertical splits)
-  --         height_ratio = 0.3,           -- DEPRECATED: Use split_ratio instead
-  --         position = "vertical",        -- Position of the window: "botright", "topleft", "vertical", "float", etc.
-  --         enter_insert = true,          -- Whether to enter insert mode when opening Claude Code
-  --         start_in_normal_mode = false, -- Whether to start in normal mode instead of insert mode
-  --         hide_numbers = true,          -- Hide line numbers in the terminal window
-  --         hide_signcolumn = true,       -- Hide the sign column in the terminal window
-  --         float = {
-  --           width = "80%",              -- Width: number of columns or percentage string
-  --           height = "80%",             -- Height: number of rows or percentage string
-  --           row = "center",             -- Row position: number, "center", or percentage string
-  --           col = "center",             -- Column position: number, "center", or percentage string
-  --           relative = "editor",        -- Relative to: "editor" or "cursor"
-  --           border = "rounded",         -- Border style: "none", "single", "double", "rounded", "solid", "shadow"
-  --         },
-  --       },
-  --       refresh = {
-  --         enable = true,             -- Enable file change detection
-  --         updatetime = 100,          -- updatetime when Claude Code is active (milliseconds)
-  --         timer_interval = 1000,     -- How often to check for file changes (milliseconds)
-  --         show_notifications = true, -- Show notification when files are reloaded
-  --       },
-  --       git = {
-  --         use_git_root = true,   -- Set CWD to git root when opening Claude Code (if in git project)
-  --         multi_instance = true, -- Use multiple Claude instances (one per git root)
-  --       },
-  --       shell = {
-  --         separator = '&&',                -- Command separator used in shell commands
-  --         pushd_cmd = 'pushd',             -- Command to push directory onto stack (e.g., 'pushd' for bash/zsh, 'enter' for nushell)
-  --         popd_cmd = 'popd',               -- Command to pop directory from stack (e.g., 'popd' for bash/zsh, 'exit' for nushell)
-  --       },
-  --       command = "/opt/local/bin/claude", -- Command used to launch Claude Code
-  --       command_variants = {
-  --         continue = "--continue",         -- Resume the most recent conversation
-  --         resume = "--resume",             -- Display an interactive conversation picker
-  --         verbose = "--verbose",           -- Enable verbose logging with full turn-by-turn output
-  --       },
-  --       keymaps = {
-  --         toggle = {
-  --           normal = '<C-,>',          -- Normal mode keymap for toggling Claude Code
-  --           terminal = '<C-,>',        -- Terminal mode keymap for toggling Claude Code
-  --           variants = {
-  --             continue = '<leader>cC', -- Normal mode keymap for Claude Code with continue flag
-  --             verbose = '<leader>cV',  -- Normal mode keymap for Claude Code with verbose flag
-  --           },
-  --         },
-  --         window_navigation = true, -- Enable window navigation keymaps (<C-h/j/k/l>)
-  --         scrolling = true,         -- Enable scrolling keymaps (<C-f/b>) for page up/down
-  --       }
-  --     })
+  --     require("plugins.gemini")
   --   end,
   -- },
   {
@@ -207,7 +145,7 @@ return {
           "nvim-lua/plenary.nvim",
         },
         cmd = "MCPHub",
-        build = "pnpm install -g mcp-hub@latest",
+        build = "bun install -g mcp-hub@latest",
         config = function()
           require("plugins.mcphub")
         end
@@ -454,7 +392,7 @@ return {
         lazy = false,
         event = "InsertEnter",
         -- cmd = "Copilot",
-        build = "pnpm i -g @github/copilot-language-server@latest",
+        build = "bun i -g @github/copilot-language-server@latest",
         opts = {
           panel = { enabled = false },
           suggestion = { enabled = false },
@@ -467,8 +405,8 @@ return {
           copilot_node_command = util.homebrew_binary("node", "node"),
           server = {
             type = "nodejs",
-            custom_server_filepath = vim.fs.joinpath(util.getenv("PNPM_HOME"),
-              "global/5/node_modules/@github/copilot-language-server/dist/language-server.js"),
+            custom_server_filepath = vim.fs.joinpath(util.getenv("BUN_INSTALL"),
+              "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"),
           },
           copilot_model = "gpt-41-copilot",
           -- configuration: [{
@@ -636,7 +574,7 @@ return {
   --   {
   --     "zbirenbaum/copilot.lua",
   --     cmd = "Copilot",
-  --     build = "pnpm i -g @github/copilot-language-server@latest",
+  --     build = "bun i -g @github/copilot-language-server@latest",
   --     opts = {
   --       panel = { enabled = false },
   --       suggestion = { enabled = false },
@@ -757,6 +695,9 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     event = { "BufReadPost", "BufNewFile" },
+    cmd = {
+      "TSInstallInfo",
+    },
     build = ":TSUpdate",
     dependencies = {
       "JoosepAlviste/nvim-ts-context-commentstring",
@@ -825,6 +766,28 @@ return {
       lazy = false,
       config = function()
         require("plugins.snacks")
+      end,
+    },
+    {
+      "folke/edgy.nvim",
+      event = "VeryLazy",
+      ---@module 'edgy'
+      ---@param opts Edgy.Config
+      opts = function(_, opts)
+        for _, pos in ipairs({ "top", "bottom", "left", "right" }) do
+          opts[pos] = opts[pos] or {}
+          table.insert(opts[pos], {
+            ft = "snacks_terminal",
+            size = { height = 0.4 },
+            title = "%{b:snacks_terminal.id}: %{b:term_title}",
+            filter = function(_buf, win)
+              return vim.w[win].snacks_win
+                  and vim.w[win].snacks_win.position == pos
+                  and vim.w[win].snacks_win.relative == "editor"
+                  and not vim.w[win].trouble_preview
+            end,
+          })
+        end
       end,
     },
     {
@@ -1251,7 +1214,7 @@ return {
     -- Zsh
     {
       "chrisbra/vim-zsh",
-      event = "VeryLazy",
+      lazy = false,
     },
   },
 
@@ -1451,7 +1414,7 @@ return {
       ---@type LazyKeysSpec
       keys = {
         ---@diagnostic disable-next-line
-        { "*", "<Plug>(asterisk-gz*)", desc = "Run 'asterisk-gz*'", { "n", "v", "x", "s", "o", "i", "t" } }, -- "c"
+        { "*", "<Plug>(asterisk-gz*)", desc = "Run 'asterisk-gz*'", { "n", "v", "x", "s", "o", "i", "t" } },
       },
     },
     {
@@ -1476,10 +1439,6 @@ return {
         "TextCaseOpenTelescopeLSPChange",
         "TextCaseStartReplacingCommand",
       },
-    },
-    {
-      "echasnovski/mini.icons",
-      event = "VeryLazy",
     },
     {
       "nvimdev/hlsearch.nvim",
@@ -1590,10 +1549,6 @@ return {
           },
         },
       },
-    },
-    {
-      "folke/neoconf.nvim",
-      cmd = "Neoconf",
     },
     {
       "wakatime/vim-wakatime",

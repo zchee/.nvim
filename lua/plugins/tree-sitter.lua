@@ -4,6 +4,19 @@ local ts_config = require("nvim-treesitter.configs")
 local ts_parsers = require("nvim-treesitter.parsers")
 local ts_context_commentstring = require("ts_context_commentstring")
 
+---@type ts_context_commentstring.Config
+ts_context_commentstring.setup {
+  enable_autocmd = true,
+  custom_calculation = nil,
+  languages = {
+    go = { __default = '// %s', __multiline = '/* %s */' },
+    lua = { __default = '-- %s', __multiline = '--[[ %s ]]' },
+  },
+  config = {},
+  commentary_integration = nil,
+}
+vim.g.skip_ts_context_commentstring_module = true
+
 vim.treesitter.language.register("starlark", "tiltfile")
 vim.treesitter.language.register("json", "jsonschema")
 vim.treesitter.language.register("json", "jsonl")
@@ -53,15 +66,16 @@ parsers_config.mustache = {
 }
 
 --- zsh
-parsers_config.zsh = {
-  ---@type InstallInfo
-  install_info = {
-    url = util.src_path("github.com/zchee/tree-sitter-zsh"),
-    files = { "src/parser.c", "src/scanner.c" },
-    generate_requires_npm = true,
-    requires_generate_from_grammar = false,
-  },
-}
+-- parsers_config.zsh = {
+--   ---@type InstallInfo
+--   install_info = {
+--     url = "https://github.com/zchee/tree-sitter-zsh",
+--     branch = "devel",
+--     files = { "src/parser.c", "src/scanner.c" },
+--     generate_requires_npm = true,
+--     requires_generate_from_grammar = true,
+--   },
+-- }
 
 --- fork: dockerfile
 parsers_config.dockerfile = {
@@ -103,6 +117,17 @@ parsers_config.printf = {
   },
 }
 
+--- kitty
+parsers_config.kitty = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/OXY2DEV/tree-sitter-kitty",
+    files = { "src/parser.c" },
+    branch = "main",
+  },
+}
+
+--- wit
 parsers_config.wit = {
   ---@type InstallInfo
   install_info = {
@@ -112,6 +137,7 @@ parsers_config.wit = {
   },
 }
 
+--- x86asm
 parsers_config.x86asm = {
   ---@type InstallInfo
   install_info = {
@@ -120,19 +146,6 @@ parsers_config.x86asm = {
     branch = "main",
   },
 }
-
----@type ts_context_commentstring.Config
-ts_context_commentstring.setup {
-  enable_autocmd = true,
-  custom_calculation = nil,
-  languages = {
-    go = { __default = '// %s', __multiline = '/* %s */' },
-    lua = { __default = '-- %s', __multiline = '--[[ %s ]]' },
-  },
-  config = {},
-  commentary_integration = nil,
-}
-vim.g.skip_ts_context_commentstring_module = true
 
 -- $ nvim --headless -c 'lua vim.cmd[[TSInstallInfo]]' -c 'q'
 -- :'<,'>s/\(\w*\)\s*\(\[\(✓\|✗\)\]\)/  "\1",  -- \2/g
@@ -284,7 +297,8 @@ local parsers = {
   -- "kcl",                -- [✗] not installed
   "kconfig", -- [✓] installed
   -- "kdl",                -- [✗] not installed
-  "kotlin",  -- [✓] installed
+  -- "kitty",              -- [✗] not installed
+  "kotlin", -- [✓] installed
   -- "koto",               -- [✗] not installed
   -- "kusto",              -- [✗] not installed
   -- "lalrpop",            -- [✗] not installed
@@ -420,7 +434,7 @@ local parsers = {
   "thrift",    -- [✓] installed
   -- "tiger",              -- [✗] not installed
   -- "tlaplus",            -- [✗] not installed
-  "tmux",    -- [✓] installed
+  -- "tmux",    -- [✓] installed
   "todotxt", -- [✓] installed
   "toml",    -- [✓] installed
   "tsv",     -- [✓] installed
@@ -461,7 +475,6 @@ local parsers = {
   "zig", -- [✓] installed
   -- "ziggy",              -- [✗] not installed
   -- "ziggy_schema",       -- [✗] not installed
-  "zsh", -- [✓] installed
 }
 
 ---------- old? config ----------
@@ -477,7 +490,7 @@ ts_config.setup({
     enable = true,
     disable = {
       "tmux",
-      "gitconfig",
+      -- "gitconfig",
       -- "dockerfile",
       -- "diff",
       -- "make",

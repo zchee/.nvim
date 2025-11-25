@@ -10,34 +10,36 @@ vim.hl.priorities.semantic_tokens = 125
 vim.hl.priorities.diagnostics = 150
 vim.hl.priorities.user = 200
 
---- @param name string Highlight group name
---- @param val vim.api.keyset.highlight Highlight definition map
+--- @param name string
+--- @param val vim.api.keyset.highlight
 local hi = function(name, val)
-  val.force = true
+  val = vim.tbl_extend("force", val, { force = true })
   vim.api.nvim_set_hl(0, name, val)
 end
 
-hi("WinBar", { fg = "None", bg = "None" })
-hi("diffRemoved", { fg = "red", bg = "None" })
+local hi_none = "None"
+
+hi("WinBar", { fg = "None", bg = hi_none })
+hi("diffRemoved", { fg = "red", bg = hi_none })
 
 hi("BlinkCmpMenuSelection", { link = "WildMenu" })
 
 -- Go
 --- Literals
-hi("@spell.go", { fg = "#92999f", bg = "None", blend = 70 })
-hi("@string.go", { fg = "#f2f3f3", bg = "None", blend = 50 }) -- { fg = "#92999f", bg = "None" }
+hi("@spell.go", { fg = "#92999f", bg = hi_none, blend = 70 })
+hi("@string.go", { fg = "#f2f3f3", bg = hi_none, blend = 50 }) -- { fg = "#92999f", bg = "None" }
 hi("@rune_literal.go", { link = "String" })
 
 --- Keywords
-hi("@type.builtin.go", { fg = "#ffbf6b", bg = "None", bold = false })
--- hi("@lsp.mod.defaultLibrary.go", { fg = "#ffbf6b", bg = "None", bold = false })
+hi("@type.builtin.go", { fg = "#ffbf6b", bg = hi_none, bold = false })
+-- hi("@lsp.mod.defaultLibrary.go", { fg = "#ffbf6b", bg = hi_none, bold = false })
 hi("@keyword.return.go", { link = "Statement" }) -- TODO(zchee): consider to use "Keyword" or "Statement"
 hi("@keyword.defer.go", { link = "Keyword" })    -- TODO(zchee): consider to use "Keyword" or "Statement"
 hi("@keyword.function.go", { link = "Keyword" }) -- TODO(zchee): consider to use "Keyword" or "Statement"
-hi("@number.go", { link = "None" })              -- TODO(zchee): consider to use "Keyword" or "Statement"
+hi("@number.go", { link = "Number" })            -- TODO(zchee): consider to use "Keyword" or "Statement"
 
 --- Comment
-hi("@comment.documentation.go", { fg = "#9ba3a8", bg = "None", bold = false, italic = true })
+hi("@comment.documentation.go", { fg = "#9ba3a8", bg = hi_none, bold = false, italic = true })
 hi("@comment.documentation.pragma.go", { link = "@attribute" })
 
 --- Conditional
@@ -45,14 +47,14 @@ hi("@conditional.case.go", { link = "Statement" })
 hi("@conditional.default.go", { link = "Statement" })
 
 --- Builtin types
-hi("@type.builtin.error.go", { fg = "#ff5370", bg = "None", bold = true })
+hi("@type.builtin.error.go", { fg = "#ff5370", bg = hi_none, bold = true })
 hi("@type.builtin.any", { link = "Keyword" })
-hi("@type.go", { link = "None" })
+hi("@type.go", { link = hi_none })
 
 --- Import decl
 hi("@namespace.go", { link = "Statement" })
-hi("@namespace.package.go", { fg = "#92999f", bg = "None" })
-hi("@module.go", { fg = "#769ae7", bg = "None", italic = true })
+hi("@namespace.package.go", { fg = "#92999f", bg = hi_none })
+hi("@module.go", { fg = "#769ae7", bg = hi_none, italic = true })
 
 --- Type decl
 hi("@type.definition.go", { link = "Normal" })
@@ -95,16 +97,16 @@ hi("@lsp.type.parameter.go", { link = "None" })
 -- printf
 hi("@character.printf", { link = "PreProc" })
 
---- gomod
+-- gomod
 hi("@string.special.gomod", { link = "String" })
 
---- Lua
+-- Lua
 hi("@namespace.builtin.lua", { link = "@type.builtin" })
 
 -- TypeScript
 hi("@keyword.modifier.typescript", { fg = "#c792ea", bg = "None", bold = true })
 
--- dockerfile
+-- Dockerfile
 -- hi("@keyword.dockerfile", { blend = 100 })
 
 -- Python
@@ -130,6 +132,10 @@ hi("@attribute.graphql", { link = "Macro" })
 -- Diff
 hi("@diff.plus", { fg = "#bae57d", bg = "None" })
 hi("@diff.minus", { fg = "#ff5370", bg = "None" })
+
+-- C
+hi("@label.c", { link = "@lsp.type.label.c" })
+hi("@lsp.type.label.c", { fg = "#7EE787", bg = "None" })
 
 -- CPP
 hi("doxygenBrief", { fg = "#81a2be", bg = "NONE" })

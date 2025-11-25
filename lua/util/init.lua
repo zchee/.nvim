@@ -185,6 +185,12 @@ end
 
 ---@param binary string binary name
 ---@return string
+function M.bun_prefix(binary)
+  return tostring(vim.fs.joinpath(os.getenv("BUN_INSTALL"), "bin", binary))
+end
+
+---@param binary string binary name
+---@return string
 function M.pnpm_prefix(binary)
   return tostring(vim.fs.joinpath(os.getenv("PNPM_HOME"), binary))
 end

@@ -132,8 +132,9 @@ end
 ---
 ---Returns the UNIX prefix directory according to the macOS cpu architecture.
 ---
+---@param ... string
 ---@return string
-function M.prefix()
+function M.prefix(...)
   local machine = vim.uv.os_uname()["machine"]
   local prefix
   if machine == "x86_64" then
@@ -142,7 +143,7 @@ function M.prefix()
     prefix = "/opt/local"
   end
 
-  return tostring(prefix)
+  return vim.fs.joinpath(tostring(prefix), ...)
 end
 
 ---
@@ -169,11 +170,7 @@ end
 ---@return string
 function M.homebrew_portable_ruby(binary)
   local prefix = M.homebrew_prefix()
-  if vim.uv.os_uname()["machine"] == "arm64" then
-    prefix = tostring(vim.fs.dirname(prefix))
-  end
-
-  return vim.fs.joinpath(prefix, "Homebrew/Library/Homebrew/vendor/portable-ruby/current/bin", binary)
+  return vim.fs.joinpath(prefix, "Library/Homebrew/vendor/portable-ruby/current/bin", binary)
 end
 
 ---@param formula string homebrew formula name

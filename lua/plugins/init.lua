@@ -30,6 +30,17 @@ return {
   --   dir = vim.fs.joinpath(util.go_path("src/github.com/zchee/trans.nvim")),
   --   cmd = { "TransNvim" },
   -- },
+  {
+    dir = util.src_path("github.com/zchee/metafrastis.nvim"),
+    event = "VeryLazy",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "folke/snacks.nvim",
+    },
+    config = function()
+      require("plugins.metafrastis")
+    end,
+  },
 
   -- AI
   {
@@ -85,14 +96,6 @@ return {
       },
     },
   },
-  -- {
-  --   "kiddos/gemini.nvim",
-  --   branch = "master",
-  --   event = "VeryLazy",
-  --   config = function()
-  --     require("plugins.gemini")
-  --   end,
-  -- },
   {
     "olimorris/codecompanion.nvim",
     branch = "main",

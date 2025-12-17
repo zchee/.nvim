@@ -295,6 +295,14 @@ return {
         branch = "main",
       },
       {
+        "hrsh7th/cmp-cmdline",
+        branch = "main",
+      },
+      {
+        "dmitmel/cmp-cmdline-history",
+        branch = "master",
+      },
+      {
         "hrsh7th/cmp-nvim-lsp-document-symbol",
         branch = "main",
       },

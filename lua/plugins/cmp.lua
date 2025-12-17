@@ -472,12 +472,97 @@ cmp.setup({
   },
 })
 
+-- for _, cmd_type in ipairs({ ":", "/", "?", "@" }) do
+--   cmp.setup.cmdline(cmd_type, {
+--     sources = {
+--       { name = "cmdline_history" },
+--     },
+--   })
+-- end
+
+local mapping_cmdline = {
+  ["<C-z>"] = {
+    c = function()
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        cmp.complete()
+      end
+    end,
+  },
+  ["<Tab>"] = {
+    c = function()
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        cmp.complete()
+      end
+    end,
+  },
+  ["<S-Tab>"] = {
+    c = function()
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        cmp.complete()
+      end
+    end,
+  },
+  ["<Up>"] = {
+    c = function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        fallback()
+      end
+    end,
+  },
+  ["<Down>"] = {
+    c = function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end,
+  },
+  ["<C-e>"] = {
+    c = cmp.mapping.abort(),
+  },
+  ["<C-y>"] = {
+    c = cmp.mapping.confirm({ select = false }),
+  },
+}
+
 cmp.setup.cmdline("/", {
-  sources = cmp.config.sources({
-    { name = 'nvim_lsp_document_symbol' }
-  }, {
-    { name = 'buffer' }
-  })
+  completion = {
+    keyword_length = 3,
+  },
+  mapping = mapping_cmdline,
+  sources = cmp.config.sources(
+    {
+      { name = "nvim_lsp_document_symbol" }
+    },
+    {
+      { name = "buffer" }
+    }
+  )
+})
+
+cmp.setup.cmdline(":", {
+  completion = {
+    keyword_length = 3,
+  },
+  mapping = mapping_cmdline,
+  sources = cmp.config.sources(
+    {
+      { name = "path" },
+    },
+    {
+      { name = "cmdline" },
+      { name = "cmdline_history" },
+    }
+  ),
 })
 
 cmp.setup.filetype("gitcommit", {

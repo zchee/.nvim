@@ -39,15 +39,53 @@ vim.g.rustaceanvim = {
       ---@type integer
       port = 27631,       -- default
     },
-    settings = {
-      server = {
-        extraEnv = {
-          ["RUSTUP_TOOLCHAIN"] = "nightly",
-          ["RUSTFLAGS"] = os.getenv("RUSTFLAGS"),
-          ["CHALK_OVERFLOW_DEPTH"] = "100000000",
-          ["CHALK_SOLVER_MAX_SIZE"] = "100000000",
-        },
-      },
+    -- settings = {
+    --   server = {
+    --     extraEnv = {
+    --       ["RUSTUP_TOOLCHAIN"] = "nightly",
+    --       ["RUSTFLAGS"] = os.getenv("RUSTFLAGS"),
+    --       ["CHALK_OVERFLOW_DEPTH"] = "100000000",
+    --       ["CHALK_SOLVER_MAX_SIZE"] = "100000000",
+    --     },
+    --   },
+    --   ["rust-analyzer"] = {
+    --     completion = {
+    --       fullFunctionSignatures = {
+    --         enable = true,
+    --       },
+    --       hideDeprecated = true,
+    --     },
+    --     diagnostics = {
+    --       experimental = "enable",
+    --     },
+    --     inlayHints = {
+    --       bindingModeHints = {
+    --         enable = true,
+    --       },
+    --       closureCaptureHints = {
+    --         enable = true,
+    --       },
+    --       genericParameterHints = {
+    --         lifetime = {
+    --           enable = true,
+    --         },
+    --         type = {
+    --           enable = true,
+    --         },
+    --       },
+    --       implicitSizedBoundHints = {
+    --         enable = true,
+    --       },
+    --       lifetimeElisionHints = {
+    --         useParameterNames = true,
+    --       },
+    --     },
+    --     runnables = {
+    --       extraArgs = { "--release" },
+    --     },
+    --   }
+    -- },
+    default_settings = {
       ["rust-analyzer"] = {
         completion = {
           fullFunctionSignatures = {

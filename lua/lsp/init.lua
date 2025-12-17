@@ -694,6 +694,7 @@ local servers = {
   ["gopls"] = require("lsp.gopls"),
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
+  ["rust_analyzer"] = require("lsp.rust_analyzer"),
   ["lua_ls"] = require("lsp.lua_ls"),
   ["protols"] = require("lsp.protols"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),

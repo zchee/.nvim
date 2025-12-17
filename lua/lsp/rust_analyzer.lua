@@ -1,82 +1,86 @@
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { "rustup", "run", "nightly", "rust-analyzer" },
+  cmd = { "rust-analyzer" },
   root_markers = { "Cargo.toml", ".git" },
-  init_options = {
-    server = {
-      extraEnv = {
-        ["RUSTUP_TOOLCHAIN"] = "nightly",
-        ["RUSTFLAGS"] = os.getenv("RUSTFLAGS"),
-        ["CHALK_OVERFLOW_DEPTH"] = "100000000",
-        ["CHALK_SOLVER_MAX_SIZE"] = "100000000",
-      },
-    },
-    ["rust-analyzer"] = {
-      completion = {
-        fullFunctionSignatures = {
-          enable = true,
-        },
-        hideDeprecated = true,
-      },
-      -- diagnostics = {
-      --   experimental = "enable",
-      -- },
-      lens = {
-        debug = { enable = true },
-        enable = true,
-        implementations = { enable = true },
-        references = {
-          adt = { enable = true },
-          enumVariant = { enable = true },
-          method = { enable = true },
-          trait = { enable = true },
-        },
-        run = { enable = true },
-        updateTest = { enable = true },
-      },
-      inlayHints = {
-        bindingModeHints = {
-          enable = true,
-        },
-        closureCaptureHints = {
-          enable = true,
-        },
-        genericParameterHints = {
-          lifetime = {
-            enable = true,
-          },
-          type = {
-            enable = true,
-          },
-        },
-        implicitSizedBoundHints = {
-          enable = true,
-        },
-        lifetimeElisionHints = {
-          useParameterNames = true,
-        },
-      },
-    }
-  },
+  -- init_options = {
+  --   server = {
+  --     extraEnv = {
+  --       ["RUSTUP_TOOLCHAIN"] = "nightly",
+  --       ["RUSTFLAGS"] = os.getenv("RUSTFLAGS"),
+  --       ["CHALK_OVERFLOW_DEPTH"] = "100000000",
+  --       ["CHALK_SOLVER_MAX_SIZE"] = "100000000",
+  --     },
+  --   },
+  --   ["rust-analyzer"] = {
+  --     completion = {
+  --       fullFunctionSignatures = {
+  --         enable = true,
+  --       },
+  --       hideDeprecated = true,
+  --     },
+  --     -- diagnostics = {
+  --     --   experimental = "enable",
+  --     -- },
+  --     lens = {
+  --       debug = { enable = true },
+  --       enable = true,
+  --       implementations = { enable = true },
+  --       references = {
+  --         adt = { enable = true },
+  --         enumVariant = { enable = true },
+  --         method = { enable = true },
+  --         trait = { enable = true },
+  --       },
+  --       run = { enable = true },
+  --       updateTest = { enable = true },
+  --     },
+  --     inlayHints = {
+  --       bindingModeHints = {
+  --         enable = true,
+  --       },
+  --       closureCaptureHints = {
+  --         enable = true,
+  --       },
+  --       genericParameterHints = {
+  --         lifetime = {
+  --           enable = true,
+  --         },
+  --         type = {
+  --           enable = true,
+  --         },
+  --       },
+  --       implicitSizedBoundHints = {
+  --         enable = true,
+  --       },
+  --       lifetimeElisionHints = {
+  --         useParameterNames = true,
+  --       },
+  --     },
+  --   }
+  -- },
   settings = {
-    server = {
-      extraEnv = {
-        ["RUSTUP_TOOLCHAIN"] = "nightly",
-        ["RUSTFLAGS"] = os.getenv("RUSTFLAGS"),
-        ["CHALK_OVERFLOW_DEPTH"] = "100000000",
-        ["CHALK_SOLVER_MAX_SIZE"] = "100000000",
-      },
-    },
+    -- server = {
+    --   extraEnv = {
+    --     ["RUSTUP_TOOLCHAIN"] = "nightly",
+    --     ["RUSTFLAGS"] = os.getenv("RUSTFLAGS"),
+    --     ["CHALK_OVERFLOW_DEPTH"] = "100000000",
+    --     ["CHALK_SOLVER_MAX_SIZE"] = "100000000",
+    --   },
+    -- },
     ["rust-analyzer"] = {
+      cachePriming = {
+        enabled = true,
+        numThreads = 0,
+      },
       completion = {
         fullFunctionSignatures = {
           enable = true,
         },
         hideDeprecated = true,
       },
-      -- diagnostics = {
-      --   experimental = "enable",
-      -- },
+      diagnostics = {
+        experimental = "enable",
+      },
       inlayHints = {
         bindingModeHints = {
           enable = true,
@@ -99,7 +103,10 @@ return {
           useParameterNames = true,
         },
       },
-    }
+      runnables = {
+        extraArgs = { "--release" },
+      },
+    },
   },
   --   cachePriming = {
   --     numThreads = "physical",

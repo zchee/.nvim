@@ -882,20 +882,20 @@ return {
 
     -- Rust
     {
-      {
-        'mrcjkb/rustaceanvim',
-        lazy = false,
-        confio = function()
-          require("plugins.rustaceanvim")
-        end,
-      },
+      -- {
+      --   'mrcjkb/rustaceanvim',
+      --   lazy = false,
+      --   confio = function()
+      --     require("plugins.rustaceanvim")
+      --   end,
+      -- },
       {
         "saecki/crates.nvim",
         branch = "main",
         config = function()
           require("crates").setup({
             lsp = {
-              enabled = true,
+              enabled = false,
               -- on_attach = function(client, bufnr)
               --   -- the same on_attach function as for your other language servers
               --   -- can be ommited if you're using the `LspAttach` autocmd

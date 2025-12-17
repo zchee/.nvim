@@ -19,16 +19,23 @@ end
 
 local hi_none = "None"
 
+-- nvim default
 hi("WinBar", { fg = "None", bg = hi_none })
 hi("diffRemoved", { fg = "red", bg = hi_none })
 
+-- plugins
 hi("BlinkCmpMenuSelection", { link = "WildMenu" })
 
 -- Go
 --- Literals
 hi("@spell.go", { fg = "#92999f", bg = hi_none, blend = 70 })
-hi("@string.go", { fg = "#f2f3f3", bg = hi_none, blend = 50 }) -- { fg = "#92999f", bg = "None" }
+hi("@string.go", { link = hi_none }) -- { fg = "#f2f3f3", bg = hi_none, blend = 50 }, { fg = "#92999f", bg = "None" }
 hi("@rune_literal.go", { link = "String" })
+-- Treesitter
+--   - @string.go priority: 130   language: go
+--
+-- Semantic Tokens
+--   - @lsp.type.number.go links to Number   priority: 125
 
 --- Keywords
 hi("@type.builtin.go", { fg = "#ffbf6b", bg = hi_none, bold = false })
@@ -85,14 +92,15 @@ hi("goImportedPkg", { fg = "#769ae7", bg = "None", italic = true, blend = 10 })
 --- fmt verb
 hi("@format_verb.go", { link = "PreProc" })
 
+hi("@lsp.type.function.go", { link = "Type" })
 hi("@lsp.type.namespace.go", { fg = "#769ae7", bg = "None", italic = true })
+hi("@lsp.type.number.go", { link = "Number" })
+hi("@lsp.type.parameter.go", { link = "None" })
+hi("@lsp.type.string.go", { fg = "#f2f3f3", bg = hi_none, blend = 50 }) -- link = "None"
 hi("@lsp.type.type.go", { link = "Normal" })
 hi("@lsp.type.typeParameter.go", { link = "Typedef" })
-hi("@lsp.type.function.go", { link = "Type" })
 hi("@lsp.type.variable.go", { link = "None" })
-hi("@lsp.type.string.go", { link = "None" })
 hi("@lsp.typemod.type.definition.go", { link = "Normal" })
-hi("@lsp.type.parameter.go", { link = "None" })
 
 -- printf
 hi("@character.printf", { link = "PreProc" })
@@ -110,17 +118,17 @@ hi("@keyword.modifier.typescript", { fg = "#c792ea", bg = "None", bold = true })
 -- hi("@keyword.dockerfile", { blend = 100 })
 
 -- Python
-hi("@constant.python", { fg = "#f2f3f3", bg = "None", blend = 50 })
 hi("@comment.python", { fg = "#9ba3a8", bg = "None", bold = false, italic = true })
+hi("@constant.python", { fg = "#f2f3f3", bg = "None", blend = 50 })
+hi("@lsp.type.namespace.python", { fg = "#769ae7", bg = "None", italic = true })
+hi("@lsp.type.variable.python", { link = "None" })
 hi("@spell.python", { link = "Commment" })
-hi("@string.documentation.python", { link = "Comment" })
-hi("pythonSpaceError", { fg = "#787f86", bg = "#787f86" })
+hi("@string.documentation.python", { link = "String" })
+hi("@variable.python", { link = "None" })
 hi("pythonDelimiter", { link = "Special" })
 hi("pythonNONE", { link = "pythonFunction" })
 hi("pythonSelf", { link = "pythonOperator" })
-hi("@lsp.type.variable.python", { link = "None" })
-hi("@variable.python", { link = "None" })
-hi("@lsp.type.namespace.python", { fg = "#769ae7", bg = "None", italic = true })
+hi("pythonSpaceError", { fg = "#787f86", bg = "#787f86" })
 
 -- YAML
 hi("@property.yaml", { fg = "#81a2be", bg = "NONE", bold = false })

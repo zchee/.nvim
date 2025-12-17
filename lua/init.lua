@@ -1,14 +1,14 @@
 jit.off()
 jit.opt.start(3)
--- jit.opt.start("-fma", "maxtrace=10000", "maxrecord=40000", "maxirconst=10000", "loopunroll=100")
 jit.opt.start("-fma")
+jit.opt.start("-dce")
+-- jit.opt.start("hotloop=10", "hotexit=2")
+jit.opt.start("hotloop=1")
+jit.opt.start("loopunroll=1000000")
+jit.opt.start("sizemcode=524288")
+jit.opt.start("maxtrace=8000", "maxrecord=16000", "minstitch=3", "maxmcode=40960")
+-- jit.opt.start("-fma", "maxtrace=10000", "maxrecord=40000", "maxirconst=10000", "loopunroll=100")
 jit.on(true, true)
-
--- Make sure to setup `mapleader` and `maplocalleader` before
--- loading lazy.nvim so that mappings are correct.
--- This is also a good place to setup other settings (vim.opt)
-vim.g.mapleader = "<Space>"
-vim.g.maplocalleader = "<BS>"
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -41,6 +41,12 @@ if not vim.uv.fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
+
+-- Make sure to setup `mapleader` and `maplocalleader` before
+-- loading lazy.nvim so that mappings are correct.
+-- This is also a good place to setup other settings (vim.opt)
+vim.g.mapleader = " " -- use "<Space>"?
+vim.g.maplocalleader = "<BS>"
 
 require("config.lazy")
 

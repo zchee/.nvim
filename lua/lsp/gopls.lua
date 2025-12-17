@@ -98,8 +98,9 @@ end
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
+  -- cmd = { util.go_path("bin", "gopls"), "serve" },
   cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" }, -- , "-mcp-listen=localhost:12215" m:12, c:5, p:15  --[[, "-remote=unix;/tmp/gopls.sock" --]]
-  filetypes = { "go", "gotmpl", "gomod", "gowork" },                               -- , "gomod", "gowork"
+  filetypes = { "go", "gotmpl", "gomod", "gowork" },
   root_dir = function(bufnr, on_dir)
     local fname = vim.api.nvim_buf_get_name(bufnr)
     get_mod_cache_dir()
@@ -193,7 +194,7 @@ return {
     usePlaceholders = true,
     deepCompletion = true,
     completeUnimported = true,
-    completionBudget = "0",          -- "100ms",
+    completionBudget = "100ms",      -- "100ms",
     importsSource = "gopls",
     matcher = "fuzzy",               -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
     symbolMatcher = "fastFuzzy",     -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
@@ -201,7 +202,7 @@ return {
     symbolScope = "workspace",       -- "workspace", "all",
     hoverKind = "fulldocumentation", -- "FullDocumentation",
     linkTarget = "",                 -- "pkg.go.dev",
-    linksInHover = "gopls",          -- true, false, "gopls"
+    linksInHover = false,            -- true, false, "gopls"
     importShortcut = "both",         -- "Link", "Both", "Definition"
     analyses = {
       appends = true,
@@ -270,7 +271,7 @@ return {
       functionTypeParameters = true,
       ignoredError = true,
     },
-    vulncheck = "imports", -- "off", "imports", "prompt"
+    vulncheck = "off", -- "off", "imports", "prompt"
     codelenses = {
       generate = true,
       regenerate_cgo = true,
@@ -280,7 +281,7 @@ return {
       upgrade_dependency = true,
       vendor = true,
     },
-    staticcheck = true,
+    staticcheck = false,
     ["local"] = "",
     verboseOutput = false,
     verboseWorkDoneProgress = false,
@@ -325,7 +326,7 @@ return {
     expandWorkspaceToModule = true,
     experimentalPostfixCompletions = true,
     templateExtensions = { "tmpl", "tpl", "gotmpl" },
-    diagnosticsDelay = "500ms",  -- "300ms",  -- "0ms", -- "500ms",
+    diagnosticsDelay = "300ms",  -- "300ms",  -- "0ms", -- "500ms",
     diagnosticsTrigger = "edit", -- "save", "edit",
     analysisProgressReporting = false,
     standaloneTags = {
@@ -335,12 +336,13 @@ return {
       "wireinject",
     },
     subdirWatchPatterns = "auto", -- "on", "off", "auto"
-    reportAnalysisProgressAfter = "1s",
+    reportAnalysisProgressAfter = "1000ms",
     telemetryPrompt = false,
     linkifyShowMessage = true,
     includeReplaceInWorkspace = false,
     zeroConfig = true,
     pullDiagnostics = true,
+    renameMovesSubpackages = true,
     testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
   },
 
@@ -353,12 +355,13 @@ return {
 
     if string.find(new_root_dir, "go/src") then
       new_config.settings.env = {
-        GOEXPERIMENTAL = { "arenas,cgocheck2,loopvar,newinliner,jsonv2,greenteagc,randomizedheapbase64,sizespecializedmalloc,goroutineleakprofile" },
+        GOEXPERIMENTAL = { "loopvar,newinliner,jsonv2,greenteagc,randomizedheapbase64,sizespecializedmalloc,goroutineleakprofile,runtimefreegc,simd,runtimesecret" },
       }
       new_config.settings.buildFlags = {
-        "goexperiment.arenas", "goexperiment.cgocheck2", "goexperiment.loopvar",
-        "goexperiment.newinliner", "goexperiment.jsonv2", "goexperiment.greenteagc",
-        "goexperiment.randomizedheapbase64", "goexperiment.sizespecializedmalloc", "goexperiment.goroutineleakprofile"
+        "goexperiment.loopvar", "goexperiment.newinliner", "goexperiment.jsonv2",
+        "goexperiment.greenteagc", "goexperiment.randomizedheapbase64", "goexperiment.sizespecializedmalloc",
+        "goexperiment.goroutineleakprofile", "goexperiment.runtimefreegc", "goexperiment.simd",
+        "goexperiment.runtimesecret",
       }
     end
   end,

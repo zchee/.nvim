@@ -1,5 +1,7 @@
 local util = require("util")
 
+--- https://github.com/redhat-developer/yaml-language-server#language-server-settings
+--- https://github.com/redhat-developer/yaml-language-server/blob/main/src/languageserver/handlers/settingsHandlers.ts
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   -- NOTE(zchee): use self-compiled for disabled "Matches multiple schemas when only one must validate." error
@@ -13,13 +15,13 @@ return {
       yamlVersion = 1.2,
       format = {
         enable = true,
-        singleQuote = true,
+        singleQuote = false,
         bracketSpacing = true,
         trailingComma = true,
         proseWrap = "preserve",
         printWidth = 150,
       },
-      validate = true,
+      validate = false,
       hover = true,
       completion = true,
       disableDefaultProperties = false,

@@ -72,11 +72,10 @@ return {
       diagnostics = {
         enable = true,
         globals = {
-          "vim",            -- neovim builtin
-          "vim.uv",         -- neovim builtin
-          "vim%.uv",        -- neovim builtin
-          "package",        -- neovim builtin
-          "packer_plugins", -- packer.nvim
+          "vim",     -- neovim builtin
+          "vim.uv",  -- neovim builtin
+          "vim%.uv", -- neovim builtin
+          "package", -- neovim builtin
           "describe",
           "it",
           "before_each",

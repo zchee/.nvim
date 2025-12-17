@@ -541,7 +541,6 @@ register_lsp(
     capabilities = default_capabilities_config(),
   }
 )
-lspconfig.neocmake.setup({})
 
 register_lsp(
   "tilt_ls",
@@ -555,7 +554,6 @@ register_lsp(
     capabilities = default_capabilities_config(),
   }
 )
-lspconfig.tilt_ls.setup(require("lsp.tilt_ls"))
 
 -- register_lsp(
 --   "sourcekit",
@@ -574,7 +572,7 @@ register_lsp(
   {
     cmd = { "ruby-lsp" },
     filetypes = { "ruby", "eruby" },
-    root_dir = lspconfig.util.root_pattern("Gemfile", ".git"),
+    root_markers = { "Gemfile", ".git" },
     init_options = {
       formatter = "auto",
     },
@@ -582,7 +580,6 @@ register_lsp(
     capabilities = default_capabilities_config(),
   }
 )
-lspconfig.ruby_lsp.setup(require("lsp.ruby_lsp"))
 
 -- register_lsp(
 --   "docker_language_server",
@@ -625,15 +622,20 @@ lspconfig.ruby_lsp.setup(require("lsp.ruby_lsp"))
 register_lsp(
   "tsgo",
   {
-    -- cmd = { "tsgo" },
-    filetypes = { "typescript" },
-    -- root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
-    -- root_dir = require("lspconfig").util.root_pattern("Dockerfile", "*.dockerfile", "Dockerfile*"),
+    cmd = { "tsgo", "--lsp", "-stdio" },
+    filetypes = {
+      "javascript",
+      "javascriptreact",
+      "javascript.jsx",
+      "typescript",
+      "typescriptreact",
+      "typescript.tsx",
+    },
+    root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
     single_file_support = true,
     capabilities = default_capabilities_config(),
   }
 )
-lspconfig.tsgo.setup(require("lsp.tsgo"))
 
 -- register_lsp(
 --   "pyrefly",
@@ -657,11 +659,11 @@ register_lsp(
   {
     cmd = { "protols" },
     filetypes = { "proto" },
+    root_markers = { "buf.yaml", "buf.gen.yaml", ".git" },
     single_file_support = true,
     capabilities = default_capabilities_config(),
   }
 )
-lspconfig.protols.setup(require("lsp.protols"))
 
 -- register_lsp(
 --   "phpactor",
@@ -679,11 +681,11 @@ lspconfig.protols.setup(require("lsp.protols"))
 vim.lsp.config("*", {
   capabilities = default_capabilities_config(),
   on_attach = on_attach,
-  root_markers = { ".git" },
+  -- root_markers = { ".git" },
 })
 
+-- ["ts_ls"] = require("lsp.ts_ls"),
 local servers = {
-  ["sourcekit"] = require("lsp.sourcekit"),
   ["asm_lsp"] = require("lsp.asm_lsp"),
   ["basedpyright"] = require("lsp.basedpyright"),
   ["bashls"] = require("lsp.bashls"),
@@ -693,25 +695,14 @@ local servers = {
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
+  ["protols"] = require("lsp.protols"),
+  ["ruby_lsp"] = require("lsp.ruby_lsp"),
+  ["sourcekit"] = require("lsp.sourcekit"),
   ["stainless"] = {},
-  -- ["markdown_oxide"] = {
-  --   cmd = { util.homebrew_binary("markdown-oxide", "markdown-oxide") },
-  --   capabilities = vim.tbl_deep_extend(
-  --     'force',
-  --     default_capabilities_config(),
-  --     {
-  --       workspace = {
-  --         didChangeWatchedFiles = {
-  --           dynamicRegistration = true,
-  --         },
-  --       },
-  --     }
-  --   ),
-  --   on_attach = on_attach,
-  -- },
   ["taplo"] = require("lsp.taplo"),
   ["terraformls"] = require("lsp.terraformls"),
-  ["ts_ls"] = require("lsp.ts_ls"),
+  ["tilt_ls"] = require("lsp.tilt_ls"),
+  ["tsgo"] = require("lsp.tsgo"),
   ["yamlls"] = require("lsp.yamlls"),
   ["zls"] = require("lsp.zls"),
 }

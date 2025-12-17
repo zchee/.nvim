@@ -47,6 +47,21 @@ return {
     },
   },
   settings = {
+    hostInfo = "neovim",
+    preferences = {
+      quotePreference = "double",
+      includeCompletionsForModuleExports = true,
+      includeCompletionsForImportStatements = true,
+      lazyConfiguredProjectsFromExternalProject = true,
+      organizeImportsCaseFirst = "upper",
+      includeInlayParameterNameHints = "all", -- "literals"
+      includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+      includeInlayFunctionParameterTypeHints = true,
+      includeInlayVariableTypeHints = true,
+      includeInlayPropertyDeclarationTypeHints = true,
+      includeInlayFunctionLikeReturnTypeHints = true,
+      includeInlayEnumMemberValueHints = true,
+    },
     typescript = {
       enablePromptUseWorkspaceTsdk = true,
       workspaceSymbols = {
@@ -64,23 +79,23 @@ return {
       },
     },
   },
-  on_init = function(client)
-    client.config.settings = {
-      typescript = {
-        inlayHints = {
-          includeInlayParameterNameHints = "all",
-          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayVariableTypeHints = true,
-          includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayEnumMemberValueHints = true,
-        },
-        completions = {
-          completeFunctionCalls = true,
-        },
-      },
-    }
-  end,
+  -- on_init = function(client)
+  --   client.config.settings = {
+  --     typescript = {
+  --       inlayHints = {
+  --         includeInlayParameterNameHints = "all",
+  --         includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+  --         includeInlayFunctionParameterTypeHints = true,
+  --         includeInlayVariableTypeHints = true,
+  --         includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+  --         includeInlayPropertyDeclarationTypeHints = true,
+  --         includeInlayFunctionLikeReturnTypeHints = true,
+  --         includeInlayEnumMemberValueHints = true,
+  --       },
+  --       completions = {
+  --         completeFunctionCalls = true,
+  --       },
+  --     },
+  --   }
+  -- end,
 }

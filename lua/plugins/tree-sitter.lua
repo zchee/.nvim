@@ -434,7 +434,7 @@ local parsers = {
   "thrift",    -- [✓] installed
   -- "tiger",              -- [✗] not installed
   -- "tlaplus",            -- [✗] not installed
-  -- "tmux",    -- [✓] installed
+  -- "tmux",               -- [✗] not installed
   "todotxt", -- [✓] installed
   "toml",    -- [✓] installed
   "tsv",     -- [✓] installed

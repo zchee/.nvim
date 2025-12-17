@@ -1551,6 +1551,10 @@ return {
       },
     },
     {
+      dir = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy/vimdoc-ja"),
+      lazy = false,
+    },
+    {
       "wakatime/vim-wakatime",
       lazy = false,
     },

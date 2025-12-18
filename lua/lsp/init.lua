@@ -518,31 +518,6 @@ local register_lsp = function(name, default_config)
 end
 
 register_lsp(
-  "neocmake",
-  {
-    cmd = { vim.fn.exepath("neocmakelsp"), "--stdio" },
-    filetypes = { "cmake" },
-    root_dir = function(fname)
-      return lspconfig.util.root_pattern(
-        unpack({ 'CMakePresets.json', 'CTestConfig.cmake', '.git', 'build', 'cmake' })
-      )(fname)
-    end,
-    single_file_support = true,
-    init_options = {
-      format = {
-        enable = false,
-      },
-      lint = {
-        enable = false,
-      },
-      scan_cmake_in_package = true,
-      enable_semantic_token = true,
-    },
-    capabilities = default_capabilities_config(),
-  }
-)
-
-register_lsp(
   "tilt_ls",
   {
     cmd = { "tilt", "lsp", "start" },
@@ -694,10 +669,11 @@ local servers = {
   ["gopls"] = require("lsp.gopls"),
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
-  ["rust_analyzer"] = require("lsp.rust_analyzer"),
   ["lua_ls"] = require("lsp.lua_ls"),
+  ["neocmake"] = require("lsp.neocmake"),
   ["protols"] = require("lsp.protols"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
+  ["rust_analyzer"] = require("lsp.rust_analyzer"),
   ["sourcekit"] = require("lsp.sourcekit"),
   ["stainless"] = {},
   ["taplo"] = require("lsp.taplo"),

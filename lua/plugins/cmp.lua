@@ -534,36 +534,36 @@ local mapping_cmdline = {
   },
 }
 
-cmp.setup.cmdline("/", {
-  completion = {
-    keyword_length = 3,
-  },
-  mapping = mapping_cmdline,
-  sources = cmp.config.sources(
-    {
-      { name = "nvim_lsp_document_symbol" }
-    },
-    {
-      { name = "buffer" }
-    }
-  )
-})
-
-cmp.setup.cmdline(":", {
-  completion = {
-    keyword_length = 3,
-  },
-  mapping = mapping_cmdline,
-  sources = cmp.config.sources(
-    {
-      { name = "path" },
-    },
-    {
-      { name = "cmdline" },
-      { name = "cmdline_history" },
-    }
-  ),
-})
+-- cmp.setup.cmdline("/", {
+--   completion = {
+--     keyword_length = 3,
+--   },
+--   mapping = mapping_cmdline,
+--   sources = cmp.config.sources(
+--     {
+--       { name = "nvim_lsp_document_symbol" }
+--     },
+--     {
+--       { name = "buffer" }
+--     }
+--   )
+-- })
+--
+-- cmp.setup.cmdline(":", {
+--   completion = {
+--     keyword_length = 3,
+--   },
+--   mapping = mapping_cmdline,
+--   sources = cmp.config.sources(
+--     {
+--       { name = "path" },
+--     },
+--     {
+--       { name = "cmdline" },
+--       { name = "cmdline_history" },
+--     }
+--   ),
+-- })
 
 cmp.setup.filetype("gitcommit", {
   sources = cmp.config.sources({

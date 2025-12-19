@@ -98,8 +98,8 @@ end
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  -- cmd = { util.go_path("bin", "gopls"), "serve" },
-  cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" }, -- , "-mcp-listen=localhost:12215" m:12, c:5, p:15  --[[, "-remote=unix;/tmp/gopls.sock" --]]
+  cmd = { util.go_path("bin", "gopls"), "serve" },
+  -- cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" }, -- , "-mcp-listen=localhost:12215" m:12, c:5, p:15  --[[, "-remote=unix;/tmp/gopls.sock" --]]
   filetypes = { "go", "gotmpl", "gomod", "gowork" },
   root_dir = function(bufnr, on_dir)
     local fname = vim.api.nvim_buf_get_name(bufnr)

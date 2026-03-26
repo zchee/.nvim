@@ -285,18 +285,6 @@ return {
     },
   },
 
-  {
-    "JoosepAlviste/nvim-ts-context-commentstring",
-    lazy = false,
-    -- event = "VeryLazy",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-    },
-    config = function()
-      require("plugins.ts_context_commentstring")
-    end,
-  },
-
   -- Completion
   {
     "hrsh7th/nvim-cmp",
@@ -395,13 +383,15 @@ return {
       "echasnovski/mini.icons",
       {
         "zbirenbaum/copilot-cmp",
+        dependencies = {
+          "zbirenbaum/copilot.lua",
+        },
         config = function()
           require("copilot_cmp").setup()
         end
       },
       {
         "zbirenbaum/copilot.lua",
-        lazy = false,
         event = "InsertEnter",
         build = "bun i -g @github/copilot-language-server@latest",
         config = function()
@@ -1382,7 +1372,6 @@ return {
     },
     {
       "johmsalas/text-case.nvim",
-      lazy = false,
       dependencies = {
         "nvim-telescope/telescope.nvim",
       },
@@ -1412,30 +1401,9 @@ return {
     },
     {
       "andymass/vim-matchup",
-      event = "VeryLazy",
-      -- config = function()
-      --   require("plugins.matchup")
-      -- end,
-      init = function()
-        vim.g.matchup_no_version_check = true
-
-        ---@type matchup.Config
-        require("match-up").setup({
-          ---@diagnostic disable-next-line
-          matchparen = {
-            enabled = 0,
-            deferred = 1,
-            deferred_fade_time = 450,
-          },
-          treesitter = {
-            enabled = true,
-            disabled = {},
-            include_match_words = true,
-            disable_virtual_text = true,
-            enable_quotes = true,
-            stopline = 5000,
-          }
-        })
+      event = { "BufReadPost", "BufNewFile" },
+      config = function()
+        require("plugins.matchup")
       end,
     },
     {

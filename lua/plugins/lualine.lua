@@ -1,35 +1,5 @@
 local lualine = require("lualine")
 
--- Autocommand to update untracked status only on save or load
--- https://github.com/pietervdheijden/dotfiles/commit/cc0a7aad212a
-vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost" }, {
-  pattern = "*",
-  callback = function()
-    local filepath = vim.fn.expand("%:p")
-    if filepath == "" then
-      vim.b.untracked_status = ""
-      return
-    end
-
-    -- Check if the file is untracked
-    local git_status = vim.fn.systemlist("git ls-files --others --exclude-standard " .. filepath)
-    if #git_status > 0 then
-      vim.b.untracked_status = "Untracked"
-    else
-      vim.b.untracked_status = ""
-    end
-  end,
-})
-
-local get_branch = function()
-  local result
-  local on_exit = function(obj)
-    result = obj.stdout:gsub("\n", "")
-  end
-  vim.system({ "git", "branch", "--show-current", "--no-color", "--omit-empty" }, { text = false }, on_exit):wait()
-  return " " .. result
-end
-
 -- { 'fileformat', icons_enabled = true }
 lualine.setup({
   options = {
@@ -76,7 +46,7 @@ lualine.setup({
         },
       },
       {
-        get_branch,
+        "branch",
         padding = {
           left = 0,
           right = 1,

@@ -3,9 +3,9 @@ local util = require("util")
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   autostart = true,
-  cmd = { util.homebrew_binary("terraform-ls-head", "terraform-ls"), "serve", "-req-concurrency=32" },
+  cmd = { util.homebrew_binary("terraform-ls-head", "terraform-ls"), "serve", "-req-concurrency=16" },
   filetypes = { "terraform", "terraform-vars" },
-  root_markers = { ".terraform", ".git" },
+  root_markers = { ".terraform.lock.hcl", ".terraform", ".git" },
   -- root_dir = require("lspconfig").util.root_pattern(
   --   ".terraform",
   --   ".terraform.lock.hcl",

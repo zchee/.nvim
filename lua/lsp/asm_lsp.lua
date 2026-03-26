@@ -5,7 +5,8 @@ return {
   cmd = { util.homebrew_binary("asm-lsp", "asm-lsp") },
   filetypes = {
     "asm",
-    "goasm",
     "vmasm",
+    -- "goasm",
   },
+  root_markers = { ".asm-lsp.toml", ".git" },
 }

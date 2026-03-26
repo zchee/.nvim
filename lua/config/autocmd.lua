@@ -48,6 +48,7 @@ if vim.fn.has("mac") then
     local sdk_dir = vim.fs.joinpath(developer_dir, "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk")
     local toolchain_dir = vim.fs.joinpath(developer_dir, "/Toolchains/XcodeDefault.xctoolchain")
 
+    vim.opt.path:append(vim.fs.joinpath(util.homebrew_prefix(), "include"))
     vim.opt.path:append("/usr/local/include")
     vim.opt.path:append(vim.fs.joinpath(sdk_dir, "/usr/include"))
     vim.opt.path:append(vim.fs.joinpath(toolchain_dir .. "/usr/include/c++/v1"))
@@ -71,8 +72,8 @@ end
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "c", "cpp", "objc", "objcpp", "go" },
   callback = function()
-    if vim.fn.isdirectory("/usr/local/Frameworks/Python.framework/Headers") then
-      vim.opt.path:append("/usr/local/Frameworks/Python.framework/Headers")
+    if vim.fn.isdirectory(vim.fs.joinpath(util.homebrew_prefix(), "Frameworks/Python.framework/Headers")) then
+      vim.opt.path:append(vim.fs.joinpath(util.homebrew_prefix(), "Frameworks/Python.framework/Headers"))
     end
   end,
 })
@@ -325,30 +326,32 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 --   callback = highlight_symbol,
 -- })
 
--- -- https://github.com/golang/tools/blob/gopls/v0.11.0/gopls/doc/vim.md#imports
+-- https://github.com/golang/tools/blob/gopls/v0.11.0/gopls/doc/vim.md#imports
+---@param client vim.lsp.Client
+---@param bufnr integer
+---@param cmd string
+local function code_action_sync(client, bufnr, cmd)
+  local params = {}
+  params = vim.lsp.util.make_range_params(0, "utf-16")
+  --- @diagnostic disable-next-line
+  params.context = { only = { cmd }, diagnostics = {} }
+
+  --- @diagnostic disable-next-line
+  local resp = client.request_sync("textDocument/codeAction", params, 3000, bufnr)
+  for cid, r in pairs(resp and resp.result or {}) do
+    if r.edit then
+      local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
+      vim.lsp.util.apply_workspace_edit(r.edit, enc)
+    end
+  end
+end
+
 -- ---@param client vim.lsp.Client
 -- ---@param bufnr integer
--- ---@param cmd string
--- local function code_action_sync(client, bufnr, cmd)
---   local params = {}
---   params = vim.lsp.util.make_range_params(0, "utf-16")
---   params.context = { only = { cmd }, diagnostics = {} } --- @diagnostic disable-line
---
---   local resp = client.request_sync("textDocument/codeAction", params, 3000, bufnr) --- @diagnostic disable-line
---   for cid, r in pairs(resp and resp.result or {}) do
---     if r.edit then
---       local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
---       vim.lsp.util.apply_workspace_edit(r.edit, enc)
---     end
---   end
--- end
---
--- ---@param client vim.lsp.Client
--- ---@param bufnr integer
--- local function organize_imports_sync(client, bufnr)
---   code_action_sync(client, bufnr, "source.organizeImports")
--- end
---
+local function organize_imports_sync(client, bufnr)
+  code_action_sync(client, bufnr, "source.organizeImports")
+end
+
 -- ---@param client vim.lsp.Client
 -- ---@param bufnr integer
 -- local function fix_all_sync(client, bufnr)
@@ -452,7 +455,6 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 -- })
 
 -- BufWritePre
-local augroup_code_action_format = vim.api.nvim_create_augroup("LspCodeActionFormat", { clear = false })
 local code_action_kinds = {
   "quickfix",
   "refactor",
@@ -463,6 +465,7 @@ local code_action_kinds = {
   "source.organizeImports",
   "source.fixAll",
 }
+local augroup_code_action_format = vim.api.nvim_create_augroup("LspCodeActionFormat", { clear = false })
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = augroup_code_action_format,
   pattern = {

@@ -41,8 +41,8 @@ lazydev.setup({
         -- path = util.homebrew_prefix() .. "/opt/lua-language-server/libexec/meta/3rd/luv/library",
         -- path = mason_path.package_prefix("lua-language-server") .. "libexec/meta/3rd/luv/library"
       },
-      -- "plenary.nvim",
-      -- "nvim-treesitter",
+      "plenary.nvim",
+      "nvim-treesitter",
     },
   },
   integrations = {
@@ -58,7 +58,7 @@ lazydev.setup({
 -- https://github.com/LuaLS/lua-language-server/blob/master/script/config/template.lua
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.homebrew_binary("lua-language-server", "lua-language-server") },
+  cmd = { util.homebrew_binary("lua-language-server-head", "lua-language-server") },
   settings = {
     Lua = {
       completion = {
@@ -74,7 +74,7 @@ return {
         globals = {
           "vim",     -- neovim builtin
           "vim.uv",  -- neovim builtin
-          "vim%.uv", -- neovim builtin
+          -- "vim%.uv", -- neovim builtin
           "package", -- neovim builtin
           "describe",
           "it",
@@ -90,7 +90,7 @@ return {
         },
         libraryFiles = "Opened",
         workspaceDelay = 3000,
-        workspaceEvent = "OnSave",
+        workspaceEvent = "OnChange", -- "OnSave",
         workspaceRate = 100,
       },
       format = {
@@ -150,14 +150,15 @@ return {
         ignoreDir = {
           ".*_tmp/.*",
         },
-        -- library = vim.list_extend(vim.api.nvim_get_runtime_file("lua", true), {
-        --   "${3rd}/luv/library",
-        --   "${3rd}/busted/library",
-        --   "${3rd}/luassert/library",
-        -- }),
+        library = {
+          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/busted/library"),
+          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/library"),
+          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library"),
+        },
         maxPreload = 500000,     -- default: 5000, 500000
         preloadFileSize = 50000, -- default: 500, 50000
         useGitIgnore = true,
+        userThirdParty = {},
       },
     },
   },

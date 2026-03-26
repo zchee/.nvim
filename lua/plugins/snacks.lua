@@ -1,5 +1,8 @@
 local snacks = require("snacks")
 local util   = require("util")
+local compat = require("plugins.snacks_compat")
+
+compat.patch_quickfile_module(require("snacks.quickfile"))
 
 ---@class snacks.Config: snacks.plugins.Config
 snacks.setup({
@@ -82,7 +85,7 @@ snacks.setup({
       },
     },
     math = {
-      enabled = true,
+      enabled = false,
       -- in the templates below, `${header}` comes from any section in your document,
       -- between a start/end header comment. Comment syntax is language-specific.
       -- * start comment: `// snacks: header start`
@@ -144,8 +147,8 @@ snacks.setup({
   notifier     = {
     enabled = true,
     timeout = 10000,
-    width = { min = 100, max = 0.6 },
-    height = { min = 1, max = 0.6 },
+    width = { min = 100, max = 0.8 },
+    height = { min = 1, max = 0.8 },
     margin = { top = 0, right = 1, bottom = 0 },
     padding = true, -- add 1 cell of left/right padding to the notification window
     sort = { "added", "level" },
@@ -172,9 +175,16 @@ snacks.setup({
     ---@type fun(notif: snacks.notifier.Notif): boolean # filter our unwanted notifications (return false to hide)
     filter = function(notif)
       local is_gopls = string.find(notif.msg, "gopls")
-      if is_gopls and string.find(notif.msg, "context canceled") or string.find(notif.msg, "timeout") or string.find(notif.msg, "pull diagnostics not supported for this file kind") then
+      if is_gopls and
+          string.find(notif.msg, "context canceled") or
+          string.find(notif.msg, "timeout") or
+          string.find(notif.msg, "pull diagnostics not supported for this file kind") then
         return false
       end
+      if string.find(notif.msg, "vim-illuminate: An internal error") then
+        return false
+      end
+
       return true
     end,
     refresh = 100,
@@ -290,7 +300,10 @@ snacks.setup({
       status  = "󰈸 ",
     },
   },
-  quickfile    = { enabled = true },
+  quickfile    = {
+    enabled = true,
+    exclude = { "latex", "ruby" },
+  },
   scope        = { enabled = false },
   scratch      = { enabled = false },
   scroll       = { enabled = false },

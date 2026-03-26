@@ -1,13 +1,13 @@
 local render_markdown = require("render-markdown")
 
----@module 'render-markdown'
----@class render.md.UserConfig: render.md.buffer.UserConfig
+---@class render.md.UserConfig
 render_markdown.setup({
   preset = "lazy",
   file_types = {
     "markdown",
     "Avante",
   },
+  restart_highlighter = true,
   completions = {
     blink = {
       enabled = true,

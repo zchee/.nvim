@@ -1,7 +1,8 @@
 local ts_context_commentstring = require('ts_context_commentstring')
 
+---@class ts_context_commentstring.Config
 ts_context_commentstring.setup({
-  enable_autocmd = true,
+  enable_autocmd = false,
   custom_calculation = nil,
   -- commentary_integration = {
   --   Commentary = 'gc',

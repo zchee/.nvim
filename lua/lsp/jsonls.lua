@@ -2,7 +2,7 @@ local util = require "util"
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.bun_prefix("vscode-json-language-server"), "--stdio" },
+  cmd = { util.homebrew_binary("node", "node"), util.bun_prefix("vscode-json-language-server"), "--stdio" },
   filetypes = { "json", "json5", "jsonschema" },
   -- https://github.com/microsoft/vscode/blob/main/extensions/json-language-features/package.json
   settings = {
@@ -16,6 +16,10 @@ return {
           url = "file:///Users/zchee/src/github.com/zchee/schema/claude-code.schema.json",
           -- url = "https://raw.githubusercontent.com/zchee/schema/refs/heads/main/claude-code.schema.json",
           fileMatch = ".*/%.claude.json",
+        },
+        {
+          url = "https://raw.githubusercontent.com/zchee/schema/refs/heads/main/claude-code.schema.json",
+          fileMatch = "/\\.?codex/hooks.json",
         },
         -- {
         --   url = "/Users/zchee/src/github.com/zchee/schema/claude-code.settings.schema.json",

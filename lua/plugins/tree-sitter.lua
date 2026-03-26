@@ -27,7 +27,7 @@ vim.treesitter.language.register("zsh", "zsh")
 ---@class ParserInfo[]
 local parsers_config = ts_parsers.get_parser_configs()
 
---- goasm
+--- goasm: TODO(zchee): development
 -- treesitter_parsers_config.goasm = {
 --   ---@type InstallInfo
 --   install_info = {
@@ -39,6 +39,18 @@ local parsers_config = ts_parsers.get_parser_configs()
 --   },
 --   -- filetype = "goasm",
 --   maintainers = { "@zchee" },
+-- }
+
+--- zsh: TODO(zchee): development
+-- parsers_config.zsh = {
+--   ---@type InstallInfo
+--   install_info = {
+--     url = "https://github.com/zchee/tree-sitter-zsh",
+--     branch = "devel",
+--     files = { "src/parser.c", "src/scanner.c" },
+--     generate_requires_npm = true,
+--     requires_generate_from_grammar = true,
+--   },
 -- }
 
 --- cel
@@ -53,77 +65,13 @@ parsers_config.cel = {
   },
 }
 
---- mustache
-parsers_config.mustache = {
-  ---@type InstallInfo
-  install_info = {
-    url = "https://github.com/TheLeoP/tree-sitter-mustache",
-    branch = "main",
-    files = { "src/parser.c", "src/scanner.c" },
-    generate_requires_npm = true,
-    requires_generate_from_grammar = true,
-  },
-}
-
---- zsh
--- parsers_config.zsh = {
---   ---@type InstallInfo
---   install_info = {
---     url = "https://github.com/zchee/tree-sitter-zsh",
---     branch = "devel",
---     files = { "src/parser.c", "src/scanner.c" },
---     generate_requires_npm = true,
---     requires_generate_from_grammar = true,
---   },
--- }
-
---- fork: dockerfile
-parsers_config.dockerfile = {
-  ---@type InstallInfo
-  install_info = {
-    url = "https://github.com/zchee/tree-sitter-dockerfile",
-    files = { "src/parser.c", "src/scanner.c" },
-  },
-}
-
---- fork: func
-parsers_config.func = {
-  ---@type InstallInfo
-  install_info = {
-    url = "https://github.com/tree-sitter-grammars/tree-sitter-func",
-    files = { "src/parser.c" },
-    branch = "main",
-  },
-}
-
---- fork: make
-parsers_config.make = {
-  ---@type InstallInfo
-  install_info = {
-    -- url = "https://github.com/tree-sitter-grammars/tree-sitter-make",
-    url = util.src_path("github.com/tree-sitter-grammars/tree-sitter-make"),
-    files = { "src/parser.c" },
-    -- branch = "main",
-  },
-}
-
---- fork: printf
-parsers_config.printf = {
-  ---@type InstallInfo
-  install_info = {
-    url = "https://github.com/tree-sitter-grammars/tree-sitter-printf",
-    files = { "src/parser.c" },
-    branch = "main",
-  },
-}
-
 --- kitty
 parsers_config.kitty = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/OXY2DEV/tree-sitter-kitty",
-    files = { "src/parser.c" },
     branch = "main",
+    files = { "src/parser.c" },
   },
 }
 
@@ -132,8 +80,8 @@ parsers_config.wit = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/bytecodealliance/tree-sitter-wit",
-    files = { "src/parser.c" },
     branch = "main",
+    files = { "src/parser.c" },
   },
 }
 
@@ -142,8 +90,86 @@ parsers_config.x86asm = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/bearcove/tree-sitter-x86asm",
-    files = { "src/parser.c" },
     branch = "main",
+    files = { "src/parser.c" },
+  },
+}
+
+--- tree-sitter-grammars: func
+parsers_config.func = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/tree-sitter-grammars/tree-sitter-func",
+    branch = "main",
+    files = { "src/parser.c" },
+  },
+}
+
+--- tree-sitter-grammars: make
+parsers_config.make = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/tree-sitter-grammars/tree-sitter-make",
+    branch = "main",
+    -- url = util.src_path("github.com/tree-sitter-grammars/tree-sitter-make"),
+    files = { "src/parser.c" },
+  },
+}
+
+--- tree-sitter-grammars: printf
+parsers_config.printf = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/tree-sitter-grammars/tree-sitter-printf",
+    branch = "main",
+    files = { "src/parser.c" },
+  },
+}
+
+--- fork: dockerfile
+parsers_config.dockerfile = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/zchee/tree-sitter-dockerfile",
+    branch = "main",
+    files = {
+      "src/parser.c",
+      "src/scanner.c",
+    },
+  },
+}
+
+--- fork: mustache
+parsers_config.mustache = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/zchee/tree-sitter-mustache",
+    branch = "dev",
+    files = {
+      "src/parser.c",
+      "src/scanner.c",
+    },
+  },
+}
+
+--- fork: mlir
+parsers_config.mlir = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/zchee/tree-sitter-mlir",
+    branch = "dev",
+    files = { "src/parser.c" },
+  },
+}
+
+--- fork: swift
+--- TODO(zchee): fix
+parsers_config.swift = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/zchee/tree-sitter-swift",
+    branch = "dev",
+    files = { "src/parser.c" },
   },
 }
 
@@ -302,7 +328,7 @@ local parsers = {
   -- "koto",               -- [✗] not installed
   -- "kusto",              -- [✗] not installed
   -- "lalrpop",            -- [✗] not installed
-  "latex", -- [✓] installed
+  -- "latex",              -- [✗] not installed
   -- "ledger",             -- [✗] not installed
   -- "leo",                -- [✗] not installed
   "linkerscript", -- [✓] installed
@@ -312,7 +338,7 @@ local parsers = {
   "lua",    -- [✓] installed
   "luadoc", -- [✓] installed
   "luap",   -- [✓] installed
-  -- "luau",              -- [✗] not installed
+  -- "luau",               -- [✗] not installed
   -- "m68k",               -- [✗] not installed
   "make",              -- [✓] installed
   "markdown",          -- [✓] installed
@@ -419,14 +445,14 @@ local parsers = {
   -- "surface",            -- [✗] not installed
   -- "svelte",             -- [✗] not installed
   -- "sway",               -- [✗] not installed
-  "swift", -- [✓] installed
+  -- "swift",              -- [✗] not installed, TODO(zchee): install
   -- "sxhkdrc",            -- [✗] not installed
   -- "systemtap",          -- [✗] not installed
   -- "t32",                -- [✗] not installed
   "tablegen", -- [✓] installed
   -- "tact",               -- [✗] not installed
   -- "tcl",                -- [✗] not installed
-  "teal",      -- [✓] installed
+  -- "teal",               -- [✗] not installed
   "templ",     -- [✓] installed
   -- "tera",               -- [✗] not installed
   "terraform", -- [✓] installed
@@ -490,39 +516,21 @@ ts_config.setup({
     enable = true,
     disable = {
       "tmux",
-      -- "gitconfig",
-      -- "dockerfile",
-      -- "diff",
-      -- "make",
-      -- "vim",
-      -- "zsh",
     },
-    additional_vim_regex_highlighting = {
-      -- "zsh",
-      -- "dockerfile",
-      -- "gitconfig",
-      -- "diff",
-      -- "gitcommit",
-      -- "make",
-      -- "toml",
-    },
+    additional_vim_regex_highlighting = {},
     set_custom_captures = {},
   },
   indent = {
     enable = true,
     disable = {
-      -- "go",
-      -- "gomod",
-      -- "json",
-      -- "python",
       "yaml",
     },
   },
   incremental_selection = {
     enable = true,
-    disable = {
-      "go",
-    },
+    -- disable = {
+    --   "go",
+    -- },
     keymaps = {
       init_selection = "gnn",
       node_decremental = "grm",

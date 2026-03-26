@@ -1,17 +1,36 @@
 local lualine = require("lualine")
 
-local get_branch = function()
-  -- return "foo"
-  local result
-  vim.system({ "git", "branch", "--show-current", "--no-color", "--omit-empty" }, { text = true },
-    function(obj)
-      result = obj.stdout
+-- Autocommand to update untracked status only on save or load
+-- https://github.com/pietervdheijden/dotfiles/commit/cc0a7aad212a
+vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost" }, {
+  pattern = "*",
+  callback = function()
+    local filepath = vim.fn.expand("%:p")
+    if filepath == "" then
+      vim.b.untracked_status = ""
+      return
     end
-  ):wait()
-  return result
-  -- return " " .. result
+
+    -- Check if the file is untracked
+    local git_status = vim.fn.systemlist("git ls-files --others --exclude-standard " .. filepath)
+    if #git_status > 0 then
+      vim.b.untracked_status = "Untracked"
+    else
+      vim.b.untracked_status = ""
+    end
+  end,
+})
+
+local get_branch = function()
+  local result
+  local on_exit = function(obj)
+    result = obj.stdout:gsub("\n", "")
+  end
+  vim.system({ "git", "branch", "--show-current", "--no-color", "--omit-empty" }, { text = false }, on_exit):wait()
+  return " " .. result
 end
 
+-- { 'fileformat', icons_enabled = true }
 lualine.setup({
   options = {
     icons_enabled = true,
@@ -32,9 +51,10 @@ lualine.setup({
     always_divide_middle = true,
     globalstatus = false,
     refresh = {
-      statusline = 1000,
-      tabline = 1000,
-      winbar = 1000,
+      statusline = 500,
+      tabline = 500,
+      winbar = 500,
+      refresh_time = 16, -- ~60fps
     },
   },
   sections = {
@@ -55,13 +75,13 @@ lualine.setup({
           newfile = "[New]",     -- Text to show for newly created file before first write
         },
       },
-      -- {
-      --   get_branch,
-      --   padding = {
-      --     left = 20,
-      --     right = 2,
-      --   },
-      -- },
+      {
+        get_branch,
+        padding = {
+          left = 0,
+          right = 1,
+        },
+      },
       {
         "filetype",
         color = {
@@ -74,10 +94,11 @@ lualine.setup({
       },
       "diff",
       "diagnostics",
-      {
-        "copilot",
-      },
       "location",
+      {
+        "fileformat",
+        icons_enabled = false,
+      },
     },
     lualine_c = {
     },

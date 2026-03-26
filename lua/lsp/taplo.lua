@@ -20,6 +20,11 @@ return {
           "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
           "https://taplo.tamasfe.dev/schema_index.json",
         },
+        associations = {
+          [".*/\\.?codex/config.toml"] =
+          -- "file:///Users/zchee/src/github.com/zchee/schema/codex.schema.json",
+          "https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/core/config.schema.json",
+        },
         cache = {
           memoryExpiration = 60, -- default: 60
           diskExpiration = 600,  -- default: 600
@@ -55,7 +60,8 @@ return {
   },
   on_attach = function(client, bufnr)
     local bufname = vim.api.nvim_buf_get_name(bufnr)
-    if string.find(bufname, "pyproject.toml") then
+    if string.find(bufname, "pyproject") then
+      ---@diagnostic disable-next-line
       client.settings.evenBetterToml.formatter.indentString = "    "
     end
   end,

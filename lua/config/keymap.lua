@@ -1,3 +1,6 @@
+vim.g.mapleader = " "
+vim.g.maplocalleader = "<BS>"
+
 local autocmd_user = vim.api.nvim_create_augroup("AutocmdUser", { clear = true })
 
 -- " Map Leader:
@@ -84,8 +87,8 @@ vim.keymap.set({ "v", "x" }, "tr", "<Plug>(operator-surround-replace)", { silent
 -- "   <S-Up>) <Nop>
 
 
-vim.keymap.set({ "n" }, "<Space>", "<Nop>", { noremap = true })
-vim.keymap.set({ "n" }, "<BS>", "<Nop>", { noremap = true })
+-- vim.keymap.set({ "n" }, "<Space>", "<Nop>", { noremap = true })
+-- vim.keymap.set({ "n" }, "<BS>", "<Nop>", { noremap = true })
 
 -- vim.keymap.set({ "n" }, "*", "<Plug>(asterisk-gz*)", { nowait = true, silent = true })
 -- vim.keymap.set({ "n" }, "-", "<Cmd>NvimTreeToggle<CR>", { noremap = true, silent = true, nowait = true })

@@ -50,13 +50,3 @@
 
 ((const_spec (expression_list) @spell.const_string_literal)
  (#lua-match? @spell.const_string_literal "[a-z,A-Z-\/]"))
-
-((call_expression (rune_literal) @string.rune_literal)
- (#lua-match? @string.rune_literal "[a-z,A-Z-\/]"))
-          ; (expression_statement ; [39, 2] - [39, 20]
-          ;   (call_expression ; [39, 2] - [39, 20]
-          ;     function: (selector_expression ; [39, 2] - [39, 15]
-          ;       operand: (identifier) ; [39, 2] - [39, 5]
-          ;       field: (field_identifier)) ; [39, 6] - [39, 15]
-          ;     arguments: (argument_list ; [39, 15] - [39, 20]
-          ;       (rune_literal)))))) ; [39, 16] - [39, 19]

@@ -6,20 +6,25 @@ copilot.setup({
   panel = { enabled = false },
   suggestion = { enabled = false },
   filetypes = {
-    -- ["*"] = false,
+    ["*"] = true,
     help = false,
-    markdown = true,
     sh = false,
   },
   copilot_node_command = util.homebrew_binary("node", "node"),
   server = {
     type = "nodejs",
-    custom_server_filepath = vim.fs.joinpath(util.getenv("BUN_INSTALL"),
-      "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"),
+    custom_server_filepath = vim.fs.joinpath(
+      util.getenv("BUN_INSTALL"),
+      "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"
+    ),
   },
   copilot_model = "gpt-41-copilot",
+  --- @class vim.lsp.Config : vim.lsp.ClientConfig
   server_opts_overrides = {
-    init_options = {
+    settings = {
+      telemetry = {
+        telemetryLevel = "off"
+      },
       github = {
         copilot = {
           selectedCompletionModel = "gpt-41-copilot",

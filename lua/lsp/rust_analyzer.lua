@@ -5,11 +5,35 @@
 return {
   cmd = { "rust-analyzer" },
   root_markers = { "Cargo.toml", ".git" },
-  settings = {
+  init_options = {
+    cachePriming = {
+      enabled = true,
+      numThreads = 8,
+    },
+    cargo = {
+      allTargets = false,
+      buildScripts = {
+        enable = true,
+        seRustcWrapper = true,
+        invocationStrategy = "once",
+      },
+      extraArgs = {
+        "--release",
+      },
+      extraEnv = {
+        RUSTC_WRAPPER = "/opt/homebrew/opt/sccache/bin/sccache",
+        RUSTFLAGS = os.getenv("RUSTFLAGS"),
+        SKIP_WASM_BUILD = "1",
+      },
+      loadOutDirsFromCheck = true,
+    },
+    procMacro = {
+      enable = true,
+    },
+    numThreads = 8,
     ["rust-analyzer"] = {
-      cachePriming = {
-        enabled = true,
-        numThreads = "physical",
+      check = {
+        extraArgs = { "--release" },
       },
       completion = {
         fullFunctionSignatures = {
@@ -19,6 +43,12 @@ return {
       },
       diagnostics = {
         experimental = "enable",
+      },
+      imports = {
+        granularity = {
+          group = "module",
+        },
+        prefix = "self",
       },
       inlayHints = {
         bindingModeHints = {
@@ -41,6 +71,84 @@ return {
         lifetimeElisionHints = {
           useParameterNames = true,
         },
+      },
+      rustfmt = {
+        -- extraArgs = { "+nightly-2023-11-01" },
+      },
+      runnables = {
+        extraArgs = { "--release" },
+      },
+    },
+  },
+  settings = {
+    cachePriming = {
+      enabled = true,
+      numThreads = 8,
+    },
+    cargo = {
+      allTargets = false,
+      buildScripts = {
+        enable = true,
+        seRustcWrapper = true,
+        invocationStrategy = "once",
+      },
+      extraArgs = {
+        "--release",
+      },
+      extraEnv = {
+        RUSTC_WRAPPER = "/opt/homebrew/opt/sccache/bin/sccache",
+        RUSTFLAGS = os.getenv("RUSTFLAGS"),
+        SKIP_WASM_BUILD = "1",
+      },
+      loadOutDirsFromCheck = true,
+    },
+    procMacro = {
+      enable = true,
+    },
+    numThreads = 8,
+    ["rust-analyzer"] = {
+      check = {
+        extraArgs = { "--release" },
+      },
+      completion = {
+        fullFunctionSignatures = {
+          enable = true,
+        },
+        hideDeprecated = true,
+      },
+      diagnostics = {
+        experimental = "enable",
+      },
+      imports = {
+        granularity = {
+          group = "module",
+        },
+        prefix = "self",
+      },
+      inlayHints = {
+        bindingModeHints = {
+          enable = true,
+        },
+        closureCaptureHints = {
+          enable = true,
+        },
+        genericParameterHints = {
+          lifetime = {
+            enable = true,
+          },
+          type = {
+            enable = true,
+          },
+        },
+        implicitSizedBoundHints = {
+          enable = true,
+        },
+        lifetimeElisionHints = {
+          useParameterNames = true,
+        },
+      },
+      rustfmt = {
+        -- extraArgs = { "+nightly-2023-11-01" },
       },
       runnables = {
         extraArgs = { "--release" },

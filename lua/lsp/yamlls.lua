@@ -6,6 +6,7 @@ local util = require("util")
 return {
   -- NOTE(zchee): use self-compiled for disabled "Matches multiple schemas when only one must validate." error
   cmd = {
+    util.homebrew_binary("node", "node"),
     util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server"),
     "--stdio",
   },
@@ -41,6 +42,10 @@ return {
       },
       schemas = {
         -- local : zchee/schema
+        --- Gemini
+        ["file:///Users/zchee/src/github.com/zchee/schema/gemini-repoconfig.schema.json"] = {
+          ".gemini/config.yaml",
+        },
         --- Buf
         ["file:///Users/zchee/src/github.com/zchee/schema/buf.schema.json"] = {
           "**/buf.yaml",
@@ -93,7 +98,7 @@ return {
           "azure-pipelines.yml",
         },
         -- compose
-        ["https://raw.githubusercontent.com/compose-spec/compose-spec/main/schema/compose-spec.json"] = {
+        ["https://raw.githubusercontent.com/compose-spec/compose-go/refs/heads/main/schema/compose-spec.json"] = {
           "*compose*.yaml",
           "*compose*.yml",
           "*docker-compose*.yaml",

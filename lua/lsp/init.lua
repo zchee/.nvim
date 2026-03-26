@@ -1,9 +1,9 @@
-local util = require("util")
+-- local util = require("util")
 
-local lspconfig = require("lspconfig")
+-- local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
 
-vim.lsp.log.set_level(vim.log.levels.OFF) -- "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+vim.lsp.log.set_level(vim.log.levels.OFF) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
 vim.diagnostic.config({
   underline = false,
   virtual_text = false,
@@ -30,7 +30,7 @@ hover.config({
     require("hover.providers.man")
   end,
   providers = {
-    -- 'hover.providers.diagnostic',
+    'hover.providers.diagnostic',
     'hover.providers.lsp',
     'hover.providers.dap',
     'hover.providers.man',
@@ -656,18 +656,19 @@ register_lsp(
 vim.lsp.config("*", {
   capabilities = default_capabilities_config(),
   on_attach = on_attach,
-  -- root_markers = { ".git" },
+  root_markers = { ".git" },
 })
 
--- ["ts_ls"] = require("lsp.ts_ls"),
+-- ["tilt_ls"] = require("lsp.tilt_ls"),
+-- ["helm_ls"] = require("lsp.helm_ls"),
 local servers = {
   ["asm_lsp"] = require("lsp.asm_lsp"),
   ["basedpyright"] = require("lsp.basedpyright"),
   ["bashls"] = require("lsp.bashls"),
+  ["buf_ls"] = require("lsp.buf_ls"),
   ["clangd"] = require("lsp.clangd"),
   ["dockerls"] = require("lsp.dockerls"),
   ["gopls"] = require("lsp.gopls"),
-  ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
   ["neocmake"] = require("lsp.neocmake"),
@@ -675,11 +676,10 @@ local servers = {
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
   ["rust_analyzer"] = require("lsp.rust_analyzer"),
   ["sourcekit"] = require("lsp.sourcekit"),
-  ["stainless"] = {},
   ["taplo"] = require("lsp.taplo"),
   ["terraformls"] = require("lsp.terraformls"),
-  ["tilt_ls"] = require("lsp.tilt_ls"),
-  ["tsgo"] = require("lsp.tsgo"),
+  ["ts_ls"] = require("lsp.ts_ls"),
+  -- ["tsgo"] = require("lsp.tsgo"),
   ["yamlls"] = require("lsp.yamlls"),
   ["zls"] = require("lsp.zls"),
 }
@@ -688,8 +688,8 @@ for server, config in pairs(servers) do
   vim.lsp.enable(server, true)
 end
 
-vim.keymap.set({ "n" }, "K", function() require("hover").open() end, { silent = true })
--- vim.keymap.set({ "n" }, "K", "<Cmd>Lspsaga hover_doc<CR>", { silent = true })
+-- vim.keymap.set({ "n" }, "K", function() require("hover").open() end, { silent = true })
+vim.keymap.set({ "n" }, "K", "<Cmd>Lspsaga hover_doc<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<C-]>", function() require("snacks").picker.lsp_definitions() end, { silent = true })
 vim.keymap.set({ "n" }, "<C-k>", "<Cmd>Lspsaga signature_help<CR>", { silent = true })
 -- vim.keymap.set({ "n", "v" }, "<BS>ac", function() actions_preview.code_actions({}) end, { silent = true })

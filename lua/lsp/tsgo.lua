@@ -2,7 +2,8 @@ local util = require "util"
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.bun_prefix("tsgo"), "--lsp", "-stdio" },
+  -- cmd = { util.bun_prefix("tsgo"), "--lsp", "-stdio" },
+  cmd = { "/Users/zchee/go/src/github.com/microsoft/typescript-go/built/local/tsgo", "--lsp", "-stdio" },
   filetypes = {
     "javascript",
     "javascriptreact",

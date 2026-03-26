@@ -96,6 +96,7 @@ hi("@lsp.type.function.go", { link = "Type" })
 hi("@lsp.type.namespace.go", { fg = "#769ae7", bg = "None", italic = true })
 hi("@lsp.type.number.go", { link = "Number" })
 hi("@lsp.type.parameter.go", { link = "None" })
+hi("@lsp.type.property.go", { link = "None" })
 hi("@lsp.type.string.go", { fg = "#f2f3f3", bg = hi_none, blend = 50 }) -- link = "None"
 hi("@lsp.type.type.go", { link = "Normal" })
 hi("@lsp.type.typeParameter.go", { link = "Typedef" })
@@ -152,7 +153,7 @@ hi("doxygenSpecialOnelineDesc", { fg = "#81a2be", bg = "NONE" })
 
 --- third-party
 hi("LspSignatureActiveParameter", { fg = "None", bg = "#343941", blend = 10 })
-hi("LspInlayHint", { fg = "#9ba3a8", bg = "None", bold = false, italic = true, blend = 50 })
+hi("LspInlayHint", { fg = "#787f86", bg = "None", bold = false, italic = true, blend = 50 })
 
 --- VimIlluminate:
 hi("illuminatedWord", { fg = "NONE", bg = "NONE", underline = true })

@@ -98,8 +98,8 @@ end
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.go_path("bin", "gopls"), "serve" },
-  -- cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" }, -- , "-mcp-listen=localhost:12215" m:12, c:5, p:15  --[[, "-remote=unix;/tmp/gopls.sock" --]]
+  -- cmd = { util.go_path("bin", "gopls"), "serve" },
+  cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" },
   filetypes = { "go", "gotmpl", "gomod", "gowork" },
   root_dir = function(bufnr, on_dir)
     local fname = vim.api.nvim_buf_get_name(bufnr)
@@ -109,6 +109,19 @@ return {
     local rootdir = get_root_dir(fname)
     on_dir(rootdir)
   end,
+
+  capabilities = {
+    experimental = {
+      interactiveInputTypes = {
+        string = true,
+        fileURI = true,
+        bool = true,
+        number = true,
+        enum = true,
+        list = true,
+      },
+    },
+  },
 
   -- capabilities = {
   --   textDocument = {
@@ -194,12 +207,12 @@ return {
     usePlaceholders = true,
     deepCompletion = true,
     completeUnimported = true,
-    completionBudget = "100ms",      -- "100ms",
+    completionBudget = "10ms",       -- "100ms",
     importsSource = "gopls",
     matcher = "fuzzy",               -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
     symbolMatcher = "fastFuzzy",     -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
     symbolStyle = "full",            -- "Package", "Full", "Dynamic"
-    symbolScope = "workspace",       -- "workspace", "all",
+    symbolScope = "all",             -- "workspace", "all",
     hoverKind = "fulldocumentation", -- "FullDocumentation",
     linkTarget = "",                 -- "pkg.go.dev",
     linksInHover = false,            -- true, false, "gopls"
@@ -271,7 +284,7 @@ return {
       functionTypeParameters = true,
       ignoredError = true,
     },
-    vulncheck = "off", -- "off", "imports", "prompt"
+    vulncheck = "imports", -- "off", "imports", "prompt"
     codelenses = {
       generate = true,
       regenerate_cgo = true,
@@ -281,8 +294,9 @@ return {
       upgrade_dependency = true,
       vendor = true,
     },
-    staticcheck = false,
+    staticcheck = true,
     ["local"] = "",
+    maxFileCacheBytes = 1e9,
     verboseOutput = false,
     verboseWorkDoneProgress = false,
     showBugReports = false,
@@ -326,9 +340,9 @@ return {
     expandWorkspaceToModule = true,
     experimentalPostfixCompletions = true,
     templateExtensions = { "tmpl", "tpl", "gotmpl" },
-    diagnosticsDelay = "300ms",  -- "300ms",  -- "0ms", -- "500ms",
+    diagnosticsDelay = "100ms",  -- "300ms",  -- "0ms", -- "500ms",
     diagnosticsTrigger = "edit", -- "save", "edit",
-    analysisProgressReporting = false,
+    analysisProgressReporting = true,
     standaloneTags = {
       "ignore",
       "tools",
@@ -336,7 +350,7 @@ return {
       "wireinject",
     },
     subdirWatchPatterns = "auto", -- "on", "off", "auto"
-    reportAnalysisProgressAfter = "1000ms",
+    -- reportAnalysisProgressAfter = "1000ms",
     telemetryPrompt = false,
     linkifyShowMessage = true,
     includeReplaceInWorkspace = false,

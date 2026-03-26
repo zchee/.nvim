@@ -579,9 +579,10 @@ return {
     },
     init = function(plugin)
       require("lazy.core.loader").add_to_rtp(plugin)
+      require("nvim-treesitter.query_predicates")
+      require("plugins.treesitter_compat").patch_query_predicates()
     end,
     config = function()
-      require("nvim-treesitter.query_predicates")
       require("plugins.tree-sitter")
     end,
   },

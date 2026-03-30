@@ -357,6 +357,7 @@ return {
     zeroConfig = true,
     pullDiagnostics = true,
     renameMovesSubpackages = true,
+    fileWatcher = "fsnotify",
     testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
   },
 

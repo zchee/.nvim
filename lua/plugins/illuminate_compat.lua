@@ -20,16 +20,15 @@ end
 
 ---@param err any
 ---@return boolean
-function M.is_treesitter_locals_parent_error(err)
+function M.is_treesitter_locals_error(err)
   if type(err) ~= "string" then
     return false
   end
 
-  local has_parent_error = err:find("attempt to call method 'parent' %(a nil value%)", 1, false) ~= nil
-  local has_locals_path = err:find("locals%.lua:", 1, false) ~= nil
-  local has_treesitter_path = err:find("nvim%-treesitter", 1, false) ~= nil
+  local has_nil_method = err:find("attempt to call method '%w+' %(a nil value%)", 1, false) ~= nil
+  local has_treesitter_path = err:find("treesitter", 1, false) ~= nil
 
-  return has_parent_error and has_locals_path and has_treesitter_path
+  return has_nil_method and has_treesitter_path
 end
 
 ---@param failures table<integer, IlluminateCompatFailure>
@@ -83,7 +82,7 @@ function M.patch_treesitter_provider(provider, opts)
       return refs
     end
 
-    if not M.is_treesitter_locals_parent_error(refs) then
+    if not M.is_treesitter_locals_error(refs) then
       error(refs, 0)
     end
 

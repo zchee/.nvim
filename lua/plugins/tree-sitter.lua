@@ -10,7 +10,7 @@ vim.treesitter.language.register("json", "jsonschema")
 vim.treesitter.language.register("json", "jsonl")
 vim.treesitter.language.register("gotmpl", "helm")
 vim.treesitter.language.register("docker-bake", "hcl")
-vim.treesitter.language.register("zsh", "zsh")
+vim.treesitter.language.register("bash", "zsh")
 
 ---@class ParserInfo[]
 local parsers_config = ts_parsers.get_parser_configs()

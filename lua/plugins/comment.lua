@@ -1,5 +1,6 @@
 local comment = require("Comment")
 local ft = require("Comment.ft")
+local ts_context_commentstring_comment = require("ts_context_commentstring.integrations.comment_nvim")
 
 -- local ts_context_commentstring = require('ts_context_commentstring')
 -- local ts_context_commentstring_comment = require("ts_context_commentstring.integrations.comment_nvim")
@@ -89,7 +90,7 @@ local comment_config = {
     extra = false,
     extended = false,
   },
-  -- pre_hook = ts_context_commentstring_comment.create_pre_hook(),
+  pre_hook = ts_context_commentstring_comment.create_pre_hook(),
 }
 comment.setup(comment_config)
 

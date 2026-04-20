@@ -7,7 +7,6 @@ local include_paths = {
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  -- cmd = { util.homebrew_binary("protols-head", "protols") },
   cmd = { util.homebrew_binary("protols-head", "protols"), "--include-paths=" .. table.concat(include_paths, ",") },
   filetypes = { "proto" },
   root_markers = {

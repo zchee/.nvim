@@ -4,7 +4,7 @@
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { "rust-analyzer" },
-  root_markers = { "Cargo.toml", ".git" },
+  root_markers = { "rust-toolchain.toml", "Cargo.toml", ".git" },
   init_options = {
     cachePriming = {
       enabled = true,

@@ -273,6 +273,7 @@ return {
       unusedwrite = true,
       waitgroup = true,
       yield = true,
+      ST1000 = false,
     },
     hints = {
       parameterNames = true,

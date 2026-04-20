@@ -97,6 +97,10 @@ return {
         ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/main/service-schema.json"] = {
           "azure-pipelines.yml",
         },
+        -- Cloud Run
+        ["https://raw.githubusercontent.com/kubectl-plugin/crd-schema/refs/heads/main/gcp/serving.knative.dev/v1/service.json"] = {
+          "cloud-run/*.yaml",
+        },
         -- compose
         ["https://raw.githubusercontent.com/compose-spec/compose-go/refs/heads/main/schema/compose-spec.json"] = {
           "*compose*.yaml",

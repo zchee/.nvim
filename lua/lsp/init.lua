@@ -3,7 +3,7 @@
 -- local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
 
-vim.lsp.log.set_level(vim.log.levels.OFF) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
+vim.lsp.log.set_level(vim.log.levels.ERROR) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
 vim.diagnostic.config({
   underline = false,
   virtual_text = false,
@@ -444,6 +444,13 @@ local default_capabilities_config = function()
   capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
   -- capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
 
+  -- if capabilities.workspace then
+  --   capabilities.workspace.didChangeWatchedFiles = {
+  --     dynamicRegistration = true,
+  --     relativePatternSupport = true,
+  --   }
+  -- end
+
   ---@type lsp.ClientCapabilities
   local capabilities_override = {
     general = {
@@ -460,7 +467,9 @@ local default_capabilities_config = function()
     },
   }
 
-  return vim.tbl_deep_extend("force", capabilities, capabilities_override)
+  -- capabilities = vim.tbl_deep_extend("force", capabilities, capabilities_override)
+
+  return capabilities
 end
 
 --- @param client vim.lsp.Client
@@ -517,57 +526,6 @@ local register_lsp = function(name, default_config)
   end
 end
 
-register_lsp(
-  "tilt_ls",
-  {
-    cmd = { "tilt", "lsp", "start" },
-    filetypes = { "tiltfile" },
-    root_dir = function(filename, _)
-      return vim.fs.dirname(vim.fs.find('.git', { path = filename, upward = true })[1])
-    end,
-    settings = {},
-    capabilities = default_capabilities_config(),
-  }
-)
-
--- register_lsp(
---   "sourcekit",
---   {
---     cmd = { "xcrun", "-f", "sourcekit-lsp", "--configuration=release" },
---     filetypes = { "swift" },
---     -- root_markers = { 'buildServer.json', '*.xcodeproj', '*.xcworkspace', 'compile_commands.json', 'Package.swift', '.git' },
---     root_markers = { "Package.swift", "compile_commands.json" },
---     capabilities = default_capabilities_config(),
---   }
--- )
--- lspconfig.sourcekit.setup(require("lsp.sourcekit"))
-
-register_lsp(
-  "ruby_lsp",
-  {
-    cmd = { "ruby-lsp" },
-    filetypes = { "ruby", "eruby" },
-    root_markers = { "Gemfile", ".git" },
-    init_options = {
-      formatter = "auto",
-    },
-    single_file_support = true,
-    capabilities = default_capabilities_config(),
-  }
-)
-
--- register_lsp(
---   "docker_language_server",
---   {
---     cmd = { "docker-language-server", "start", "--stdio" },
---     filetypes = { "dockerfile", "eruby" },
---     root_markers = { "Dockerfile", "*.dockerfile", "Dockerfile*" },
---     single_file_support = true,
---     capabilities = default_capabilities_config(),
---   }
--- )
--- lspconfig.docker_language_server.setup(require("lsp.docker_language_server"))
-
 -- register_lsp(
 --   "stainless",
 --   {
@@ -579,20 +537,6 @@ register_lsp(
 --   }
 -- )
 -- lspconfig.stainless.setup({})
-
--- register_lsp(
---   "cmake_language_server",
---   {
---     cmd = { util.homebrew_binary("cmake-language-server", "cmake-language-server") },
---     -- filetypes = { "ruby", "eruby" },
---     -- root_dir = lspconfig.util.root_pattern("Gemfile", ".git"),
---     -- init_options = {
---     --   formatter = "auto",
---     -- },
---     -- single_file_support = true,
---   }
--- )
--- lspconfig.cmake_language_server.setup(require("plugins.lsp.cmake-language-server"))
 
 register_lsp(
   "tsgo",
@@ -612,46 +556,6 @@ register_lsp(
   }
 )
 
--- register_lsp(
---   "pyrefly",
---   {
---     cmd = { "pyrefly", "lsp" },
---     filetypes = { "python" },
---     single_file_support = true,
---     capabilities = default_capabilities_config(),
---   }
--- )
--- lspconfig.pyrefly.setup({
---   pyrefly = {
---     init_config = {
---       python_interpreter_path = ".venv/bin/python",
---     },
---   },
--- })
-
-register_lsp(
-  "protols",
-  {
-    cmd = { "protols" },
-    filetypes = { "proto" },
-    root_markers = { "buf.yaml", "buf.gen.yaml", ".git" },
-    single_file_support = true,
-    capabilities = default_capabilities_config(),
-  }
-)
-
--- register_lsp(
---   "phpactor",
---   {
---     cmd = { "/Users/zchee/src/github.com/phpactor/phpactor/bin/phpactor" },
---     filetypes = { "php" },
---     single_file_support = true,
---     capabilities = default_capabilities_config(),
---   }
--- )
--- lspconfig.phpactor.setup({})
-
-
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 vim.lsp.config("*", {
   capabilities = default_capabilities_config(),
@@ -659,8 +563,11 @@ vim.lsp.config("*", {
   root_markers = { ".git" },
 })
 
--- ["tilt_ls"] = require("lsp.tilt_ls"),
+-- https://github.com/neovim/nvim-lspconfig/tree/master/lsp
 -- ["helm_ls"] = require("lsp.helm_ls"),
+-- ["tilt_ls"] = require("lsp.tilt_ls"),
+-- ["ts_ls"] = require("lsp.ts_ls"),
+-- ["tsgo"] = require("lsp.tsgo"),
 local servers = {
   ["asm_lsp"] = require("lsp.asm_lsp"),
   ["basedpyright"] = require("lsp.basedpyright"),
@@ -678,9 +585,9 @@ local servers = {
   ["sourcekit"] = require("lsp.sourcekit"),
   ["taplo"] = require("lsp.taplo"),
   ["terraformls"] = require("lsp.terraformls"),
-  ["ts_ls"] = require("lsp.ts_ls"),
-  -- ["tsgo"] = require("lsp.tsgo"),
+  ["vtsls"] = require("lsp.vtsls"),
   ["yamlls"] = require("lsp.yamlls"),
+  ["zizmor"] = require("lsp.zizmor"),
   ["zls"] = require("lsp.zls"),
 }
 for server, config in pairs(servers) do

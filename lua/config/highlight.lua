@@ -114,6 +114,7 @@ hi("@namespace.builtin.lua", { link = "@type.builtin" })
 
 -- TypeScript
 hi("@keyword.modifier.typescript", { fg = "#c792ea", bg = "None", bold = true })
+hi("@variable.member.typescript", { link = "NonText" })
 
 -- Dockerfile
 -- hi("@keyword.dockerfile", { blend = 100 })

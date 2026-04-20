@@ -13,7 +13,7 @@ vim.treesitter.language.register("docker-bake", "hcl")
 vim.treesitter.language.register("bash", "zsh")
 
 ---@class ParserInfo[]
-local parsers_config = ts_parsers.get_parser_configs()
+local parser_config = ts_parsers.get_parser_configs()
 
 --- goasm: TODO(zchee): development
 -- treesitter_parsers_config.goasm = {
@@ -42,7 +42,7 @@ local parsers_config = ts_parsers.get_parser_configs()
 -- }
 
 --- cel
-parsers_config.cel = {
+parser_config.cel = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/bufbuild/tree-sitter-cel",
@@ -54,7 +54,7 @@ parsers_config.cel = {
 }
 
 --- kitty
-parsers_config.kitty = {
+parser_config.kitty = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/OXY2DEV/tree-sitter-kitty",
@@ -63,8 +63,20 @@ parsers_config.kitty = {
   },
 }
 
+--- vhs
+parser_config.vhs = {
+  install_info = {
+    url = "https://github.com/charmbracelet/tree-sitter-vhs",
+    files = { "src/parser.c" },
+    branch = "main",
+    generate_requires_npm = false,
+    requires_generate_from_grammar = false,
+  },
+  filetype = "vhs",
+}
+
 --- wit
-parsers_config.wit = {
+parser_config.wit = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/bytecodealliance/tree-sitter-wit",
@@ -74,7 +86,7 @@ parsers_config.wit = {
 }
 
 --- x86asm
-parsers_config.x86asm = {
+parser_config.x86asm = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/bearcove/tree-sitter-x86asm",
@@ -84,7 +96,7 @@ parsers_config.x86asm = {
 }
 
 --- tree-sitter-grammars: func
-parsers_config.func = {
+parser_config.func = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/tree-sitter-grammars/tree-sitter-func",
@@ -94,7 +106,7 @@ parsers_config.func = {
 }
 
 --- tree-sitter-grammars: make
-parsers_config.make = {
+parser_config.make = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/tree-sitter-grammars/tree-sitter-make",
@@ -105,7 +117,7 @@ parsers_config.make = {
 }
 
 --- tree-sitter-grammars: printf
-parsers_config.printf = {
+parser_config.printf = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/tree-sitter-grammars/tree-sitter-printf",
@@ -115,7 +127,7 @@ parsers_config.printf = {
 }
 
 --- fork: dockerfile
-parsers_config.dockerfile = {
+parser_config.dockerfile = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/zchee/tree-sitter-dockerfile",
@@ -128,7 +140,7 @@ parsers_config.dockerfile = {
 }
 
 --- fork: mustache
-parsers_config.mustache = {
+parser_config.mustache = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/zchee/tree-sitter-mustache",
@@ -141,7 +153,7 @@ parsers_config.mustache = {
 }
 
 --- fork: mlir
-parsers_config.mlir = {
+parser_config.mlir = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/zchee/tree-sitter-mlir",
@@ -152,7 +164,7 @@ parsers_config.mlir = {
 
 --- fork: swift
 --- TODO(zchee): fix
-parsers_config.swift = {
+parser_config.swift = {
   ---@type InstallInfo
   install_info = {
     url = "https://github.com/zchee/tree-sitter-swift",
@@ -503,6 +515,7 @@ ts_config.setup({
   highlight = {
     enable = true,
     disable = {
+      "metal",
       "tmux",
     },
     additional_vim_regex_highlighting = {},

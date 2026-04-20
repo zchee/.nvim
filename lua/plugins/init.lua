@@ -42,9 +42,18 @@ return {
     end,
   },
 
+  -- Lazy
+  {
+    "vhyrro/luarocks.nvim",
+    lazy = false,
+    priority = 1000,
+    config = true,
+  },
+
   -- AI
   {
-    "coder/claudecode.nvim",
+    -- "coder/claudecode.nvim",
+    "zchee/claudecode.nvim",
     dependencies = {
       "folke/snacks.nvim",
     },
@@ -56,44 +65,48 @@ return {
       "ClaudeCodeAdd",
       "ClaudeCodeDiffAccept",
       "ClaudeCodeDiffDeny",
+      "ClaudeCodeNew",
+      "ClaudeCodeCloseSession",
+      "ClaudeCodeSwitch",
+      "ClaudeCodeCloseSession",
     },
     config = function()
       require("plugins.claudecode")
     end,
     keys = {
       {
-        "<leader>a", nil, desc = "AI/Claude Code"
+        "<Leader>a", nil, desc = "AI/Claude Code"
       },
       {
-        "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude"
+        "<Leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude"
       },
       {
-        "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude"
+        "<Leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude"
       },
       {
-        "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude"
+        "<Leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude"
       },
       {
-        "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude"
+        "<Leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude"
       },
       {
-        "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model"
+        "<Leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model"
       },
       {
-        "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer"
+        "<Leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer"
       },
       {
-        "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude"
+        "<Leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude"
       },
       {
-        "<leader>as", "<cmd>ClaudeCodeTreeAdd<cr>", desc = "Add file", ft = { "NvimTree", "neo-tree", "oil", "minifiles" }
+        "<Leader>as", "<cmd>ClaudeCodeTreeAdd<cr>", desc = "Add file", ft = { "NvimTree", "neo-tree", "oil", "minifiles" }
       },
       -- Diff management
       {
-        "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff"
+        "<Leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff"
       },
       {
-        "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff"
+        "<Leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff"
       },
     },
   },
@@ -955,46 +968,46 @@ return {
     },
 
     -- Rust
-    {
-      -- {
-      --   'mrcjkb/rustaceanvim',
-      --   lazy = false,
-      --   confio = function()
-      --     require("plugins.rustaceanvim")
-      --   end,
-      -- },
-      -- {
-      --   "saecki/crates.nvim",
-      --   config = function()
-      --     require("crates").setup({
-      --       lsp = {
-      --         enabled = false,
-      --         -- on_attach = function(client, bufnr)
-      --         --   -- the same on_attach function as for your other language servers
-      --         --   -- can be ommited if you're using the `LspAttach` autocmd
-      --         -- end,
-      --         actions = true,
-      --         completion = true,
-      --         hover = true,
-      --       },
-      --       completion = {
-      --         cmp = {
-      --           use_custom_kind = true,
-      --           -- optionally change the text and highlight groups
-      --           kind_text = {
-      --             version = "Version",
-      --             feature = "Feature",
-      --           },
-      --           kind_highlight = {
-      --             version = "CmpItemKindVersion",
-      --             feature = "CmpItemKindFeature",
-      --           },
-      --         },
-      --       },
-      --     })
-      --   end,
-      -- },
-    },
+    -- {
+    --   {
+    --     'mrcjkb/rustaceanvim',
+    --     lazy = false,
+    --     confio = function()
+    --       require("plugins.rustaceanvim")
+    --     end,
+    --   },
+    --   {
+    --     "saecki/crates.nvim",
+    --     config = function()
+    --       require("crates").setup({
+    --         lsp = {
+    --           enabled = false,
+    --           -- on_attach = function(client, bufnr)
+    --           --   -- the same on_attach function as for your other language servers
+    --           --   -- can be ommited if you're using the `LspAttach` autocmd
+    --           -- end,
+    --           actions = true,
+    --           completion = true,
+    --           hover = true,
+    --         },
+    --         completion = {
+    --           cmp = {
+    --             use_custom_kind = true,
+    --             -- optionally change the text and highlight groups
+    --             kind_text = {
+    --               version = "Version",
+    --               feature = "Feature",
+    --             },
+    --             kind_highlight = {
+    --               version = "CmpItemKindVersion",
+    --               feature = "CmpItemKindFeature",
+    --             },
+    --           },
+    --         },
+    --       })
+    --     end,
+    --   },
+    -- },
 
     -- Markdown
     {
@@ -1123,6 +1136,12 @@ return {
       },
     },
 
+    -- JSON
+    {
+      "VPavliashvili/json-nvim",
+      ft = "json",
+    },
+
     -- Zig
     {
       {
@@ -1139,7 +1158,7 @@ return {
       },
     },
 
-    -- GraphQL
+    -- graphql
     {
       {
         "jparise/vim-graphql",
@@ -1406,32 +1425,34 @@ return {
         require("plugins.matchup")
       end,
     },
-    {
-      "NvChad/nvim-colorizer.lua",
-      lazy = true,
-      cmd = {
-        "ColorizerAttachToBuffer",
-        "ColorizerDetachFromBuffer",
-        "ColorizerReloadAllBuffers",
-        "ColorizerToggle", },
-      opts = {
-        filetypes = { "lua" },
-        user_default_options = {
-          RGB = true,
-          RRGGBB = true,
-          names = true,
-          RRGGBBAA = false,
-          AARRGGBB = false,
-          rgb_fn = false,
-          hsl_fn = false,
-          css = false,
-          css_fn = false,
-          mode = "background",
-          virtualtext = "■",
-        },
-        buftypes = {},
-      },
-    },
+    -- {
+    --   "NvChad/nvim-colorizer.lua",
+    --   lazy = true,
+    --   event = "User Colorizer",
+    --   cmd = {
+    --     "ColorizerAttachToBuffer",
+    --     "ColorizerDetachFromBuffer",
+    --     "ColorizerReloadAllBuffers",
+    --     "ColorizerToggle",
+    --   },
+    --   opts = {
+    --     filetypes = { "lua" },
+    --     user_default_options = {
+    --       RGB = true,
+    --       RRGGBB = true,
+    --       names = true,
+    --       RRGGBBAA = false,
+    --       AARRGGBB = false,
+    --       rgb_fn = false,
+    --       hsl_fn = false,
+    --       css = false,
+    --       css_fn = false,
+    --       mode = "background",
+    --       virtualtext = "■",
+    --     },
+    --     buftypes = {},
+    --   },
+    -- },
     {
       "dstein64/vim-startuptime",
       cmd = "StartupTime",

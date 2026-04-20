@@ -2,7 +2,7 @@ local metafrastis = require("metafrastis")
 
 ---@type MetafrastisConfig
 metafrastis.setup({
-  provider = "google",
+  provider = "deepl",
   source_lang = "en",
   target_lang = "ja",
   max_chars = 8000,
@@ -39,6 +39,7 @@ metafrastis.setup({
     },
     google = {
       api_key = vim.env.GOOGLE_API_KEY or vim.env.GOOGLE_TRANSLATE_KEY,
+      gcp_project_id = vim.env.METAFRASTIS_GCP_PROJECT,
       model = "v2",
       base_url = "https://translation.googleapis.com/language/translate/v2",
       price_per_million_chars = 20.0,

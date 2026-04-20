@@ -128,17 +128,18 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
   end,
 })
 
-vim.api.nvim_create_autocmd({ "BufEnter" }, {
-  group = autocmd_user,
-  pattern = {
-    "**/colors/*",
-    "**/highlight.lua",
-    "**/kitty/color.conf",
-  },
-  callback = function()
-    vim.cmd.ColorizerToggle()
-  end,
-})
+-- local autocmd_colorizer = vim.api.nvim_create_augroup("Colorizer", { clear = false })
+-- vim.api.nvim_create_autocmd({ "BufEnter" }, {
+--   group = autocmd_colorizer,
+--   pattern = {
+--     "**/colors/*",
+--     "**/highlight.lua",
+--     "**/kitty/color.conf",
+--   },
+--   callback = function()
+--     vim.cmd.ColorizerToggle()
+--   end,
+-- })
 
 -- BufWinEnter
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
@@ -173,43 +174,42 @@ vim.api.nvim_create_autocmd({ "WinEnter" }, {
   end,
 })
 
-local autocmd_lsp_format = vim.api.nvim_create_augroup("LspFormat", { clear = true })
-vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-  group = autocmd_lsp_format,
-  pattern = {
-    "*.lua",
-    -- "*.ts",
-  },
-  callback = function(args)
-    local file = vim.fs.abspath(args.file)
-    if string.find(file, "neovim/neovim") then
-      return
-    end
+-- vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+--   group = autocmd_lsp_format,
+--   pattern = {
+--     "*.lua",
+--     -- "*.ts",
+--   },
+--   callback = function(args)
+--     local file = vim.fs.abspath(args.file)
+--     if string.find(file, "neovim/neovim") then
+--       return
+--     end
+--
+--     vim.lsp.buf.format({
+--       async = false,
+--       trimTrailingWhitespace = true,
+--       insertFinalNewline = true,
+--       trimFinalNewlines = true,
+--     })
+--   end,
+-- })
 
-    vim.lsp.buf.format({
-      async = false,
-      trimTrailingWhitespace = true,
-      insertFinalNewline = true,
-      trimFinalNewlines = true,
-    })
-  end,
-})
-
-vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-  group = autocmd_lsp_format,
-  pattern = {
-    "*.tf",
-    "*.tfvars",
-  },
-  callback = function()
-    vim.lsp.buf.format({
-      async = true,
-      trimTrailingWhitespace = true,
-      insertFinalNewline = true,
-      trimFinalNewlines = true,
-    })
-  end,
-})
+-- vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+--   group = autocmd_lsp_format,
+--   pattern = {
+--     "*.tf",
+--     "*.tfvars",
+--   },
+--   callback = function()
+--     vim.lsp.buf.format({
+--       async = true,
+--       trimTrailingWhitespace = true,
+--       insertFinalNewline = true,
+--       trimFinalNewlines = true,
+--     })
+--   end,
+-- })
 
 ---@class PrioritySemanticTokens
 ---@field type string semantic tokens type
@@ -326,32 +326,6 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 --   callback = highlight_symbol,
 -- })
 
--- https://github.com/golang/tools/blob/gopls/v0.11.0/gopls/doc/vim.md#imports
----@param client vim.lsp.Client
----@param bufnr integer
----@param cmd string
-local function code_action_sync(client, bufnr, cmd)
-  local params = {}
-  params = vim.lsp.util.make_range_params(0, "utf-16")
-  --- @diagnostic disable-next-line
-  params.context = { only = { cmd }, diagnostics = {} }
-
-  --- @diagnostic disable-next-line
-  local resp = client.request_sync("textDocument/codeAction", params, 3000, bufnr)
-  for cid, r in pairs(resp and resp.result or {}) do
-    if r.edit then
-      local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
-      vim.lsp.util.apply_workspace_edit(r.edit, enc)
-    end
-  end
-end
-
--- ---@param client vim.lsp.Client
--- ---@param bufnr integer
-local function organize_imports_sync(client, bufnr)
-  code_action_sync(client, bufnr, "source.organizeImports")
-end
-
 -- ---@param client vim.lsp.Client
 -- ---@param bufnr integer
 -- local function fix_all_sync(client, bufnr)
@@ -455,16 +429,28 @@ end
 -- })
 
 -- BufWritePre
-local code_action_kinds = {
-  "quickfix",
-  "refactor",
-  "refactor.extract",
-  "refactor.inline",
-  "refactor.rewrite",
-  "source",
-  "source.organizeImports",
-  "source.fixAll",
-}
+local autocmd_lsp_format = vim.api.nvim_create_augroup("LspFormat", { clear = true })
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = autocmd_lsp_format,
+  pattern = {
+    -- "*.lua",
+    "*.zig",
+  },
+  callback = function(args)
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = args.buf,
+      callback = function()
+        vim.lsp.buf.format({
+          async = false,
+          trimTrailingWhitespace = true,
+          insertFinalNewline = true,
+          trimFinalNewlines = true,
+          id = args.data.client_id,
+        })
+      end,
+    })
+  end
+})
 local augroup_code_action_format = vim.api.nvim_create_augroup("LspCodeActionFormat", { clear = false })
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = augroup_code_action_format,
@@ -568,17 +554,33 @@ vim.api.nvim_create_autocmd("BufEnter", {
 })
 
 -- kitty
-local kitty_group = vim.api.nvim_create_augroup("Kitty", { clear = true })
-vim.api.nvim_create_autocmd({ "VimEnter", "VimResume" }, {
-  group = kitty_group,
-  callback = function()
-    io.stdout:write("\x1b]1337;SetUserVar=in_editor=MQo\007")
+-- https://sw.kovidgoyal.net/kitty/mapping/#conditional-mappings-depending-on-the-state-of-the-focused-window
+vim.api.nvim_create_autocmd({ "VimEnter", "VimResume", "UIEnter" }, {
+  group = vim.api.nvim_create_augroup("KittySetVarVimEnter", { clear = true }),
+  callback = function(args)
+    if "snacks_picker_input" == vim.api.nvim_get_option_value("filetype", { buf = args.buf }) then
+      return
+    end
+
+    if vim.api.nvim_ui_send then
+      vim.api.nvim_ui_send("\x1b]1337;SetUserVar=in_editor=MQ==\007")
+    else
+      io.stdout:write("\x1b]1337;SetUserVar=in_editor=MQ==\007")
+    end
   end,
 })
 vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
-  group = kitty_group,
-  callback = function()
-    io.stdout:write("\x1b]1337;SetUserVar=in_editor\007")
+  group = vim.api.nvim_create_augroup("KittyUnsetVarVimLeave", { clear = true }),
+  callback = function(args)
+    if "snacks_picker_input" == vim.api.nvim_get_option_value("filetype", { buf = args.buf }) then
+      return
+    end
+
+    if vim.api.nvim_ui_send then
+      vim.api.nvim_ui_send("\x1b]1337;SetUserVar=in_editor\007")
+    else
+      io.stdout:write("\x1b]1337;SetUserVar=in_editor\007")
+    end
   end,
 })
 
@@ -595,20 +597,6 @@ vim.api.nvim_create_autocmd("User", {
     end)
   end,
 })
-
--- vim.api.nvim_create_autocmd("User", {
---   pattern = "BlinkCmpMenuOpen",
---   callback = function()
---     vim.b.copilot_suggestion_hidden = true
---   end,
--- })
---
--- vim.api.nvim_create_autocmd("User", {
---   pattern = "BlinkCmpMenuClose",
---   callback = function()
---     vim.b.copilot_suggestion_hidden = false
---   end,
--- })
 
 -- Debug:
 -- vim.api.nvim_create_autocmd(

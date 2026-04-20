@@ -1,5 +1,4 @@
 local snacks = require("snacks")
-local util   = require("util")
 local compat = require("plugins.snacks_compat")
 
 compat.patch_quickfile_module(require("snacks.quickfile"))
@@ -32,7 +31,11 @@ snacks.setup({
     },
     force = false,
     doc = {
-      enabled = true,
+      -- Keep image conversion/manual features available, but disable automatic
+      -- document attachment because Snacks terminal detection can leak Kitty's
+      -- terminal-response sequence into Markdown buffers.
+      -- ref: https://sw.kovidgoyal.net/kitty/mapping/#conditional-mappings-depending-on-the-state-of-the-focused-window
+      enabled = false,
       inline = true,
       float = true,
       max_width = 80,

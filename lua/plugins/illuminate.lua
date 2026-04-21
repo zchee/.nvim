@@ -1,6 +1,20 @@
 local compat = require("plugins.illuminate_compat")
 
 do
+  local ok, reference_module = pcall(require, "illuminate.reference")
+  if ok then
+    compat.patch_reference_module(reference_module)
+  end
+end
+
+do
+  local ok, provider = pcall(require, "illuminate.providers.regex")
+  if ok then
+    compat.patch_regex_provider(provider)
+  end
+end
+
+do
   local ok, provider = pcall(require, "illuminate.providers.treesitter")
   if ok then
     -- Keep the treesitter provider enabled, but skip the known broken

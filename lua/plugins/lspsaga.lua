@@ -3,25 +3,25 @@ local lspsaga = require("lspsaga")
 -- https://github.com/nvimdev/lspsaga.nvim/blob/main/lua/lspsaga/init.lua
 lspsaga.setup({
   ui = {
-    winbar_prefix = '',
-    border = 'rounded',
+    winbar_prefix = "",
+    border = "rounded",
     devicon = true,
     foldericon = true,
     title = true,
     expand = "⊞",
     collapse = "⊟",
     code_action = " ", -- "💡",
-    lines = { '┗', '┣', '┃', '━', '┏' },
+    lines = { "┗", "┣", "┃", "━", "┏" },
     kind = {},
-    button = { '', '' },
+    button = { "", "" },
     imp_sign = "󰳛 ", -- " ", "󰳛 "
     use_nerd = true,
   },
   hover = {
     max_width = 0.9,
     max_height = 0.8,
-    open_link = 'gx',
-    open_cmd = '!chrome',
+    open_link = "gx",
+    open_cmd = "!chrome",
   },
   diagnostic = {
     show_layout = "float",
@@ -164,17 +164,17 @@ lspsaga.setup({
     },
   },
   typehierarchy = {
-    layout = 'float',
+    layout = "float",
     left_width = 0.2,
     keys = {
-      edit = 'e',
-      vsplit = 's',
-      split = 'i',
-      tabe = 't',
+      edit = "e",
+      vsplit = "s",
+      split = "i",
+      tabe = "t",
       close = "<Esc>",
-      quit = 'q',
-      shuttle = '[w',
-      toggle_or_req = 'u',
+      quit = "q",
+      shuttle = "[w",
+      toggle_or_req = "u",
     },
   },
   implement = {

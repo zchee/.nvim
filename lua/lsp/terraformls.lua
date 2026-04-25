@@ -23,7 +23,7 @@ return {
           "terraform.tfstate.d",
         },
         ignorePaths = {
-          ".terragrunt-cache"
+          ".terragrunt-cache",
         },
       },
       experimentalFeatures = {

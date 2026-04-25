@@ -7,4 +7,4 @@ vim.b.did_ftplugin = true
 
 vim.opt_local.commentstring = "#%s"
 vim.opt_local.comments = ":#"
-vim.b.undo_ftplugin = 'setlocal commentstring< comments<'
+vim.b.undo_ftplugin = "setlocal commentstring< comments<"

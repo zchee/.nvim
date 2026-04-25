@@ -23,7 +23,7 @@ copilot.setup({
   server_opts_overrides = {
     settings = {
       telemetry = {
-        telemetryLevel = "off"
+        telemetryLevel = "off",
       },
       github = {
         copilot = {
@@ -38,7 +38,7 @@ copilot.setup({
             -- topP = ["advanced", "top_p"],
             indentationMode = false,
             inlineSuggestCount = 0, -- #completions for getCompletions
-            listCount = 3,          -- #completions for panel
+            listCount = 3, -- #completions for panel
             -- debugOverrideProxyUrl = ["advanced", "debug.overrideProxyUrl"],
             -- debugTestOverrideProxyUrl = ["advanced", "debug.testOverrideProxyUrl"],
             -- debugEnableGitHubTelemetry = ["advanced", "debug.githubCTSIntegrationEnabled"],

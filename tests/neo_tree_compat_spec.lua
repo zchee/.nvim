@@ -9,11 +9,17 @@ package.path = table.concat({
 local compat = require("plugins.neo_tree_compat")
 
 local function assert_eq(actual, expected, message)
-  assert(actual == expected, string.format("%s\nexpected: %s\nactual: %s", message, vim.inspect(expected), vim.inspect(actual)))
+  assert(
+    actual == expected,
+    string.format("%s\nexpected: %s\nactual: %s", message, vim.inspect(expected), vim.inspect(actual))
+  )
 end
 
 do
-  assert(compat.is_invalid_win_error("Invalid 'win': Expected Lua number"), "should match the known invalid window error")
+  assert(
+    compat.is_invalid_win_error("Invalid 'win': Expected Lua number"),
+    "should match the known invalid window error"
+  )
   assert(not compat.is_invalid_win_error("some other error"), "should reject unrelated errors")
 end
 
@@ -51,7 +57,10 @@ do
     })
   end)
   assert(not ok, "get_node_safely should rethrow unrelated failures")
-  assert(type(err) == "string" and err:find("boom", 1, true) ~= nil, "unexpected error while rethrowing unrelated failures")
+  assert(
+    type(err) == "string" and err:find("boom", 1, true) ~= nil,
+    "unexpected error while rethrowing unrelated failures"
+  )
 end
 
 do

@@ -4,13 +4,13 @@ local util = require("util")
 return {
   cmd = { util.homebrew_binary("neocmakelsp", "neocmakelsp"), "stdio" },
   filetypes = { "cmake" },
-  rotoot_markers = { "CMakeLists.txt", 'CMakePresets.json', 'CTestConfig.cmake', '.git', 'build', 'cmake' },
+  rotoot_markers = { "CMakeLists.txt", "CMakePresets.json", "CTestConfig.cmake", ".git", "build", "cmake" },
   settings = {
     format = {
-      enable = false
+      enable = false,
     },
     lint = {
-      enable = false
+      enable = false,
     },
     scan_cmake_in_package = true,
     semantic_token = true,

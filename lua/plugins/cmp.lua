@@ -21,19 +21,19 @@ npairs.setup({
     "TelescopePrompt",
   },
   fast_wrap = {
-    map = '<M-e>',
-    chars = { '{', '[', '(', '"', "'" },
+    map = "<M-e>",
+    chars = { "{", "[", "(", '"', "'" },
     pattern = [=[[%'%"%>%]%)%}%,%`]]=],
-    end_key = '$',
+    end_key = "$",
     avoid_move_to_end = true,
-    before_key = 'h',
-    after_key = 'l',
+    before_key = "h",
+    after_key = "l",
     cursor_pos_before = true,
-    keys = 'qwertyuiopzxcvbnmasdfghjkl',
-    highlight = 'Search',
-    highlight_grey = 'Comment',
+    keys = "qwertyuiopzxcvbnmasdfghjkl",
+    highlight = "Search",
+    highlight_grey = "Comment",
     manual_position = true,
-    use_virt_lines = true
+    use_virt_lines = true,
   },
   map_bs = true,
   map_cr = true,
@@ -52,7 +52,7 @@ npairs.setup({
 npairs.add_rules({
   npairs_rule('"', "'", "'", "go"):with_pair(npairs_treesitter_node.is_ts_node({ "string" })),
   npairs_rule("'", '"', '"', "go"):with_pair(npairs_treesitter_node.is_ts_node({ "string" })),
-  npairs_rule("[", ']', "go"):with_pair(npairs_treesitter_node.is_ts_node({ "string", "comment" })),
+  npairs_rule("[", "]", "go"):with_pair(npairs_treesitter_node.is_ts_node({ "string", "comment" })),
 })
 -- Lua
 npairs.add_rules({
@@ -121,13 +121,13 @@ local ignore_filetypes = {
 cmp.setup({
   ---@class cmp.PerformanceConfig
   performance = {
-    debounce = 60,                    -- default: 60
-    throttle = 10,                    -- default: 30
-    fetching_timeout = 500,           -- default: 500
-    filtering_context_budget = 3,     -- default: 3
-    confirm_resolve_timeout = 80,     -- default: 80
-    async_budget = 1,                 -- default: 1
-    max_view_entries = 350,           -- default: 200
+    debounce = 60, -- default: 60
+    throttle = 10, -- default: 30
+    fetching_timeout = 500, -- default: 500
+    filtering_context_budget = 3, -- default: 3
+    confirm_resolve_timeout = 80, -- default: 80
+    async_budget = 1, -- default: 1
+    max_view_entries = 350, -- default: 200
   },
   preselect = cmp.PreselectMode.None, -- cmp.PreselectMode.Item, cmp.PreselectMode.None
   ---@class cmp.Mapping
@@ -201,9 +201,9 @@ cmp.setup({
       -- "TextChangedI",
       -- "TextChangedP",
     },
-    completeopt = "menu,menuone,noinsert",                            -- default
+    completeopt = "menu,menuone,noinsert", -- default
     keyword_pattern = [[\%(-\?\d\+\%(\.\d\+\)\?\|\h\w*\%(-\w*\)*\)]], -- default
-    keyword_length = 1,                                               -- default
+    keyword_length = 1, -- default
   },
   ---@class cmp.FormattingConfig
   formatting = {
@@ -235,31 +235,31 @@ cmp.setup({
         luasnip = 1,
       },
       symbol_map = {
-        Text = '  ',
-        Method = '  ',
-        Function = '  ',
-        Constructor = '  ',
-        Field = '  ',
-        Variable = '  ',
-        Class = '  ',
-        Interface = '  ',
-        Module = '  ',
-        Property = '  ',
-        Unit = '  ',
-        Value = '  ',
-        Enum = '  ',
-        Keyword = '  ',
-        Snippet = '  ',
-        Color = '  ',
-        File = '  ',
-        Reference = '  ',
-        Folder = '  ',
-        EnumMember = '  ',
-        Constant = '  ',
-        Struct = '  ',
-        Event = '  ',
-        Operator = '  ',
-        TypeParameter = '  ',
+        Text = "  ",
+        Method = "  ",
+        Function = "  ",
+        Constructor = "  ",
+        Field = "  ",
+        Variable = "  ",
+        Class = "  ",
+        Interface = "  ",
+        Module = "  ",
+        Property = "  ",
+        Unit = "  ",
+        Value = "  ",
+        Enum = "  ",
+        Keyword = "  ",
+        Snippet = "  ",
+        Color = "  ",
+        File = "  ",
+        Reference = "  ",
+        Folder = "  ",
+        EnumMember = "  ",
+        Constant = "  ",
+        Struct = "  ",
+        Event = "  ",
+        Operator = "  ",
+        TypeParameter = "  ",
       },
       ellipsis_char = "...",
       show_labelDetails = true,
@@ -466,7 +466,7 @@ cmp.setup({
       max_height = math.floor(40 * (40 / vim.o.lines)),
       max_width = math.floor((40 * 2) * (vim.o.columns / (40 * 2 * 16 / 9))),
       border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-      winhighlight = 'FloatBorder:NormalFloat',
+      winhighlight = "FloatBorder:NormalFloat",
       winblend = vim.o.pumblend,
     },
   },
@@ -573,21 +573,21 @@ cmp.setup.filetype("gitcommit", {
 })
 
 -- gray
-vim.api.nvim_set_hl(0, 'CmpItemAbbrDeprecated', { bg = 'NONE', strikethrough = true, fg = '#808080' })
+vim.api.nvim_set_hl(0, "CmpItemAbbrDeprecated", { bg = "NONE", strikethrough = true, fg = "#808080" })
 -- blue
-vim.api.nvim_set_hl(0, 'CmpItemAbbrMatch', { bg = 'NONE', fg = '#569CD6' })
-vim.api.nvim_set_hl(0, 'CmpItemAbbrMatchFuzzy', { link = 'CmpIntemAbbrMatch' })
+vim.api.nvim_set_hl(0, "CmpItemAbbrMatch", { bg = "NONE", fg = "#569CD6" })
+vim.api.nvim_set_hl(0, "CmpItemAbbrMatchFuzzy", { link = "CmpIntemAbbrMatch" })
 -- light blue
-vim.api.nvim_set_hl(0, 'CmpItemKindVariable', { bg = 'NONE', fg = '#9CDCFE' })
-vim.api.nvim_set_hl(0, 'CmpItemKindInterface', { link = 'CmpItemKindVariable' })
-vim.api.nvim_set_hl(0, 'CmpItemKindText', { link = 'CmpItemKindVariable' })
+vim.api.nvim_set_hl(0, "CmpItemKindVariable", { bg = "NONE", fg = "#9CDCFE" })
+vim.api.nvim_set_hl(0, "CmpItemKindInterface", { link = "CmpItemKindVariable" })
+vim.api.nvim_set_hl(0, "CmpItemKindText", { link = "CmpItemKindVariable" })
 -- pink
-vim.api.nvim_set_hl(0, 'CmpItemKindFunction', { bg = 'NONE', fg = '#C586C0' })
-vim.api.nvim_set_hl(0, 'CmpItemKindMethod', { link = 'CmpItemKindFunction' })
+vim.api.nvim_set_hl(0, "CmpItemKindFunction", { bg = "NONE", fg = "#C586C0" })
+vim.api.nvim_set_hl(0, "CmpItemKindMethod", { link = "CmpItemKindFunction" })
 -- front
-vim.api.nvim_set_hl(0, 'CmpItemKindKeyword', { bg = 'NONE', fg = '#D4D4D4' })
-vim.api.nvim_set_hl(0, 'CmpItemKindProperty', { link = 'CmpItemKindKeyword' })
-vim.api.nvim_set_hl(0, 'CmpItemKindUnit', { link = 'CmpItemKindKeyword' })
+vim.api.nvim_set_hl(0, "CmpItemKindKeyword", { bg = "NONE", fg = "#D4D4D4" })
+vim.api.nvim_set_hl(0, "CmpItemKindProperty", { link = "CmpItemKindKeyword" })
+vim.api.nvim_set_hl(0, "CmpItemKindUnit", { link = "CmpItemKindKeyword" })
 
 -- local ts_node_func_parens_disabled = {
 --   named_imports = true,   -- ecma
@@ -682,13 +682,7 @@ cmp.event:on(
                 end
               end
             end
-            npairs_cmp.filetypes["*"]["("].handler(
-              char,
-              item,
-              bufnr,
-              rules,
-              commit_character
-            )
+            npairs_cmp.filetypes["*"]["("].handler(char, item, bufnr, rules, commit_character)
           end,
         },
       },

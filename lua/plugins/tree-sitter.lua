@@ -186,9 +186,9 @@ local parsers = {
   "asm", -- [✓] installed
   -- "astro",              -- [✗] not installed
   -- "authzed",            -- [✗] not installed
-  "awk",    -- [✓] installed
-  "bash",   -- [✓] installed
-  "bass",   -- [✓] installed
+  "awk", -- [✓] installed
+  "bash", -- [✓] installed
+  "bass", -- [✓] installed
   -- "beancount",          -- [✗] not installed
   "bibtex", -- [✓] installed
   -- "bicep",              -- [✗] not installed
@@ -197,48 +197,48 @@ local parsers = {
   -- "blueprint",          -- [✗] not installed
   -- "bp",                 -- [✗] not installed
   -- "brightscript",       -- [✗] not installed
-  "c",     -- [✓] installed
+  "c", -- [✓] installed
   -- "c_sharp",            -- [✗] not installed
   "caddy", -- [✓] installed
   -- "cairo",              -- [✗] not installed
   "capnp", -- [✓] installed
-  "cel",   -- [✓] installed
+  "cel", -- [✓] installed
   -- "chatito",            -- [✗] not installed
   -- "circom",             -- [✗] not installed
   -- "clojure",            -- [✗] not installed
-  "cmake",      -- [✓] installed
-  "comment",    -- [✓] installed
+  "cmake", -- [✓] installed
+  "comment", -- [✓] installed
   "commonlisp", -- [✓] installed
   -- "cooklang",           -- [✗] not installed
   -- "corn",               -- [✗] not installed
   -- "cpon",               -- [✗] not installed
-  "cpp",  -- [✓] installed
+  "cpp", -- [✓] installed
   -- "css",                -- [✗] not installed
-  "csv",  -- [✓] installed
+  "csv", -- [✓] installed
   "cuda", -- [✓] installed
-  "cue",  -- [✓] installed
+  "cue", -- [✓] installed
   -- "cylc",               -- [✗] not installed
   -- "d",                  -- [✗] not installed
-  "dart",         -- [✓] installed
+  "dart", -- [✓] installed
   -- "desktop",            -- [✗] not installed
-  "devicetree",   -- [✓] installed
+  "devicetree", -- [✓] installed
   -- "dhall",              -- [✗] not installed
-  "diff",         -- [✓] installed
-  "disassembly",  -- [✓] installed
+  "diff", -- [✓] installed
+  "disassembly", -- [✓] installed
   -- "djot",               -- [✗] not installed
-  "dockerfile",   -- [✓] installed
-  "dot",          -- [✓] installed
-  "doxygen",      -- [✓] installed
-  "dtd",          -- [✓] installed
+  "dockerfile", -- [✓] installed
+  "dot", -- [✓] installed
+  "doxygen", -- [✓] installed
+  "dtd", -- [✓] installed
   -- "earthfile",          -- [✗] not installed
-  "ebnf",         -- [✓] installed
+  "ebnf", -- [✓] installed
   "editorconfig", -- [✓] installed
   -- "eds",                -- [✗] not installed
   -- "eex",                -- [✗] not installed
   -- "elixir",             -- [✗] not installed
   -- "elm",                -- [✗] not installed
   -- "elsa",               -- [✗] not installed
-  "elvish",            -- [✓] installed
+  "elvish", -- [✓] installed
   "embedded_template", -- [✓] installed
   -- "enforce",            -- [✗] not installed
   -- "erlang",             -- [✗] not installed
@@ -260,25 +260,25 @@ local parsers = {
   -- "gdscript",           -- [✗] not installed
   -- "gdshader",           -- [✗] not installed
   -- "git_config",         -- [✗] not installed
-  "git_rebase",    -- [✓] installed
+  "git_rebase", -- [✓] installed
   "gitattributes", -- [✓] installed
-  "gitcommit",     -- [✓] installed
-  "gitignore",     -- [✓] installed
+  "gitcommit", -- [✓] installed
+  "gitignore", -- [✓] installed
   -- "gleam",              -- [✗] not installed
-  "glimmer",       -- [✓] installed
+  "glimmer", -- [✓] installed
   -- "glimmer_javascript", -- [✗] not installed
   -- "glimmer_typescript", -- [✗] not installed
   "glsl", -- [✓] installed
-  "gn",   -- [✓] installed
+  "gn", -- [✓] installed
   -- "gnuplot",            -- [✗] not installed
-  "go",   -- [✓] installed
+  "go", -- [✓] installed
   -- "goctl",              -- [✗] not installed
   -- "godot_resource",     -- [✗] not installed
-  "gomod",   -- [✓] installed
-  "gosum",   -- [✓] installed
-  "gotmpl",  -- [✓] installed
-  "gowork",  -- [✓] installed
-  "gpg",     -- [✓] installed
+  "gomod", -- [✓] installed
+  "gosum", -- [✓] installed
+  "gotmpl", -- [✓] installed
+  "gowork", -- [✓] installed
+  "gpg", -- [✓] installed
   "graphql", -- [✓] installed
   -- "gren",               -- [✗] not installed
   -- "groovy",             -- [✗] not installed
@@ -287,17 +287,17 @@ local parsers = {
   -- "hare",               -- [✗] not installed
   -- "haskell",            -- [✗] not installed
   -- "haskell_persistent", -- [✗] not installed
-  "hcl",   -- [✓] installed
+  "hcl", -- [✓] installed
   -- "heex",               -- [✗] not installed
-  "helm",  -- [✓] installed
+  "helm", -- [✓] installed
   "hjson", -- [✓] installed
-  "hlsl",  -- [✓] installed
+  "hlsl", -- [✓] installed
   -- "hlsplaylist",        -- [✗] not installed
   -- "hocon",              -- [✗] not installed
   -- "hoon",               -- [✗] not installed
-  "html",       -- [✓] installed
+  "html", -- [✓] installed
   "htmldjango", -- [✓] installed
-  "http",       -- [✓] installed
+  "http", -- [✓] installed
   -- "hurl",               -- [✗] not installed
   -- "hyprlang",           -- [✗] not installed
   -- "idl",                -- [✗] not installed
@@ -305,19 +305,19 @@ local parsers = {
   "ini", -- [✓] installed
   -- "inko",               -- [✗] not installed
   -- "ipkg",               -- [✗] not installed
-  "ispc",         -- [✓] installed
+  "ispc", -- [✓] installed
   -- "janet_simple",       -- [✗] not installed
-  "java",         -- [✓] installed
-  "javadoc",      -- [✓] installed
-  "javascript",   -- [✓] installed
-  "jinja",        -- [✓] installed
+  "java", -- [✓] installed
+  "javadoc", -- [✓] installed
+  "javascript", -- [✓] installed
+  "jinja", -- [✓] installed
   "jinja_inline", -- [✓] installed
-  "jq",           -- [✓] installed
-  "jsdoc",        -- [✓] installed
-  "json",         -- [✓] installed
-  "json5",        -- [✓] installed
-  "jsonc",        -- [✓] installed
-  "jsonnet",      -- [✓] installed
+  "jq", -- [✓] installed
+  "jsdoc", -- [✓] installed
+  "json", -- [✓] installed
+  "json5", -- [✓] installed
+  "jsonc", -- [✓] installed
+  "jsonnet", -- [✓] installed
   -- "julia",              -- [✗] not installed
   -- "just",               -- [✗] not installed
   -- "kcl",                -- [✗] not installed
@@ -334,46 +334,46 @@ local parsers = {
   "linkerscript", -- [✓] installed
   -- "liquid",             -- [✗] not installed
   -- "liquidsoap",         -- [✗] not installed
-  "llvm",   -- [✓] installed
-  "lua",    -- [✓] installed
+  "llvm", -- [✓] installed
+  "lua", -- [✓] installed
   "luadoc", -- [✓] installed
-  "luap",   -- [✓] installed
+  "luap", -- [✓] installed
   -- "luau",               -- [✗] not installed
   -- "m68k",               -- [✗] not installed
-  "make",              -- [✓] installed
-  "markdown",          -- [✓] installed
-  "markdown_inline",   -- [✓] installed
-  "matlab",            -- [✓] installed
+  "make", -- [✓] installed
+  "markdown", -- [✓] installed
+  "markdown_inline", -- [✓] installed
+  "matlab", -- [✓] installed
   -- "menhir",             -- [✗] not installed
-  "mermaid",           -- [✓] installed
-  "meson",             -- [✓] installed
-  "mlir",              -- [✓] installed
-  "mustache",          -- [✓] installed
+  "mermaid", -- [✓] installed
+  "meson", -- [✓] installed
+  "mlir", -- [✓] installed
+  "mustache", -- [✓] installed
   -- "muttrc",             -- [✗] not installed
-  "nasm",              -- [✓] installed
-  "nginx",             -- [✓] installed
+  "nasm", -- [✓] installed
+  "nginx", -- [✓] installed
   -- "nickel",             -- [✗] not installed
-  "nim",               -- [✓] installed
+  "nim", -- [✓] installed
   "nim_format_string", -- [✓] installed
-  "ninja",             -- [✓] installed
-  "nix",               -- [✓] installed
+  "ninja", -- [✓] installed
+  "nix", -- [✓] installed
   -- "norg",               -- [✗] not installed
   -- "nqc",                -- [✗] not installed
   -- "nu",                 -- [✗] not installed
-  "objc",    -- [✓] installed
+  "objc", -- [✓] installed
   "objdump", -- [✓] installed
   -- "ocaml",              -- [✗] not installed
   -- "ocaml_interface",    -- [✗] not installed
   -- "ocamllex",           -- [✗] not installed
   -- "odin",               -- [✗] not installed
   -- "pascal",             -- [✗] not installed
-  "passwd",   -- [✓] installed
-  "pem",      -- [✓] installed
-  "perl",     -- [✓] installed
-  "php",      -- [✓] installed
+  "passwd", -- [✓] installed
+  "pem", -- [✓] installed
+  "perl", -- [✓] installed
+  "php", -- [✓] installed
   "php_only", -- [✓] installed
-  "phpdoc",   -- [✓] installed
-  "pioasm",   -- [✓] installed
+  "phpdoc", -- [✓] installed
+  "pioasm", -- [✓] installed
   -- "po",                 -- [✗] not installed
   -- "pod",                -- [✗] not installed
   -- "poe_filter",         -- [✗] not installed
@@ -383,17 +383,17 @@ local parsers = {
   -- "prisma",             -- [✗] not installed
   -- "problog",            -- [✗] not installed
   -- "prolog",             -- [✗] not installed
-  "promql",     -- [✓] installed
+  "promql", -- [✓] installed
   "properties", -- [✓] installed
-  "proto",      -- [✓] installed
+  "proto", -- [✓] installed
   -- "prql",               -- [✗] not installed
   -- "psv",                -- [✗] not installed
   "pug", -- [✓] installed
   -- "puppet",             -- [✗] not installed
   -- "purescript",         -- [✗] not installed
   "pymanifest", -- [✓] installed
-  "python",     -- [✓] installed
-  "ql",         -- [✓] installed
+  "python", -- [✓] installed
+  "ql", -- [✓] installed
   -- "qmldir",             -- [✗] not installed
   -- "qmljs",              -- [✗] not installed
   "query", -- [✓] installed
@@ -402,11 +402,11 @@ local parsers = {
   -- "ralph",              -- [✗] not installed
   -- "rasi",               -- [✗] not installed
   -- "razor",              -- [✗] not installed
-  "rbs",          -- [✓] installed
-  "re2c",         -- [✓] installed
-  "readline",     -- [✓] installed
-  "regex",        -- [✓] installed
-  "rego",         -- [✓] installed
+  "rbs", -- [✓] installed
+  "re2c", -- [✓] installed
+  "readline", -- [✓] installed
+  "regex", -- [✓] installed
+  "rego", -- [✓] installed
   "requirements", -- [✓] installed
   -- "rescript",           -- [✗] not installed
   -- "rnoweb",             -- [✗] not installed
@@ -414,7 +414,7 @@ local parsers = {
   -- "robots",             -- [✗] not installed
   -- "roc",                -- [✗] not installed
   -- "ron",                -- [✗] not installed
-  "rst",  -- [✓] installed
+  "rst", -- [✓] installed
   "ruby", -- [✓] installed
   -- "runescript",         -- [✗] not installed
   "rust", -- [✓] installed
@@ -427,18 +427,18 @@ local parsers = {
   -- "slim",               -- [✗] not installed
   -- "slint",              -- [✗] not installed
   -- "smali",              -- [✗] not installed
-  "smithy",   -- [✓] installed
+  "smithy", -- [✓] installed
   -- "snakemake",          -- [✗] not installed
   "solidity", -- [✓] installed
   -- "soql",               -- [✗] not installed
   -- "sosl",               -- [✗] not installed
   -- "sourcepawn",         -- [✗] not installed
   -- "sparql",             -- [✗] not installed
-  "sql",        -- [✓] installed
+  "sql", -- [✓] installed
   -- "squirrel",           -- [✗] not installed
   "ssh_config", -- [✓] installed
-  "starlark",   -- [✓] installed
-  "strace",     -- [✓] installed
+  "starlark", -- [✓] installed
+  "strace", -- [✓] installed
   -- "styled",             -- [✗] not installed
   -- "supercollider",      -- [✗] not installed
   -- "superhtml",          -- [✗] not installed
@@ -453,18 +453,18 @@ local parsers = {
   -- "tact",               -- [✗] not installed
   -- "tcl",                -- [✗] not installed
   -- "teal",               -- [✗] not installed
-  "templ",     -- [✓] installed
+  "templ", -- [✓] installed
   -- "tera",               -- [✗] not installed
   "terraform", -- [✓] installed
   "textproto", -- [✓] installed
-  "thrift",    -- [✓] installed
+  "thrift", -- [✓] installed
   -- "tiger",              -- [✗] not installed
   -- "tlaplus",            -- [✗] not installed
   -- "tmux",               -- [✗] not installed
   "todotxt", -- [✓] installed
-  "toml",    -- [✓] installed
-  "tsv",     -- [✓] installed
-  "tsx",     -- [✓] installed
+  "toml", -- [✓] installed
+  "tsv", -- [✓] installed
+  "tsx", -- [✓] installed
   -- "turtle",             -- [✗] not installed
   -- "twig",               -- [✗] not installed
   "typescript", -- [✓] installed
@@ -481,20 +481,20 @@ local parsers = {
   -- "vento",              -- [✗] not installed
   -- "verilog",            -- [✗] not installed
   -- "vhdl",               -- [✗] not installed
-  "vhs",    -- [✓] installed
-  "vim",    -- [✓] installed
+  "vhs", -- [✓] installed
+  "vim", -- [✓] installed
   "vimdoc", -- [✓] installed
   -- "vrl",                -- [✗] not installed
   -- "vue",                -- [✗] not installed
   -- "wgsl",               -- [✗] not installed
   -- "wgsl_bevy",          -- [✗] not installed
   -- "wing",               -- [✗] not installed
-  "wit",    -- [✓] installed
+  "wit", -- [✓] installed
   "x86asm", -- [✓] installed
   -- "xcompose",           -- [✗] not installed
-  "xml",    -- [✓] installed
+  "xml", -- [✓] installed
   -- "xresources",         -- [✗] not installed
-  "yaml",   -- [✓] installed
+  "yaml", -- [✓] installed
   -- "yang",               -- [✗] not installed
   -- "yuck",               -- [✗] not installed
   -- "zathurarc",          -- [✗] not installed
@@ -604,9 +604,9 @@ ts_config.setup({
   pairs = {
     enable = true,
     disable = {},
-    highlight_pair_events = {},                                   -- e.g. {"CursorMoved"}, -- when to highlight the pairs, use {} to deactivate highlighting
-    highlight_self = false,                                       -- whether to highlight also the part of the pair under cursor (or only the partner)
-    goto_right_end = false,                                       -- whether to go to the end of the right partner or the beginning
+    highlight_pair_events = {}, -- e.g. {"CursorMoved"}, -- when to highlight the pairs, use {} to deactivate highlighting
+    highlight_self = false, -- whether to highlight also the part of the pair under cursor (or only the partner)
+    goto_right_end = false, -- whether to go to the end of the right partner or the beginning
     fallback_cmd_normal = "call matchit#Match_wrapper('',1,'n')", -- What command to issue when we can't find a pair (e.g. "normal! %")
     keymaps = {
       goto_partner = "<leader>%",
@@ -614,10 +614,10 @@ ts_config.setup({
     },
     delete_balanced = {
       only_on_first_char = false, -- whether to trigger balanced delete when on first character of a pair
-      fallback_cmd_normal = nil,  -- fallback command when no pair found, can be nil
-      longest_partner = false,    -- whether to delete the longest or the shortest pair when multiple found.
+      fallback_cmd_normal = nil, -- fallback command when no pair found, can be nil
+      longest_partner = false, -- whether to delete the longest or the shortest pair when multiple found.
       -- E.g. whether to delete the angle bracket or whole tag in  <pair> </pair>
-    }
+    },
   },
   -- https://github.com/andymass/vim-matchup
   matchup = {

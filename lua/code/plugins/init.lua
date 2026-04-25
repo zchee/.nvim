@@ -5,7 +5,7 @@ return {
   {
     "rainbowhxch/accelerated-jk.nvim",
     config = function()
-      require('accelerated-jk').setup({
+      require("accelerated-jk").setup({
         mode = "time_driven",
         enable_deceleration = true,
         acceleration_motions = {},

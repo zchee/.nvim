@@ -10,16 +10,16 @@
 --                                                                                                                 --
 -- --------------------------------------------------------------------------------------------------------------- --
 
-vim.cmd('filetype plugin indent on')
-if vim.fn.exists('syntax_on') ~= 1 then
-  vim.cmd('syntax enable')
+vim.cmd("filetype plugin indent on")
+if vim.fn.exists("syntax_on") ~= 1 then
+  vim.cmd("syntax enable")
 end
 
-local util         = require("util")
+local util = require("util")
 
 -- Environment Variables:
 
-vim.env.MANWIDTH   = 999
+vim.env.MANWIDTH = 999
 
 -- -- Remote Plugins:
 -- vim.g.loaded_python_provider    = 1 -- $VIMRUNTIME/autoload/provider/python.vim
@@ -64,14 +64,14 @@ vim.env.MANWIDTH   = 999
 -- Global Settings:
 
 vim.opt.autoindent = true
-vim.opt.autoread   = true
-vim.opt.backup     = true
-vim.opt.backupdir  = vim.fn.stdpath("state") .. "/backup/" -- NOTE(zchee): can't use `vim.fs.joinpath`
+vim.opt.autoread = true
+vim.opt.backup = true
+vim.opt.backupdir = vim.fn.stdpath("state") .. "/backup/" -- NOTE(zchee): can't use `vim.fs.joinpath`
 vim.opt.backupcopy = "yes"
-vim.opt.belloff    = "all"
-vim.opt.cindent    = true
+vim.opt.belloff = "all"
+vim.opt.cindent = true
 vim.opt.cinkeys:remove("0#") -- comments don't fiddle with indenting
-vim.opt.cinoptions = ""      -- See :h cinoptions-values
+vim.opt.cinoptions = "" -- See :h cinoptions-values
 -- vim.opt.clipboard = "unnamedplus"
 vim.opt.cmdheight = 2
 vim.opt.cmdwinheight = 50
@@ -92,9 +92,9 @@ vim.opt.fileformats = { "unix" }
 vim.opt.fillchars:append("diff:/")
 vim.opt.foldcolumn = "0"
 vim.opt.foldlevel = 0
-vim.opt.foldlevelstart = 99       -- open all folds by default
+vim.opt.foldlevelstart = 99 -- open all folds by default
 vim.opt.foldmethod = "expr"
-vim.opt.foldnestmax = 1           -- maximum fold depth
+vim.opt.foldnestmax = 1 -- maximum fold depth
 vim.opt.formatoptions:append("c") -- Autowrap comments using textwidth - :help fo-table
 vim.opt.formatoptions:append("j") -- Delete comment character when joining commented lines
 vim.opt.formatoptions:append("l") -- do not wrap lines that have been longer when starting insert mode already
@@ -103,9 +103,9 @@ vim.opt.formatoptions:append("q") -- Allow formatting of comments with "gq"
 vim.opt.formatoptions:append("r") -- Insert comment leader after hitting <Enter>
 vim.opt.formatoptions:append("t") -- Auto-wrap text using textwidth
 vim.opt.formatoptions:remove("o") -- Automatically insert the current comment leader after hitting 'o' or'O' in Normal mode
-vim.opt.foldnestmax = 1           -- maximum fold depth
+vim.opt.foldnestmax = 1 -- maximum fold depth
 vim.opt.grepformat = "%f:%l:%c:%m"
-if vim.fn.executable('rg') == 1 then
+if vim.fn.executable("rg") == 1 then
   vim.o.grepprg = "rg --vimgrep --hidden --glob ‘!.git’"
 end
 vim.opt.helplang = { "en", "ja" }
@@ -129,7 +129,7 @@ vim.opt.listchars = {
   precedes = "‹",
 }
 vim.opt.makeprg = "make"
-vim.opt.matchtime = 0        -- disable nvim matchparen
+vim.opt.matchtime = 0 -- disable nvim matchparen
 vim.opt.maxmempattern = 1000 -- default: 1000, max: 2000000
 vim.opt.modelines = 1
 vim.opt.mouse = "a"
@@ -154,7 +154,7 @@ vim.opt.shortmess:append("c") -- atOIc " default: filnxtToOF
 vim.opt.shortmess:append("I") -- atOIc " default: filnxtToOF
 vim.opt.showfulltag = true
 vim.opt.showtabline = 2
-vim.opt.sidescroll = 1     -- 0
+vim.opt.sidescroll = 1 -- 0
 vim.opt.sidescrolloff = 15 -- 0
 vim.opt.signcolumn = "yes:5"
 vim.opt.sessionoptions = {
@@ -178,19 +178,19 @@ vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.suffixes:append(".pyc")
 vim.opt.switchbuf = "uselast" -- useopen
-vim.opt.synmaxcol = 0         -- default: 3000, 0: unlimited, 400, 1500, 5000
+vim.opt.synmaxcol = 0 -- default: 3000, 0: unlimited, 400, 1500, 5000
 vim.opt.tabstop = 2
 vim.opt.tagcase = "smart"
-vim.opt.tags = "./tags;"                              -- http://d.hatena.ne.jp/thinca/20090723/1248286959
+vim.opt.tags = "./tags;" -- http://d.hatena.ne.jp/thinca/20090723/1248286959
 vim.opt.textwidth = 0
-vim.opt.timeout = true                                -- mappnig timeout
-vim.opt.timeoutlen = 230                              -- default: 1000
-vim.opt.ttimeout = true                               -- keycode timeout
-vim.opt.ttimeoutlen = 30                              -- default: 50
+vim.opt.timeout = true -- mappnig timeout
+vim.opt.timeoutlen = 230 -- default: 1000
+vim.opt.ttimeout = true -- keycode timeout
+vim.opt.ttimeoutlen = 30 -- default: 50
 vim.opt.undodir = vim.fn.stdpath("state") .. "/undo/" -- NOTE(zchee): can't use `vim.fs.joinpath`
 vim.opt.undofile = true
-vim.opt.undolevels = 10000                            -- default: 1000
-vim.opt.updatetime = 100                              -- default: 4000
+vim.opt.undolevels = 10000 -- default: 1000
+vim.opt.updatetime = 100 -- default: 4000
 vim.opt.pumblend = 15
 vim.opt.pumheight = 30
 vim.opt.virtualedit = "block"
@@ -246,26 +246,26 @@ vim.cmd.colorscheme("equinusocio_material")
 
 -- Go:
 vim.g["go#generate#test#template_dir"] = os.getenv("XDG_CONFIG_HOME") .. "/go/template/gotests"
-vim.g.go_highlight_array_whitespace_error = 0    -- default : 1
-vim.g.go_highlight_chan_whitespace_error = 0     -- default : 1
-vim.g.go_highlight_extra_types = 1               -- default : 1
-vim.g.go_highlight_space_tab_error = 0           -- default : 1
+vim.g.go_highlight_array_whitespace_error = 0 -- default : 1
+vim.g.go_highlight_chan_whitespace_error = 0 -- default : 1
+vim.g.go_highlight_extra_types = 1 -- default : 1
+vim.g.go_highlight_space_tab_error = 0 -- default : 1
 vim.g.go_highlight_trailing_whitespace_error = 0 -- default : 1
-vim.g.go_highlight_operators = 1                 -- default : 0
-vim.g.go_highlight_functions = 1                 -- default : 0
-vim.g.go_highlight_function_parameters = 0       -- default : 0
-vim.g.go_highlight_function_calls = 1            -- default : 0
-vim.g.go_highlight_fields = 1                    -- default : 0
-vim.g.go_highlight_types = 0                     -- default : 0
-vim.g.go_highlight_build_constraints = 1         -- default : 0
-vim.g.go_highlight_string_spellcheck = 0         -- default : 1
-vim.g.go_highlight_format_strings = 1            -- default : 1
-vim.g.go_highlight_generate_tags = 1             -- default : 0
-vim.g.go_highlight_variable_assignments = 0      -- default : 0
-vim.g.go_highlight_variable_declarations = 0     -- default : 0
-vim.g.go_highlight_diagnostic_errors = 1         -- default : 0
-vim.g.go_highlight_diagnostic_warnings = 1       -- default : 1
-vim.g.go_highlight_debug = 1                     -- default : 1
+vim.g.go_highlight_operators = 1 -- default : 0
+vim.g.go_highlight_functions = 1 -- default : 0
+vim.g.go_highlight_function_parameters = 0 -- default : 0
+vim.g.go_highlight_function_calls = 1 -- default : 0
+vim.g.go_highlight_fields = 1 -- default : 0
+vim.g.go_highlight_types = 0 -- default : 0
+vim.g.go_highlight_build_constraints = 1 -- default : 0
+vim.g.go_highlight_string_spellcheck = 0 -- default : 1
+vim.g.go_highlight_format_strings = 1 -- default : 1
+vim.g.go_highlight_generate_tags = 1 -- default : 0
+vim.g.go_highlight_variable_assignments = 0 -- default : 0
+vim.g.go_highlight_variable_declarations = 0 -- default : 0
+vim.g.go_highlight_diagnostic_errors = 1 -- default : 0
+vim.g.go_highlight_diagnostic_warnings = 1 -- default : 1
+vim.g.go_highlight_debug = 1 -- default : 1
 vim.g.go_fold_enable = { "block", "import", "varconst", "comment", "package_comment" }
 vim.g.go_highlight_error = 1
 vim.g.go_highlight_return = 1

@@ -5,7 +5,9 @@ function _G.dump(...)
 end
 
 function M.cmp_or(val, default)
-  if val == nil then return default end
+  if val == nil then
+    return default
+  end
   return val
 end
 
@@ -40,7 +42,7 @@ end
 ---@return boolean
 function M.is_exists(path)
   local file = io.open(path, "r")
-  if (file ~= nil) then
+  if file ~= nil then
     io.close(file)
     return true
   else

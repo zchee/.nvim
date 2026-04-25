@@ -40,14 +40,11 @@ do
     "matcher should detect the quickfile redraw Treesitter range failure"
   )
 
-  assert_falsy(
-    compat.is_treesitter_quickfile_range_error("plain error"),
-    "matcher should ignore unrelated errors"
-  )
+  assert_falsy(compat.is_treesitter_quickfile_range_error("plain error"), "matcher should ignore unrelated errors")
 
   assert_truthy(
     compat.is_treesitter_quickfile_range_error(table.concat({
-      'Error in command line:',
+      "Error in command line:",
       'Decoration provider "start" (ns=nvim.treesitter.highlighter):',
       "Lua: .../vim/treesitter/languagetree.lua:215: .../vim/treesitter.lua:196: attempt to call method 'range' (a nil value)",
     }, "\n")),
@@ -148,7 +145,10 @@ do
 
   assert_falsy(ok, "unknown redraw failures must still propagate")
   assert_equal(11, stopped, "unknown redraw failures should still stop treesitter before propagating")
-  assert_truthy(type(err) == "string" and err:find("unexpected redraw failure", 1, true) ~= nil, "error should be preserved")
+  assert_truthy(
+    type(err) == "string" and err:find("unexpected redraw failure", 1, true) ~= nil,
+    "error should be preserved"
+  )
 end
 
 do

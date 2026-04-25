@@ -2,7 +2,7 @@
 
 -- local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
-local util              = require("util")
+local util = require("util")
 
 vim.lsp.log.set_level(vim.log.levels.ERROR) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
 vim.diagnostic.config({
@@ -44,7 +44,7 @@ hover.config({
   preview_window = false,
   title = false,
   mouse_providers = { "hover.providers.lsp" },
-  mouse_delay = 1000
+  mouse_delay = 1000,
 })
 
 local lspsaga = require("lspsaga")
@@ -287,7 +287,7 @@ tiny_inline_diagnostic.setup({
     hint = "DiagnosticHint",
     arrow = "NonText",
     background = "CursorLine", -- Background color for diagnostics. Can be a highlight group or a hexadecimal color (#RRGGBB)
-    mixing_color = "Normal",   -- Color blending option for the diagnostic background. Use "None" or a hexadecimal color (#RRGGBB) to blend with another color
+    mixing_color = "Normal", -- Color blending option for the diagnostic background. Use "None" or a hexadecimal color (#RRGGBB) to blend with another color
   },
   options = {
     show_source = {
@@ -297,8 +297,8 @@ tiny_inline_diagnostic.setup({
     use_icons_from_diagnostic = true,
     set_arrow_to_diag_color = false,
     add_messages = true, -- Add messages to diagnostics when multiline diagnostics are enabled. If set to false, only signs will be displayed
-    throttle = 20,       -- milliseconds
-    softwrap = 200,      -- Minimum message length before wrapping to a new line
+    throttle = 20, -- milliseconds
+    softwrap = 200, -- Minimum message length before wrapping to a new line
     multilines = {
       enabled = true,
       always_show = true,
@@ -310,7 +310,7 @@ tiny_inline_diagnostic.setup({
     enable_on_select = false,
     overflow = {
       mode = "wrap", -- "wrap" - Split long messages into multiple lines, "none" - Do not truncate messages, "oneline" - Keep the message on a single line, even if it's long
-      padding = 5,   -- Trigger wrapping to occur this many characters earlier when mode == "wrap".
+      padding = 5, -- Trigger wrapping to occur this many characters earlier when mode == "wrap".
     },
     break_line = {
       enabled = false,
@@ -331,7 +331,7 @@ tiny_inline_diagnostic.setup({
     },
     overwrite_events = nil, -- Events to attach diagnostics to buffers. You should not change this unless the plugin does not work with your configuration
   },
-  disabled_ft = {}          -- List of filetypes to disable the plugin
+  disabled_ft = {}, -- List of filetypes to disable the plugin
 })
 
 -- lspconfig.util.default_config = vim.tbl_extend(
@@ -511,7 +511,11 @@ local on_attach = function(client, bufnr)
 
   if client.name == "yamlls" then
     local bufname = vim.api.nvim_buf_get_name(bufnr)
-    if bufname:match(".*/templates/.*%.ya?ml") or bufname:match(".*/templates/.*%.tpl") or bufname:match("helmfile.*%.ya?ml") then
+    if
+      bufname:match(".*/templates/.*%.ya?ml")
+      or bufname:match(".*/templates/.*%.tpl")
+      or bufname:match("helmfile.*%.ya?ml")
+    then
       client:stop(true)
     end
   end
@@ -552,23 +556,20 @@ end
 --   }
 -- )
 
-register_lsp(
-  "tsgo",
-  {
-    cmd = { "tsgo", "--lsp", "-stdio" },
-    filetypes = {
-      "javascript",
-      "javascriptreact",
-      "javascript.jsx",
-      "typescript",
-      "typescriptreact",
-      "typescript.tsx",
-    },
-    root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
-    single_file_support = true,
-    capabilities = default_capabilities_config(),
-  }
-)
+register_lsp("tsgo", {
+  cmd = { "tsgo", "--lsp", "-stdio" },
+  filetypes = {
+    "javascript",
+    "javascriptreact",
+    "javascript.jsx",
+    "typescript",
+    "typescriptreact",
+    "typescript.tsx",
+  },
+  root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
+  single_file_support = true,
+  capabilities = default_capabilities_config(),
+})
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 vim.lsp.config("*", {
@@ -597,7 +598,7 @@ local servers = {
   ["gopls"] = require("lsp.gopls"),
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
-  ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") }, },
+  ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") } },
   ["neocmake"] = require("lsp.neocmake"),
   ["protols"] = require("lsp.protols"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
@@ -617,23 +618,33 @@ end
 
 -- vim.keymap.set({ "n" }, "K", function() require("hover").open() end, { silent = true })
 vim.keymap.set({ "n" }, "K", "<Cmd>Lspsaga hover_doc<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<C-]>", function() require("snacks").picker.lsp_definitions() end, { silent = true })
+vim.keymap.set({ "n" }, "<C-]>", function()
+  require("snacks").picker.lsp_definitions()
+end, { silent = true })
 vim.keymap.set({ "n" }, "<C-k>", "<Cmd>Lspsaga signature_help<CR>", { silent = true })
 -- vim.keymap.set({ "n", "v" }, "<BS>ac", function() actions_preview.code_actions({}) end, { silent = true })
-vim.keymap.set({ "n", "v" }, "<BS>ac", function() require("snacks").picker.actions() end, { silent = true })
+vim.keymap.set({ "n", "v" }, "<BS>ac", function()
+  require("snacks").picker.actions()
+end, { silent = true })
 vim.keymap.set({ "n" }, "<BS>ca", "<Cmd>Lspsaga code_action<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>f", "<Cmd>lua vim.lsp.buf.format({ async = false })<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>gci", "<Cmd>Lspsaga incoming_calls<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>gco", "<Cmd>Lspsaga outgoing_calls<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>ge", "<Cmd>Lspsaga show_line_diagnostics<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>gh", "<Cmd>Lspsaga lsp_finder<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<BS>gi", function() require("snacks").picker.lsp_implementations() end, { silent = true })
+vim.keymap.set({ "n" }, "<BS>gi", function()
+  require("snacks").picker.lsp_implementations()
+end, { silent = true })
 vim.keymap.set({ "n" }, "<BS>gk", function()
   local new_virtual_lines = not vim.diagnostic.config().virtual_lines
   local new_virtual_text = not vim.diagnostic.config().virtual_text
   vim.diagnostic.config({ virtual_lines = new_virtual_lines, virtual_text = new_virtual_text })
 end, { silent = true })
 vim.keymap.set({ "n" }, "<BS>gp", "<Cmd>Lspsaga peek_definition<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<BS>gr", function() require("snacks").picker.lsp_references() end, { silent = true })
-vim.keymap.set({ "n" }, "<BS>gt", function() require("snacks").picker.lsp_type_definitions() end, { silent = true })
+vim.keymap.set({ "n" }, "<BS>gr", function()
+  require("snacks").picker.lsp_references()
+end, { silent = true })
+vim.keymap.set({ "n" }, "<BS>gt", function()
+  require("snacks").picker.lsp_type_definitions()
+end, { silent = true })
 vim.keymap.set({ "n" }, "<Space>e", "<Cmd>Lspsaga rename<CR>", { silent = true })

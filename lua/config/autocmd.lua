@@ -65,7 +65,7 @@ if vim.fn.has("mac") then
 
   vim.api.nvim_create_autocmd("FileType", {
     pattern = { "c", "cpp", "objc", "objcpp", "go" },
-    callback = path_add_macos_headers
+    callback = path_add_macos_headers,
   })
 end
 -- C familly
@@ -449,7 +449,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         })
       end,
     })
-  end
+  end,
 })
 local augroup_code_action_format = vim.api.nvim_create_augroup("LspCodeActionFormat", { clear = false })
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
@@ -532,24 +532,18 @@ vim.api.nvim_create_autocmd({ "TermOpen" }, {
 vim.api.nvim_create_autocmd("BufEnter", {
   pattern = "go.mod",
   callback = function(e)
-    vim.api.nvim_buf_create_user_command(e.buf, "GomodPinReplace",
-      function()
-        vim.cmd("'<,'>s/^\\t\\(.*\\)\\s\\(.*\\)/\\t\\1 => \\1 \\2/g | nohlsearch")
-      end,
-      {
-        range = true,
-        desc = "substitutes gomod replace packages",
-      }
-    )
-    vim.api.nvim_buf_create_user_command(e.buf, "GomodLatest",
-      function()
-        vim.cmd("'<,'>s/ v[a-z0-9.\\+-]*/ latest/g | nohlsearch")
-      end,
-      {
-        range = true,
-        desc = "substitutes module version to latest",
-      }
-    )
+    vim.api.nvim_buf_create_user_command(e.buf, "GomodPinReplace", function()
+      vim.cmd("'<,'>s/^\\t\\(.*\\)\\s\\(.*\\)/\\t\\1 => \\1 \\2/g | nohlsearch")
+    end, {
+      range = true,
+      desc = "substitutes gomod replace packages",
+    })
+    vim.api.nvim_buf_create_user_command(e.buf, "GomodLatest", function()
+      vim.cmd("'<,'>s/ v[a-z0-9.\\+-]*/ latest/g | nohlsearch")
+    end, {
+      range = true,
+      desc = "substitutes module version to latest",
+    })
   end,
 })
 

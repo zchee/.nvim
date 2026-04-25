@@ -42,12 +42,12 @@ return {
   -- end,
   root_markers = { "deno.json", "deno.jsonc", "tsconfig.json", "package.json", ".git" },
   filetypes = {
-    'javascript',
-    'javascriptreact',
-    'javascript.jsx',
-    'typescript',
-    'typescriptreact',
-    'typescript.tsx',
+    "javascript",
+    "javascriptreact",
+    "javascript.jsx",
+    "typescript",
+    "typescriptreact",
+    "typescript.tsx",
   },
   init_options = {
     deno = {
@@ -67,7 +67,7 @@ return {
         imports = {
           autoDiscover = true,
           hosts = {
-            ['https://deno.land'] = true,
+            ["https://deno.land"] = true,
           },
         },
       },

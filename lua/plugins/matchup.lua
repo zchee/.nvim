@@ -15,5 +15,5 @@ require("match-up").setup({
     disable_virtual_text = true,
     enable_quotes = true,
     stopline = 5000,
-  }
+  },
 })

@@ -7,7 +7,7 @@ local rep = require("luasnip.extras").rep
 -- local partial = require("luasnip.extras").partial
 
 local function in_func()
-  local ok, ts_utils = pcall(require, 'nvim-treesitter.ts_utils')
+  local ok, ts_utils = pcall(require, "nvim-treesitter.ts_utils")
   if not ok then
     return false
   end
@@ -18,7 +18,7 @@ local function in_func()
   local expr = current_node
 
   while expr do
-    if expr:type() == 'function_declaration' or expr:type() == 'method_declaration' then
+    if expr:type() == "function_declaration" or expr:type() == "method_declaration" then
       return true
     end
     local parent = expr:parent()
@@ -31,8 +31,8 @@ local function in_func()
 end
 
 local function is_in_test_file()
-  local filename = vim.fn.expand('%:p')
-  return vim.endswith(filename, '_test.go')
+  local filename = vim.fn.expand("%:p")
+  return vim.endswith(filename, "_test.go")
 end
 
 local function is_in_test_function()
@@ -69,12 +69,9 @@ local func_snippets = {
       trig = "len",
       dscr = "len(...)",
     },
-    fmt([[len({})]],
-      {
-        ls.i(1, "object"),
-      },
-      in_fn
-    )
+    fmt([[len({})]], {
+      ls.i(1, "object"),
+    }, in_fn)
   ),
 
   -- iter
@@ -87,7 +84,8 @@ local func_snippets = {
       trig = "iterseq",
       dscr = "iter.Seq[V any]",
     },
-    fmta([[
+    fmta(
+      [[
 				return func(yield func(<1>) bool) {
 					<>
 				}
@@ -108,7 +106,8 @@ local func_snippets = {
       trig = "iterseq2",
       dscr = "iter.Seq2[K, V any]",
     },
-    fmta([[
+    fmta(
+      [[
 				return func(yield func(<1>, <2>) bool) {
 					<>
 				}
@@ -128,38 +127,29 @@ local func_snippets = {
       trig = "ff",
       dscr = "fmt.Printf(...)",
     },
-    fmt([[fmt.Printf("{}: %#v\n", {})]],
-      {
-        ls.i(1, ""),
-        rep(1),
-      },
-      in_fn
-    )
+    fmt([[fmt.Printf("{}: %#v\n", {})]], {
+      ls.i(1, ""),
+      rep(1),
+    }, in_fn)
   ),
   ls.s(
     {
       trig = "ft",
       dscr = "fmt.Printf(%T = %#v)",
     },
-    fmt([[fmt.Printf("{}: %[1]T = %#[1]v\n", {})]],
-      {
-        ls.i(1, ""),
-        rep(1),
-      },
-      in_fn
-    )
+    fmt([[fmt.Printf("{}: %[1]T = %#[1]v\n", {})]], {
+      ls.i(1, ""),
+      rep(1),
+    }, in_fn)
   ),
   ls.s(
     {
       trig = "fl",
       dscr = "fmt.Println(...)",
     },
-    fmt([[fmt.Println("{}")]],
-      {
-        ls.i(1, ""),
-      },
-      in_fn
-    )
+    fmt([[fmt.Println("{}")]], {
+      ls.i(1, ""),
+    }, in_fn)
   ),
 
   -- error handling
@@ -168,7 +158,8 @@ local func_snippets = {
       trig = "iferr",
       dscr = "if err != nil",
     },
-    fmta([[
+    fmta(
+      [[
 				if err != nil {
 					<>
 				}
@@ -184,7 +175,8 @@ local func_snippets = {
       trig = "errnil",
       dscr = "err != nil {return err}",
     },
-    fmta([[
+    fmta(
+      [[
 				; err != nil {
 					<>
 				}
@@ -201,11 +193,9 @@ local func_snippets = {
       trig = "tabwriter",
       dscr = "tw := tabwriter.NewWriter(...)",
     },
-    fmt([[tw := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', tabwriter.TabIndent){}]],
-      {
-        ls.i(1, ""),
-      }
-    )
+    fmt([[tw := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', tabwriter.TabIndent){}]], {
+      ls.i(1, ""),
+    })
   ),
 }
 
@@ -216,26 +206,20 @@ local test_snippets = {
       trig = "tf",
       dscr = "t.Logf(...)",
     },
-    fmt([[t.Logf("{}: %#v", {})]],
-      {
-        ls.i(1, ""),
-        rep(1),
-      },
-      in_test_fn
-    )
+    fmt([[t.Logf("{}: %#v", {})]], {
+      ls.i(1, ""),
+      rep(1),
+    }, in_test_fn)
   ),
   ls.s(
     {
       trig = "ft",
       dscr = "t.Logf(%T = %#v)",
     },
-    fmt([[t.Logf("{}: %[1]T = %#[1]v\n", {})]],
-      {
-        ls.i(1, ""),
-        rep(1),
-      },
-      in_test_fn
-    )
+    fmt([[t.Logf("{}: %[1]T = %#[1]v\n", {})]], {
+      ls.i(1, ""),
+      rep(1),
+    }, in_test_fn)
   ),
 
   -- testcases
@@ -244,7 +228,8 @@ local test_snippets = {
       trig = "test",
       dscr = "create test cases for testing",
     },
-    fmta([[
+    fmta(
+      [[
 				func Test<>(t *testing.T) {
 					t.Parallel()
 
@@ -276,7 +261,8 @@ local test_snippets = {
       trig = "diff",
       dscr = 'if diff := cmp.Diff(sc, got); diff != "" {; t.Fatalf("(+want, -got)", diff)}',
     },
-    fmta([[
+    fmta(
+      [[
         if diff := cmp.Diff(<1>, <2>); diff != "" {
         	t.Fatalf("(+want, -got)\n%s", diff)
         }
@@ -296,7 +282,8 @@ local test_snippets = {
       name = "benchmark",
       dscr = "Create benchmark",
     },
-    fmt([[
+    fmt(
+      [[
 				func Benchmark{}(b *testing.B) {{
 					b.ReportAllocs()
 					b.ResetTimer()
@@ -309,7 +296,7 @@ local test_snippets = {
       {
         ls.i(1, "method name"),
         rep(1),
-        ls.i(2, "args")
+        ls.i(2, "args"),
       },
       in_test_file
     )
@@ -322,7 +309,8 @@ local test_snippets = {
       name = "parallel benchmark",
       dscr = "Create parallel benchmark",
     },
-    fmta([[
+    fmta(
+      [[
 				var bench<> <>
 
 				func Benchmark<>(b *testing.B) {{
@@ -338,7 +326,7 @@ local test_snippets = {
         ls.i(3, "name"),
         rep(1),
         ls.i(3, "function"),
-        ls.i(4, "args")
+        ls.i(4, "args"),
       },
       in_test_file
     )
@@ -352,11 +340,9 @@ local doc_snippets = {
       trig = "doc_string",
       dscr = "String returns a string representation of the $1",
     },
-    fmt([[// String returns a string representation of the {}.]],
-      {
-        ls.i(1, "type name"),
-      }
-    )
+    fmt([[// String returns a string representation of the {}.]], {
+      ls.i(1, "type name"),
+    })
   ),
 
   ls.s(
@@ -364,11 +350,9 @@ local doc_snippets = {
       trig = "doc_error",
       dscr = "Error returns a string representation of the ...",
     },
-    fmt([[// Error returns a string representation of the [{}].]],
-      {
-        ls.i(1, "type name"),
-      }
-    )
+    fmt([[// Error returns a string representation of the [{}].]], {
+      ls.i(1, "type name"),
+    })
   ),
   ls.s(
     {
@@ -376,11 +360,9 @@ local doc_snippets = {
       name = "... implements [...]",
       dscr = "... implements [...]",
     },
-    fmt([[ implements [{}].]],
-      {
-        ls.i(1),
-      }
-    )
+    fmt([[ implements [{}].]], {
+      ls.i(1),
+    })
   ),
   ls.s(
     {
@@ -388,11 +370,9 @@ local doc_snippets = {
       name = "... represents a [...]",
       dscr = "... represents a [...]",
     },
-    fmt([[ represents a {}]],
-      {
-        ls.i(1),
-      }
-    )
+    fmt([[ represents a {}]], {
+      ls.i(1),
+    })
   ),
   ls.s(
     {
@@ -400,45 +380,35 @@ local doc_snippets = {
       name = "Deprecated: ...",
       dscr = "Deprecated: ...",
     },
-    fmt([[// Deprecated: Use {} instead of.{}]],
-      {
-        ls.i(1, "name"),
-        ls.i(2),
-      }
-    )
+    fmt([[// Deprecated: Use {} instead of.{}]], {
+      ls.i(1, "name"),
+      ls.i(2),
+    })
   ),
   ls.s(
     {
       trig = "doc_drop-in",
       name = "drop-in replacement",
     },
-    fmt([[ is a drop-in replacement for [{}] with {}.]],
-      {
-        ls.i(1, "target type name"),
-        ls.i(2, "what"),
-      }
-    )
+    fmt([[ is a drop-in replacement for [{}] with {}.]], {
+      ls.i(1, "target type name"),
+      ls.i(2, "what"),
+    })
   ),
   ls.s(
     {
       trig = "doc_equivalent",
       name = "equivalent to",
     },
-    fmt([[ is equivalent to [{}] with {}.]],
-      {
-        ls.i(1, "target type name"),
-        ls.i(2, "what"),
-      }
-    )
+    fmt([[ is equivalent to [{}] with {}.]], {
+      ls.i(1, "target type name"),
+      ls.i(2, "what"),
+    })
   ),
-  ls.s(
-    {
-      trig = "doc_concurrently",
-      name = "concurrently call",
-    },
-    fmt([[// This method is safe to call concurrently.]], {}
-    )
-  ),
+  ls.s({
+    trig = "doc_concurrently",
+    name = "concurrently call",
+  }, fmt([[// This method is safe to call concurrently.]], {})),
 }
 
 local add_snippets_opt = { refresh_notify = true, type = "snippets" }

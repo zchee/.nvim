@@ -1,7 +1,7 @@
 local telescope = require("telescope")
 
-local nonicons = require("nvim-nonicons")
 local live_grep_args = require("telescope-live-grep-args.actions")
+local nonicons = require("nvim-nonicons")
 
 -- local telescope_utils = require("telescope.utils")
 -- local project_actions = require("telescope._extensions.project.actions")
@@ -140,31 +140,31 @@ telescope.setup({
       bottom_pane = {
         height = 25,
         preview_cutoff = 120,
-        prompt_position = "top"
+        prompt_position = "top",
       },
       center = {
         height = 0.4,
         preview_cutoff = 40,
         prompt_position = "top",
-        width = 0.5
+        width = 0.5,
       },
       cursor = {
         height = 0.9,
         preview_cutoff = 40,
-        width = 0.8
+        width = 0.8,
       },
       horizontal = {
         height = 0.9,
         preview_cutoff = 120,
         prompt_position = "bottom",
-        width = 0.8
+        width = 0.8,
       },
       vertical = {
         height = 0.9,
         preview_cutoff = 40,
         prompt_position = "bottom",
-        width = 0.8
-      }
+        width = 0.8,
+      },
     },
     path_display = { "smart" },
     mappings = {
@@ -190,18 +190,18 @@ telescope.setup({
       "--follow",
       "--no-ignore-vcs",
       "--no-config",
-      "--glob=!.git/",             -- git
-      "--glob=!.idea/",            -- JetBrains
-      "--glob=!.next/",            -- Next.js
+      "--glob=!.git/", -- git
+      "--glob=!.idea/", -- JetBrains
+      "--glob=!.next/", -- Next.js
       -- "--glob=!node_modules/",     -- Node.js
       "--glob=!storybook-static/", -- storybook
-      "--glob=!*.egg-info/",       -- Python egg
-      "--glob=!*venv/",            -- Python virtualenv
-      "--glob=!*.min.css",         -- minify
-      "--glob=!*.min.js",          -- minify
-      "--glob=!*.bundle.js",       -- webpack
-      "--glob=!*.recording",       -- asciinema
-      "--glob=!.aider*",           -- aider
+      "--glob=!*.egg-info/", -- Python egg
+      "--glob=!*venv/", -- Python virtualenv
+      "--glob=!*.min.css", -- minify
+      "--glob=!*.min.js", -- minify
+      "--glob=!*.bundle.js", -- webpack
+      "--glob=!*.recording", -- asciinema
+      "--glob=!.aider*", -- aider
     },
     -- vimgrep_arguments = {
     --   "ugrep",
@@ -268,7 +268,7 @@ telescope.setup({
       hidden_files = true, -- default: false
       theme = "dropdown",
       order_by = "asc",
-      search_by = "path",         -- "title",
+      search_by = "path", -- "title",
       sync_with_nvim_tree = true, -- default false
       -- default for on_project_selected = find project files
       -- on_project_selected = function(prompt_bufnr)
@@ -280,9 +280,9 @@ telescope.setup({
       -- end
     },
     ["ui-select"] = {
-      require("telescope.themes").get_dropdown {
+      require("telescope.themes").get_dropdown({
         -- even more opts
-      },
+      }),
 
       -- pseudo code / specification for writing custom displays, like the one
       -- for "codeactions"

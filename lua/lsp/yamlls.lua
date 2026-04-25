@@ -31,7 +31,7 @@ return {
         parentSkeletonSelectedFirst = true,
       },
       style = {
-        flowMapping = "allow",  -- "allow" | "forbid"
+        flowMapping = "allow", -- "allow" | "forbid"
         flowSequence = "allow", -- "allow" | "forbid"
       },
       keyOrdering = false,

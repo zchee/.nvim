@@ -41,9 +41,9 @@ hi("@rune_literal.go", { link = "String" })
 hi("@type.builtin.go", { fg = "#ffbf6b", bg = hi_none, bold = false })
 -- hi("@lsp.mod.defaultLibrary.go", { fg = "#ffbf6b", bg = hi_none, bold = false })
 hi("@keyword.return.go", { link = "Statement" }) -- TODO(zchee): consider to use "Keyword" or "Statement"
-hi("@keyword.defer.go", { link = "Keyword" })    -- TODO(zchee): consider to use "Keyword" or "Statement"
+hi("@keyword.defer.go", { link = "Keyword" }) -- TODO(zchee): consider to use "Keyword" or "Statement"
 hi("@keyword.function.go", { link = "Keyword" }) -- TODO(zchee): consider to use "Keyword" or "Statement"
-hi("@number.go", { link = "Number" })            -- TODO(zchee): consider to use "Keyword" or "Statement"
+hi("@number.go", { link = "Number" }) -- TODO(zchee): consider to use "Keyword" or "Statement"
 
 --- Comment
 hi("@comment.documentation.go", { fg = "#9ba3a8", bg = hi_none, bold = false, italic = true })

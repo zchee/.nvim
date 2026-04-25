@@ -40,27 +40,21 @@ local ls = require("luasnip")
 return {
   --- Comment
   ls.s({
-      trig = "todo",
-      name = "TODO comment",
-      dscr = "TODO(zchee): ...",
-    },
-    ls.t("TODO(zchee): ")
-  ),
+    trig = "todo",
+    name = "TODO comment",
+    dscr = "TODO(zchee): ...",
+  }, ls.t("TODO(zchee): ")),
   ls.s({
-      trig = "note",
-      name = "NOTE comment",
-      dscr = "NOTE(zchee): ...",
-    },
-    ls.t("NOTE(zchee): ")
-  ),
+    trig = "note",
+    name = "NOTE comment",
+    dscr = "NOTE(zchee): ...",
+  }, ls.t("NOTE(zchee): ")),
 
   --- Terminal
   ls.s({
-      trig = "devnull",
-      dscr = "> /dev/null 2>&1",
-    },
-    ls.t("> /dev/null 2>&1")
-  ),
+    trig = "devnull",
+    dscr = "> /dev/null 2>&1",
+  }, ls.t("> /dev/null 2>&1")),
 
   -- ls.s("time", partial(vim.fn.strftime, "%H:%M:%S")),
   -- ls.s("date", partial(vim.fn.strftime, "%Y-%m-%d")),

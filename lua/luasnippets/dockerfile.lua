@@ -6,28 +6,26 @@ local fmt = require("luasnip.extras.fmt").fmt
 
 return {
   -- https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#syntax
-  ls.s({
+  ls.s(
+    {
       trig = "syntax",
       name = "Declare the Dockerfile syntax version to use for the build.",
       dscr = "syntax",
     },
-    fmt([[# syntax=docker.io/docker/dockerfile-upstream:{}]],
-      {
-        ls.i(1, "master-labs"),
-      }
-    )
+    fmt([[# syntax=docker.io/docker/dockerfile-upstream:{}]], {
+      ls.i(1, "master-labs"),
+    })
   ),
 
   -- https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md#check
-  ls.s({
+  ls.s(
+    {
       trig = "check",
       name = "Configure how build checks are evaluated.",
       dscr = "check",
     },
-    fmt([[# check={}]],
-      {
-        ls.i(1, "error=true"),
-      }
-    )
+    fmt([[# check={}]], {
+      ls.i(1, "error=true"),
+    })
   ),
 }

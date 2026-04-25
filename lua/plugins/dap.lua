@@ -168,7 +168,7 @@ dap_virtual_text.setup({
   virt_text_pos = "eol",
   virt_lines = false,
   virt_lines_above = true,
-  virt_text_win_col = nil,               -- position the virtual text at a fixed window column (starting from the first text column) ,
+  virt_text_win_col = nil, -- position the virtual text at a fixed window column (starting from the first text column) ,
   filter_references_pattern = "<module", -- filter references (not definitions) pattern when all_references is activated (Lua gmatch pattern, default filters out Python modules)
   --- A callback that determines how a variable is displayed or whether it should be omitted
   --- param variable https://microsoft.github.io/debug-adapter-protocol/specification#Types_Variable
@@ -206,8 +206,8 @@ local dapui_default_config = {
           size = 0.25, -- Can be float or integer > 1
         },
         { id = "breakpoints", size = 0.25 },
-        { id = "stacks",      size = 0.25 },
-        { id = "watches",     size = 0.25 },
+        { id = "stacks", size = 0.25 },
+        { id = "watches", size = 0.25 },
       },
       size = 40,
       position = "left", -- Can be "left" or "right"

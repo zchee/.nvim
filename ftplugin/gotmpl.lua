@@ -1,7 +1,7 @@
 -- gotmpl.lua: Vim filetype plugin for Go template file.
 
 if vim.b.did_ftplugin then
-	return
+  return
 end
 vim.b.did_ftplugin = true
 

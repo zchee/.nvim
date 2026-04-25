@@ -171,34 +171,34 @@ M.constants = {
   -- are reserved for internal usage.
   MarkupKind = {
     -- Plain text is supported as a content format
-    PlainText = 'plaintext',
+    PlainText = "plaintext",
     -- Markdown is supported as a content format
-    Markdown = 'markdown',
+    Markdown = "markdown",
   },
 
   ResourceOperationKind = {
     -- Supports creating new files and folders.
-    Create = 'create',
+    Create = "create",
     -- Supports renaming existing files and folders.
-    Rename = 'rename',
+    Rename = "rename",
     -- Supports deleting existing files and folders.
-    Delete = 'delete',
+    Delete = "delete",
   },
 
   FailureHandlingKind = {
     -- Applying the workspace change is simply aborted if one of the changes provided
     -- fails. All operations executed before the failing operation stay executed.
-    Abort = 'abort',
+    Abort = "abort",
     -- All operations are executed transactionally. That means they either all
     -- succeed or no changes at all are applied to the workspace.
-    Transactional = 'transactional',
+    Transactional = "transactional",
     -- If the workspace edit contains only textual file changes they are executed transactionally.
     -- If resource changes (create, rename or delete file) are part of the change the failure
     -- handling strategy is abort.
-    TextOnlyTransactional = 'textOnlyTransactional',
+    TextOnlyTransactional = "textOnlyTransactional",
     -- The client tries to undo the operations already executed. But there is no
     -- guarantee that this succeeds.
-    Undo = 'undo',
+    Undo = "undo",
   },
 
   -- Known error codes for an `InitializeError`;
@@ -248,11 +248,11 @@ M.constants = {
   -- A set of predefined code action kinds
   CodeActionKind = {
     -- Empty kind.
-    Empty = '',
+    Empty = "",
     -- Base kind for quickfix actions
-    QuickFix = 'quickfix',
+    QuickFix = "quickfix",
     -- Base kind for refactoring actions
-    Refactor = 'refactor',
+    Refactor = "refactor",
     -- Base kind for refactoring extraction actions
     --
     -- Example extract actions:
@@ -262,7 +262,7 @@ M.constants = {
     -- - Extract variable
     -- - Extract interface from class
     -- - ...
-    RefactorExtract = 'refactor.extract',
+    RefactorExtract = "refactor.extract",
     -- Base kind for refactoring inline actions
     --
     -- Example inline actions:
@@ -271,7 +271,7 @@ M.constants = {
     -- - Inline variable
     -- - Inline constant
     -- - ...
-    RefactorInline = 'refactor.inline',
+    RefactorInline = "refactor.inline",
     -- Base kind for refactoring rewrite actions
     --
     -- Example rewrite actions:
@@ -282,13 +282,13 @@ M.constants = {
     -- - Make method static
     -- - Move method to base class
     -- - ...
-    RefactorRewrite = 'refactor.rewrite',
+    RefactorRewrite = "refactor.rewrite",
     -- Base kind for source actions
     --
     -- Source code actions apply to the entire file.
-    Source = 'source',
+    Source = "source",
     -- Base kind for an organize imports source action
-    SourceOrganizeImports = 'source.organizeImports',
+    SourceOrganizeImports = "source.organizeImports",
   },
   -- The reason why code actions were requested.
   CodeActionTriggerKind = {

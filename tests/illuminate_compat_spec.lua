@@ -107,9 +107,7 @@ do
       return true
     end,
     get_references = function(_bufnr, _cursor)
-      error(
-        ".../nvim-treesitter/lua/nvim-treesitter/locals.lua:286: attempt to call method 'parent' (a nil value)"
-      )
+      error(".../nvim-treesitter/lua/nvim-treesitter/locals.lua:286: attempt to call method 'parent' (a nil value)")
     end,
   }
 

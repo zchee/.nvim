@@ -1,4 +1,4 @@
-local smart_splits = require('smart-splits')
+local smart_splits = require("smart-splits")
 
 smart_splits.setup({
   -- Ignored buffer types (only while resizing)

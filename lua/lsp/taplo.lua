@@ -27,11 +27,11 @@ return {
         },
         cache = {
           memoryExpiration = 60, -- default: 60
-          diskExpiration = 600,  -- default: 600
+          diskExpiration = 600, -- default: 600
         },
       },
       completion = {
-        maxKeys = 10 -- default: 5
+        maxKeys = 10, -- default: 5
       },
       syntax = {
         semanticTokens = true,

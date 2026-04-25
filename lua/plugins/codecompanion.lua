@@ -11,7 +11,7 @@ codecompanion.setup({
     },
     cmd = {
       adapter = "anthropic",
-    }
+    },
   },
   extensions = {
     mcphub = {
@@ -19,29 +19,29 @@ codecompanion.setup({
       opts = {
         make_vars = true,
         make_slash_commands = true,
-        show_result_in_chat = true
-      }
+        show_result_in_chat = true,
+      },
     },
     history = {
       enabled = true,
       opts = {
-        keymap = "gh",                                                    -- Keymap to open history from chat buffer (default: gh)
-        auto_generate_title = true,                                       -- Automatically generate titles for new chats
-        continue_last_chat = false,                                       ---On exiting and entering neovim, loads the last chat on opening chat
-        delete_on_clearing_chat = false,                                  ---When chat is cleared with `gx` delete the chat from history
-        picker = "snacks",                                                -- Picker interface ("telescope" or "snacks" or "default")
-        enable_logging = false,                                           ---Enable detailed logging for history extension
+        keymap = "gh", -- Keymap to open history from chat buffer (default: gh)
+        auto_generate_title = true, -- Automatically generate titles for new chats
+        continue_last_chat = false, ---On exiting and entering neovim, loads the last chat on opening chat
+        delete_on_clearing_chat = false, ---When chat is cleared with `gx` delete the chat from history
+        picker = "snacks", -- Picker interface ("telescope" or "snacks" or "default")
+        enable_logging = false, ---Enable detailed logging for history extension
         dir_to_save = vim.fn.stdpath("data") .. "/codecompanion/history", ---Directory path to save the chats
-        auto_save = true,                                                 -- Save all chats by default
-        save_chat_keymap = "sc",                                          -- Keymap to save the current chat manually
-      }
+        auto_save = true, -- Save all chats by default
+        save_chat_keymap = "sc", -- Keymap to save the current chat manually
+      },
     },
     vectorcode = {
       opts = {
         add_tool = true,
         add_slash_command = true,
         tool_opts = {},
-      }
+      },
     },
   },
   adapters = {
@@ -52,8 +52,7 @@ codecompanion.setup({
         },
         headers = {
           ["anthropic-version"] = "2023-06-01",
-          ["anthropic-beta"] =
-          "prompt-caching-2024-07-31,pdfs-2024-09-25,output-128k-2025-02-19,token-efficient-tools-2025-02-19,prompt-tools-2025-04-02",   -- ,computer-use-2025-01-24
+          ["anthropic-beta"] = "prompt-caching-2024-07-31,pdfs-2024-09-25,output-128k-2025-02-19,token-efficient-tools-2025-02-19,prompt-tools-2025-04-02", -- ,computer-use-2025-01-24
         },
         schema = {
           model = {
@@ -80,9 +79,9 @@ codecompanion.setup({
               local sonnet_thought_max_tokens = 64000
               local model = self.schema.model.default
               if
-                  self.schema.model.choices[model]
-                  and self.schema.model.choices[model].opts
-                  and self.schema.model.choices[model].opts.can_reason
+                self.schema.model.choices[model]
+                and self.schema.model.choices[model].opts
+                and self.schema.model.choices[model].opts.can_reason
               then
                 return sonnet_thought_max_tokens
               end
@@ -120,10 +119,10 @@ codecompanion.setup({
     action_palette = {
       width = 95,
       height = 10,
-      prompt = "Prompt ",                   -- Prompt used for interactive LLM calls
-      provider = "snacks",                  -- "default", "telescope", "mini_pick" "snacks"
+      prompt = "Prompt ", -- Prompt used for interactive LLM calls
+      provider = "snacks", -- "default", "telescope", "mini_pick" "snacks"
       opts = {
-        show_default_actions = true,        -- Show the default actions in the action palette?
+        show_default_actions = true, -- Show the default actions in the action palette?
         show_default_prompt_library = true, -- Show the default prompt library in the action palette?
       },
     },
@@ -179,5 +178,5 @@ codecompanion.setup({
         language
       )
     end,
-  }
+  },
 })

@@ -1,37 +1,28 @@
-vim.api.nvim_create_user_command("LuaVimInspect",
-  function(opts)
-    vim.print(vim.inspect(opts.fargs))
-  end,
-  {
-    nargs = "*",
-    desc = "Gets a human-readable representation of the given object.",
-    complete = "lua",
-  }
-)
+vim.api.nvim_create_user_command("LuaVimInspect", function(opts)
+  vim.print(vim.inspect(opts.fargs))
+end, {
+  nargs = "*",
+  desc = "Gets a human-readable representation of the given object.",
+  complete = "lua",
+})
 
-vim.api.nvim_create_user_command("LuaSnipEdit",
-  function()
-    vim.cmd([[ silent command! LuaSnipEdit :lua require("luasnip.loaders").edit_snippet_files() ]])
-  end,
-  {
-    desc = "Edit LuaSnip source.",
-  }
-)
+vim.api.nvim_create_user_command("LuaSnipEdit", function()
+  vim.cmd([[ silent command! LuaSnipEdit :lua require("luasnip.loaders").edit_snippet_files() ]])
+end, {
+  desc = "Edit LuaSnip source.",
+})
 
-vim.api.nvim_create_user_command("ManV",
-  function(opts)
-    vim.cmd("vertical Man " .. opts.args)
+vim.api.nvim_create_user_command("ManV", function(opts)
+  vim.cmd("vertical Man " .. opts.args)
+end, {
+  desc = "Man with vertical split.",
+  complete = function(...)
+    return require("man").man_complete(...)
   end,
-  {
-    desc = "Man with vertical split.",
-    complete = function(...)
-      return require('man').man_complete(...)
-    end,
-    nargs = "*",
-    bang = true,
-    bar = true,
-  }
-)
+  nargs = "*",
+  bang = true,
+  bar = true,
+})
 
 -- "" CheckColor:
 -- function s:check_colorscheme() abort
@@ -55,94 +46,77 @@ vim.api.nvim_create_user_command("ManV",
 --   }
 -- )
 
-vim.api.nvim_create_user_command("TerminalV",
-  function(opts)
-    vim.cmd("vsplit | terminal " .. opts.args)
-  end,
-  {
-    desc = "Open terminal with vertical split.",
-    nargs = "*",
+vim.api.nvim_create_user_command("TerminalV", function(opts)
+  vim.cmd("vsplit | terminal " .. opts.args)
+end, {
+  desc = "Open terminal with vertical split.",
+  nargs = "*",
+})
+
+vim.api.nvim_create_user_command("LspServerInfo", function(opts)
+  local filter = {
+    bufnr = 0,
+    -- name = opts.args,
   }
-)
+  print(vim.inspect(vim.lsp.get_clients(filter)))
+end, {
+  desc = "Get active clients.",
+  nargs = "?",
+})
 
-vim.api.nvim_create_user_command("LspServerInfo",
-  function(opts)
-    local filter = {
-      bufnr = 0,
-      -- name = opts.args,
-    }
-    print(vim.inspect(vim.lsp.get_clients(filter)))
-  end,
-  {
-    desc = "Get active clients.",
-    nargs = "?",
-  }
-)
+vim.api.nvim_create_user_command("TSInspectTree", function(opts)
+  if opts.mods ~= "" or opts.count ~= 0 then
+    local count = opts.count ~= 0 and opts.count or ""
+    local new = opts.mods ~= "" and "new" or "vnew"
 
-vim.api.nvim_create_user_command("TSInspectTree",
-  function(opts)
-    if opts.mods ~= '' or opts.count ~= 0 then
-      local count = opts.count ~= 0 and opts.count or ''
-      local new = opts.mods ~= '' and 'new' or 'vnew'
+    vim.treesitter.inspect_tree({
+      command = ("%s %s%s"):format(opts.mods, count, new),
+    })
+  else
+    vim.treesitter.inspect_tree()
+  end
 
-      vim.treesitter.inspect_tree({
-        command = ('%s %s%s'):format(opts.mods, count, new),
-      })
-    else
-      vim.treesitter.inspect_tree()
-    end
+  vim.api.nvim_win_set_width(0, 250)
+  vim.opt_local.number = false
+  vim.api.nvim_buf_set_keymap(0, "n", "q", "<Cmd>q<CR>", {
+    noremap = true,
+    script = true,
+    desc = "Quick quit the current window",
+  })
+end, {
+  desc = "Inspect treesitter language tree for buffer",
+  count = true,
+})
 
-    vim.api.nvim_win_set_width(0, 250)
-    vim.opt_local.number = false
-    vim.api.nvim_buf_set_keymap(0, "n", "q", "<Cmd>q<CR>",
-      {
-        noremap = true,
-        script = true,
-        desc = "Quick quit the current window",
-      }
-    )
-  end,
-  {
-    desc = 'Inspect treesitter language tree for buffer',
-    count = true,
-  }
-)
-
-vim.api.nvim_create_user_command("DiagramToggle",
-  function()
-    vim.cmd("Lazy load diagram.nvim")
-  end,
-  {
-    desc = "Toggle diagram.nvim.",
-  }
-)
+vim.api.nvim_create_user_command("DiagramToggle", function()
+  vim.cmd("Lazy load diagram.nvim")
+end, {
+  desc = "Toggle diagram.nvim.",
+})
 
 -- Transrator
-vim.api.nvim_create_user_command("Trans",
-  function()
-    local vstart = vim.fn.getpos("'<")
-    local vend = vim.fn.getpos("'>")
+vim.api.nvim_create_user_command("Trans", function()
+  local vstart = vim.fn.getpos("'<")
+  local vend = vim.fn.getpos("'>")
 
-    if not vstart or not vend then
-      return
-    end
+  if not vstart or not vend then
+    return
+  end
 
-    --- @diagnostic disable-next-line
-    local lines = table.concat(vim.fn.getline(vstart[2], vend[2]))
-    lines = lines:gsub("\t", "")
+  --- @diagnostic disable-next-line
+  local lines = table.concat(vim.fn.getline(vstart[2], vend[2]))
+  lines = lines:gsub("\t", "")
 
-    if not lines:find("// ") then
-      return vim.cmd.TranslateW(lines)
-    end
-    lines = lines:gsub("// ", "")
-
+  if not lines:find("// ") then
     return vim.cmd.TranslateW(lines)
-  end,
-  {
-    desc = 'ranslate the text from the source language source_lang to the target language target_lang',
-    range = true,
-  }
-)
+  end
+  lines = lines:gsub("// ", "")
+
+  return vim.cmd.TranslateW(lines)
+end, {
+  desc = "ranslate the text from the source language source_lang to the target language target_lang",
+  range = true,
+})
 
 -- local function get_lenses(bufnr)
 --   return {

@@ -26,8 +26,7 @@ return {
     enabled = true,
     first_provider = "claude",
     second_provider = "gemini",
-    prompt =
-    "Based on the two reference outputs below, generate a response that incorporates elements from both but reflects your own judgment and unique perspective. Do not provide any explanation, just give the response directly. Reference Output 1: [{{provider1_output}}], Reference Output 2: [{{provider2_output}}]",
+    prompt = "Based on the two reference outputs below, generate a response that incorporates elements from both but reflects your own judgment and unique perspective. Do not provide any explanation, just give the response directly. Reference Output 1: [{{provider1_output}}], Reference Output 2: [{{provider2_output}}]",
     timeout = 60000,
   },
   mappings = {
@@ -85,11 +84,11 @@ return {
       close_from_input = nil, -- e.g., { normal = "<Esc>", insert = "<C-d>" }
     },
     files = {
-      add_current = "<leader>ac",     -- Add current buffer to selected files
+      add_current = "<leader>ac", -- Add current buffer to selected files
       add_all_buffers = "<leader>aB", -- Add all buffer files to selected files
     },
-    select_model = "<leader>a?",      -- Select model command
-    select_history = "<leader>ah",    -- Select history command
+    select_model = "<leader>a?", -- Select model command
+    select_history = "<leader>ah", -- Select history command
   },
   windows = {
     position = "right",
@@ -101,8 +100,8 @@ return {
     ask = {
       floating = true,
       start_insert = true,
-      border = "rounded"
-    }
+      border = "rounded",
+    },
   },
   ---@type AvanteSupportedProvider
   providers = {
@@ -111,8 +110,7 @@ return {
       model = "claude-sonnet-4-20250514",
       timeout = 30000,
       extra_headers = {
-        ["anthropic-beta"] =
-        "files-api-2025-04-14,mcp-client-2025-04-04,interleaved-thinking-2025-05-14,code-execution-2025-05-22,extended-cache-ttl-2025-04-11",
+        ["anthropic-beta"] = "files-api-2025-04-14,mcp-client-2025-04-04,interleaved-thinking-2025-05-14,code-execution-2025-05-22,extended-cache-ttl-2025-04-11",
       },
       extra_request_body = {
         temperature = 0,
@@ -235,7 +233,7 @@ return {
   --- @type AvanteRepoMapConfig
   repo_map = {
     ignore_patterns = { "%.git", "%.worktree", "__pycache__", "node_modules" }, -- ignore files matching these
-    negate_patterns = {},                                                       -- negate ignore files matching these.
+    negate_patterns = {}, -- negate ignore files matching these.
   },
   --- @type AvanteFileSelectorConfig
   file_selector = {

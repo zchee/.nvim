@@ -48,7 +48,7 @@ return {
         desc = "Translate the given range",
         noremap = true,
       },
-    }
+    },
   },
 
   -- Lazy
@@ -84,38 +84,62 @@ return {
     end,
     keys = {
       {
-        "<Leader>a", nil, desc = "AI/Claude Code"
+        "<Leader>a",
+        nil,
+        desc = "AI/Claude Code",
       },
       {
-        "<Leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude"
+        "<Leader>ac",
+        "<cmd>ClaudeCode<cr>",
+        desc = "Toggle Claude",
       },
       {
-        "<Leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude"
+        "<Leader>af",
+        "<cmd>ClaudeCodeFocus<cr>",
+        desc = "Focus Claude",
       },
       {
-        "<Leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude"
+        "<Leader>ar",
+        "<cmd>ClaudeCode --resume<cr>",
+        desc = "Resume Claude",
       },
       {
-        "<Leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude"
+        "<Leader>aC",
+        "<cmd>ClaudeCode --continue<cr>",
+        desc = "Continue Claude",
       },
       {
-        "<Leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model"
+        "<Leader>am",
+        "<cmd>ClaudeCodeSelectModel<cr>",
+        desc = "Select Claude model",
       },
       {
-        "<Leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer"
+        "<Leader>ab",
+        "<cmd>ClaudeCodeAdd %<cr>",
+        desc = "Add current buffer",
       },
       {
-        "<Leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude"
+        "<Leader>as",
+        "<cmd>ClaudeCodeSend<cr>",
+        mode = "v",
+        desc = "Send to Claude",
       },
       {
-        "<Leader>as", "<cmd>ClaudeCodeTreeAdd<cr>", desc = "Add file", ft = { "NvimTree", "neo-tree", "oil", "minifiles" }
+        "<Leader>as",
+        "<cmd>ClaudeCodeTreeAdd<cr>",
+        desc = "Add file",
+        ft = { "NvimTree", "neo-tree", "oil", "minifiles" },
       },
       -- Diff management
       {
-        "<Leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff"
+        "<Leader>aa",
+        "<cmd>ClaudeCodeDiffAccept<cr>",
+        desc = "Accept diff",
       },
       {
-        "<Leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff"
+        "<Leader>ad",
+        "<cmd>ClaudeCodeDiffDeny<cr>",
+        desc = "Deny diff",
       },
     },
   },
@@ -272,7 +296,7 @@ return {
           position = "top", -- "right",
           width = 60,
           height = 10,
-        }
+        },
       },
       {
         "j-hui/fidget.nvim",
@@ -299,15 +323,13 @@ return {
         dependencies = {
           "folke/snacks.nvim",
           "nvim-treesitter/nvim-treesitter",
-          "nvim-tree/nvim-web-devicons"
+          "nvim-tree/nvim-web-devicons",
         },
         config = function()
           require("plugins.aerial")
           vim.keymap.set("n", "<Space>o", function()
-              require("aerial").snacks_picker({ layout = { preset = "sidebar", preview = "main" } })
-            end,
-            { desc = "Symbols" }
-          )
+            require("aerial").snacks_picker({ layout = { preset = "sidebar", preview = "main" } })
+          end, { desc = "Symbols" })
         end,
       },
     },
@@ -416,7 +438,7 @@ return {
         },
         config = function()
           require("copilot_cmp").setup()
-        end
+        end,
       },
       {
         "zbirenbaum/copilot.lua",
@@ -662,9 +684,9 @@ return {
             title = "%{b:snacks_terminal.id}: %{b:term_title}",
             filter = function(_, win)
               return vim.w[win].snacks_win
-                  and vim.w[win].snacks_win.position == pos
-                  and vim.w[win].snacks_win.relative == "editor"
-                  and not vim.w[win].trouble_preview
+                and vim.w[win].snacks_win.position == pos
+                and vim.w[win].snacks_win.relative == "editor"
+                and not vim.w[win].trouble_preview
             end,
           })
         end
@@ -702,7 +724,7 @@ return {
             {
               "stevearc/dressing.nvim",
             },
-          }
+          },
         },
       },
       cmd = {
@@ -712,7 +734,7 @@ return {
         "Fugit2Graph",
       },
       keys = {
-        { "<Space>g", mode = "n", "<cmd>Fugit2<cr>" }
+        { "<Space>g", mode = "n", "<cmd>Fugit2<cr>" },
       },
       ---@module 'fugit2'
       ---@type Fugit2Config
@@ -784,7 +806,7 @@ return {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-web-devicons",
       },
-      opts = require("plugins.todo-comment")
+      opts = require("plugins.todo-comment"),
     },
   },
 
@@ -1060,7 +1082,7 @@ return {
                   download_remote_images = true,
                   only_render_image_at_cursor = true,
                   only_render_image_at_cursor_mode = "popup",
-                  floating_windows = true,    -- if true, images will be rendered in floating markdown windows
+                  floating_windows = true, -- if true, images will be rendered in floating markdown windows
                   filetypes = { "markdown" }, -- markdown extensions (ie. quarto) can go here
                 },
               },
@@ -1083,10 +1105,10 @@ return {
             max_height = 600,
             max_width_window_percentage = nil,
             max_height_window_percentage = 50,
-            window_overlap_clear_enabled = false,                                               -- toggles images when windows are overlapped
+            window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
             window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
-            editor_only_render_when_focused = false,                                            -- auto show/hide images when the editor gains/looses focus
-            tmux_show_only_in_active_window = false,                                            -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+            editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
+            tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
             hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
           },
         },
@@ -1105,7 +1127,7 @@ return {
                 background = "#010101",
                 theme = "dark",
                 scale = 2,
-                width = 800,  -- nil | 800 | 400 | ...
+                width = 800, -- nil | 800 | 400 | ...
                 height = 600, -- nil | 600 | 300 | ...
               },
               plantuml = {
@@ -1250,7 +1272,7 @@ return {
         triggers = {
           {
             "<auto>",
-            mode = "nxso"
+            mode = "nxso",
           },
         },
         ---@param ctx { mode: string, operator: string }
@@ -1297,7 +1319,7 @@ return {
         },
         layout = {
           width = {
-            min = 50
+            min = 50,
           },
           spacing = 3,
         },
@@ -1329,13 +1351,13 @@ return {
           },
           desc = {
             { "<Plug>%(?(.*)%)?", "%1" },
-            { "^%+",              "" },
-            { "<[cC]md>",         "" },
-            { "<[cC][rR]>",       "" },
-            { "<[sS]ilent>",      "" },
-            { "^lua%s+",          "" },
-            { "^call%s+",         "" },
-            { "^:%s*",            "" },
+            { "^%+", "" },
+            { "<[cC]md>", "" },
+            { "<[cC][rR]>", "" },
+            { "<[sS]ilent>", "" },
+            { "^lua%s+", "" },
+            { "^call%s+", "" },
+            { "^:%s*", "" },
           },
         },
         icons = {

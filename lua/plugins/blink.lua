@@ -1,9 +1,9 @@
 local blink = require("blink.cmp")
 
 local np = require("nvim-autopairs")
+local np_cmp_autopairs = require("nvim-autopairs.completion.cmp")
 local np_rule = require("nvim-autopairs.rule")
 local np_ts_conds = require("nvim-autopairs.ts-conds")
-local np_cmp_autopairs = require("nvim-autopairs.completion.cmp")
 
 local ls = require("luasnip")
 local ls_loader_lua = require("luasnip.loaders.from_lua")
@@ -138,13 +138,9 @@ blink.setup({
         fallbacks = { "buffer" },
         -- Filter text items from the LSP provider, since we have the buffer provider for that
         transform_items = function(_, items)
-          return vim.tbl_filter(
-            function(item)
-              return item.kind ~=
-                  require("blink.cmp.types").CompletionItemKind.Text
-            end,
-            items
-          )
+          return vim.tbl_filter(function(item)
+            return item.kind ~= require("blink.cmp.types").CompletionItemKind.Text
+          end, items)
         end,
       },
       snippets = {
@@ -154,7 +150,7 @@ blink.setup({
         async = true,
         opts = {
           use_show_condition = true, -- Whether to use show_condition for filtering snippets
-          show_autosnippets = true,  -- Whether to show autosnippets in the completion list
+          show_autosnippets = true, -- Whether to show autosnippets in the completion list
           prefer_doc_trig = false,
         },
       },
@@ -182,7 +178,7 @@ blink.setup({
         async = true,
         opts = {
           kind_icons = {
-            Avante = '󰖷',
+            Avante = "󰖷",
           },
           avante = {
             command = {
@@ -195,8 +191,8 @@ blink.setup({
                 return vim.bo.filetype == "AvanteInput"
               end,
             },
-          }
-        }
+          },
+        },
       },
       lazydev = {
         name = "LazyDev",
@@ -267,7 +263,7 @@ blink.setup({
       ---@param cmp blink.cmp.API
       function(cmp)
         return cmp.accept({
-          callback = on_confirm_done
+          callback = on_confirm_done,
         })
       end,
       "fallback",
@@ -293,8 +289,8 @@ blink.setup({
     --- @type blink.cmp.CompletionTriggerConfig
     trigger = {
       prefetch_on_insert = false, -- When true, will prefetch the completion items when entering insert mode
-      show_in_snippet = true,     -- When false, will not show the completion window automatically when in a snippet
-      show_on_keyword = true,     -- When true, will show the completion window after typing any of alphanumerics, `-` or `_`
+      show_in_snippet = true, -- When false, will not show the completion window automatically when in a snippet
+      show_on_keyword = true, -- When true, will show the completion window after typing any of alphanumerics, `-` or `_`
       show_on_backspace = true,
       show_on_backspace_in_keyword = false,
       show_on_backspace_after_accept = true,
@@ -309,7 +305,7 @@ blink.setup({
       end,
       show_on_accept_on_trigger_character = true, -- will show the completion window when the cursor comes after a trigger character after accepting an item
       show_on_insert_on_trigger_character = true, -- will show the completion window when the cursor comes after a trigger character when entering insert mode
-      show_on_x_blocked_trigger_characters = { "'", '"', '(', '{', '[' },
+      show_on_x_blocked_trigger_characters = { "'", '"', "(", "{", "[" },
     },
     --- @class blink.cmp.CompletionListConfig
     list = {
@@ -320,7 +316,7 @@ blink.setup({
       },
       cycle = {
         from_bottom = true, -- calling `select_next` at the _bottom_ of the completion list will select the _first_ completion item.
-        from_top = true,    -- calling `select_prev` at the _top_ of the completion list will select the _last_ completion item.
+        from_top = true, -- calling `select_prev` at the _top_ of the completion list will select the _last_ completion item.
       },
     },
     accept = {
@@ -338,11 +334,11 @@ blink.setup({
       border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
       winblend = 0,
       winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
-      scrolloff = 2,                     -- Keep the cursor X lines away from the top/bottom of the window
-      scrollbar = true,                  -- Note that the gutter will be disabled when border ~= 'none'
+      scrolloff = 2, -- Keep the cursor X lines away from the top/bottom of the window
+      scrollbar = true, -- Note that the gutter will be disabled when border ~= 'none'
       direction_priority = { "s", "n" }, -- Which directions to show the window, falling back to the next direction when there's not enough space
-      auto_show = true,                  -- Whether to automatically show the window when new completion items are available
-      cmdline_position = function()      -- Screen coordinates of the command line
+      auto_show = true, -- Whether to automatically show the window when new completion items are available
+      cmdline_position = function() -- Screen coordinates of the command line
         if vim.g.ui_cmdline_pos ~= nil then
           local pos = vim.g.ui_cmdline_pos
           return { pos[1] - 1, pos[2] }
@@ -351,35 +347,36 @@ blink.setup({
         return { vim.o.lines - height, 0 }
       end,
       draw = {
-        align_to = "label",     -- Aligns the keyword you"ve typed to a component in the menu. "none" to disable, or "cursor" to align to the cursor
-        padding = 1,            -- Left and right padding, optionally { left, right } for different padding on each side
-        gap = 1,                -- Gap between columns
+        align_to = "label", -- Aligns the keyword you"ve typed to a component in the menu. "none" to disable, or "cursor" to align to the cursor
+        padding = 1, -- Left and right padding, optionally { left, right } for different padding on each side
+        gap = 1, -- Gap between columns
         treesitter = { "lsp" }, -- Use treesitter to highlight the label text for the given list of sources
-        columns = {             -- Components to render, grouped by column
-          { "label",     "label_description", gap = 2 },
-          { "kind_icon", "kind",              "source_name", gap = 2 }
+        columns = { -- Components to render, grouped by column
+          { "label", "label_description", gap = 2 },
+          { "kind_icon", "kind", "source_name", gap = 2 },
         },
         components = {
           kind_icon = {
             text = function(ctx)
-              local kind_icon, _, _ = require("mini.icons").get('lsp', ctx
-                .kind)
+              local kind_icon, _, _ = require("mini.icons").get("lsp", ctx.kind)
               return kind_icon
             end,
             highlight = function(ctx)
-              local _, hl, _ = require("mini.icons").get('lsp', ctx.kind)
+              local _, hl, _ = require("mini.icons").get("lsp", ctx.kind)
               return hl
             end,
           },
           kind = {
             highlight = function(ctx)
-              local _, hl, _ = require("mini.icons").get('lsp', ctx.kind)
+              local _, hl, _ = require("mini.icons").get("lsp", ctx.kind)
               return hl
             end,
           },
           label = {
             width = { fill = true, max = 60 },
-            text = function(ctx) return ctx.label .. ctx.label_detail end,
+            text = function(ctx)
+              return ctx.label .. ctx.label_detail
+            end,
             highlight = function(ctx)
               -- label and label details
               local highlights = {
@@ -390,47 +387,51 @@ blink.setup({
                 },
               }
               if ctx.label_detail then
-                table.insert(highlights,
-                  {
-                    #ctx.label,
-                    #ctx.label + #ctx.label_detail,
-                    group = "BlinkCmpLabelDetail"
-                  })
+                table.insert(highlights, {
+                  #ctx.label,
+                  #ctx.label + #ctx.label_detail,
+                  group = "BlinkCmpLabelDetail",
+                })
               end
               -- characters matched on the label by the fuzzy matcher
               for _, idx in ipairs(ctx.label_matched_indices) do
-                table.insert(highlights,
-                  {
-                    idx,
-                    idx + 1,
-                    group = "BlinkCmpLabelMatch",
-                  })
+                table.insert(highlights, {
+                  idx,
+                  idx + 1,
+                  group = "BlinkCmpLabelMatch",
+                })
               end
               return highlights
             end,
           },
           label_description = {
             width = { max = 30 },
-            text = function(ctx) return ctx.label_description end,
+            text = function(ctx)
+              return ctx.label_description
+            end,
             highlight = "BlinkCmpLabelDescription",
           },
           source_name = {
             width = { max = 30 },
-            text = function(ctx) return ctx.source_name end,
+            text = function(ctx)
+              return ctx.source_name
+            end,
             highlight = "BlinkCmpSource",
           },
           source_id = {
             width = { max = 30 },
-            text = function(ctx) return ctx.source_id end,
+            text = function(ctx)
+              return ctx.source_id
+            end,
             highlight = "BlinkCmpSource",
           },
         },
       },
     },
     documentation = {
-      auto_show = true,               -- Controls whether the documentation window will automatically show when selecting a completion item
-      auto_show_delay_ms = 500,       -- Delay before showing the documentation window
-      update_delay_ms = 50,           -- Delay before updating the documentation window when selecting a new item, while an existing item is still visible
+      auto_show = true, -- Controls whether the documentation window will automatically show when selecting a completion item
+      auto_show_delay_ms = 500, -- Delay before showing the documentation window
+      update_delay_ms = 50, -- Delay before updating the documentation window when selecting a new item, while an existing item is still visible
       treesitter_highlighting = true, -- Whether to use treesitter highlighting, disable if you run into performance issues
       -- Draws the item in the documentation window, by default using an internal treesitter based implementation
       draw = function(opts)
@@ -442,7 +443,7 @@ blink.setup({
         max_height = 20,
         border = nil, -- Defaults to `vim.o.winborder` on nvim 0.11+ or 'padded' when not defined/<=0.10
         winblend = 0,
-        winhighlight = 'Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc',
+        winhighlight = "Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc",
         scrollbar = true, -- Note that the gutter will be disabled when border ~= 'none'
         -- Which directions to show the documentation window, for each of the possible menu window directions, falling back to the next direction when there's not enough space
         direction_priority = {
@@ -453,10 +454,10 @@ blink.setup({
     },
     ghost_text = {
       enabled = false,
-      show_with_selection = true,     -- Show the ghost text when an item has been selected
+      show_with_selection = true, -- Show the ghost text when an item has been selected
       show_without_selection = false, -- Show the ghost text when no item has been selected, defaulting to the first item
-      show_with_menu = false,         -- Show the ghost text when the menu is open
-      show_without_menu = false,      -- Show the ghost text when the menu is closed
+      show_with_menu = false, -- Show the ghost text when the menu is open
+      show_without_menu = false, -- Show the ghost text when the menu is closed
     },
   },
   fuzzy = {
@@ -465,8 +466,8 @@ blink.setup({
     -- max_typos = function(keyword) -- Allows for a number of typos relative to the length of the query Set this to 0 to match the behavior of fzf
     --   return math.floor(#keyword / 2)
     -- end,
-    use_frecency = true,       -- Frecency tracks the most recently/frequently used items and boosts the score of the item
-    use_proximity = true,      -- Proximity bonus boosts the score of items matching nearby words
+    use_frecency = true, -- Frecency tracks the most recently/frequently used items and boosts the score of the item
+    use_proximity = true, -- Proximity bonus boosts the score of items matching nearby words
     use_unsafe_no_lock = true, -- disables the lock and fsync when writing to the frecency database.
     -- Controls which sorts to use and in which order, falling back to the next sort if the first one returns nil
     -- You may pass a function instead of a string to customize the sorting
@@ -485,12 +486,12 @@ blink.setup({
   signature = {
     enabled = true,
     trigger = {
-      enabled = true,         -- Show the signature help automatically
+      enabled = true, -- Show the signature help automatically
       show_on_keyword = true, -- Show the signature help window after typing any of alphanumerics, `-` or `_`
       blocked_trigger_characters = {},
       blocked_retrigger_characters = {},
-      show_on_trigger_character = true,           -- Show the signature help window after typing a trigger character
-      show_on_insert = true,                      -- Show the signature help window when entering insert mode
+      show_on_trigger_character = true, -- Show the signature help window after typing a trigger character
+      show_on_insert = true, -- Show the signature help window when entering insert mode
       show_on_insert_on_trigger_character = true, -- Show the signature help window when the cursor comes after a trigger character when entering insert mode
     },
     window = {
@@ -499,10 +500,10 @@ blink.setup({
       max_height = 10,
       border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" }, -- Defaults to `vim.o.winborder` on nvim 0.11+ or 'padded' when not defined/<=0.10
       winblend = 0,
-      winhighlight = 'Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder',
-      scrollbar = true,                  -- Note that the gutter will be disabled when border ~= 'none'
+      winhighlight = "Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder",
+      scrollbar = true, -- Note that the gutter will be disabled when border ~= 'none'
       direction_priority = { "n", "s" }, -- Which directions to show the window, falling back to the next direction when there's not enough space, or another window is in the way
-      treesitter_highlighting = true,    -- Disable if you run into performance issues
+      treesitter_highlighting = true, -- Disable if you run into performance issues
       show_documentation = true,
     },
   },
@@ -544,8 +545,7 @@ blink.setup({
       ["<Tab>"] = {
         function(cmp)
           if cmp.is_ghost_text_visible() and not cmp.is_menu_visible() then
-            return cmp
-                .select_and_accept()
+            return cmp.select_and_accept()
           end
         end,
         "show_and_insert",

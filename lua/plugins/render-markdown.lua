@@ -34,7 +34,7 @@ render_markdown.setup({
     inline_left = "",
     inline_right = "",
     inline_pad = 0,
-    highlight = "None",       -- "RenderMarkdownCode",
+    highlight = "None", -- "RenderMarkdownCode",
     highlight_language = nil,
     highlight_border = false, --"RenderMarkdownCodeBorder",
     highlight_inline = "RenderMarkdownCodeInline",

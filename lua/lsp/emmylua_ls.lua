@@ -10,19 +10,19 @@ lazydev.setup({
     "lazy.nvim",
     {
       path = "${3rd}/luv/library",
-      words = { "vim%.uv" }
+      words = { "vim%.uv" },
     },
     {
       "plenary.nvim",
-      "nvim-treesitter"
-    }
+      "nvim-treesitter",
+    },
   },
   integrations = {
     lspconfig = true,
-    cmp = true
+    cmp = true,
   },
   enabled = true,
-  debug = false
+  debug = false,
 })
 
 -- https://github.com/EmmyLuaLs/emmylua-analyzer-rust/blob/main/docs/config/emmyrc_json_EN.md
@@ -34,7 +34,7 @@ return {
     ".luarc.json",
     ".stylua.toml",
     "init.vim",
-    ".git"
+    ".git",
   },
   workspace_required = false,
   settings = {
@@ -47,13 +47,13 @@ return {
         autoRequireSeparator = ".",
         callSnippet = false,
         postfix = "@",
-        baseFunctionIncludesName = true
+        baseFunctionIncludesName = true,
       },
       diagnostics = {
         enable = true,
         globals = {
-          "vim",     -- neovim builtin
-          "vim.uv",  -- neovim builtin
+          "vim", -- neovim builtin
+          "vim.uv", -- neovim builtin
           "package", -- neovim builtin
           "describe",
           "it",
@@ -61,12 +61,12 @@ return {
           "after_each",
           "teardown",
           "pending",
-          "clear"    -- Busted
+          "clear", -- Busted
         },
         disable = {
           "redundant-parameter",
-          "duplicate-set-field"
-        }
+          "duplicate-set-field",
+        },
       },
       format = {
         externalTool = {
@@ -74,9 +74,9 @@ return {
           args = {
             "-",
             "--stdin-filepath",
-            "${file}"
+            "${file}",
           },
-          timeout = 5000
+          timeout = 5000,
         },
         externalToolRangeFormat = {
           program = "stylua",
@@ -88,11 +88,11 @@ return {
             "--indent-type",
             "${use_tabs?Tabs:Spaces}",
             "--range-start=${start_offset}",
-            "--range-end=${end_offset}"
+            "--range-end=${end_offset}",
           },
-          timeout = 5000
+          timeout = 5000,
         },
-        enable = true
+        enable = true,
       },
       hint = {
         enable = true,
@@ -101,45 +101,45 @@ return {
         localHint = true,
         overrideHint = true,
         metaCallHint = true,
-        enumParamHint = false
+        enumParamHint = false,
       },
       codeLens = {
-        enable = true
+        enable = true,
       },
       hover = {
-        enable = true
+        enable = true,
       },
       runtime = {
-        version = "LuaJIT"
+        version = "LuaJIT",
       },
       semanticTokens = {
         enabled = true,
-        renderDocumentationMarkup = true
+        renderDocumentationMarkup = true,
       },
       signatureHelp = {
-        detailSignatureHelper = false
+        detailSignatureHelper = false,
       },
       telemetry = {
-        enable = false
+        enable = false,
       },
       workspace = {
         ignoreDir = {
-          ".*_tmp/.*"
+          ".*_tmp/.*",
         },
         library = {
           vim.fs.joinpath(vim.fn.stdpath("config"), "lua"),
           vim.env.VIMRUNTIME,
           vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/busted/library"),
           vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/library"),
-          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library")
-        }
-      }
-    }
+          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library"),
+        },
+      },
+    },
   },
   on_init = function(client)
     ---@diagnostic disable-next-line
     client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
-      workspace = { library = vim.api.nvim_get_runtime_file("", true) }
+      workspace = { library = vim.api.nvim_get_runtime_file("", true) },
     })
-  end
+  end,
 }

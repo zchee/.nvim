@@ -19,11 +19,8 @@ function M.is_treesitter_quickfile_range_error(err)
   local has_treesitter_path = err:find("vim/treesitter%.lua:", 1, false) ~= nil
   local has_languagetree_path = err:find("vim/treesitter/languagetree%.lua:", 1, false) ~= nil
 
-  return has_range_error and (
-    has_decoration_provider
-    or has_highlighter_namespace
-    or (has_treesitter_path and has_languagetree_path)
-  )
+  return has_range_error
+    and (has_decoration_provider or has_highlighter_namespace or (has_treesitter_path and has_languagetree_path))
 end
 
 ---@class SnacksQuickfileCompatOps
@@ -42,8 +39,12 @@ function M.render_quickfile(buf, ft, lang, ops)
 
   local start_treesitter = ops.start_treesitter or vim.treesitter.start
   local stop_treesitter = ops.stop_treesitter or vim.treesitter.stop
-  local redraw = ops.redraw or function() vim.cmd.redraw() end
-  local set_syntax = ops.set_syntax or function(target_buf, syntax) vim.bo[target_buf].syntax = syntax end
+  local redraw = ops.redraw or function()
+    vim.cmd.redraw()
+  end
+  local set_syntax = ops.set_syntax or function(target_buf, syntax)
+    vim.bo[target_buf].syntax = syntax
+  end
 
   ---@param redraw_now boolean?
   local function syntax_fallback(redraw_now)
@@ -96,8 +97,12 @@ function M.patch_quickfile_module(quickfile, deps)
   deps = deps or {}
 
   local config_get = deps.config_get or Snacks.config.get
-  local did_vim_enter = deps.did_vim_enter or function() return vim.v.vim_did_enter == 1 end
-  local get_current_filetype = deps.get_current_filetype or function() return vim.bo.filetype end
+  local did_vim_enter = deps.did_vim_enter or function()
+    return vim.v.vim_did_enter == 1
+  end
+  local get_current_filetype = deps.get_current_filetype or function()
+    return vim.bo.filetype
+  end
   local get_current_buf = deps.get_current_buf or api.nvim_get_current_buf
   local match_filetype = deps.match_filetype or vim.filetype.match
   local get_lang = deps.get_lang or vim.treesitter.language.get_lang

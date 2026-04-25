@@ -34,6 +34,6 @@ return {
         -- // Follow redirection operators with a space.
         -- spaceRedirects: z.boolean().default(false),
       },
-    }
+    },
   },
 }

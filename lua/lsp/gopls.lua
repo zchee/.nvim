@@ -4,13 +4,12 @@ local util = require("util")
 ---For gvisor, moby/buildkit, chaos%-mesh/chaos%-mesh, zchee/go-cloud-debug-agent, go.opentelemetry.io/auto
 ---
 local is_goos_linux = function(cwd)
-  return
-      string.find(cwd, "gvisor")
-      or string.find(cwd, "chaos%-mesh/chaos%-mesh")
-      or string.find(cwd, "go%-cloud%-debug%-agent")
-      or string.find(cwd, "GoogleCloudPlatform/grpc%-gcp%-tools")
-      or string.find(cwd, "go.opentelemetry.io/auto")
-      or string.find(cwd, "buildkit")
+  return string.find(cwd, "gvisor")
+    or string.find(cwd, "chaos%-mesh/chaos%-mesh")
+    or string.find(cwd, "go%-cloud%-debug%-agent")
+    or string.find(cwd, "GoogleCloudPlatform/grpc%-gcp%-tools")
+    or string.find(cwd, "go.opentelemetry.io/auto")
+    or string.find(cwd, "buildkit")
 end
 
 local function organize_imports()
@@ -172,8 +171,7 @@ return {
 
   handlers = {
     -- for tiny_inline_diagnostic
-    ["textDocument/publishDiagnostics"] = function()
-    end,
+    ["textDocument/publishDiagnostics"] = function() end,
     -- ["textDocument/rangeFormatting"] = function(...)
     --   vim.lsp.handlers["textDocument/rangeFormatting"](...)
     --   if vim.fn.getbufinfo("%")[1].changed == 1 then
@@ -197,27 +195,27 @@ return {
       -- "-**/examples",
       "-**/sample",
       "-**/samples",
-      "-**/kokoro",             -- Google kokoro
-      "-**/node_modules",       -- Node.js
+      "-**/kokoro", -- Google kokoro
+      "-**/node_modules", -- Node.js
       "-external_jsonlib_test", -- bytedance/sonic
-      "-fuzz",                  -- bytedance/sonic
-      "-generic_test",          -- bytedance/sonic
+      "-fuzz", -- bytedance/sonic
+      "-generic_test", -- bytedance/sonic
     },
-    workspaceFiles = {},        -- NOTE(zchee): This setting need only be customized in environments with a custom GOPACKAGESDRIVER
+    workspaceFiles = {}, -- NOTE(zchee): This setting need only be customized in environments with a custom GOPACKAGESDRIVER
     completionDocumentation = true,
     usePlaceholders = true,
     deepCompletion = true,
     completeUnimported = true,
-    completionBudget = "10ms",       -- default: "100ms"
-    importsSource = "gopls",         -- "off", "gopls", "goimports"
-    matcher = "CaseSensitive",       -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
+    completionBudget = "10ms", -- default: "100ms"
+    importsSource = "gopls", -- "off", "gopls", "goimports"
+    matcher = "CaseSensitive", -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
     symbolMatcher = "CaseSensitive", -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
-    symbolStyle = "Dynamic",         -- "Package", "Full", "Dynamic"
-    symbolScope = "workspace",       -- "workspace", "all",
+    symbolStyle = "Dynamic", -- "Package", "Full", "Dynamic"
+    symbolScope = "workspace", -- "workspace", "all",
     hoverKind = "FullDocumentation", -- "SingleLine", "NoDocumentation", "SynopsisDocumentation", "FullDocumentation", "Structured"
-    linkTarget = "pkg.go.dev",       -- default: "pkg.go.dev",
-    linksInHover = "gopls",          -- true, false, "gopls"
-    importShortcut = "Definition",   -- "Both", "Link", "Definition"
+    linkTarget = "pkg.go.dev", -- default: "pkg.go.dev",
+    linksInHover = "gopls", -- true, false, "gopls"
+    importShortcut = "Definition", -- "Both", "Link", "Definition"
     -- golang.org/x/tools/gopls/internal/settings.DefaultAnalyzers
     analyses = {
       appends = true,
@@ -284,12 +282,12 @@ return {
       --- non-default
       SA9003 = false, -- Empty body in an if or else branch
       ST1000 = false, -- Incorrect or missing package comment
-      ST1003 = true,  -- Poorly chosen identifier
-      ST1016 = true,  -- Use consistent method receiver names
-      ST1020 = true,  -- The documentation of an exported function should start with the function’s name
-      ST1021 = true,  -- The documentation of an exported type should start with type’s name
-      ST1022 = true,  -- The documentation of an exported variable or constant should start with variable’s name
-      ST1023 = true,  -- Redundant type in variable declaration
+      ST1003 = true, -- Poorly chosen identifier
+      ST1016 = true, -- Use consistent method receiver names
+      ST1020 = true, -- The documentation of an exported function should start with the function’s name
+      ST1021 = true, -- The documentation of an exported type should start with type’s name
+      ST1022 = true, -- The documentation of an exported variable or constant should start with variable’s name
+      ST1023 = true, -- Redundant type in variable declaration
     },
     -- golang.org/x/tools/gopls/internal/settings.InlayHint
     hints = {
@@ -372,7 +370,7 @@ return {
     expandWorkspaceToModule = true,
     experimentalPostfixCompletions = true,
     templateExtensions = { "tmpl", "tpl", "gotmpl" },
-    diagnosticsDelay = "1s",     -- default: "1s", "100ms"
+    diagnosticsDelay = "1s", -- default: "1s", "100ms"
     diagnosticsTrigger = "Edit", -- "Edit", "Save",
     analysisProgressReporting = true,
     standaloneTags = {
@@ -381,7 +379,7 @@ return {
       "integration",
       "wireinject",
     },
-    subdirWatchPatterns = "on",         -- "on", "off", "auto"
+    subdirWatchPatterns = "on", -- "on", "off", "auto"
     reportAnalysisProgressAfter = "5s", -- default: "5s", "1000ms"
     telemetryPrompt = true,
     linkifyShowMessage = false,
@@ -404,12 +402,20 @@ return {
 
     if string.find(new_root_dir, "go/src") then
       new_config.settings.env = {
-        GOEXPERIMENTAL = { "loopvar,newinliner,jsonv2,greenteagc,randomizedheapbase64,sizespecializedmalloc,goroutineleakprofile,runtimefreegc,simd,runtimesecret" },
+        GOEXPERIMENTAL = {
+          "loopvar,newinliner,jsonv2,greenteagc,randomizedheapbase64,sizespecializedmalloc,goroutineleakprofile,runtimefreegc,simd,runtimesecret",
+        },
       }
       new_config.settings.buildFlags = {
-        "goexperiment.loopvar", "goexperiment.newinliner", "goexperiment.jsonv2",
-        "goexperiment.greenteagc", "goexperiment.randomizedheapbase64", "goexperiment.sizespecializedmalloc",
-        "goexperiment.goroutineleakprofile", "goexperiment.runtimefreegc", "goexperiment.simd",
+        "goexperiment.loopvar",
+        "goexperiment.newinliner",
+        "goexperiment.jsonv2",
+        "goexperiment.greenteagc",
+        "goexperiment.randomizedheapbase64",
+        "goexperiment.sizespecializedmalloc",
+        "goexperiment.goroutineleakprofile",
+        "goexperiment.runtimefreegc",
+        "goexperiment.simd",
         "goexperiment.runtimesecret",
       }
     end

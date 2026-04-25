@@ -31,7 +31,7 @@ lazydev.setup({
     "lazy.nvim",
     {
       path = "${3rd}/luv/library",
-      words = { "vim%.uv" }
+      words = { "vim%.uv" },
     },
     {
       -- {
@@ -77,8 +77,8 @@ return {
       diagnostics = {
         enable = true,
         globals = {
-          "vim",     -- neovim builtin
-          "vim.uv",  -- neovim builtin
+          "vim", -- neovim builtin
+          "vim.uv", -- neovim builtin
           -- "vim%.uv", -- neovim builtin
           "package", -- neovim builtin
           "describe",
@@ -128,8 +128,8 @@ return {
         version = "LuaJIT",
         pathStrict = false,
         path = {
-          '?.lua',
-          '?/init.lua',
+          "?.lua",
+          "?/init.lua",
         },
       },
       semantic = {
@@ -163,7 +163,7 @@ return {
           vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/library"),
           vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library"),
         },
-        maxPreload = 500000,     -- default: 5000, 500000
+        maxPreload = 500000, -- default: 5000, 500000
         preloadFileSize = 50000, -- default: 500, 50000
         useGitIgnore = true,
         userThirdParty = {},

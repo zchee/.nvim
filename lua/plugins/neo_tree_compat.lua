@@ -44,7 +44,9 @@ function M.hijack_cursor_handler(deps)
   local log = deps.log or require("neo-tree.log")
   local manager = deps.manager or require("neo-tree.sources.manager")
   local inspect = deps.inspect or vim.inspect
-  local filetype = deps.filetype or function() return vim.o.filetype end
+  local filetype = deps.filetype or function()
+    return vim.o.filetype
+  end
   local get_current_line = deps.get_current_line or api.nvim_get_current_line
   local find = deps.find or string.find
 

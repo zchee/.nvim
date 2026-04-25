@@ -1,6 +1,6 @@
 local comment = require("Comment")
-local ft = require("Comment.ft")
 local compat = require("plugins.comment_compat")
+local ft = require("Comment.ft")
 local ts_context_commentstring_comment = require("ts_context_commentstring.integrations.comment_nvim")
 
 compat.patch_ft(ft)
@@ -80,7 +80,7 @@ local comment_config = {
     block = "gbc",
   },
   opleader = {
-    line = "disable",  -- hack
+    line = "disable", -- hack
     block = "disable", -- hack
   },
   extra = {

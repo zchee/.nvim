@@ -35,9 +35,9 @@ vim.g.rustaceanvim = {
       ---@type boolean
       enable = true,
       ---@type string
-      host = '127.0.0.1', -- default
+      host = "127.0.0.1", -- default
       ---@type integer
-      port = 27631,       -- default
+      port = 27631, -- default
     },
     -- settings = {
     --   server = {
@@ -121,17 +121,17 @@ vim.g.rustaceanvim = {
         runnables = {
           extraArgs = { "--release" },
         },
-      }
+      },
     },
     standalone = true,
     status_notify_level = false,
-    capabilities = require('rustaceanvim.config.server').create_client_capabilities(),
+    capabilities = require("rustaceanvim.config.server").create_client_capabilities(),
   },
   dap = {
     adapter = {
-      type = 'executable',
-      command = '/opt/homebrew/opt/llvm/bin/lldb-dap',
-      name = 'lldb',
+      type = "executable",
+      command = "/opt/homebrew/opt/llvm/bin/lldb-dap",
+      name = "lldb",
     },
     autoload_configurations = true,
   },

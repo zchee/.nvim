@@ -15,8 +15,8 @@ dressing.setup({
     max_width = { 140, 0.9 }, -- min_width and max_width can be a list of mixed types. min_width = {20, 0.2} means "the greater of 20 columns or 20% of total"
     buf_options = {},
     win_options = {
-      wrap = false,      -- Disable line wrapping
-      list = true,       -- Indicator for when text exceeds window
+      wrap = false, -- Disable line wrapping
+      list = true, -- Indicator for when text exceeds window
       listchars = "precedes:…,extends:…",
       sidescrolloff = 0, -- Increase this for more context when text scrolls off the window
     },
@@ -43,9 +43,9 @@ dressing.setup({
   },
 
   select = {
-    enabled = true,                                                -- Set to false to disable the vim.ui.select implementation
+    enabled = true, -- Set to false to disable the vim.ui.select implementation
     backend = { "nui", "telescope", "fzf_lua", "fzf", "builtin" }, -- Priority list of preferred vim.select implementations
-    trim_prompt = true,                                            -- Trim trailing `:` from prompt
+    trim_prompt = true, -- Trim trailing `:` from prompt
     nui = {
       show_numbers = true,
       position = "50%",
@@ -132,9 +132,9 @@ dressing.setup({
               row = 3,
               col = 15,
             },
-          }
+          },
         }
       end
-    end
+    end,
   },
 })

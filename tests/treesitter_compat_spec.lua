@@ -140,12 +140,22 @@ do
   )
 
   assert_truthy(
-    registered_predicates["kind-eq?"].handler({ [1] = { new_node("string") } }, nil, 0, { "kind-eq?", 1, "comment", "string" }),
+    registered_predicates["kind-eq?"].handler(
+      { [1] = { new_node("string") } },
+      nil,
+      0,
+      { "kind-eq?", 1, "comment", "string" }
+    ),
     "kind-eq? should compare the unwrapped capture type"
   )
 
   assert_truthy(
-    registered_predicates["is?"].handler({ [1] = { new_node("identifier") } }, nil, 0, { "is?", 1, "parameter", "field" }),
+    registered_predicates["is?"].handler(
+      { [1] = { new_node("identifier") } },
+      nil,
+      0,
+      { "is?", 1, "parameter", "field" }
+    ),
     "is? should use the unwrapped capture when resolving the local definition kind"
   )
 
@@ -157,7 +167,11 @@ do
     { "set-lang-from-mimetype!", 1 },
     mimetype_metadata
   )
-  assert_equal("javascript", mimetype_metadata["injection.language"], "mimetype directive should map known script types")
+  assert_equal(
+    "javascript",
+    mimetype_metadata["injection.language"],
+    "mimetype directive should map known script types"
+  )
 
   local markdown_metadata = {}
   registered_directives["set-lang-from-info-string!"].handler(
@@ -167,7 +181,11 @@ do
     { "set-lang-from-info-string!", 1 },
     markdown_metadata
   )
-  assert_equal("lua", markdown_metadata["injection.language"], "markdown info directive should lowercase and resolve parser aliases")
+  assert_equal(
+    "lua",
+    markdown_metadata["injection.language"],
+    "markdown info directive should lowercase and resolve parser aliases"
+  )
 
   local downcase_metadata = {
     [1] = { text = "HeLLo" },

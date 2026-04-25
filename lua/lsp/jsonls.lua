@@ -1,4 +1,4 @@
-local util = require "util"
+local util = require("util")
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {

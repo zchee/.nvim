@@ -86,7 +86,6 @@ vim.keymap.set({ "v", "x" }, "tr", "<Plug>(operator-surround-replace)", { silent
 -- " <S-Down>) <Nop>
 -- "   <S-Up>) <Nop>
 
-
 -- vim.keymap.set({ "n" }, "<Space>", "<Nop>", { noremap = true })
 -- vim.keymap.set({ "n" }, "<BS>", "<Nop>", { noremap = true })
 
@@ -128,8 +127,12 @@ vim.keymap.set({ "n" }, "@", "^", { nowait = true, silent = true })
 vim.keymap.set({ "n" }, "^", "@", { nowait = true, silent = true })
 vim.keymap.set({ "n" }, "b", "b", { nowait = true, silent = true })
 vim.keymap.del("n", "gcc")
-vim.keymap.set({ "n" }, "gc", "<Plug>(comment_toggle_linewise_current)",
-  { noremap = false, silent = true, nowait = true })
+vim.keymap.set(
+  { "n" },
+  "gc",
+  "<Plug>(comment_toggle_linewise_current)",
+  { noremap = false, silent = true, nowait = true }
+)
 vim.keymap.set({ "n" }, "gs", "<cmd>Switch<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "gx", "<Plug>(openbrowser-smart-search)", { silent = true })
 vim.keymap.set({ "n" }, "j", "<Plug>(accelerated_jk_gj)", { nowait = true, silent = true })
@@ -152,9 +155,12 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   },
   callback = function()
     if vim.bo.filetype == "help" then
-      vim.keymap.set({ "n" },
-        "<C-]>", ":<C-u>Help<Space><C-r><C-w><CR>",
-        { noremap = true, silent = true, buffer = true })
+      vim.keymap.set(
+        { "n" },
+        "<C-]>",
+        ":<C-u>Help<Space><C-r><C-w><CR>",
+        { noremap = true, silent = true, buffer = true }
+      )
     end
   end,
 })
@@ -164,9 +170,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
     "*.vim",
   },
   callback = function()
-    vim.keymap.set({ "n" },
-      "K", ":<C-u>Help<Space><C-r><C-w><CR>",
-      { noremap = true, silent = true, buffer = true })
+    vim.keymap.set({ "n" }, "K", ":<C-u>Help<Space><C-r><C-w><CR>", { noremap = true, silent = true, buffer = true })
   end,
 })
 
@@ -223,10 +227,10 @@ vim.keymap.set({ "i" }, "<C-j>", "<C-r>*", { noremap = true, silent = true })
 -- "        V : move to the first non-blank character of the line
 
 vim.keymap.set({ "v" }, "<S-Tab>", "%", { noremap = true })
-vim.keymap.set({ "v" }, "c", "\"_c", { noremap = true, nowait = true })
-vim.keymap.set({ "v" }, "P", "\"_dP", { noremap = true, nowait = true })
-vim.keymap.set({ "v" }, "p", "\"_dp", { noremap = true, nowait = true })
-vim.keymap.set({ "v" }, "x", "\"_x", { noremap = true, nowait = true })
+vim.keymap.set({ "v" }, "c", '"_c', { noremap = true, nowait = true })
+vim.keymap.set({ "v" }, "P", '"_dP', { noremap = true, nowait = true })
+vim.keymap.set({ "v" }, "p", '"_dp', { noremap = true, nowait = true })
+vim.keymap.set({ "v" }, "x", '"_x', { noremap = true, nowait = true })
 vim.keymap.set({ "v" }, "@", "^", { noremap = true, nowait = true })
 vim.keymap.set({ "v" }, "^", "$", { noremap = true, nowait = true })
 vim.keymap.set({ "v" }, "ga", "<Plug>(LiveEasyAlign)", { silent = true })
@@ -274,9 +278,12 @@ vim.keymap.set({ "v" }, "V", "^", { noremap = true, nowait = true })
 --   "<Plug>(comment_toggle_linewise_visual)",
 --   { noremap = true, silent = true, nowait = true, desc = "Comment toggle linewise" }
 -- )
-vim.keymap.set({ "x" }, "gb",
+vim.keymap.set(
+  { "x" },
+  "gb",
   "<Plug>(comment_toggle_blockwise_visual)",
-  { noremap = true, silent = true, desc = "Comment toggle blockwise (visual)" })
+  { noremap = true, silent = true, desc = "Comment toggle blockwise (visual)" }
+)
 -- vim.keymap.set({ "x" }, "<C-t>", "<cmd>Trans<CR>", { noremap = true, silent = true })
 -- vim.keymap.set(
 --   { "x" },
@@ -327,8 +334,8 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
     "*.json",
   },
   callback = function()
-    vim.keymap.set({ "s" }, "\"", "'", { noremap = true, buffer = true })
-    vim.keymap.set({ "s" }, "'", "\"", { noremap = true, buffer = true })
+    vim.keymap.set({ "s" }, '"', "'", { noremap = true, buffer = true })
+    vim.keymap.set({ "s" }, "'", '"', { noremap = true, buffer = true })
   end,
 })
 

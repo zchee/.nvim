@@ -10,34 +10,34 @@ neotree.setup({
     "git_status",
     "document_symbols",
   },
-  add_blank_line_at_top = false,            -- Add a blank line at the top of the tree.
+  add_blank_line_at_top = false, -- Add a blank line at the top of the tree.
   auto_clean_after_session_restore = false, -- Automatically clean up broken neo-tree buffers saved in sessions
-  close_if_last_window = true,              -- Close Neo-tree if it is the last window left in the tab
-  default_source = "filesystem",            -- you can choose a specific source `last` here which indicates the last used source
+  close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
+  default_source = "filesystem", -- you can choose a specific source `last` here which indicates the last used source
   enable_diagnostics = true,
   enable_git_status = true,
   enable_modified_markers = true, -- Show markers for files with unsaved changes.
-  enable_opened_markers = true,   -- Enable tracking of opened files. Required for `components.name.highlight_opened_files`
+  enable_opened_markers = true, -- Enable tracking of opened files. Required for `components.name.highlight_opened_files`
   enable_refresh_on_write = true, -- Refresh the tree when a file is written. Only used if `use_libuv_file_watcher` is false.
-  enable_cursor_hijack = true,    -- If enabled neotree will keep the cursor on the first letter of the filename when moving in the tree.
+  enable_cursor_hijack = true, -- If enabled neotree will keep the cursor on the first letter of the filename when moving in the tree.
   git_status_async = true,
   git_status_async_options = {
-    batch_size = 1000,                                                       -- how many lines of git status results to process at a time
-    batch_delay = 10,                                                        -- delay in ms between batches. Spreads out the workload to let other processes run.
-    max_lines = 10000,                                                       -- How many lines of git status results to process. Anything after this will be dropped.
+    batch_size = 1000, -- how many lines of git status results to process at a time
+    batch_delay = 10, -- delay in ms between batches. Spreads out the workload to let other processes run.
+    max_lines = 10000, -- How many lines of git status results to process. Anything after this will be dropped.
   },
-  hide_root_node = false,                                                    -- Hide the root node.
-  retain_hidden_root_indent = true,                                          -- IF the root node is hidden, keep the indentation anyhow.
-  log_level = "error",                                                       -- "trace", "debug", "info", "warn", "error", "fatal"
-  log_to_file = false,                                                       -- true, false, "/path/to/file.log", use ':lua require("neo-tree").show_logs()' to show the file
-  open_files_in_last_window = true,                                          -- false = open files in top left window
+  hide_root_node = false, -- Hide the root node.
+  retain_hidden_root_indent = true, -- IF the root node is hidden, keep the indentation anyhow.
+  log_level = "error", -- "trace", "debug", "info", "warn", "error", "fatal"
+  log_to_file = false, -- true, false, "/path/to/file.log", use ':lua require("neo-tree").show_logs()' to show the file
+  open_files_in_last_window = true, -- false = open files in top left window
   open_files_do_not_replace_types = { "terminal", "Trouble", "qf", "edgy" }, -- when opening files, do not use windows containing these filetypes or buftypes
   open_files_using_relative_paths = false,
-  popup_border_style = "NC",                                                 -- "double", "rounded", "single", "solid", (or "" to use 'winborder' on Neovim v0.11+) "NC" is a special style that works well with NormalNC set
-  resize_timer_interval = 500,                                               -- in ms, needed for containers to redraw right aligned and faded content set to -1 to disable the resize timer entirely. NOTE: this will speed up to 50 ms for 1 second following a resize
-  sort_case_insensitive = false,                                             -- used when sorting files and directories in the tree
-  sort_function = nil,                                                       -- uses a custom function for sorting files and directories in the tree
-  use_popups_for_input = true,                                               -- If false, inputs will use vim.ui.input() instead of custom floats.
+  popup_border_style = "NC", -- "double", "rounded", "single", "solid", (or "" to use 'winborder' on Neovim v0.11+) "NC" is a special style that works well with NormalNC set
+  resize_timer_interval = 500, -- in ms, needed for containers to redraw right aligned and faded content set to -1 to disable the resize timer entirely. NOTE: this will speed up to 50 ms for 1 second following a resize
+  sort_case_insensitive = false, -- used when sorting files and directories in the tree
+  sort_function = nil, -- uses a custom function for sorting files and directories in the tree
+  use_popups_for_input = true, -- If false, inputs will use vim.ui.input() instead of custom floats.
   use_default_mappings = true,
   source_selector = {
     winbar = false,
@@ -90,7 +90,7 @@ neotree.setup({
       handler = function(file_path)
         _ = file_path
         require("neo-tree.command").execute({ action = "close" })
-      end
+      end,
     },
     --  {
     --    event = "file_opened",
@@ -198,15 +198,14 @@ neotree.setup({
       provider = function(icon, node, state) -- default icon provider utilizes nvim-web-devicons if available
         if node.type == "file" or node.type == "terminal" then
           local success, web_devicons = pcall(require, "nvim-web-devicons")
-          local name = node.type == "terminal" and "terminal" or
-              node.name
+          local name = node.type == "terminal" and "terminal" or node.name
           if success then
             local devicon, hl = web_devicons.get_icon(name)
             icon.text = devicon or icon.text
             icon.highlight = hl or icon.highlight
           end
         end
-      end
+      end,
     },
     modified = {
       symbol = "[+] ",
@@ -223,40 +222,40 @@ neotree.setup({
     },
     git_status = {
       symbols = {
-        added     = "✚", -- NOTE: you can set any of these to an empty string to not show them
-        deleted   = "✖",
-        modified  = "",
-        renamed   = "󰁕",
+        added = "✚", -- NOTE: you can set any of these to an empty string to not show them
+        deleted = "✖",
+        modified = "",
+        renamed = "󰁕",
         untracked = "",
-        ignored   = "",
-        unstaged  = "󰄱",
-        staged    = "",
-        conflict  = "",
+        ignored = "",
+        unstaged = "󰄱",
+        staged = "",
+        conflict = "",
       },
       align = "right",
     },
     file_size = {
       enabled = true,
-      width = 12,          -- width of the column
+      width = 12, -- width of the column
       required_width = 64, -- min width of window required to show this column
     },
     type = {
       enabled = true,
-      width = 10,           -- width of the column
+      width = 10, -- width of the column
       required_width = 110, -- min width of window required to show this column
     },
     last_modified = {
       enabled = true,
-      width = 20,                   -- width of the column
-      required_width = 88,          -- min width of window required to show this column
+      width = 20, -- width of the column
+      required_width = 88, -- min width of window required to show this column
       format = "%Y-%m-%d %I:%M %p", -- format string for timestamp (see `:h os.date()`)
       -- or use a function that takes in the date in seconds and returns a string to display
       --format = require("neo-tree.utils").relative_date, -- enable relative timestamps
     },
     created = {
       enabled = false,
-      width = 20,                   -- width of the column
-      required_width = 120,         -- min width of window required to show this column
+      width = 20, -- width of the column
+      required_width = 120, -- min width of window required to show this column
       format = "%Y-%m-%d %I:%M %p", -- format string for timestamp (see `:h os.date()`)
     },
     symlink_target = {
@@ -272,19 +271,19 @@ neotree.setup({
       {
         "container",
         content = {
-          { "name",          zindex = 10 },
+          { "name", zindex = 10 },
           {
             "symlink_target",
             zindex = 10,
             highlight = "NeoTreeSymbolicLinkTarget",
           },
-          { "clipboard",     zindex = 10 },
-          { "diagnostics",   errors_only = true, zindex = 20,     align = "right",          hide_when_expanded = true },
-          { "git_status",    zindex = 10,        align = "right", hide_when_expanded = true },
-          { "file_size",     zindex = 10,        align = "right" },
-          { "type",          zindex = 10,        align = "right" },
-          { "last_modified", zindex = 10,        align = "right" },
-          { "created",       zindex = 10,        align = "right" },
+          { "clipboard", zindex = 10 },
+          { "diagnostics", errors_only = true, zindex = 20, align = "right", hide_when_expanded = true },
+          { "git_status", zindex = 10, align = "right", hide_when_expanded = true },
+          { "file_size", zindex = 10, align = "right" },
+          { "type", zindex = 10, align = "right" },
+          { "last_modified", zindex = 10, align = "right" },
+          { "created", zindex = 10, align = "right" },
         },
       },
     },
@@ -296,35 +295,35 @@ neotree.setup({
         content = {
           {
             "name",
-            zindex = 10
+            zindex = 10,
           },
           {
             "symlink_target",
             zindex = 10,
             highlight = "NeoTreeSymbolicLinkTarget",
           },
-          { "clipboard",     zindex = 10 },
-          { "bufnr",         zindex = 10 },
-          { "modified",      zindex = 20, align = "right" },
-          { "diagnostics",   zindex = 20, align = "right" },
-          { "git_status",    zindex = 10, align = "right" },
-          { "file_size",     zindex = 10, align = "right" },
-          { "type",          zindex = 10, align = "right" },
+          { "clipboard", zindex = 10 },
+          { "bufnr", zindex = 10 },
+          { "modified", zindex = 20, align = "right" },
+          { "diagnostics", zindex = 20, align = "right" },
+          { "git_status", zindex = 10, align = "right" },
+          { "file_size", zindex = 10, align = "right" },
+          { "type", zindex = 10, align = "right" },
           { "last_modified", zindex = 10, align = "right" },
-          { "created",       zindex = 10, align = "right" },
+          { "created", zindex = 10, align = "right" },
         },
       },
     },
     message = {
       { "indent", with_markers = false },
-      { "name",   highlight = "NeoTreeMessage" },
+      { "name", highlight = "NeoTreeMessage" },
     },
     terminal = {
       { "indent" },
       { "icon" },
       { "name" },
-      { "bufnr" }
-    }
+      { "bufnr" },
+    },
   },
   nesting_rules = {},
   commands = {}, -- A list of functions
@@ -364,7 +363,7 @@ neotree.setup({
             use_snacks_image = true,
             use_image_nvim = true,
             -- title = "Neo-tree Preview", -- You can define a custom title for the preview floating window.
-          }
+          },
         },
         ["-"] = "navigate_up",
         ["a"] = {
@@ -372,7 +371,7 @@ neotree.setup({
           -- some commands may take optional config options, see `:h neo-tree-mappings` for details
           config = {
             show_path = "none", -- "none", "relative", "absolute"
-          }
+          },
         },
         ["c"] = "copy", -- takes text input for destination, also accepts the config.show_path and config.insert_as options
         ["d"] = "delete",
@@ -435,8 +434,8 @@ neotree.setup({
             ["<S-CR>"] = "close_keep_filter",
             ["<C-CR>"] = "close_clear_filter",
             ["<esc>"] = "close",
-          }
-        }
+          },
+        },
         -- ["<esc>"] = "noop", -- if you want to use normal mode
         -- ["key"] = function(state, scroll_padding) ... end,
       },
@@ -446,7 +445,7 @@ neotree.setup({
         "toggle_node",
         nowait = false,
       },
-      ["<CR>"] = "open",    -- { "open", config = { expand_nested_files = true } }, -- expand nested file takes precedence
+      ["<CR>"] = "open", -- { "open", config = { expand_nested_files = true } }, -- expand nested file takes precedence
       ["o"] = "open",
       ["<Esc>"] = "cancel", -- close preview or floating neo-tree window
       ["P"] = {
@@ -456,7 +455,7 @@ neotree.setup({
           use_snacks_image = true,
           use_image_nvim = true,
           -- title = "Neo-tree Preview", -- You can define a custom title for the preview floating window.
-        }
+        },
       },
       ["<C-f>"] = { "scroll_preview", config = { direction = -10 } },
       ["<C-b>"] = { "scroll_preview", config = { direction = 10 } },
@@ -481,7 +480,7 @@ neotree.setup({
         -- some commands may take optional config options, see `:h neo-tree-mappings` for details
         config = {
           show_path = "none", -- "none", "relative", "absolute"
-        }
+        },
       },
       ["A"] = "add_directory", -- also accepts the config.show_path and config.insert_as options.
       ["d"] = "delete",
@@ -497,12 +496,12 @@ neotree.setup({
       ["<"] = "prev_source",
       [">"] = "next_source",
     },
-    async_directory_scan = "always",  -- "auto"   means refreshes are async, but it's synchronous when called from the Neotree commands. "always" means directory scans are always async. "never"  means directory scans are never async.
-    scan_mode = "shallow",            -- "shallow": Don't scan into directories to detect possible empty directory a priority. "deep": Scan into directories to detect empty or grouped empty directories a priori.
-    bind_to_cwd = true,               -- true creates a 2-way binding between vim's cwd and neo-tree's root
+    async_directory_scan = "always", -- "auto"   means refreshes are async, but it's synchronous when called from the Neotree commands. "always" means directory scans are always async. "never"  means directory scans are never async.
+    scan_mode = "shallow", -- "shallow": Don't scan into directories to detect possible empty directory a priority. "deep": Scan into directories to detect empty or grouped empty directories a priori.
+    bind_to_cwd = true, -- true creates a 2-way binding between vim's cwd and neo-tree's root
     cwd_target = {
-      sidebar = "global",             -- sidebar is when position = left or right
-      current = "window"              -- current is when position = current
+      sidebar = "global", -- sidebar is when position = left or right
+      current = "window", -- current is when position = current
     },
     check_gitignore_in_search = true, -- check gitignore status for files/directories when searching
     -- setting this to false will speed up searches, but gitignored
@@ -514,15 +513,15 @@ neotree.setup({
     --         The first field in each component is the name of the function to call.
     --         The rest of the fields are passed to the function as the "config" argument.
     filtered_items = {
-      visible = false,                       -- when true, they will just be displayed differently than normal items
+      visible = false, -- when true, they will just be displayed differently than normal items
       force_visible_in_empty_folder = false, -- when true, hidden files will be shown if the root folder is otherwise empty
-      show_hidden_count = true,              -- when true, the number of hidden items in each folder will be shown as the last entry
+      show_hidden_count = true, -- when true, the number of hidden items in each folder will be shown as the last entry
       hide_dotfiles = false,
       hide_gitignored = false,
       hide_hidden = false, -- only works on Windows for hidden files/directories
       hide_by_name = {
         ".DS_Store",
-        "thumbs.db"
+        "thumbs.db",
         --"node_modules",
       },
       hide_by_pattern = { -- uses glob style patterns
@@ -549,11 +548,13 @@ neotree.setup({
     -- `fi init`
     -- will match: `./sources/filesystem/init.lua
     find_command = "fd", -- this is determined automatically, you probably don't need to set it
-    find_args = {        -- you can specify extra args to pass to the find command.
+    find_args = { -- you can specify extra args to pass to the find command.
       fd = {
-        "--exclude", ".git",
-        "--exclude", "node_modules"
-      }
+        "--exclude",
+        ".git",
+        "--exclude",
+        "node_modules",
+      },
     },
     ---- or use a function instead of list of strings
     --find_args = function(cmd, path, search_term, args)
@@ -576,12 +577,12 @@ neotree.setup({
     --  end
     --  return args
     --end,
-    group_empty_dirs = false,               -- when true, empty folders will be grouped together
-    search_limit = 50,                      -- max number of search results when using filters
+    group_empty_dirs = false, -- when true, empty folders will be grouped together
+    search_limit = 50, -- max number of search results when using filters
     follow_current_file = {
-      enabled = true,                       -- This will find and focus the file in the active buffer every time
+      enabled = true, -- This will find and focus the file in the active buffer every time
       --               -- the current file is changed while the tree is open.
-      leave_dirs_open = false,              -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
+      leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
     },
     hijack_netrw_behavior = "open_default", -- netrw disabled, opening a directory opens neo-tree
     -- in whatever position is specified in window.position
@@ -594,14 +595,14 @@ neotree.setup({
   buffers = {
     bind_to_cwd = true,
     follow_current_file = {
-      enabled = true,          -- This will find and focus the file in the active buffer every time
+      enabled = true, -- This will find and focus the file in the active buffer every time
       --              -- the current file is changed while the tree is open.
       leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
     },
-    group_empty_dirs = true,   -- when true, empty directories will be grouped together
-    show_unloaded = false,     -- When working with sessions, for example, restored but unfocused buffers
+    group_empty_dirs = true, -- when true, empty directories will be grouped together
+    show_unloaded = false, -- When working with sessions, for example, restored but unfocused buffers
     -- are mark as "unloaded". Turn this on to view these unloaded buffer.
-    terminals_first = false,   -- when true, terminals will be listed before file buffers
+    terminals_first = false, -- when true, terminals will be listed before file buffers
     window = {
       mappings = {
         ["<BS>"] = "navigate_up",
@@ -630,17 +631,17 @@ neotree.setup({
       },
     },
   },
-  window = {                  -- see https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/popup for possible options. These can also be functions that return these options.
-    position = "left",        -- left, right, top, bottom, float, current
-    width = 100,              -- applies to left and right positions
-    height = 15,              -- applies to top and bottom positions
+  window = { -- see https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/popup for possible options. These can also be functions that return these options.
+    position = "left", -- left, right, top, bottom, float, current
+    width = 100, -- applies to left and right positions
+    height = 15, -- applies to top and bottom positions
     auto_expand_width = true, -- expand the window when file exceeds the window width. does not work with position = "float"
-    popup = {                 -- settings that apply to float position only
+    popup = { -- settings that apply to float position only
       size = {
         height = "80%",
         width = "50%",
       },
-      position = "50%",       -- 50% means center it
+      position = "50%", -- 50% means center it
       title = function(state) -- format the text that appears at the top of a popup window
         return "Neo-tree " .. state.name:gsub("^%l", string.upper)
       end,
@@ -680,19 +681,19 @@ neotree.setup({
     renderers = {
       root = {
         { "indent" },
-        { "icon",  default = "C" },
-        { "name",  zindex = 10 },
+        { "icon", default = "C" },
+        { "name", zindex = 10 },
       },
       symbol = {
-        { "indent",    with_expanders = true },
+        { "indent", with_expanders = true },
         { "kind_icon", default = "?" },
         {
           "container",
           content = {
-            { "name",      zindex = 10 },
+            { "name", zindex = 10 },
             { "kind_name", zindex = 20, align = "right" },
-          }
-        }
+          },
+        },
       },
     },
     window = {
@@ -748,16 +749,16 @@ neotree.setup({
       Event = { icon = "", hl = "Constant" },
       Operator = { icon = "󰆕", hl = "Operator" },
       TypeParameter = { icon = "󰊄", hl = "Type" },
-    }
+    },
   },
   example = {
     renderers = {
       custom = {
         { "indent" },
-        { "icon",  default = "C" },
+        { "icon", default = "C" },
         { "custom" },
-        { "name" }
-      }
+        { "name" },
+      },
     },
     window = {
       mappings = {

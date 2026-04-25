@@ -1,6 +1,6 @@
-local nvim_tree = require("nvim-tree")
-local nonicons_extention = require("nvim-nonicons.extentions.nvim-tree")
 local lsp_file_operations = require("lsp-file-operations")
+local nonicons_extention = require("nvim-nonicons.extentions.nvim-tree")
+local nvim_tree = require("nvim-tree")
 
 nvim_tree.setup({
   on_attach = "disable", -- function(bufnr). If nil, will use the deprecated mapping strategy
@@ -60,9 +60,9 @@ nvim_tree.setup({
     highlight_git = false,
     highlight_diagnostics = false,
     highlight_opened_files = "all", -- "none", "icon", "name", "all"
-    highlight_modified = "none",    -- "none", "icon", "name", "all"
-    highlight_bookmarks = "none",   -- "none", "icon", "name", "all"
-    highlight_clipboard = "none",   -- "none", "icon", "name", "all"
+    highlight_modified = "none", -- "none", "icon", "name", "all"
+    highlight_bookmarks = "none", -- "none", "icon", "name", "all"
+    highlight_clipboard = "none", -- "none", "icon", "name", "all"
     indent_markers = {
       enable = false,
       inline_arrows = true,

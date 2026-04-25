@@ -1,3 +1,5 @@
+require("plugins.neo_tree_compat").patch_hijack_cursor_module()
+
 local neotree = require("neo-tree")
 
 ---@class neotree.Config

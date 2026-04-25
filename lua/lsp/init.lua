@@ -2,6 +2,7 @@
 
 -- local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
+local util              = require("util")
 
 vim.lsp.log.set_level(vim.log.levels.ERROR) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
 vim.diagnostic.config({
@@ -30,11 +31,11 @@ hover.config({
     require("hover.providers.man")
   end,
   providers = {
-    'hover.providers.diagnostic',
-    'hover.providers.lsp',
-    'hover.providers.dap',
-    'hover.providers.man',
-    'hover.providers.dictionary',
+    "hover.providers.diagnostic",
+    "hover.providers.lsp",
+    "hover.providers.dap",
+    "hover.providers.man",
+    "hover.providers.dictionary",
   },
   ---@type vim.api.keyset.win_config
   preview_opts = {
@@ -42,7 +43,7 @@ hover.config({
   },
   preview_window = false,
   title = false,
-  mouse_providers = { 'hover.providers.lsp' },
+  mouse_providers = { "hover.providers.lsp" },
   mouse_delay = 1000
 })
 
@@ -210,17 +211,17 @@ lspsaga.setup({
     },
   },
   typehierarchy = {
-    layout = 'float',
+    layout = "float",
     left_width = 0.2,
     keys = {
-      edit = 'e',
-      vsplit = 's',
-      split = 'i',
-      tabe = 't',
+      edit = "e",
+      vsplit = "s",
+      split = "i",
+      tabe = "t",
       close = "<Esc>",
-      quit = 'q',
-      shuttle = '[w',
-      toggle_or_req = 'u',
+      quit = "q",
+      shuttle = "[w",
+      toggle_or_req = "u",
     },
   },
   implement = {
@@ -274,7 +275,7 @@ vim.api.nvim_create_autocmd({ "LspAttach", "LspDetach" }, {
   end,
 })
 
-local tiny_inline_diagnostic = require('tiny-inline-diagnostic')
+local tiny_inline_diagnostic = require("tiny-inline-diagnostic")
 tiny_inline_diagnostic.setup({
   preset = "modern", -- "modern", "classic", "minimal", "powerline", "ghost", "simple", "nonerdfont", "amongus"
   transparent_bg = true,
@@ -538,6 +539,19 @@ end
 -- )
 -- lspconfig.stainless.setup({})
 
+-- register_lsp(
+--   "mpls",
+--   {
+--     cmd = { "mpls", "--port=1218", "--code-style=github-dark", "--browser=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--enable-emoji", "--enable-footnotes", "--enable-wikilinks", "--full-sync", "--plantuml-path=/opt/homebrew/bin/plantuml", "--tabs", "--theme=dark" },
+--     filetypes = {
+--       "markdown",
+--     },
+--     root_markers = { ".git" },
+--     single_file_support = true,
+--     capabilities = default_capabilities_config(),
+--   }
+-- )
+
 register_lsp(
   "tsgo",
   {
@@ -565,6 +579,11 @@ vim.lsp.config("*", {
 
 -- https://github.com/neovim/nvim-lspconfig/tree/master/lsp
 -- ["helm_ls"] = require("lsp.helm_ls"),
+-- ["markdown_oxide"] = {},
+-- ["mpls"] = {
+--   cmd = { "mpls", "--port=1218", "--code-style=github-dark", "--browser=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--enable-emoji", "--enable-footnotes", "--enable-wikilinks", "--full-sync", "--plantuml-path=/opt/homebrew/bin/plantuml", "--tabs", "--theme=dark" },
+-- },
+-- ["taplo"] = require("lsp.taplo"),
 -- ["tilt_ls"] = require("lsp.tilt_ls"),
 -- ["ts_ls"] = require("lsp.ts_ls"),
 -- ["tsgo"] = require("lsp.tsgo"),
@@ -578,13 +597,14 @@ local servers = {
   ["gopls"] = require("lsp.gopls"),
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
+  ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") }, },
   ["neocmake"] = require("lsp.neocmake"),
   ["protols"] = require("lsp.protols"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
   ["rust_analyzer"] = require("lsp.rust_analyzer"),
   ["sourcekit"] = require("lsp.sourcekit"),
-  ["taplo"] = require("lsp.taplo"),
   ["terraformls"] = require("lsp.terraformls"),
+  ["tombi"] = require("lsp.tombi"),
   ["vtsls"] = require("lsp.vtsls"),
   ["yamlls"] = require("lsp.yamlls"),
   ["zizmor"] = require("lsp.zizmor"),

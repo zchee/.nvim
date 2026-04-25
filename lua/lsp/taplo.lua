@@ -21,9 +21,9 @@ return {
           "https://taplo.tamasfe.dev/schema_index.json",
         },
         associations = {
-          [".*/\\.?codex/config.toml"] =
-          -- "file:///Users/zchee/src/github.com/zchee/schema/codex.schema.json",
-          "https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/core/config.schema.json",
+          [".*/\\.?codex/config.toml"] = "https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/core/config.schema.json",
+          -- [".*/\\.?codex/config.toml"] = "file:///Users/zchee/src/github.com/zchee/schema/codex.schema.json",
+          [".*/pyproject.toml"] = "file:///Users/zchee/src/github.com/zchee/schema/pyproject.uv.schema.json",
         },
         cache = {
           memoryExpiration = 60, -- default: 60

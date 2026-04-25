@@ -1,7 +1,7 @@
 local aerial = require("aerial")
 
 aerial.setup({
-  backends = { "treesitter", "lsp", "markdown", "asciidoc", "man" },
+  backends = { "lsp", "treesitter", "markdown", "asciidoc", "man" },
   layout = {
     -- These control the width of the aerial window.
     -- They can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
@@ -193,7 +193,12 @@ aerial.setup({
   nerd_font = "auto",
 
   -- Call this function when aerial attaches to a buffer.
-  on_attach = function(bufnr) end,
+  -- optionally use on_attach to set keymaps when aerial has attached to a buffer
+  on_attach = function(bufnr)
+    -- Jump forwards/backwards with '{' and '}'
+    vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+    vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+  end,
 
   -- Call this function when aerial first sets symbols on a buffer.
   on_first_symbols = function(bufnr) end,

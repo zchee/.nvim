@@ -302,8 +302,8 @@ cmp.setup({
       -- group_index = 100,
       option = {
         markdown_oxide = {
-          keyword_pattern = [[\(\k\| \|\/\|#\)\+]]
-        }
+          keyword_pattern = [[\(\k\| \|\/\|#\)\+]],
+        },
       },
       ---@param ctx cmp.Context
       entry_filter = function(_, ctx)

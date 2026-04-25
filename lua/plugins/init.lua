@@ -40,6 +40,15 @@ return {
     config = function()
       require("plugins.metafrastis")
     end,
+    keys = {
+      {
+        "<BS>t",
+        "<CMD>MetafrastisTranslate<CR>",
+        mode = "x",
+        desc = "Translate the given range",
+        noremap = true,
+      },
+    }
   },
 
   -- Lazy
@@ -196,17 +205,6 @@ return {
       end,
     },
     {
-      "zeioth/garbage-day.nvim",
-      event = "VeryLazy",
-      opts = {
-        aggressive_mode = false,
-        excluded_lsp_clients = {
-          "rust_analyzer",
-        }, -- "null-ls",, "jdtls", "marksman", "lua_ls",
-      },
-      dependencies = {
-        "neovim/nvim-lspconfig",
-      },
       {
         "neovim/nvim-lspconfig",
         event = {
@@ -249,6 +247,23 @@ return {
         config = function()
           require("lsp")
         end,
+      },
+      {
+        "zeioth/garbage-day.nvim",
+        event = "LspAttach",
+        opts = {
+          aggressive_mode = false,
+          excluded_lsp_clients = {
+            "gopls",
+            "rust_analyzer",
+            "taplo",
+          },
+          grace_period = 60 * 15,
+          wakeup_delay = 500,
+        },
+        dependencies = {
+          "neovim/nvim-lspconfig",
+        },
       },
       {
         "amrbashir/nvim-docs-view",

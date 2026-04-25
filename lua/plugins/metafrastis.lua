@@ -2,7 +2,7 @@ local metafrastis = require("metafrastis")
 
 ---@type MetafrastisConfig
 metafrastis.setup({
-  provider = "deepl",
+  provider = "openrouter",
   source_lang = "en",
   target_lang = "ja",
   max_chars = 8000,
@@ -30,9 +30,6 @@ metafrastis.setup({
     memory_max_entries = 512,
     memory_skip_disk_ttl = 5,
   },
-  -- http = {
-  --   backend = "plenary", -- default: Plenary job-based curl; set to "curl" to force vim.system
-  -- },
   providers = {
     echo = {
       suffix = "[echo]",
@@ -64,8 +61,8 @@ metafrastis.setup({
       output_per_million = 2.50,
     },
     openrouter = {
-      api_key = vim.env.OPENROUTER_API_KEY,
-      model = "openrouter/auto",
+      api_key = vim.env.OPENROUTER_METAFRASTIS_API_KEY,
+      model = "deepseek/deepseek-v4-flash",
       base_url = "https://openrouter.ai/api/v1/chat/completions",
       input_per_million = 0.15,
       output_per_million = 0.60,

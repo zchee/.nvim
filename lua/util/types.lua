@@ -1,0 +1,5 @@
+--- @class go_dir_custom_args
+---
+--- @field envvar_id string
+---
+--- @field custom_subdir string?

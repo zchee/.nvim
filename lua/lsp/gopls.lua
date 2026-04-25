@@ -29,9 +29,9 @@ local std_lib = nil
 local function identify_go_dir(custom_args, on_complete)
   local cmd = { "go", "env", custom_args.envvar_id }
   vim.system(cmd, { text = true }, function(output)
-    local res = vim.trim(output.stdout or '')
-    if output.code == 0 and res ~= '' then
-      if custom_args.custom_subdir and custom_args.custom_subdir ~= '' then
+    local res = vim.trim(output.stdout or "")
+    if output.code == 0 and res ~= "" then
+      if custom_args.custom_subdir and custom_args.custom_subdir ~= "" then
         res = res .. custom_args.custom_subdir
       end
       on_complete(res)
@@ -52,7 +52,7 @@ end
 
 ---@return string?
 local function get_std_lib_dir()
-  if std_lib and std_lib ~= '' then
+  if std_lib and std_lib ~= "" then
     return std_lib
   end
 
@@ -66,7 +66,7 @@ end
 
 ---@return string?
 local function get_mod_cache_dir()
-  if mod_cache and mod_cache ~= '' then
+  if mod_cache and mod_cache ~= "" then
     return mod_cache
   end
 
@@ -98,8 +98,8 @@ end
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  -- cmd = { util.go_path("bin", "gopls"), "serve" },
-  cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" },
+  cmd = { util.go_path("bin", "gopls"), "serve" },
+  -- cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" },
   filetypes = { "go", "gotmpl", "gomod", "gowork" },
   root_dir = function(bufnr, on_dir)
     local fname = vim.api.nvim_buf_get_name(bufnr)
@@ -203,20 +203,22 @@ return {
       "-fuzz",                  -- bytedance/sonic
       "-generic_test",          -- bytedance/sonic
     },
+    workspaceFiles = {},        -- NOTE(zchee): This setting need only be customized in environments with a custom GOPACKAGESDRIVER
     completionDocumentation = true,
     usePlaceholders = true,
     deepCompletion = true,
     completeUnimported = true,
-    completionBudget = "10ms",       -- "100ms",
-    importsSource = "gopls",
-    matcher = "fuzzy",               -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
-    symbolMatcher = "fastFuzzy",     -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
-    symbolStyle = "full",            -- "Package", "Full", "Dynamic"
-    symbolScope = "all",             -- "workspace", "all",
-    hoverKind = "fulldocumentation", -- "FullDocumentation",
-    linkTarget = "",                 -- "pkg.go.dev",
-    linksInHover = false,            -- true, false, "gopls"
-    importShortcut = "both",         -- "Link", "Both", "Definition"
+    completionBudget = "10ms",       -- default: "100ms"
+    importsSource = "gopls",         -- "off", "gopls", "goimports"
+    matcher = "CaseSensitive",       -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
+    symbolMatcher = "CaseSensitive", -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
+    symbolStyle = "Dynamic",         -- "Package", "Full", "Dynamic"
+    symbolScope = "workspace",       -- "workspace", "all",
+    hoverKind = "FullDocumentation", -- "SingleLine", "NoDocumentation", "SynopsisDocumentation", "FullDocumentation", "Structured"
+    linkTarget = "pkg.go.dev",       -- default: "pkg.go.dev",
+    linksInHover = "gopls",          -- true, false, "gopls"
+    importShortcut = "Definition",   -- "Both", "Link", "Definition"
+    -- golang.org/x/tools/gopls/internal/settings.DefaultAnalyzers
     analyses = {
       appends = true,
       asmdecl = true,
@@ -234,6 +236,7 @@ return {
       directive = true,
       embeddirective = true,
       errorsas = true,
+      fieldalignment = true,
       fillreturns = true,
       framepointer = true,
       hostport = true,
@@ -273,8 +276,22 @@ return {
       unusedwrite = true,
       waitgroup = true,
       yield = true,
-      ST1000 = false,
+      -- NOTE(zchee): those analyzer is not safe to enable by default
+      appendclipped = true,
+      slicesdelete = true,
+      -- staticcheck: https://staticcheck.dev/docs/checks
+      QF1008 = false, -- Omit embedded fields from selector expression
+      --- non-default
+      SA9003 = false, -- Empty body in an if or else branch
+      ST1000 = false, -- Incorrect or missing package comment
+      ST1003 = true,  -- Poorly chosen identifier
+      ST1016 = true,  -- Use consistent method receiver names
+      ST1020 = true,  -- The documentation of an exported function should start with the function’s name
+      ST1021 = true,  -- The documentation of an exported type should start with type’s name
+      ST1022 = true,  -- The documentation of an exported variable or constant should start with variable’s name
+      ST1023 = true,  -- Redundant type in variable declaration
     },
+    -- golang.org/x/tools/gopls/internal/settings.InlayHint
     hints = {
       parameterNames = true,
       assignVariableTypes = true,
@@ -285,7 +302,15 @@ return {
       functionTypeParameters = true,
       ignoredError = true,
     },
-    vulncheck = "imports", -- "off", "imports", "prompt"
+    annotations = {
+      -- golang.org/x/tools/gopls/internal/settings.Annotation
+      ["nil"] = true,
+      escape = true,
+      inline = true,
+      bounds = true,
+    },
+    vulncheck = "Imports", -- "Prompt", "Imports", "Off"
+    -- golang.org/x/tools/gopls/internal/golang/compileropt.CodeLensSource
     codelenses = {
       generate = true,
       regenerate_cgo = true,
@@ -296,7 +321,7 @@ return {
       vendor = true,
     },
     staticcheck = true,
-    ["local"] = "",
+    ["local"] = "", -- NOTE(zchee): set dinamically
     maxFileCacheBytes = 1e9,
     verboseOutput = false,
     verboseWorkDoneProgress = false,
@@ -304,6 +329,7 @@ return {
     gofumpt = true,
     completeFunctionCalls = true,
     semanticTokens = true,
+    -- golang.org/x/tools/gopls/internal/protocol/semtok.Type
     semanticTokenTypes = {
       comment = true,
       ["function"] = true,
@@ -315,15 +341,19 @@ return {
       number = true,
       operator = true,
       parameter = true,
+      property = true,
       string = true,
       type = true,
       typeParameter = true,
       variable = true,
     },
+    -- golang.org/x/tools/gopls/internal/protocol/semtok.Modifier
     semanticTokenModifiers = {
       defaultLibrary = true,
       definition = true,
       readonly = true,
+      static = true,
+      -- non-standard modifiers
       array = true,
       bool = true,
       chan = true,
@@ -336,29 +366,32 @@ return {
       slice = true,
       string = true,
       struct = true,
+      shadowing = true,
     },
     newGoFileHeader = true,
     expandWorkspaceToModule = true,
     experimentalPostfixCompletions = true,
     templateExtensions = { "tmpl", "tpl", "gotmpl" },
-    diagnosticsDelay = "100ms",  -- "300ms",  -- "0ms", -- "500ms",
-    diagnosticsTrigger = "edit", -- "save", "edit",
+    diagnosticsDelay = "1s",     -- default: "1s", "100ms"
+    diagnosticsTrigger = "Edit", -- "Edit", "Save",
     analysisProgressReporting = true,
     standaloneTags = {
-      "ignore",
+      "ignore", -- default
       "tools",
       "integration",
       "wireinject",
     },
-    subdirWatchPatterns = "auto", -- "on", "off", "auto"
-    -- reportAnalysisProgressAfter = "1000ms",
-    telemetryPrompt = false,
-    linkifyShowMessage = true,
+    subdirWatchPatterns = "on",         -- "on", "off", "auto"
+    reportAnalysisProgressAfter = "5s", -- default: "5s", "1000ms"
+    telemetryPrompt = true,
+    linkifyShowMessage = false,
     includeReplaceInWorkspace = false,
     zeroConfig = true,
     pullDiagnostics = true,
+    -- gopls Invalid settings: setting option "Annotations": unexpected setting; setting option "codelenses": The 'run_govulncheck' codelens is superseded by the 'vulncheck' codelens. Only 'vulncheck' should be set.; setting option "mcpTools": invalid type []interface {} (want JSON object)
+    -- mcpTools = {},
     renameMovesSubpackages = true,
-    fileWatcher = "fsnotify",
+    fileWatcher = "fsnotify", -- "off", "fsnotify", "poll"
     testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
   },
 

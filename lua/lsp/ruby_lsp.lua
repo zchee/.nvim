@@ -28,51 +28,71 @@ local function add_ruby_deps_command(client, bufnr)
     { nargs = "?", complete = function() return { "all" } end })
 end
 
---- @class vim.lsp.Config : vim.lsp.ClientConfig
+-- --- @class vim.lsp.Config : vim.lsp.ClientConfig
+-- return {
+--   cmd = {
+--     vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/vendor/portable-ruby/current/bin/ruby-lsp"),
+--     "--use-launcher",
+--   },
+--   filetypes = { "ruby", "eruby" },
+--   root_markers = { ".git", "Gemfile" },
+--   init_options = {
+--     enabledFeatures = {
+--       codeActions = true,
+--       codeLens = true,
+--       completion = true,
+--       definition = true,
+--       diagnostics = true,
+--       documentHighlights = true,
+--       documentLink = true,
+--       documentSymbols = true,
+--       foldingRanges = true,
+--       formatting = true,
+--       hover = true,
+--       inlayHint = true,
+--       onTypeFormatting = true,
+--       selectionRanges = true,
+--       semanticHighlighting = true,
+--       signatureHelp = true,
+--       typeHierarchy = true,
+--       workspaceSymbol = true
+--     },
+--     featuresConfiguration = {
+--       inlayHint = {
+--         enableAll = true,
+--       },
+--     },
+--     -- indexing = {
+--     --   includedPatterns = { util.homebrew_prefix() .. "Library/Homebrew/**" },
+--     --   -- excludedGems = {"gem1", "gem2", "etc."},
+--     --   -- excludedMagicComments = {"compiled:true"},
+--     -- },
+--     formatter = "auto",
+--     experimentalFeaturesEnabled = true,
+--     -- bundleGemfile = vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/Gemfile"),
+--     -- rubyExecutablePath = vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/vendor/portable-ruby/current/bin/ruby"),
+--   },
+--   on_attach = function(client, buffer)
+--     add_ruby_deps_command(client, buffer)
+--   end,
+-- }
+
+---@type vim.lsp.Config
 return {
-  cmd = {
-    vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/vendor/portable-ruby/current/bin/ruby-lsp"),
-    "--use-launcher",
-  },
+  cmd = function(dispatchers, config)
+    return vim.lsp.rpc.start(
+      { vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/vendor/portable-ruby/current/bin/ruby-lsp") },
+      dispatchers,
+      config and config.root_dir and { cwd = config.cmd_cwd or config.root_dir }
+    )
+  end,
   filetypes = { "ruby", "eruby" },
   root_markers = { "Gemfile", ".git" },
   init_options = {
-    enabledFeatures = {
-      codeActions = true,
-      codeLens = true,
-      completion = true,
-      definition = true,
-      diagnostics = true,
-      documentHighlights = true,
-      documentLink = true,
-      documentSymbols = true,
-      foldingRanges = true,
-      formatting = true,
-      hover = true,
-      inlayHint = true,
-      onTypeFormatting = true,
-      selectionRanges = true,
-      semanticHighlighting = true,
-      signatureHelp = true,
-      typeHierarchy = true,
-      workspaceSymbol = true
-    },
-    featuresConfiguration = {
-      inlayHint = {
-        enableAll = true,
-      },
-    },
-    -- indexing = {
-    --   includedPatterns = { util.homebrew_prefix() .. "Library/Homebrew/**" },
-    --   -- excludedGems = {"gem1", "gem2", "etc."},
-    --   -- excludedMagicComments = {"compiled:true"},
-    -- },
     formatter = "auto",
-    experimentalFeaturesEnabled = true,
-    -- bundleGemfile = vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/Gemfile"),
-    -- rubyExecutablePath = vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/vendor/portable-ruby/current/bin/ruby"),
   },
-  on_attach = function(client, buffer)
-    add_ruby_deps_command(client, buffer)
+  reuse_client = function(client, config)
+    config.cmd_cwd = config.root_dir
+    return client.config.cmd_cwd == config.cmd_cwd
   end,
 }

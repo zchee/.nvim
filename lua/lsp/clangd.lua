@@ -4,7 +4,7 @@ return {
     -- clangd version 18.0.0 (https://github.com/llvm/llvm-project 4b5366c9512aa273a5272af1d833961e1ed156e7)
     -- Features: mac+grpc+xpc
     -- Platform: x86_64-apple-darwin23.2.0
-    "/opt/llvm/clangd/bin/clangd",
+    "/opt/local/llvm/clangd/bin/clangd",
     "--query-driver=/usr/bin/**",
     "--all-scopes-completion",
     "--background-index",
@@ -25,7 +25,7 @@ return {
     "--enable-config",
     "-j=32",
     "--parse-forwarding-functions",
-    "--pch-storage=memory",
+    "--pch-storage=disk",
     "--use-dirty-headers",
     "--input-style=standard",
     "--offset-encoding=utf-16",

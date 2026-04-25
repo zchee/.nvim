@@ -59,6 +59,11 @@ lazydev.setup({
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.homebrew_binary("lua-language-server-head", "lua-language-server") },
+  root_markers = {
+    ".git",
+    ".stylua.toml",
+    "init.vim",
+  },
   settings = {
     Lua = {
       completion = {
@@ -95,9 +100,12 @@ return {
       },
       format = {
         enable = true,
+        -- https://github.com/CppCXY/EmmyLuaCodeStyle/blob/master/docs/format_config_EN.md
         defaultConfig = {
           indent_style = "space",
           indent_size = "2",
+          quote_style = "double",
+          max_line_length = "160",
         },
       },
       hint = {

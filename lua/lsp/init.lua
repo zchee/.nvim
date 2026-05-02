@@ -581,6 +581,7 @@ vim.lsp.config("*", {
 -- https://github.com/neovim/nvim-lspconfig/tree/master/lsp
 -- ["helm_ls"] = require("lsp.helm_ls"),
 -- ["markdown_oxide"] = {},
+-- ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") } },
 -- ["mpls"] = {
 --   cmd = { "mpls", "--port=1218", "--code-style=github-dark", "--browser=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--enable-emoji", "--enable-footnotes", "--enable-wikilinks", "--full-sync", "--plantuml-path=/opt/homebrew/bin/plantuml", "--tabs", "--theme=dark" },
 -- },
@@ -598,7 +599,6 @@ local servers = {
   ["gopls"] = require("lsp.gopls"),
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
-  ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") } },
   ["neocmake"] = require("lsp.neocmake"),
   ["protols"] = require("lsp.protols"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),

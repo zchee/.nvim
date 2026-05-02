@@ -22,7 +22,7 @@ return {
         proseWrap = "preserve",
         printWidth = 150,
       },
-      validate = false,
+      validate = true,
       hover = true,
       completion = true,
       disableDefaultProperties = false,
@@ -42,10 +42,6 @@ return {
       },
       schemas = {
         -- local : zchee/schema
-        --- Gemini
-        ["file:///Users/zchee/src/github.com/zchee/schema/gemini-repoconfig.schema.json"] = {
-          ".gemini/config.yaml",
-        },
         --- Buf
         ["file:///Users/zchee/src/github.com/zchee/schema/buf.schema.json"] = {
           "**/buf.yaml",
@@ -87,6 +83,11 @@ return {
         -- },
 
         -- remote
+        --- Gemini
+        -- ["file:///Users/zchee/src/github.com/zchee/schema/gemini-repoconfig.schema.json"] = {
+        ["https://raw.githubusercontent.com/zchee/schema/main/gemini-repoconfig.schema.json"] = {
+          ".gemini/config.yaml",
+        },
 
         -- apko
         ["https://raw.githubusercontent.com/chainguard-dev/apko/main/pkg/build/types/schema.json"] = {

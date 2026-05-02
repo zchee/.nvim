@@ -234,7 +234,7 @@ return {
       directive = true,
       embeddirective = true,
       errorsas = true,
-      fieldalignment = true,
+      fieldalignment = false,
       fillreturns = true,
       framepointer = true,
       hostport = true,

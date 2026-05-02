@@ -55,6 +55,32 @@ dap_go.setup({
   },
 })
 
+local dap_docker = require("dap-docker")
+dap_docker.setup({
+  docker = {
+    -- the path to the executable docker which will be used for debugging.
+    -- by default, this is the "docker" executable on your PATH.
+    path = "/Applications/Docker.app/Contents/Resources/bin/docker",
+    -- builder sets the default builder to be used. If set to nil, it will
+    -- default to the default builder from the docker context.
+    -- Overridden by a configuration-specific `builder` in the launch configuration.
+    builder = nil,
+    -- standalone should be set to true if the buildx is being invoked
+    -- directly instead of as a plugin. defaults to false.
+    -- mostly used for development.
+    standalone = false,
+  },
+})
+
+dap.configurations.docker = {
+  {
+    type = "dockerfile",
+    name = "Build (Cache-Only)",
+    request = "launch",
+    args = { "-o", "type=cacheonly" },
+  },
+}
+
 dap.adapters.lldb = {
   type = "executable",
   command = "/opt/llvm/devel/bin/lldb-vscode",
@@ -252,6 +278,7 @@ local dapui_default_config = {
 }
 
 dapui.setup(dapui_default_config)
+
 -- dapui.setup({
 --   icons = {
 --     expanded = "▾",

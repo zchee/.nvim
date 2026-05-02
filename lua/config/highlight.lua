@@ -111,6 +111,7 @@ hi("@string.special.gomod", { link = "String" })
 
 -- Lua
 hi("@namespace.builtin.lua", { link = "@type.builtin" })
+hi("@string.regexp.lua", { link = "String" })
 
 -- TypeScript
 hi("@keyword.modifier.typescript", { fg = "#c792ea", bg = "None", bold = true })

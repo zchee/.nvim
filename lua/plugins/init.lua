@@ -600,6 +600,7 @@ return {
       "jay-babu/mason-nvim-dap.nvim",
       "jbyuki/one-small-step-for-vimkind",
       "nvim-neotest/nvim-nio",
+      "docker/nvim-dap-docker",
     },
     config = function()
       require("plugins.dap")
@@ -684,9 +685,9 @@ return {
             title = "%{b:snacks_terminal.id}: %{b:term_title}",
             filter = function(_, win)
               return vim.w[win].snacks_win
-                and vim.w[win].snacks_win.position == pos
-                and vim.w[win].snacks_win.relative == "editor"
-                and not vim.w[win].trouble_preview
+                  and vim.w[win].snacks_win.position == pos
+                  and vim.w[win].snacks_win.relative == "editor"
+                  and not vim.w[win].trouble_preview
             end,
           })
         end
@@ -1082,7 +1083,7 @@ return {
                   download_remote_images = true,
                   only_render_image_at_cursor = true,
                   only_render_image_at_cursor_mode = "popup",
-                  floating_windows = true, -- if true, images will be rendered in floating markdown windows
+                  floating_windows = true,    -- if true, images will be rendered in floating markdown windows
                   filetypes = { "markdown" }, -- markdown extensions (ie. quarto) can go here
                 },
               },
@@ -1105,10 +1106,10 @@ return {
             max_height = 600,
             max_width_window_percentage = nil,
             max_height_window_percentage = 50,
-            window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
+            window_overlap_clear_enabled = false,                                               -- toggles images when windows are overlapped
             window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
-            editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
-            tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+            editor_only_render_when_focused = false,                                            -- auto show/hide images when the editor gains/looses focus
+            tmux_show_only_in_active_window = false,                                            -- auto show/hide images in the correct Tmux window (needs visual-activity off)
             hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
           },
         },
@@ -1127,7 +1128,7 @@ return {
                 background = "#010101",
                 theme = "dark",
                 scale = 2,
-                width = 800, -- nil | 800 | 400 | ...
+                width = 800,  -- nil | 800 | 400 | ...
                 height = 600, -- nil | 600 | 300 | ...
               },
               plantuml = {
@@ -1219,7 +1220,7 @@ return {
   -- Utilities
   {
     {
-      "zchee/accelerated-jk.nvim", -- "rainbowhxch/accelerated-jk.nvim",
+      "zchee/accelerated-jk.nvim",
       lazy = false,
       keys = {
         {
@@ -1351,13 +1352,13 @@ return {
           },
           desc = {
             { "<Plug>%(?(.*)%)?", "%1" },
-            { "^%+", "" },
-            { "<[cC]md>", "" },
-            { "<[cC][rR]>", "" },
-            { "<[sS]ilent>", "" },
-            { "^lua%s+", "" },
-            { "^call%s+", "" },
-            { "^:%s*", "" },
+            { "^%+",              "" },
+            { "<[cC]md>",         "" },
+            { "<[cC][rR]>",       "" },
+            { "<[sS]ilent>",      "" },
+            { "^lua%s+",          "" },
+            { "^call%s+",         "" },
+            { "^:%s*",            "" },
           },
         },
         icons = {
@@ -1514,12 +1515,13 @@ return {
       },
     },
     {
-      dir = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy/vimdoc-ja"),
-      lazy = false,
-    },
-    {
       "wakatime/vim-wakatime",
       lazy = false,
+      opts = {
+        cli_path = util.homebrew_binary("wakatime-cli", "wakatime-cli"),
+        python_binary = util.homebrew_binary("python@3.14", "python3"),
+        status_bar_enabled = true,
+      },
     },
   },
 }

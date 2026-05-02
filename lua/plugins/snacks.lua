@@ -175,6 +175,7 @@ snacks.setup({
     -- only works for styles with a border
     ---@type string|boolean
     more_format = " ↓ %d lines ",
+
     ---@type fun(notif: snacks.notifier.Notif): boolean # filter our unwanted notifications (return false to hide)
     filter = function(notif)
       local is_gopls = string.find(notif.msg, "gopls")
@@ -185,7 +186,8 @@ snacks.setup({
       then
         return false
       end
-      if string.find(notif.msg, "vim-illuminate: An internal error") then
+
+      if string.find(notif.msg, "vim%-illuminate: An internal error") then
         return false
       end
 
@@ -193,6 +195,7 @@ snacks.setup({
     end,
     refresh = 100,
   },
+
   notify = {
     enabled = true,
     history = true,

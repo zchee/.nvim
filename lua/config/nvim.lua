@@ -108,7 +108,7 @@ vim.opt.grepformat = "%f:%l:%c:%m"
 if vim.fn.executable("rg") == 1 then
   vim.o.grepprg = "rg --vimgrep --hidden --glob ‘!.git’"
 end
-vim.opt.helplang = { "en", "ja" }
+vim.opt.helplang = { "en" }
 vim.opt.hidden = true
 vim.opt.history = 10000 -- default: 10000 (maximum)
 vim.opt.iminsert = 0

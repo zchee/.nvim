@@ -2,7 +2,7 @@ local metafrastis = require("metafrastis")
 
 ---@type MetafrastisConfig
 metafrastis.setup({
-  provider = "openrouter",
+  provider = "gemini",
   source_lang = "en",
   target_lang = "ja",
   max_chars = 8000,
@@ -30,9 +30,17 @@ metafrastis.setup({
     memory_max_entries = 512,
     memory_skip_disk_ttl = 5,
   },
+  http = {
+    backend = "plenary",
+  },
   providers = {
     echo = {
       suffix = "[echo]",
+    },
+    deepl = {
+      api_key = vim.env.DEEPL_AUTH_KEY,
+      base_url = "https://api.deepl.com/v2/translate",
+      price_per_million_chars = 25.0,
     },
     google = {
       api_key = vim.env.GOOGLE_API_KEY or vim.env.GOOGLE_TRANSLATE_KEY,
@@ -40,11 +48,6 @@ metafrastis.setup({
       model = "v2",
       base_url = "https://translation.googleapis.com/language/translate/v2",
       price_per_million_chars = 20.0,
-    },
-    deepl = {
-      api_key = vim.env.DEEPL_AUTH_KEY,
-      base_url = "https://api.deepl.com/v2/translate",
-      price_per_million_chars = 25.0,
     },
     openai = {
       api_key = vim.env.OPENAI_API_KEY,
@@ -54,8 +57,8 @@ metafrastis.setup({
       output_per_million = 0.60,
     },
     gemini = {
-      api_key = vim.env.GOOGLE_GENAI_KEY or vim.env.GOOGLE_API_KEY,
-      model = "gemini-2.5-flash",
+      api_key = vim.env.GOOGLE_API_KEY,
+      model = "gemini-3.1-flash-lite-preview",
       base_url = "https://generativelanguage.googleapis.com/v1beta/models",
       input_per_million = 0.30,
       output_per_million = 2.50,

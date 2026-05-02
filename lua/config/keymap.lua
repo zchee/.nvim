@@ -272,6 +272,7 @@ vim.keymap.set({ "v" }, "V", "^", { noremap = true, nowait = true })
 -- )
 
 --- visual
+vim.keymap.set({ "v" }, "<C-t>", "<cmd>MetafrastisTranslate<CR>", { noremap = true, silent = true })
 -- vim.keymap.set(
 --   { "x" },
 --   "gc",

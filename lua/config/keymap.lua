@@ -235,7 +235,8 @@ vim.keymap.set({ "v" }, "@", "^", { noremap = true, nowait = true })
 vim.keymap.set({ "v" }, "^", "$", { noremap = true, nowait = true })
 vim.keymap.set({ "v" }, "ga", "<Plug>(LiveEasyAlign)", { silent = true })
 -- TODO(zchee): fix
--- vim.keymap.set({ "v" }, "gs", "<Cmd>lua vim.cmd(\"'<,'>sort i\")<CR>", { noremap = true, silent = true })
+vim.cmd([[vnoremap                <silent>gs   :<C-u>'<,'>sort i<CR>]])
+-- vim.keymap.set({ "v" }, "gs", "<Cmd>lua vim.cmd(\"<C-u>'<,'>sort i\")<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "v" }, "gx", "<Plug>(openbrowser-smart-search)", { silent = true })
 vim.keymap.set({ "v" }, "tu", "<Plug>(operator-convert-case-upper-camel)", { silent = true })
 vim.keymap.set({ "v" }, "v", "g_", { noremap = true, nowait = true })
@@ -348,6 +349,11 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
 vim.keymap.set({ "c" }, "<C-a>", "<Home>", { noremap = true })
 vim.keymap.set({ "c" }, "<C-d>", "<Del>", { noremap = true })
 vim.keymap.set({ "c" }, "<S-Tab>", "<C-p>", { noremap = true })
+vim.cmd([[
+cnoremap       <C-k>    <C-\>e(strpart(getcmdline(), 0, getcmdpos()-1))<CR>
+cnoremap <expr><Up>     pumvisible() ? "\<C-p>"  : "\<Up>"
+cnoremap <expr><Down>   pumvisible() ? "\<C-n>"  : "\<Down>"
+]])
 
 -- " -------------------------------------------------------------------------------------------------
 -- " Terminal: (t)

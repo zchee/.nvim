@@ -17,6 +17,8 @@ local hi = function(name, val)
   vim.api.nvim_set_hl(0, name, val)
 end
 
+-- Gautocmdft qf hi Search  gui=None  guifg=None  guibg=#373b41
+
 local hi_none = "None"
 
 -- nvim default

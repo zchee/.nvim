@@ -24,6 +24,7 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.api.nvim_create_autocmd("FileType", {
   group = autocmd_user,
   pattern = {
+    "help",
     "man",
     "qf",
     "quickrun",
@@ -549,34 +550,34 @@ vim.api.nvim_create_autocmd("BufEnter", {
 
 -- kitty
 -- https://sw.kovidgoyal.net/kitty/mapping/#conditional-mappings-depending-on-the-state-of-the-focused-window
-vim.api.nvim_create_autocmd({ "VimEnter", "VimResume", "UIEnter" }, {
-  group = vim.api.nvim_create_augroup("KittySetVarVimEnter", { clear = true }),
-  callback = function(args)
-    if "snacks_picker_input" == vim.api.nvim_get_option_value("filetype", { buf = args.buf }) then
-      return
-    end
-
-    if vim.api.nvim_ui_send then
-      vim.api.nvim_ui_send("\x1b]1337;SetUserVar=in_editor=MQ==\007")
-    else
-      io.stdout:write("\x1b]1337;SetUserVar=in_editor=MQ==\007")
-    end
-  end,
-})
-vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
-  group = vim.api.nvim_create_augroup("KittyUnsetVarVimLeave", { clear = true }),
-  callback = function(args)
-    if "snacks_picker_input" == vim.api.nvim_get_option_value("filetype", { buf = args.buf }) then
-      return
-    end
-
-    if vim.api.nvim_ui_send then
-      vim.api.nvim_ui_send("\x1b]1337;SetUserVar=in_editor\007")
-    else
-      io.stdout:write("\x1b]1337;SetUserVar=in_editor\007")
-    end
-  end,
-})
+-- vim.api.nvim_create_autocmd({ "VimEnter", "VimResume", "UIEnter" }, {
+--   group = vim.api.nvim_create_augroup("KittySetVarVimEnter", { clear = true }),
+--   callback = function(args)
+--     if "snacks_picker_input" == vim.api.nvim_get_option_value("filetype", { buf = args.buf }) then
+--       return
+--     end
+--
+--     if vim.api.nvim_ui_send then
+--       vim.api.nvim_ui_send("\x1b]1337;SetUserVar=in_editor=MQ==\007")
+--     else
+--       io.stdout:write("\x1b]1337;SetUserVar=in_editor=MQ==\007")
+--     end
+--   end,
+-- })
+-- vim.api.nvim_create_autocmd({ "VimLeave", "VimSuspend" }, {
+--   group = vim.api.nvim_create_augroup("KittyUnsetVarVimLeave", { clear = true }),
+--   callback = function(args)
+--     if "snacks_picker_input" == vim.api.nvim_get_option_value("filetype", { buf = args.buf }) then
+--       return
+--     end
+--
+--     if vim.api.nvim_ui_send then
+--       vim.api.nvim_ui_send("\x1b]1337;SetUserVar=in_editor\007")
+--     else
+--       io.stdout:write("\x1b]1337;SetUserVar=in_editor\007")
+--     end
+--   end,
+-- })
 
 local prev = { new_name = "", old_name = "" } -- Prevents duplicate events
 vim.api.nvim_create_autocmd("User", {

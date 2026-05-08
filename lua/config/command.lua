@@ -1,3 +1,78 @@
+vim.api.nvim_create_user_command("Help", function(opts)
+  local help_cmd
+  if vim.fn.winwidth(0) > vim.fn.winheight(0) * 2 then
+    help_cmd = "vertical rightbelow help " .. opts.args
+  else
+    help_cmd = "rightbelow help " .. opts.args
+  end
+
+  vim.cmd(help_cmd)
+end, {
+  nargs = "*",
+  complete = "help",
+})
+
+-- function! s:get_syn_id(transparent)
+--   let s:synid = synID(line("."), col("."), 1)
+--   if a:transparent
+--     return synIDtrans(s:synid)
+--   else
+--     return s:synid
+--   endif
+-- endfunction
+-- " for syntax attributes
+-- function! s:get_syn_attr(synid)
+--   let s:name = synIDattr(a:synid, "name")
+--   let s:bold  = synIDattr(a:synid, "bold", "gui")
+--   let s:guifg = synIDattr(a:synid, "fg", "gui")
+--   let s:guibg = synIDattr(a:synid, "bg", "gui")
+--   let s:guisp = synIDattr(a:synid, "sp")
+--   let s:attr = {
+--         \ "name": s:name,
+--         \ "bold": s:bold,
+--         \ "guifg": s:guifg,
+--         \ "guibg": s:guibg,
+--         \ "guisp": s:guisp,
+--         \ }
+--   return s:attr
+-- endfunction
+--
+-- function! s:get_syn_info(cword)
+--   let s:baseSyn = s:get_syn_attr(s:get_syn_id(0))
+--   let s:baseSynInfo = "name: " . s:baseSyn.name .
+--        \ " bold=" . (s:baseSyn.bold == 1 ? 'true' : 'false' ) .
+--        \ " guifg=" . ((s:baseSyn.guifg != '') ? s:baseSyn.guifg . "," : "NONE" ) .
+--        \ " guibg=" . ((s:baseSyn.guibg != '') ? s:baseSyn.guibg . "," : "NONE" ) .
+--        \ " guisp=" . ((s:baseSyn.guisp != '') ? s:baseSyn.guisp . "," : "NONE" )
+--   let s:linkedSyn = s:get_syn_attr(s:get_syn_id(1))
+--   let s:linkedSynInfo =  "name: " . s:linkedSyn.name .
+--        \ " bold=" .  (s:linkedSyn.bold == 1 ? 'true' : 'false' ) .
+--        \ " guifg=" . ((s:linkedSyn.guifg != '') ? s:linkedSyn.guifg : "NONE" ) .
+--        \ " guibg=" . ((s:linkedSyn.guibg != '') ? s:linkedSyn.guibg : "NONE" ) .
+--        \ " guisp=" . ((s:linkedSyn.guisp != '') ? s:linkedSyn.guisp : "NONE" )
+--   echomsg a:cword . ':'
+--   echomsg s:baseSynInfo
+--   echomsg '  ' . "link to"
+--   echomsg s:linkedSynInfo
+-- endfunction
+-- command! SyntaxInfo call s:get_syn_info(expand('<cword>'))
+
+vim.api.nvim_create_user_command("TrimSpace", function()
+  local ft = vim.api.nvim_get_option_value("filetype", { buf = 0 })
+  local is_binary = vim.api.nvim_get_option_value("binary", { buf = 0 })
+  if not is_binary and not (ft == "diff" or ft == "markdown") then
+    vim.cmd([[
+      normal mz
+      normal Hmy
+      %s/\s\+$//e
+      normal 'yz<CR>
+      normal `z
+    ]])
+  end
+end, {
+  nargs = "*",
+})
+
 vim.api.nvim_create_user_command("LuaVimInspect", function(opts)
   vim.print(vim.inspect(opts.fargs))
 end, {
@@ -95,28 +170,28 @@ end, {
 })
 
 -- Transrator
-vim.api.nvim_create_user_command("Trans", function()
-  local vstart = vim.fn.getpos("'<")
-  local vend = vim.fn.getpos("'>")
-
-  if not vstart or not vend then
-    return
-  end
-
-  --- @diagnostic disable-next-line
-  local lines = table.concat(vim.fn.getline(vstart[2], vend[2]))
-  lines = lines:gsub("\t", "")
-
-  if not lines:find("// ") then
-    return vim.cmd.TranslateW(lines)
-  end
-  lines = lines:gsub("// ", "")
-
-  return vim.cmd.TranslateW(lines)
-end, {
-  desc = "ranslate the text from the source language source_lang to the target language target_lang",
-  range = true,
-})
+-- vim.api.nvim_create_user_command("Trans", function()
+--   local vstart = vim.fn.getpos("'<")
+--   local vend = vim.fn.getpos("'>")
+--
+--   if not vstart or not vend then
+--     return
+--   end
+--
+--   --- @diagnostic disable-next-line
+--   local lines = table.concat(vim.fn.getline(vstart[2], vend[2]))
+--   lines = lines:gsub("\t", "")
+--
+--   if not lines:find("// ") then
+--     return vim.cmd.TranslateW(lines)
+--   end
+--   lines = lines:gsub("// ", "")
+--
+--   return vim.cmd.TranslateW(lines)
+-- end, {
+--   desc = "ranslate the text from the source language source_lang to the target language target_lang",
+--   range = true,
+-- })
 
 -- local function get_lenses(bufnr)
 --   return {

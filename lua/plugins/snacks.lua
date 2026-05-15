@@ -206,22 +206,33 @@ snacks.setup({
       text = {
         ft = nil, ---@type string? filetype for highlighting
       },
+    },
+    sources = {
       file = {
         filename_first = false, -- display filename before the file path
         truncate = 100, -- truncate the file path to (roughly) this length
         filename_only = false, -- only show the filename
         icon_width = 2, -- width of the icon (in characters)
         git_status_hl = true, -- use the git status highlight group for the filename
+        hidden = true,
       },
       selected = {
         show_always = true, -- only show the selected column when there are multiple selections
         unselected = true, -- use the unselected icon for unselected items
       },
+      grep = { hidden = true },
+      buffers = { current = false },
       severity = {
-        icons = true, -- show severity icons
+        -- icons = true, -- show severity icons
         level = false, -- show severity level
-        ---@type "left"|"right"
-        pos = "right", -- position of the diagnostics
+        pos = "right", -- position of the diagnostics, "left"|"right"
+      },
+    },
+    win = {
+      input = {
+        keys = {
+          ["<Esc>"] = { "close", mode = { "n", "i" } },
+        },
       },
     },
   },

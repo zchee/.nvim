@@ -2,7 +2,7 @@ local metafrastis = require("metafrastis")
 
 ---@type MetafrastisConfig
 metafrastis.setup({
-  provider = "gemini",
+  provider = "deepl",
   source_lang = "en",
   target_lang = "ja",
   max_chars = 8000,

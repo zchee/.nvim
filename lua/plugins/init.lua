@@ -525,12 +525,18 @@ return {
       -- 		autoEnableHints = true,
       -- 	},
       -- },
-      "onsails/lspkind-nvim",
-      "SmiteshP/nvim-navic",
+      {
+        "onsails/lspkind-nvim",
+      },
+      {
+        "SmiteshP/nvim-navic",
+      },
       {
         "ray-x/cmp-treesitter",
       },
-      "echasnovski/mini.pairs",
+      {
+        "echasnovski/mini.pairs",
+      },
       {
         "windwp/nvim-autopairs",
         event = { "InsertEnter" },
@@ -633,10 +639,9 @@ return {
   -- {
   --   {
   --     "saghen/blink.cmp",
-  --     -- lazy = false,
+  --     lazy = false,
   --     event = "InsertEnter",
-  --     build =
-  --     "RUSTFLAGS='-C linker=clang -C target-cpu=native -C opt-level=3 -C force-frame-pointers=on -C debug-assertions=off -C incremental=on -C overflow-checks=off -C panic=abort -C codegen-units=1 -C embed-bitcode=yes -Z dylib-lto -Z location-detail=none -C strip=symbols -C link-arg=-undefined -C link-arg=dynamic_lookup' cargo build -v --release",
+  --     build = "RUSTFLAGS='-C target-cpu=apple-m3 -C opt-level=3 -C force-frame-pointers=on -C debug-assertions=off -C incremental=on -C overflow-checks=off -C link-arg=-undefined -C link-arg=dynamic_lookup' cargo build -v --release",
   --     dependencies = {
   --       -- sources
   --       {
@@ -647,8 +652,6 @@ return {
   --       {
   --         "zbirenbaum/copilot.lua",
   --       },
-  --       "yetone/avante.nvim",
-  --       "Kaiser-Yang/blink-cmp-avante",
   --       "echasnovski/mini.icons",
   --       "nvim-tree/nvim-web-devicons",
   --       "windwp/nvim-autopairs",
@@ -663,72 +666,89 @@ return {
   --     end,
   --     opts_extend = { "sources.default" }
   --   },
-  --   {
-  --     "zbirenbaum/copilot.lua",
-  --     cmd = "Copilot",
-  --     build = "bun i -g @github/copilot-language-server@latest",
-  --     opts = {
-  --       panel = { enabled = false },
-  --       suggestion = { enabled = false },
-  --       filetypes = {
-  --         -- ["*"] = false,
-  --         help = false,
-  --         markdown = true,
-  --         sh = false,
-  --       },
-  --       copilot_node_command = util.homebrew_binary("node", "node"),
-  --       server = {
-  --         type = "nodejs",
-  --         custom_server_filepath = vim.fs.joinpath(
-  --           util.getenv("PNPM_HOME"),
-  --           "global/5/node_modules/@github/copilot-language-server/dist/language-server.js"),
-  --       },
-  --       copilot_model = "gpt-4o-copilot",
-  --       server_opts_overrides = {
-  --         autostart = false,
-  --         trace = "off",
-  --         init_options = {
-  --           github = {
-  --             copilot = {
-  --               selectedCompletionModel = "gpt-4o-copilot",
-  --             },
+  -- {
+  --   "zbirenbaum/copilot.lua",
+  --   cmd = "Copilot",
+  --   build = "bun i -g @github/copilot-language-server@latest",
+  --   opts = {
+  --     panel = { enabled = false },
+  --     suggestion = { enabled = false },
+  --     filetypes = {
+  --       -- ["*"] = false,
+  --       help = false,
+  --       markdown = true,
+  --       sh = false,
+  --     },
+  --     copilot_node_command = util.homebrew_binary("node", "node"),
+  --     server = {
+  --       type = "nodejs",
+  --       custom_server_filepath = vim.fs.joinpath(
+  --         util.getenv("BUN_INSTALL"),
+  --         "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"),
+  --     },
+  --     copilot_model = "gpt-4o-copilot",
+  --     server_opts_overrides = {
+  --       autostart = false,
+  --       trace = "off",
+  --       init_options = {
+  --         github = {
+  --           copilot = {
+  --             selectedCompletionModel = "gpt-4o-copilot",
   --           },
+  --         },
+  --         enableAutoCompletions = false,
+  --         inlineSuggest = {
+  --           enable = false,
+  --         },
+  --         editor = {
+  --           showEditorCompletions = false,
   --           enableAutoCompletions = false,
-  --           inlineSuggest = {
-  --             enable = false,
-  --           },
-  --           editor = {
-  --             showEditorCompletions = false,
-  --             enableAutoCompletions = false,
-  --             delayCompletions = false,
-  --             -- filterCompletions = ["editor", "filterCompletions"],
-  --           },
-  --           advanced = {
-  --             displayStyle = "node",
-  --             -- secretKey = ["advanced", "secret_key"],
-  --             length = 0,
-  --             -- stops = ["advanced", "stops"],
-  --             -- temperature = ["advanced", "temperature"],
-  --             -- topP = ["advanced", "top_p"],
-  --             indentationMode = false,
-  --             inlineSuggestCount = 0, -- #completions for getCompletions
-  --             listCount = 0,          -- #completions for panel
-  --             -- debugOverrideProxyUrl = ["advanced", "debug.overrideProxyUrl"],
-  --             -- debugTestOverrideProxyUrl = ["advanced", "debug.testOverrideProxyUrl"],
-  --             -- debugEnableGitHubTelemetry = ["advanced", "debug.githubCTSIntegrationEnabled"],
-  --             -- debugOverrideEngine = ["advanced", "debug.overrideEngine"],
-  --             -- debugShowScores = ["advanced", "debug.showScores"],
-  --             -- debugOverrideLogLevels = ["advanced", "debug.overrideLogLevels"],
-  --             -- debugFilterLogCategories = ["advanced", "debug.filterLogCategories"],
-  --             -- debugUseSuffix = ["advanced", "debug.useSuffix"],
-  --             -- debugAcceptSelfSignedCertificate = ["advanced", "debug.acceptSelfSignedCertificate"]
-  --           },
+  --           delayCompletions = false,
+  --           -- filterCompletions = ["editor", "filterCompletions"],
+  --         },
+  --         advanced = {
+  --           displayStyle = "node",
+  --           -- secretKey = ["advanced", "secret_key"],
+  --           length = 0,
+  --           -- stops = ["advanced", "stops"],
+  --           -- temperature = ["advanced", "temperature"],
+  --           -- topP = ["advanced", "top_p"],
+  --           indentationMode = false,
+  --           inlineSuggestCount = 0,   -- #completions for getCompletions
+  --           listCount = 0,            -- #completions for panel
+  --           -- debugOverrideProxyUrl = ["advanced", "debug.overrideProxyUrl"],
+  --           -- debugTestOverrideProxyUrl = ["advanced", "debug.testOverrideProxyUrl"],
+  --           -- debugEnableGitHubTelemetry = ["advanced", "debug.githubCTSIntegrationEnabled"],
+  --           -- debugOverrideEngine = ["advanced", "debug.overrideEngine"],
+  --           -- debugShowScores = ["advanced", "debug.showScores"],
+  --           -- debugOverrideLogLevels = ["advanced", "debug.overrideLogLevels"],
+  --           -- debugFilterLogCategories = ["advanced", "debug.filterLogCategories"],
+  --           -- debugUseSuffix = ["advanced", "debug.useSuffix"],
+  --           -- debugAcceptSelfSignedCertificate = ["advanced", "debug.acceptSelfSignedCertificate"]
   --         },
   --       },
   --     },
   --   },
+  -- },
   --   {
   --     "saghen/blink.compat",
+  --   },
+  --   {
+  --     "folke/lazydev.nvim",
+  --     opts = {
+  --       library = {
+  --         "lazy.nvim",
+  --         {
+  --           path = "${3rd}/luv/library",
+  --           words = { "vim%.uv" },
+  --         },
+  --       },
+  --       integrations = {
+  --         lspconfig = true,
+  --         cmp = true,
+  --         coq = false,
+  --       },
+  --     },
   --   },
   -- },
   {
@@ -787,6 +807,7 @@ return {
   -- Treesitter
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "master",
     event = { "BufReadPost", "BufNewFile" },
     cmd = {
       "TSInstallInfo",
@@ -971,9 +992,9 @@ return {
             title = "%{b:snacks_terminal.id}: %{b:term_title}",
             filter = function(_, win)
               return vim.w[win].snacks_win
-                  and vim.w[win].snacks_win.position == pos
-                  and vim.w[win].snacks_win.relative == "editor"
-                  and not vim.w[win].trouble_preview
+                and vim.w[win].snacks_win.position == pos
+                and vim.w[win].snacks_win.relative == "editor"
+                and not vim.w[win].trouble_preview
             end,
           })
         end
@@ -989,6 +1010,106 @@ return {
         require("plugins.lualine")
       end,
     },
+    -- {
+    --   -- incline.nvim: Floating statusline (replaces lualine)
+    --   "b0o/incline.nvim",
+    --   event = "VeryLazy",
+    --   dependencies = { "nvim-tree/nvim-web-devicons" },
+    --   config = function()
+    --     local devicons = require("nvim-web-devicons")
+    --
+    --     require("incline").setup({
+    --       window = {
+    --         padding = 0,
+    --         margin = { horizontal = 0, vertical = 0 },
+    --         placement = { horizontal = "right", vertical = "bottom" },
+    --       },
+    --       hide = { cursorline = false, focused_win = false, only_win = false },
+    --       render = function(props)
+    --         local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
+    --         if filename == "" then
+    --           filename = "[No Name]"
+    --         end
+    --
+    --         local ft_icon, ft_color = devicons.get_icon_color(filename)
+    --         local modified = vim.bo[props.buf].modified
+    --
+    --         -- Show parent dir for generic filenames
+    --         local generic_names = { "init.lua", "index.ts", "index.js", "mod.rs", "main.go", "main.rs", "lib.rs" }
+    --         local display_name = filename
+    --         for _, name in ipairs(generic_names) do
+    --           if filename == name then
+    --             local full_path = vim.api.nvim_buf_get_name(props.buf)
+    --             local parent = vim.fn.fnamemodify(full_path, ":h:t")
+    --             display_name = parent .. "/" .. filename
+    --             break
+    --           end
+    --         end
+    --
+    --         -- Diagnostics
+    --         local diagnostics = {}
+    --         local diag_counts = {
+    --           error = #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity.ERROR }),
+    --           warn = #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity.WARN }),
+    --         }
+    --
+    --         local has_diagnostics = diag_counts.error > 0 or diag_counts.warn > 0
+    --         local text_hl = has_diagnostics and (diag_counts.error > 0 and "DiagnosticError" or "DiagnosticWarn")
+    --             or (props.focused and "Normal" or "Comment")
+    --
+    --         if diag_counts.error > 0 then
+    --           table.insert(diagnostics, { "  ", guifg = "#f38ba8" })
+    --           table.insert(diagnostics, { tostring(diag_counts.error), guifg = "#f38ba8" })
+    --         end
+    --         if diag_counts.warn > 0 then
+    --           table.insert(diagnostics, { "  ", guifg = "#f9e2af" })
+    --           table.insert(diagnostics, { tostring(diag_counts.warn), guifg = "#f9e2af" })
+    --         end
+    --
+    --         local res = { guibg = props.focused and "#1e1e2e" or "#11111b", { " " } }
+    --
+    --         if ft_icon then
+    --           table.insert(res, { ft_icon, guifg = ft_color })
+    --           table.insert(res, { " " })
+    --         end
+    --
+    --         table.insert(res, { display_name, gui = modified and "bold,italic" or "bold", group = text_hl })
+    --
+    --         if modified then
+    --           table.insert(res, { " ", guifg = "#fab387" })
+    --         end
+    --
+    --         for _, diag in ipairs(diagnostics) do
+    --           table.insert(res, diag)
+    --         end
+    --
+    --         table.insert(res, { " " })
+    --         return res
+    --       end,
+    --     })
+    --   end,
+    -- },
+    -- {
+    --   -- modes.nvim: Cursorline color indicates mode
+    --   "mvllow/modes.nvim",
+    --   event = "VeryLazy",
+    --   config = function()
+    --     require("modes").setup({
+    --       colors = {
+    --         bg = "",
+    --         copy = "#f5c359",
+    --         delete = "#c75c6a",
+    --         insert = "#78ccc5",
+    --         visual = "#9745be",
+    --       },
+    --       line_opacity = 0.25,
+    --       set_cursor = true,
+    --       set_cursorline = true,
+    --       set_number = true,
+    --       ignore = { "NvimTree", "TelescopePrompt", "oil", "lazy", "Avante", "AvanteInput", "snacks_dashboard" },
+    --     })
+    --   end,
+    -- },
     {
       "akinsho/bufferline.nvim",
       lazy = false,
@@ -1180,6 +1301,17 @@ return {
     {
       "mopp/vim-operator-convert-case",
       event = "VeryLazy",
+      config = function()
+        vim.g.switch_mapping = ""
+        vim.g.switch_custom_definitions = {
+          { 1, 0 },
+          { "v:true", "v:false" },
+          { "yes", "no" },
+          { "on", "off" },
+          { "ON", "OFF" },
+          { "static", "dynamic" },
+        }
+      end,
       dependencies = {
         "kana/vim-operator-user",
       },
@@ -1679,6 +1811,8 @@ return {
         ft = {
           "markdown",
           "Avante",
+          "codecompanion",
+          "copilot-chat",
         },
         dependencies = {
           "nvim-treesitter/nvim-treesitter",
@@ -1708,7 +1842,7 @@ return {
                   download_remote_images = true,
                   only_render_image_at_cursor = true,
                   only_render_image_at_cursor_mode = "popup",
-                  floating_windows = true,    -- if true, images will be rendered in floating markdown windows
+                  floating_windows = true, -- if true, images will be rendered in floating markdown windows
                   filetypes = { "markdown" }, -- markdown extensions (ie. quarto) can go here
                 },
               },
@@ -1731,10 +1865,17 @@ return {
             max_height = 600,
             max_width_window_percentage = nil,
             max_height_window_percentage = 50,
-            window_overlap_clear_enabled = false,                                               -- toggles images when windows are overlapped
-            window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "snacks_notif", "scrollview", "scrollview_sign" },
-            editor_only_render_when_focused = false,                                            -- auto show/hide images when the editor gains/looses focus
-            tmux_show_only_in_active_window = false,                                            -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+            window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
+            window_overlap_clear_ft_ignore = {
+              "cmp_menu",
+              "cmp_docs",
+              "snacks_picker_input",
+              "snacks_notif",
+              "scrollview",
+              "scrollview_sign",
+            },
+            editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
+            tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
             hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
           },
         },
@@ -1753,7 +1894,7 @@ return {
                 background = "#010101",
                 theme = "dark",
                 scale = 2,
-                width = 800,  -- nil | 800 | 400 | ...
+                width = 800, -- nil | 800 | 400 | ...
                 height = 600, -- nil | 600 | 300 | ...
               },
               plantuml = {
@@ -1848,20 +1989,8 @@ return {
       "zchee/accelerated-jk.nvim",
       lazy = false,
       keys = {
-        {
-          "j",
-          "<Plug>(accelerated_jk_gj)",
-          mode = "n",
-          nowait = true,
-          silent = true,
-        },
-        {
-          "k",
-          "<Plug>(accelerated_jk_gk)",
-          mode = "n",
-          nowait = true,
-          silent = true,
-        },
+        { "j", "<Plug>(accelerated_jk_gj)", mode = "n", nowait = true, silent = true },
+        { "k", "<Plug>(accelerated_jk_gk)", mode = "n", nowait = true, silent = true },
       },
       opts = {
         mode = "time_driven",
@@ -1986,13 +2115,13 @@ return {
           },
           desc = {
             { "<Plug>%(?(.*)%)?", "%1" },
-            { "^%+",              "" },
-            { "<[cC]md>",         "" },
-            { "<[cC][rR]>",       "" },
-            { "<[sS]ilent>",      "" },
-            { "^lua%s+",          "" },
-            { "^call%s+",         "" },
-            { "^:%s*",            "" },
+            { "^%+", "" },
+            { "<[cC]md>", "" },
+            { "<[cC][rR]>", "" },
+            { "<[sS]ilent>", "" },
+            { "^lua%s+", "" },
+            { "^call%s+", "" },
+            { "^:%s*", "" },
           },
         },
         icons = {
@@ -2157,28 +2286,12 @@ return {
       end,
     },
     {
-      "potamides/pantran.nvim",
-      cmd = {
-        "Pantran",
-      },
-      opts = {
-        default_engine = "deepl",
-        engines = {
-          deepl = {
-            default_source = "EN",
-            default_target = "JA",
-            free_api = false,
-          },
-        },
-      },
-    },
-    {
       "wakatime/vim-wakatime",
       lazy = false,
       opts = {
-        cli_path = util.homebrew_binary("wakatime-cli", "wakatime-cli"),
-        python_binary = util.homebrew_binary("python@3.14", "python3"),
-        status_bar_enabled = true,
+        -- cli_path = util.homebrew_binary("wakatime-cli", "wakatime-cli"),
+        -- python_binary = util.homebrew_binary("python@3.14", "python3"),
+        -- status_bar_enabled = true,
       },
     },
   },

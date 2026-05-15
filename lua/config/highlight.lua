@@ -50,6 +50,7 @@ hi("@number.go", { link = "Number" }) -- TODO(zchee): consider to use "Keyword" 
 --- Comment
 hi("@comment.documentation.go", { fg = "#9ba3a8", bg = hi_none, bold = false, italic = true })
 hi("@comment.documentation.pragma.go", { link = "@attribute" })
+hi("@comment.documentation.nolint.go", { fg = "#a6dbff", bg = hi_none })
 
 --- Conditional
 hi("@conditional.case.go", { link = "Statement" })

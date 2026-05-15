@@ -48,5 +48,8 @@
 ((comment) @comment.documentation.pragma
  (#lua-match? @comment.documentation.pragma "^\/\/go\:.*"))
 
+((comment) @comment.documentation.nolint
+ (#lua-match? @comment.documentation.nolint "^\/\/nolint\:.*"))
+
 ((const_spec (expression_list) @spell.const_string_literal)
  (#lua-match? @spell.const_string_literal "[a-z,A-Z-\/]"))

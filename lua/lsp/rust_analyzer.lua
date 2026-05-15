@@ -1,9 +1,32 @@
 --- https://github.com/rust-lang/rust-analyzer/blob/master/crates/rust-analyzer/src/config.rs
 --- https://rust-analyzer.github.io/book/configuration.html
 
+---@return string?
+local default_toolchain = function()
+  local ok, result = pcall(function()
+    return vim.system({ "rustup", "default" }, { text = true }):wait()
+  end)
+
+  if not ok or not result or result.code ~= 0 then
+    return nil
+  end
+
+  return (result.stdout or ""):match("^(%S+)")
+end
+
+---@return string[]
+local rust_analyzer_cmd = function()
+  local toolchain = default_toolchain()
+  if not toolchain then
+    return { "rust-analyzer" }
+  end
+
+  return { "rustup", "run", toolchain, "rust-analyzer" }
+end
+
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { "rust-analyzer" },
+  cmd = rust_analyzer_cmd(),
   root_markers = { "rust-toolchain.toml", "Cargo.toml", ".git" },
   init_options = {
     cachePriming = {
@@ -17,10 +40,11 @@ return {
         seRustcWrapper = true,
         invocationStrategy = "once",
       },
-      extraArgs = {
-        "--release",
-      },
+      -- extraArgs = {
+      --   "--release",
+      -- },
       extraEnv = {
+        CARGO_INCREMENTAL = 1,
         RUSTC_WRAPPER = "/opt/homebrew/opt/sccache/bin/sccache",
         RUSTFLAGS = os.getenv("RUSTFLAGS"),
         SKIP_WASM_BUILD = "1",
@@ -32,9 +56,10 @@ return {
     },
     numThreads = 8,
     ["rust-analyzer"] = {
-      check = {
-        extraArgs = { "--release" },
-      },
+      checkOnSave = false,
+      -- check = {
+      --   extraArgs = { "--release" },
+      -- },
       completion = {
         fullFunctionSignatures = {
           enable = true,
@@ -42,6 +67,7 @@ return {
         hideDeprecated = true,
       },
       diagnostics = {
+        enabled = false,
         experimental = "enable",
       },
       imports = {
@@ -75,9 +101,9 @@ return {
       rustfmt = {
         -- extraArgs = { "+nightly-2023-11-01" },
       },
-      runnables = {
-        extraArgs = { "--release" },
-      },
+      -- runnables = {
+      --   extraArgs = { "--release" },
+      -- },
     },
   },
   settings = {
@@ -92,9 +118,9 @@ return {
         seRustcWrapper = true,
         invocationStrategy = "once",
       },
-      extraArgs = {
-        "--release",
-      },
+      -- extraArgs = {
+      --   "--release",
+      -- },
       extraEnv = {
         RUSTC_WRAPPER = "/opt/homebrew/opt/sccache/bin/sccache",
         RUSTFLAGS = os.getenv("RUSTFLAGS"),
@@ -108,7 +134,7 @@ return {
     numThreads = 8,
     ["rust-analyzer"] = {
       check = {
-        extraArgs = { "--release" },
+        -- extraArgs = { "--release" },
       },
       completion = {
         fullFunctionSignatures = {
@@ -151,7 +177,7 @@ return {
         -- extraArgs = { "+nightly-2023-11-01" },
       },
       runnables = {
-        extraArgs = { "--release" },
+        -- extraArgs = { "--release" },
       },
     },
   },

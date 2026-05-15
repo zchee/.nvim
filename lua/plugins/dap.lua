@@ -37,10 +37,8 @@ mason_dap.setup({
 
 -- https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation
 local dap = require("dap")
-local dap_go = require("dap-go")
-local dap_virtual_text = require("nvim-dap-virtual-text")
-local dapui = require("dapui")
 
+local dap_go = require("dap-go")
 dap_go.setup({
   delve = {
     path = util.go_path("bin/dlv"),
@@ -83,7 +81,7 @@ dap.configurations.docker = {
 
 dap.adapters.lldb = {
   type = "executable",
-  command = "/opt/llvm/devel/bin/lldb-vscode",
+  command = "/opt/homebrew/opt/llvm/bin/lldb-dap",
   name = "lldb",
 }
 
@@ -129,7 +127,7 @@ dap.configurations.go = {
   },
 }
 
-dap.configurations.cpp = {
+dap.configurations.c = {
   {
     name = "Launch",
     type = "lldb",
@@ -144,8 +142,21 @@ dap.configurations.cpp = {
     -- postRunCommands = {'process handle -p true -s false -n false SIGWINCH'},
   },
 }
-dap.configurations.c = dap.configurations.cpp
-dap.configurations.rust = dap.configurations.cpp
+dap.configurations.cpp = dap.configurations.c
+dap.configurations.rust = {
+  {
+    name = "Launch",
+    type = "lldb",
+    request = "launch",
+    program = function()
+      return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/target/debug/", "file")
+    end,
+    cwd = "${workspaceFolder}",
+    stopOnEntry = false,
+    args = {},
+    runInTerminal = false,
+  },
+}
 dap.configurations.sh = {
   {
     type = "executable",
@@ -176,6 +187,7 @@ dap.configurations.lua = {
   },
 }
 
+local dap_virtual_text = require("nvim-dap-virtual-text")
 dap_virtual_text.setup({
   enabled = true,
   enabled_commands = true,
@@ -208,6 +220,7 @@ dap_virtual_text.setup({
   end,
 })
 
+local dapui = require("dapui")
 local dapui_default_config = {
   icons = { expanded = "", collapsed = "", current_frame = "" },
   mappings = {

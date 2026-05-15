@@ -146,6 +146,112 @@ return {
       require("plugins.codecompanion")
     end,
   },
+  {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    opts = {
+      model = "claude-opus-4.6",
+      debug = false,
+      instruction_files = {
+        ".github/copilot-instructions.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+      },
+      window = {
+        layout = "vertical",
+        width = 0.35,
+      },
+      mappings = {
+        close = {
+          normal = "q",
+          insert = "<C-c>",
+        },
+      },
+      prompts = {
+        ReviewStaged = {
+          prompt = "Review the staged diff. Lead with bugs, security issues, regressions, and missing tests. Cite file paths and keep the response terse.",
+          system_prompt = "COPILOT_REVIEW",
+          resources = { "gitdiff:staged" },
+        },
+        ReviewUnstaged = {
+          prompt = "Review the unstaged diff. Lead with bugs, security issues, regressions, and missing tests. Cite file paths and keep the response terse.",
+          system_prompt = "COPILOT_REVIEW",
+          resources = { "gitdiff:unstaged" },
+        },
+        Workspace = {
+          prompt = "Use the available workspace tools to answer. Inspect files before making claims, prefer ripgrep-style search, and do not guess about file contents.",
+          tools = "copilot",
+          sticky = {
+            "#buffer:visible",
+            "@copilot",
+          },
+        },
+      },
+    },
+    keys = {
+      { "<leader>ax", false },
+      { "<leader>ao", "<cmd>CopilotChatOpen<cr>", desc = "Open Chat" },
+      { "<leader>aq", "<cmd>CopilotChatClose<cr>", desc = "Close Chat" },
+      { "<leader>ar", "<cmd>CopilotChatReset<cr>", desc = "Reset Chat" },
+      { "<leader>am", "<cmd>CopilotChatModels<cr>", desc = "Select Model" },
+      { "<leader>aP", "<cmd>CopilotChatPrompts<cr>", desc = "Prompt Library" },
+      { "<leader>ae", "<cmd>CopilotChatExplain<cr>", desc = "Explain Code", mode = { "n", "v" } },
+      { "<leader>af", "<cmd>CopilotChatFix<cr>", desc = "Fix Code", mode = { "n", "v" } },
+      { "<leader>aO", "<cmd>CopilotChatOptimize<cr>", desc = "Optimize Code", mode = { "n", "v" } },
+      { "<leader>at", "<cmd>CopilotChatTests<cr>", desc = "Generate Tests", mode = { "n", "v" } },
+      { "<leader>ad", "<cmd>CopilotChatDocs<cr>", desc = "Generate Docs", mode = { "n", "v" } },
+      { "<leader>aR", "<cmd>CopilotChatReview<cr>", desc = "Review Code", mode = { "n", "v" } },
+      { "<leader>ag", "<cmd>CopilotChatReviewStaged<cr>", desc = "Review Staged Diff" },
+      { "<leader>aG", "<cmd>CopilotChatReviewUnstaged<cr>", desc = "Review Unstaged Diff" },
+      { "<leader>aW", "<cmd>CopilotChatWorkspace<cr>", desc = "Workspace Chat" },
+    },
+  },
+  -- https://github.com/nwiizo/dotfiles/blob/main/nvim/lua/plugins/ai.lua
+  {
+    "yetone/avante.nvim",
+    event = "VeryLazy",
+    version = false,
+    -- build = "make",
+    build = "RUSTFLAGS='-C target-cpu=apple-m3 -C opt-level=3 -C force-frame-pointers=on -C debug-assertions=off -C incremental=on -C overflow-checks=off -C link-arg=-undefined -C link-arg=dynamic_lookup' cargo build -v --release --features=luajit -p avante-repo-map -p avante-templates -p avante-tokenizers",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "stevearc/dressing.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "nvim-tree/nvim-web-devicons",
+      "zbirenbaum/copilot.lua",
+      -- {
+      --   "HakonHarnes/img-clip.nvim",
+      --   event = "VeryLazy",
+      --   opts = {},
+      -- },
+    },
+    opts = {
+      instructions_file = "CLAUDE.md",
+      provider = "copilot",
+      mode = "agentic",
+      input = { provider = "snacks" },
+      selector = { provider = "snacks" },
+      providers = {
+        copilot = {
+          endpoint = "https://api.githubcopilot.com",
+          model = "claude-opus-4.6",
+          timeout = 30000,
+        },
+      },
+      mappings = {
+        ask = "<leader>aa",
+        edit = "<leader>aE",
+        refresh = "<leader>aS",
+      },
+      behaviour = {
+        auto_suggestions = false,
+        auto_set_keymaps = true,
+        auto_apply_diff_after_generation = false,
+        auto_approve_tool_permissions = false,
+      },
+      windows = { position = "right", width = 35 },
+    },
+  },
   -- {
   --   "yetone/avante.nvim",
   --   event = "VeryLazy",

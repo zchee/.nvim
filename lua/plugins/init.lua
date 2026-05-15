@@ -425,29 +425,70 @@ return {
           },
         },
       },
-      "b0o/schemastore.nvim",
+      {
+        "b0o/schemastore.nvim",
+      },
       {
         "ray-x/lsp_signature.nvim",
         event = "InsertEnter",
       },
-      "echasnovski/mini.icons",
+      {
+        "echasnovski/mini.icons",
+      },
       {
         "zbirenbaum/copilot-cmp",
         dependencies = {
-          "zbirenbaum/copilot.lua",
+          {
+            "zbirenbaum/copilot.lua",
+            opts = {
+              filetypes = {
+                ["*"] = true,
+                gitrebase = false,
+                help = false,
+              },
+              panel = { enabled = false },
+              suggestion = {
+                enabled = false,
+                auto_trigger = false,
+                keymap = {
+                  accept = "<C-j>",
+                  accept_word = "<M-k>",
+                  accept_line = "<M-j>",
+                  next = "<M-]>",
+                  prev = "<M-[>",
+                  dismiss = "<C-]>",
+                },
+              },
+              --
+              -- copilot_node_command = util.homebrew_binary("node", "node"),
+              -- server = {
+              --   type = "nodejs",
+              --   -- custom_server_filepath = "/opt/local/lib/node_modules/@github/copilot-language-server/dist/language-server.js",
+              --   custom_server_filepath = vim.fs.joinpath(
+              --     util.getenv("BUN_INSTALL"),
+              --     "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"
+              --   ),
+              -- },
+            },
+            copilot_model = "gpt-41-copilot",
+          },
         },
         config = function()
-          require("copilot_cmp").setup()
+          -- require("plugins.copilot")
+          require("copilot_cmp").setup({
+            event = { "InsertEnter", "LspAttach" },
+            fix_pairs = false,
+          })
         end,
       },
-      {
-        "zbirenbaum/copilot.lua",
-        event = "InsertEnter",
-        build = "bun i -g @github/copilot-language-server@latest",
-        config = function()
-          require("plugins.copilot")
-        end,
-      },
+      -- {
+      --   "zbirenbaum/copilot.lua",
+      --   event = "InsertEnter",
+      --   build = "bun i -g @github/copilot-language-server@latest",
+      --   config = function()
+      --     require("plugins.copilot")
+      --   end,
+      -- },
     },
     config = function()
       require("plugins.cmp")

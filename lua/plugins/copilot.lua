@@ -13,43 +13,39 @@ copilot.setup({
   copilot_node_command = util.homebrew_binary("node", "node"),
   server = {
     type = "nodejs",
-    custom_server_filepath = vim.fs.joinpath(
-      util.getenv("BUN_INSTALL"),
-      "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"
-    ),
+    custom_server_filepath = "/opt/local/lib/node_modules/@github/copilot-language-server/dist/language-server.js",
+    -- custom_server_filepath = vim.fs.joinpath(
+    --   util.getenv("BUN_INSTALL"),
+    --   "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"
+    -- ),
   },
-  copilot_model = "gpt-41-copilot",
+  -- copilot_model = "gpt-41-copilot",
   --- @class vim.lsp.Config : vim.lsp.ClientConfig
   server_opts_overrides = {
     settings = {
       telemetry = {
         telemetryLevel = "off",
       },
-      github = {
-        copilot = {
-          selectedCompletionModel = "gpt-41-copilot",
-          advanced = {
-            -- displayStyle = "node",
-            -- useLanguageServer = true,
-            -- secretKey = ["advanced", "secret_key"],
-            length = 0,
-            -- stops = ["advanced", "stops"],
-            -- temperature = ["advanced", "temperature"],
-            -- topP = ["advanced", "top_p"],
-            indentationMode = false,
-            inlineSuggestCount = 0, -- #completions for getCompletions
-            listCount = 3, -- #completions for panel
-            -- debugOverrideProxyUrl = ["advanced", "debug.overrideProxyUrl"],
-            -- debugTestOverrideProxyUrl = ["advanced", "debug.testOverrideProxyUrl"],
-            -- debugEnableGitHubTelemetry = ["advanced", "debug.githubCTSIntegrationEnabled"],
-            -- debugOverrideEngine = ["advanced", "debug.overrideEngine"],
-            -- debugShowScores = ["advanced", "debug.showScores"],
-            -- debugOverrideLogLevels = ["advanced", "debug.overrideLogLevels"],
-            -- debugFilterLogCategories = ["advanced", "debug.filterLogCategories"],
-            -- debugUseSuffix = ["advanced", "debug.useSuffix"],
-            -- debugAcceptSelfSignedCertificate = ["advanced", "debug.acceptSelfSignedCertificate"]
-          },
-        },
+      advanced = {
+        -- displayStyle = "node",
+        useLanguageServer = true,
+        -- secretKey = ["advanced", "secret_key"],
+        length = 0,
+        -- stops = ["advanced", "stops"],
+        -- temperature = ["advanced", "temperature"],
+        -- topP = ["advanced", "top_p"],
+        indentationMode = false,
+        inlineSuggestCount = 3, -- #completions for getCompletions
+        listCount = 3, -- #completions for panel
+        -- debugOverrideProxyUrl = ["advanced", "debug.overrideProxyUrl"],
+        -- debugTestOverrideProxyUrl = ["advanced", "debug.testOverrideProxyUrl"],
+        -- debugEnableGitHubTelemetry = ["advanced", "debug.githubCTSIntegrationEnabled"],
+        -- debugOverrideEngine = ["advanced", "debug.overrideEngine"],
+        -- debugShowScores = ["advanced", "debug.showScores"],
+        -- debugOverrideLogLevels = ["advanced", "debug.overrideLogLevels"],
+        -- debugFilterLogCategories = ["advanced", "debug.filterLogCategories"],
+        -- debugUseSuffix = ["advanced", "debug.useSuffix"],
+        -- debugAcceptSelfSignedCertificate = ["advanced", "debug.acceptSelfSignedCertificate"]
       },
       -- enableAutoCompletions = false,
       -- inlineSuggest = {

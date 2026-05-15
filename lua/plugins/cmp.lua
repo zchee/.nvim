@@ -322,8 +322,8 @@ cmp.setup({
     {
       name = "copilot",
       priority = 30,
-      -- group_index = 30,
-      ---@param ctx cmp.Context
+      group_index = 30,
+      -- ---@param ctx cmp.Context
       entry_filter = function(_, ctx)
         if util.contains({ "go" }, ctx.filetype) then
           -- NOTE(zchee): only trigger Comment
@@ -346,15 +346,15 @@ cmp.setup({
     --   priority = 20,
     --   -- group_index = 20,
     -- },
-    {
-      name = "avante",
-      priority = 50,
-      group_index = 50,
-      ---@param ctx cmp.Context
-      entry_filter = function(_, ctx)
-        return not (util.contains(ignore_filetypes, ctx.filetype))
-      end,
-    },
+    -- {
+    --   name = "avante",
+    --   priority = 50,
+    --   group_index = 50,
+    --   ---@param ctx cmp.Context
+    --   entry_filter = function(_, ctx)
+    --     return not (util.contains(ignore_filetypes, ctx.filetype))
+    --   end,
+    -- },
     -- {
     --   name = "go_deep",
     --   keyword_length = 1,
@@ -398,17 +398,17 @@ cmp.setup({
     --     db_size_limit_bytes = 200 * 1024 * 1024, -- 200MB
     --   },
     -- },
-    {
-      name = "lazydev",
-      -- group_index = 0,
-      -- priority = 50,
-    },
+    -- {
+    --   name = "lazydev",
+    --   -- group_index = 0,
+    --   -- priority = 50,
+    -- },
     -- {
     --   name = "nvim_lua",
     -- },
-    {
-      name = "nvim_lsp_signature_help",
-    },
+    -- {
+    --   name = "nvim_lsp_signature_help",
+    -- },
     -- {
     --   name = "treesitter",
     --   priority = 80,

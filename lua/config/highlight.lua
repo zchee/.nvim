@@ -27,6 +27,7 @@ hi("diffRemoved", { fg = "red", bg = hi_none })
 
 -- plugins
 hi("BlinkCmpMenuSelection", { link = "WildMenu" })
+hi("@comment.note.comment", { link = "comment" })
 
 -- Go
 --- Literals

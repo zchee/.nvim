@@ -392,6 +392,56 @@ return {
         end,
       },
       {
+        -- conform.nvim: Override formatters (let LazyVim manage format-on-save via <leader>uf)
+        "stevearc/conform.nvim",
+        event = "VeryLazy",
+        ---@module 'conform'
+        ---@class conform.setupOpts
+        opts = {
+          formatters = {
+            stylua = {
+              command = "/opt/homebrew/bin/stylua",
+              -- Adds environment args to the yamlfix formatter
+              env = {
+                YAMLFIX_SEQUENCE_STYLE = "block_style",
+              },
+            },
+          },
+          formatters_by_ft = {
+            -- go = { "goimports", "gofumpt" },
+            go = { lsp_format = "prefer" },
+            lua = { "stylua" },
+            python = { "ruff_format", "ruff_organize_imports" },
+            rust = { "rustfmt" },
+            zig = { "zigfmt" },
+            ---@diagnostic disable-next-line: assign-type-mismatch
+            toml = false,
+            ---@diagnostic disable-next-line: assign-type-mismatch
+            typescript = false,
+            ---@diagnostic disable-next-line: assign-type-mismatch
+            javascript = false,
+            ---@diagnostic disable-next-line: assign-type-mismatch
+            typescriptreact = false,
+            ---@diagnostic disable-next-line: assign-type-mismatch
+            javascriptreact = false,
+            terraform = { "terraform_fmt" },
+            bash = { "shfmt" },
+            sh = { "shfmt" },
+            ---@diagnostic disable-next-line: assign-type-mismatch
+            yaml = false,
+            ---@diagnostic disable-next-line: assign-type-mismatch
+            json = false,
+            ---@diagnostic disable-next-line: assign-type-mismatch
+            markdown = false,
+          },
+          format_on_save = {
+            -- I recommend these options. See :help conform.format for details.
+            lsp_format = "fallback",
+            timeout_ms = 500,
+          },
+        },
+      },
+      {
         "nvimtools/none-ls.nvim",
         disable = true,
         -- event = { "BufReadPre", "BufNewFile" },

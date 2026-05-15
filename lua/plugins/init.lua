@@ -60,9 +60,30 @@ return {
   },
 
   -- AI
+  -- Codex (OpenAI Codex CLI): side-panel terminal wrapper.
+  -- The plugin can't pass `--dangerously-bypass-approvals-and-sandbox`
+  -- via opts; configure approval mode in `~/.codex/config.toml`
+  -- (e.g. `approval_policy = "on-failure"`) for fish abbr `cx` parity.
   {
-    -- "coder/claudecode.nvim",
-    "zchee/claudecode.nvim",
+    "johnseth97/codex.nvim",
+    cmd = { "Codex", "CodexToggle" },
+    opts = {
+      keymaps = {
+        toggle = nil,
+        quit = "<C-q>",
+      },
+      panel = true,
+      width = 0.4,
+      height = 0.85,
+      autoinstall = false,
+    },
+    keys = {
+      { "<leader>ax", "<cmd>CodexToggle<cr>", desc = "Toggle Codex (sidebar)" },
+    },
+  },
+  {
+    "coder/claudecode.nvim",
+    -- dir = util.src_path("github.com/zchee/claudecode.nvim"),
     dependencies = {
       "folke/snacks.nvim",
     },
@@ -83,47 +104,14 @@ return {
       require("plugins.claudecode")
     end,
     keys = {
-      {
-        "<Leader>a",
-        nil,
-        desc = "AI/Claude Code",
-      },
-      {
-        "<Leader>ac",
-        "<cmd>ClaudeCode<cr>",
-        desc = "Toggle Claude",
-      },
-      {
-        "<Leader>af",
-        "<cmd>ClaudeCodeFocus<cr>",
-        desc = "Focus Claude",
-      },
-      {
-        "<Leader>ar",
-        "<cmd>ClaudeCode --resume<cr>",
-        desc = "Resume Claude",
-      },
-      {
-        "<Leader>aC",
-        "<cmd>ClaudeCode --continue<cr>",
-        desc = "Continue Claude",
-      },
-      {
-        "<Leader>am",
-        "<cmd>ClaudeCodeSelectModel<cr>",
-        desc = "Select Claude model",
-      },
-      {
-        "<Leader>ab",
-        "<cmd>ClaudeCodeAdd %<cr>",
-        desc = "Add current buffer",
-      },
-      {
-        "<Leader>as",
-        "<cmd>ClaudeCodeSend<cr>",
-        mode = "v",
-        desc = "Send to Claude",
-      },
+      { "<Leader>a", nil, desc = "AI/Claude Code" },
+      { "<Leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+      { "<Leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
+      { "<Leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
+      { "<Leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
+      { "<Leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
+      { "<Leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
+      { "<Leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
       {
         "<Leader>as",
         "<cmd>ClaudeCodeTreeAdd<cr>",
@@ -131,16 +119,8 @@ return {
         ft = { "NvimTree", "neo-tree", "oil", "minifiles" },
       },
       -- Diff management
-      {
-        "<Leader>aa",
-        "<cmd>ClaudeCodeDiffAccept<cr>",
-        desc = "Accept diff",
-      },
-      {
-        "<Leader>ad",
-        "<cmd>ClaudeCodeDiffDeny<cr>",
-        desc = "Deny diff",
-      },
+      { "<Leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+      { "<Leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
     },
   },
   {

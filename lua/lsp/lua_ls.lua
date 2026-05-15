@@ -106,6 +106,7 @@ return {
           indent_size = "2",
           quote_style = "double",
           max_line_length = "160",
+          allow_non_indented_comments = false,
         },
       },
       hint = {
@@ -171,9 +172,9 @@ return {
     },
   },
   offsetEncodings = { "utf-16" },
-  on_init = function(client)
-    if client.server_capabilities then
-      client.server_capabilities.semanticTokensProvider = nil -- turn off semantic tokens
-    end
-  end,
+  -- on_init = function(client)
+  --   if client.server_capabilities then
+  --     client.server_capabilities.semanticTokensProvider = nil -- turn off semantic tokens
+  --   end
+  -- end,
 }

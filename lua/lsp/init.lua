@@ -1,8 +1,7 @@
--- local util = require("util")
+local util = require("util")
 
 -- local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
-local util = require("util")
 
 vim.lsp.log.set_level(vim.log.levels.ERROR) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
 vim.diagnostic.config({
@@ -11,7 +10,7 @@ vim.diagnostic.config({
   virtual_lines = false,
   signs = true,
   float = nil,
-  update_in_insert = false,
+  update_in_insert = true,
   severity_sort = true,
   jump = nil,
 })
@@ -248,12 +247,14 @@ lspkind.init({
 })
 
 local lsp_endhints_pattern = {
+  -- "*.go",
+  "*.lua",
   "*.py",
 }
+local lsp_endhints = require("lsp-endhints")
 vim.api.nvim_create_autocmd({ "LspAttach", "LspDetach" }, {
   pattern = lsp_endhints_pattern,
   callback = function()
-    local lsp_endhints = require("lsp-endhints")
     lsp_endhints.setup({
       icons = {
         type = "󰜁  ",
@@ -264,7 +265,7 @@ vim.api.nvim_create_autocmd({ "LspAttach", "LspDetach" }, {
       label = {
         truncateAtChars = 100,
         padding = 1,
-        marginLeft = 1,
+        marginLeft = 3,
         sameKindSeparator = ", ",
       },
       extmark = {
@@ -468,7 +469,7 @@ local default_capabilities_config = function()
     },
   }
 
-  -- capabilities = vim.tbl_deep_extend("force", capabilities, capabilities_override)
+  capabilities = vim.tbl_deep_extend("force", capabilities, capabilities_override)
 
   return capabilities
 end
@@ -531,31 +532,6 @@ local register_lsp = function(name, default_config)
   end
 end
 
--- register_lsp(
---   "stainless",
---   {
---     cmd = { "stainless-language-server", "--stdio" },
---     filetypes = { "stainless.yml", "stainless.yaml", "*.stainless.yml", "openapi.yaml", "openapi.yml" },
---     -- root_dir = lspconfig.util.root_pattern(".git"),
---     single_file_support = true,
---     capabilities = default_capabilities_config(),
---   }
--- )
--- lspconfig.stainless.setup({})
-
--- register_lsp(
---   "mpls",
---   {
---     cmd = { "mpls", "--port=1218", "--code-style=github-dark", "--browser=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--enable-emoji", "--enable-footnotes", "--enable-wikilinks", "--full-sync", "--plantuml-path=/opt/homebrew/bin/plantuml", "--tabs", "--theme=dark" },
---     filetypes = {
---       "markdown",
---     },
---     root_markers = { ".git" },
---     single_file_support = true,
---     capabilities = default_capabilities_config(),
---   }
--- )
-
 register_lsp("tsgo", {
   cmd = { "tsgo", "--lsp", "-stdio" },
   filetypes = {
@@ -579,27 +555,65 @@ vim.lsp.config("*", {
 })
 
 -- https://github.com/neovim/nvim-lspconfig/tree/master/lsp
--- ["helm_ls"] = require("lsp.helm_ls"),
 -- ["markdown_oxide"] = {},
 -- ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") } },
--- ["mpls"] = {
---   cmd = { "mpls", "--port=1218", "--code-style=github-dark", "--browser=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--enable-emoji", "--enable-footnotes", "--enable-wikilinks", "--full-sync", "--plantuml-path=/opt/homebrew/bin/plantuml", "--tabs", "--theme=dark" },
--- },
 -- ["taplo"] = require("lsp.taplo"),
 -- ["tilt_ls"] = require("lsp.tilt_ls"),
 -- ["ts_ls"] = require("lsp.ts_ls"),
 -- ["tsgo"] = require("lsp.tsgo"),
 local servers = {
   ["asm_lsp"] = require("lsp.asm_lsp"),
-  ["basedpyright"] = require("lsp.basedpyright"),
   ["bashls"] = require("lsp.bashls"),
   ["buf_ls"] = require("lsp.buf_ls"),
   ["clangd"] = require("lsp.clangd"),
   ["dockerls"] = require("lsp.dockerls"),
   ["gopls"] = require("lsp.gopls"),
+  ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
   ["neocmake"] = require("lsp.neocmake"),
+  ["basedpyright"] = require("lsp.basedpyright"),
+  -- ["pyright"] = require("lsp.pyright"),
+  -- ["pyrefly"] = {
+  --   cmd = { "pyrefly", "lsp" },
+  --   filetypes = { "python" },
+  --   root_markers = {
+  --     "pyrefly.toml",
+  --     "pyproject.toml",
+  --     "setup.py",
+  --     "setup.cfg",
+  --     "requirements.txt",
+  --     "Pipfile",
+  --     ".git",
+  --   },
+  --   settings = {
+  --     python = {
+  --       pyrefly = {
+  --         extraPaths = "/Users/zchee/src/github.com/fosdickio/binary_ninja_mcp/plugin",
+  --         analysis = {
+  --           typeCheckingMode = "auto",
+  --           diagnosticMode = "workspace",
+  --           typeErrorDisplayStatusVersion = "v2",
+  --           importFormat = "absolute",
+  --           inlayHints = {
+  --             callArgumentNames = true,
+  --             functionReturnTypes = true,
+  --             pytestParameters = true,
+  --             variableTypes = true,
+  --           },
+  --           showHoverGoToLinks = true,
+  --         },
+  --         typeCheckingMode = "default",
+  --         diagnosticMode = "workspace",
+  --         runnableCodeLens = true,
+  --       },
+  --       completeFunctionParens = true,
+  --       defaultInterpreterPath = util.homebrew_binary("python@3.14", "python3"),
+  --     },
+  --   },
+  --   single_file_support = true,
+  --   capabilities = default_capabilities_config(),
+  -- },
   ["protols"] = require("lsp.protols"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
   ["rust_analyzer"] = require("lsp.rust_analyzer"),
@@ -608,7 +622,7 @@ local servers = {
   ["tombi"] = require("lsp.tombi"),
   ["vtsls"] = require("lsp.vtsls"),
   ["yamlls"] = require("lsp.yamlls"),
-  ["zizmor"] = require("lsp.zizmor"),
+  -- ["zizmor"] = require("lsp.zizmor"),
   ["zls"] = require("lsp.zls"),
 }
 for server, config in pairs(servers) do
@@ -616,7 +630,6 @@ for server, config in pairs(servers) do
   vim.lsp.enable(server, true)
 end
 
--- vim.keymap.set({ "n" }, "K", function() require("hover").open() end, { silent = true })
 vim.keymap.set({ "n" }, "K", "<Cmd>Lspsaga hover_doc<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<C-]>", function()
   require("snacks").picker.lsp_definitions()

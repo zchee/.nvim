@@ -10,6 +10,7 @@ return {
     util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server"),
     "--stdio",
   },
+  -- cmd = { "/opt/local/var/bun/bin/yaml-language-server", "--stdio" },
   root_markers = { ".git" },
   settings = {
     yaml = {
@@ -39,6 +40,10 @@ return {
       schemaStore = {
         enbale = true,
         url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
+      },
+      customTags = {
+        "python/object/apply",
+        "!!python/object/apply",
       },
       schemas = {
         -- local : zchee/schema
@@ -87,6 +92,10 @@ return {
         -- ["file:///Users/zchee/src/github.com/zchee/schema/gemini-repoconfig.schema.json"] = {
         ["https://raw.githubusercontent.com/zchee/schema/main/gemini-repoconfig.schema.json"] = {
           ".gemini/config.yaml",
+        },
+
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/pre-commit-config.json"] = {
+          ".pre-commit-config.yaml",
         },
 
         -- apko

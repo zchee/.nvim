@@ -193,8 +193,8 @@ return {
       "-**/asm", -- mmcloughlin/avo
       -- "-**/example",
       -- "-**/examples",
-      "-**/sample",
-      "-**/samples",
+      -- "-**/sample",
+      -- "-**/samples",
       "-**/kokoro", -- Google kokoro
       "-**/node_modules", -- Node.js
       "-external_jsonlib_test", -- bytedance/sonic
@@ -207,7 +207,7 @@ return {
     deepCompletion = true,
     completeUnimported = true,
     completionBudget = "10ms", -- default: "100ms"
-    importsSource = "gopls", -- "off", "gopls", "goimports"
+    -- importsSource = "gopls", -- "off", "gopls", "goimports"
     matcher = "CaseSensitive", -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
     symbolMatcher = "CaseSensitive", -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
     symbolStyle = "Dynamic", -- "Package", "Full", "Dynamic"

@@ -36,13 +36,13 @@ codecompanion.setup({
         save_chat_keymap = "sc", -- Keymap to save the current chat manually
       },
     },
-    vectorcode = {
-      opts = {
-        add_tool = true,
-        add_slash_command = true,
-        tool_opts = {},
-      },
-    },
+    -- vectorcode = {
+    --   opts = {
+    --     add_tool = true,
+    --     add_slash_command = true,
+    --     tool_opts = {},
+    --   },
+    -- },
   },
   adapters = {
     anthropic = function()
@@ -114,6 +114,18 @@ codecompanion.setup({
         },
       })
     end,
+    acp = {
+      codex_acp = function()
+        return require("codecompanion.adapters").extend("codex", {
+          defaults = {
+            session_config_options = {
+              mode = "Full Access",
+              thought_level = "Xhigh",
+            },
+          },
+        })
+      end,
+    },
   },
   display = {
     action_palette = {
@@ -130,7 +142,7 @@ codecompanion.setup({
   opts = {
     log_level = "DEBUG",
     ---@class CodeCompanion.SystemPromptOpts
-    ---@field adapter CodeCompanion.Adapter The adapter to use for the chat
+    ---@field adapter CodeCompanion.AdapterArgs The adapter to use for the chat
     ---@field language string The language used for LLM responses
     ---@param opts CodeCompanion.SystemPromptOpts
     ---@return string

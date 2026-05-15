@@ -74,7 +74,7 @@ end, {
 })
 
 vim.api.nvim_create_user_command("LuaVimInspect", function(opts)
-  vim.print(vim.inspect(opts.fargs))
+  vim.print(vim.inspect(opts.args))
 end, {
   nargs = "*",
   desc = "Gets a human-readable representation of the given object.",

@@ -1,4 +1,5 @@
 local gitsigns = require("gitsigns")
+local gitsigns_config = require("gitsigns.config").config
 
 -- vim.cmd([[
 -- " highlight  GitGutterAddIntraLine                 gui=reverse
@@ -47,38 +48,45 @@ vim.api.nvim_set_hl(0, "GitSignsDeleteNr", { link = "CursorLineNr" })
 -- 'signs.topdelete.numhl' is now deprecated, please define highlight 'GitSignsTopdeleteNr'
 
 gitsigns.setup({
-  -- signs = {
-  --   add = {
-  --     hl = "GitSignsAdd",
-  --     text = "+",
-  --     numhl = "GitSignsAddNr",
-  --     linehl = "GitSignsAddLn",
-  --   },
-  --   change = {
-  --     hl = "GitSignsChange",
-  --     text = "~",
-  --     numhl = "GitSignsChangeNr",
-  --     linehl = "GitSignsChangeLn",
-  --   },
-  --   delete = {
-  --     hl = "GitSignsDelete",
-  --     text = "_",
-  --     numhl = "GitSignsDeleteNr",
-  --     linehl = "GitSignsDeleteLn",
-  --   },
-  --   topdelete = {
-  --     hl = "GitSignsDelete",
-  --     text = "‾",
-  --     numhl = "GitSignsDeleteNr",
-  --     linehl = "GitSignsDeleteLn",
-  --   },
-  --   changedelete = {
-  --     hl = "GitSignsChange",
-  --     text = "~_",
-  --     numhl = "GitSignsChangeNr",
-  --     linehl = "GitSignsChangeLn",
-  --   },
-  -- },
+  signs = {
+    add = {
+      hl = "GitSignsAdd",
+      text = "+",
+      numhl = "GitSignsAddNr",
+      linehl = "GitSignsAddLn",
+    },
+    change = {
+      hl = "GitSignsChange",
+      text = "~",
+      numhl = "GitSignsChangeNr",
+      linehl = "GitSignsChangeLn",
+    },
+    delete = {
+      hl = "GitSignsDelete",
+      text = "_",
+      numhl = "GitSignsDeleteNr",
+      linehl = "GitSignsDeleteLn",
+    },
+    topdelete = {
+      hl = "GitSignsDelete",
+      text = "‾",
+      numhl = "GitSignsDeleteNr",
+      linehl = "GitSignsDeleteLn",
+    },
+    changedelete = {
+      hl = "GitSignsChange",
+      text = "~_",
+      numhl = "GitSignsChangeNr",
+      linehl = "GitSignsChangeLn",
+    },
+  },
+  current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+  current_line_blame_opts = {
+    virt_text = true,
+    virt_text_pos = "eol", -- "eol" | "overlay" | "right_align"
+    delay = 1000,
+    ignore_whitespace = false,
+  },
   signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
   numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
   linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
@@ -88,13 +96,6 @@ gitsigns.setup({
     follow_files = true,
   },
   attach_to_untracked = true,
-  current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
-  current_line_blame_opts = {
-    virt_text = true,
-    virt_text_pos = "eol", -- "eol" | "overlay" | "right_align"
-    delay = 1000,
-    ignore_whitespace = false,
-  },
   current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
   sign_priority = 6,
   update_debounce = 100,
@@ -108,7 +109,29 @@ gitsigns.setup({
     row = 0,
     col = 1,
   },
-  -- yadm = {
-  --   enable = false,
-  -- },
 })
+
+local on_attach = function(bufnr)
+  local gs = package.loaded.gitsigns
+  local function map(mode, l, r, mopts)
+    mopts = mopts or {}
+    mopts.buffer = bufnr
+    vim.keymap.set(mode, l, r, mopts)
+  end
+  map("n", "<leader>gp", gs.preview_hunk, { desc = "Preview Hunk" })
+  map("n", "<leader>gb", function()
+    gs.blame_line({ full = true })
+  end, { desc = "Blame Line" })
+  map("n", "<leader>gB", gs.toggle_current_line_blame, { desc = "Toggle Blame" })
+  map("n", "<leader>hr", gs.reset_hunk, { desc = "Reset Hunk" })
+  map("n", "<leader>hs", gs.stage_hunk, { desc = "Stage Hunk" })
+  map("n", "<leader>hu", gs.undo_stage_hunk, { desc = "Undo Stage Hunk" })
+end
+
+local prev_on_attach = gitsigns_config.on_attach
+gitsigns_config.on_attach = function(bufnr)
+  if prev_on_attach then
+    prev_on_attach(bufnr)
+  end
+  on_attach(bufnr)
+end

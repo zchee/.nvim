@@ -5,7 +5,7 @@ return {
     -- Features: mac+grpc+xpc
     -- Platform: x86_64-apple-darwin23.2.0
     "/opt/local/llvm/clangd/bin/clangd",
-    "--query-driver=/usr/bin/**",
+    -- "--query-driver=/usr/bin/**",
     "--all-scopes-completion",
     "--background-index",
     "--background-index-priority=normal",
@@ -23,17 +23,16 @@ return {
     "--ranking-model=heuristics",
     "--rename-file-limit=1000",
     "--enable-config",
-    "-j=32",
+    "-j=16",
     "--parse-forwarding-functions",
     "--pch-storage=disk",
     "--use-dirty-headers",
     "--input-style=standard",
     "--offset-encoding=utf-16",
-    "--hidden-features",
   },
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "metal" },
   -- capabilities = require('cmp_nvim_lsp').default_capabilities(),
-  offsetEncoding = { 'utf-16' },
+  offsetEncoding = { "utf-16" },
 
   -- on_new_config = function(new_config, _)
   --   local cwd = vim.fn.getcwd()

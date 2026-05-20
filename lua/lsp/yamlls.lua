@@ -173,7 +173,8 @@ return {
           ".clang-format",
         },
         -- clangd
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/clangd.json"] = {
+        -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/clangd.json"] = {
+        ["file:///Users/zchee/src/github.com/zchee/schema/clangd.schema.json"] = {
           ".clangd",
           "*clangd/config.yaml",
           -- vim.fs.joinpath(vim.fn.resolve(os.getenv("$XDG_CONFIG_HOME")), "clangd/config.yaml"),

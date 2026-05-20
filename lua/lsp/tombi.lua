@@ -4,12 +4,6 @@ local util = require("util")
 return {
   cmd = { util.homebrew_binary("tombi", "tombi"), "lsp" },
   filetypes = { "toml" },
-
-  settings = {
-    format = {
-      rules = {
-        ["indent-width"] = 4,
-      },
-    },
-  },
+  -- NOTE(zchee): tombi config exists in `~/.config/tombi/config.toml`
+  settings = {},
 }

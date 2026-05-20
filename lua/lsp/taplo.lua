@@ -42,7 +42,7 @@ return {
         arrayTrailingComma = true,
         arrayAutoExpand = false,
         arrayAutoCollapse = false,
-        compactArrays = false,
+        compactArrays = true,
         compactInlineTables = false,
         inlineTableExpand = false,
         compactEntries = false,

@@ -6,7 +6,7 @@ return {
   filetypes = {
     "asm",
     "vmasm",
-    -- "goasm",
+    "goasm",
   },
   root_markers = { ".asm-lsp.toml", ".git" },
 }

@@ -19,13 +19,6 @@ return {
   --   dir = util.src_path("github.com/zchee/nvim-goasm"),
   --   ft = "goasm",
   -- },
-  -- {
-  --   dir = vim.fs.joinpath(util.src_path("github.com/zchee/tree-sitter-goasm")),
-  --   lazy = false,
-  --   opts = function()
-  --     return {}
-  --   end,
-  -- },
   {
     dir = util.src_path("github.com/zchee/metafrastis.nvim"),
     lazy = true,
@@ -40,15 +33,6 @@ return {
     config = function()
       require("plugins.metafrastis")
     end,
-    keys = {
-      {
-        "<BS>t",
-        "<CMD>MetafrastisTranslate<CR>",
-        mode = "x",
-        desc = "Translate the given range",
-        noremap = true,
-      },
-    },
   },
 
   -- Lazy
@@ -205,53 +189,53 @@ return {
       { "<leader>aW", "<cmd>CopilotChatWorkspace<cr>", desc = "Workspace Chat" },
     },
   },
-  -- https://github.com/nwiizo/dotfiles/blob/main/nvim/lua/plugins/ai.lua
-  {
-    "yetone/avante.nvim",
-    event = "VeryLazy",
-    version = false,
-    -- build = "make",
-    build = "RUSTFLAGS='-C target-cpu=apple-m3 -C opt-level=3 -C force-frame-pointers=on -C debug-assertions=off -C incremental=on -C overflow-checks=off -C link-arg=-undefined -C link-arg=dynamic_lookup' cargo build -v --release --features=luajit -p avante-repo-map -p avante-templates -p avante-tokenizers",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "stevearc/dressing.nvim",
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "zbirenbaum/copilot.lua",
-      -- {
-      --   "HakonHarnes/img-clip.nvim",
-      --   event = "VeryLazy",
-      --   opts = {},
-      -- },
-    },
-    opts = {
-      instructions_file = "CLAUDE.md",
-      provider = "copilot",
-      mode = "agentic",
-      input = { provider = "snacks" },
-      selector = { provider = "snacks" },
-      providers = {
-        copilot = {
-          endpoint = "https://api.githubcopilot.com",
-          model = "claude-opus-4.6",
-          timeout = 30000,
-        },
-      },
-      mappings = {
-        ask = "<leader>aa",
-        edit = "<leader>aE",
-        refresh = "<leader>aS",
-      },
-      behaviour = {
-        auto_suggestions = false,
-        auto_set_keymaps = true,
-        auto_apply_diff_after_generation = false,
-        auto_approve_tool_permissions = false,
-      },
-      windows = { position = "right", width = 35 },
-    },
-  },
+  -- {
+  --   -- https://github.com/nwiizo/dotfiles/blob/main/nvim/lua/plugins/ai.lua
+  --   "yetone/avante.nvim",
+  --   event = "VeryLazy",
+  --   version = false,
+  --   -- build = "make",
+  --   build = "RUSTFLAGS='-C target-cpu=apple-m3 -C opt-level=3 -C force-frame-pointers=on -C debug-assertions=off -C incremental=on -C overflow-checks=off -C link-arg=-undefined -C link-arg=dynamic_lookup' cargo build -v --release --features=luajit -p avante-repo-map -p avante-templates -p avante-tokenizers",
+  --   dependencies = {
+  --     "nvim-treesitter/nvim-treesitter",
+  --     "stevearc/dressing.nvim",
+  --     "nvim-lua/plenary.nvim",
+  --     "MunifTanjim/nui.nvim",
+  --     "nvim-tree/nvim-web-devicons",
+  --     "zbirenbaum/copilot.lua",
+  --     -- {
+  --     --   "HakonHarnes/img-clip.nvim",
+  --     --   event = "VeryLazy",
+  --     --   opts = {},
+  --     -- },
+  --   },
+  --   opts = {
+  --     instructions_file = "CLAUDE.md",
+  --     provider = "copilot",
+  --     mode = "agentic",
+  --     input = { provider = "snacks" },
+  --     selector = { provider = "snacks" },
+  --     providers = {
+  --       copilot = {
+  --         endpoint = "https://api.githubcopilot.com",
+  --         model = "claude-opus-4.6",
+  --         timeout = 30000,
+  --       },
+  --     },
+  --     mappings = {
+  --       ask = "<leader>aa",
+  --       edit = "<leader>aE",
+  --       refresh = "<leader>aS",
+  --     },
+  --     behaviour = {
+  --       auto_suggestions = false,
+  --       auto_set_keymaps = true,
+  --       auto_apply_diff_after_generation = false,
+  --       auto_approve_tool_permissions = false,
+  --     },
+  --     windows = { position = "right", width = 35 },
+  --   },
+  -- },
   -- {
   --   "yetone/avante.nvim",
   --   event = "VeryLazy",
@@ -399,40 +383,42 @@ return {
         ---@class conform.setupOpts
         opts = {
           formatters = {
+            goimports_rereviser = {
+              meta = {
+                url = "https://github.com/zchee/goimports-rereviser",
+                description = "Right imports sorting & code formatting tool (reviser of goimports-reviser)",
+              },
+              command = "goimports-rereviser",
+              args = { "-use-cache=true", "-cache-fast-skip=true", "-rm-unused", "-set-alias", "-format", "$FILENAME" }, -- , "-project-name=github.com/zchee/pandaemonium"
+              stdin = false,
+            },
             stylua = {
               command = "/opt/homebrew/bin/stylua",
-              -- Adds environment args to the yamlfix formatter
               env = {
                 YAMLFIX_SEQUENCE_STYLE = "block_style",
               },
             },
           },
           formatters_by_ft = {
-            -- go = { "goimports", "gofumpt" },
-            go = { lsp_format = "prefer" },
-            lua = { "stylua" },
-            python = { "ruff_format", "ruff_organize_imports" },
+            ---@diagnostic disable: assign-type-mismatch: push
+            go = { "goimports_rereviser", lsp_format = "first" },
+            goasm = { "asmfmt", lsp_format = "first" },
+            lua = { "stylua", lsp_format = "never" },
+            python = { "ruff_format", "ruff_fix" }, -- , "ruff_organize_imports"
             rust = { "rustfmt" },
             zig = { "zigfmt" },
-            ---@diagnostic disable-next-line: assign-type-mismatch
             toml = false,
-            ---@diagnostic disable-next-line: assign-type-mismatch
             typescript = false,
-            ---@diagnostic disable-next-line: assign-type-mismatch
             javascript = false,
-            ---@diagnostic disable-next-line: assign-type-mismatch
             typescriptreact = false,
-            ---@diagnostic disable-next-line: assign-type-mismatch
             javascriptreact = false,
             terraform = { "terraform_fmt" },
             bash = { "shfmt" },
             sh = { "shfmt" },
-            ---@diagnostic disable-next-line: assign-type-mismatch
             yaml = false,
-            ---@diagnostic disable-next-line: assign-type-mismatch
             json = false,
-            ---@diagnostic disable-next-line: assign-type-mismatch
             markdown = false,
+            ---@diagnostic enable: assign-type-mismatch: pop
           },
           format_on_save = {
             -- I recommend these options. See :help conform.format for details.

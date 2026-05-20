@@ -28,84 +28,6 @@ end
 return {
   cmd = rust_analyzer_cmd(),
   root_markers = { "rust-toolchain.toml", "Cargo.toml", ".git" },
-  init_options = {
-    cachePriming = {
-      enabled = true,
-      numThreads = 8,
-    },
-    cargo = {
-      allTargets = false,
-      buildScripts = {
-        enable = true,
-        seRustcWrapper = true,
-        invocationStrategy = "once",
-      },
-      -- extraArgs = {
-      --   "--release",
-      -- },
-      extraEnv = {
-        CARGO_INCREMENTAL = 1,
-        RUSTC_WRAPPER = "/opt/homebrew/opt/sccache/bin/sccache",
-        RUSTFLAGS = os.getenv("RUSTFLAGS"),
-        SKIP_WASM_BUILD = "1",
-      },
-      loadOutDirsFromCheck = true,
-    },
-    procMacro = {
-      enable = true,
-    },
-    numThreads = 8,
-    ["rust-analyzer"] = {
-      checkOnSave = false,
-      -- check = {
-      --   extraArgs = { "--release" },
-      -- },
-      completion = {
-        fullFunctionSignatures = {
-          enable = true,
-        },
-        hideDeprecated = true,
-      },
-      diagnostics = {
-        enabled = false,
-        experimental = "enable",
-      },
-      imports = {
-        granularity = {
-          group = "module",
-        },
-        prefix = "self",
-      },
-      inlayHints = {
-        bindingModeHints = {
-          enable = true,
-        },
-        closureCaptureHints = {
-          enable = true,
-        },
-        genericParameterHints = {
-          lifetime = {
-            enable = true,
-          },
-          type = {
-            enable = true,
-          },
-        },
-        implicitSizedBoundHints = {
-          enable = true,
-        },
-        lifetimeElisionHints = {
-          useParameterNames = true,
-        },
-      },
-      rustfmt = {
-        -- extraArgs = { "+nightly-2023-11-01" },
-      },
-      -- runnables = {
-      --   extraArgs = { "--release" },
-      -- },
-    },
-  },
   settings = {
     cachePriming = {
       enabled = true,
@@ -124,6 +46,7 @@ return {
       extraEnv = {
         RUSTC_WRAPPER = "/opt/homebrew/opt/sccache/bin/sccache",
         RUSTFLAGS = os.getenv("RUSTFLAGS"),
+        CARGO_TARGET_DIR = "target/rust-analyzer",
         SKIP_WASM_BUILD = "1",
       },
       loadOutDirsFromCheck = true,
@@ -133,9 +56,7 @@ return {
     },
     numThreads = 8,
     ["rust-analyzer"] = {
-      check = {
-        -- extraArgs = { "--release" },
-      },
+      check = {},
       completion = {
         fullFunctionSignatures = {
           enable = true,
@@ -176,9 +97,7 @@ return {
       rustfmt = {
         -- extraArgs = { "+nightly-2023-11-01" },
       },
-      runnables = {
-        -- extraArgs = { "--release" },
-      },
+      runnables = {},
     },
   },
 }

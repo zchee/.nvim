@@ -107,6 +107,8 @@ hi("@lsp.type.typeParameter.go", { link = "Typedef" })
 hi("@lsp.type.variable.go", { link = "None" })
 hi("@lsp.typemod.type.definition.go", { link = "Normal" })
 
+hi("@keyword.directive.goasm", { link = "Macro" })
+
 -- printf
 hi("@character.printf", { link = "PreProc" })
 

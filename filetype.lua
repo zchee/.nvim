@@ -5,7 +5,7 @@ local cache_home = util.xdg_cache_home()
 
 vim.filetype.add({
   extension = {
-    -- s                  = "goasm",
+    s = require("filetypes.goasm").detect,
     ["code-workspace"] = "json",
     actiongrap = "json",
     alfredappearance = "json",

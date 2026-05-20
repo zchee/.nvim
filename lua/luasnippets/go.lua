@@ -180,7 +180,7 @@ local func_snippets = {
 				; err != nil {
 					<>
 				}
-				]],
+      ]],
       {
         ls.i(1, "return err"),
       },
@@ -196,6 +196,83 @@ local func_snippets = {
     fmt([[tw := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', tabwriter.TabIndent){}]], {
       ls.i(1, ""),
     })
+  ),
+
+  -- util
+  ls.s(
+    { trig = "isASCII", dscr = "func isASCII(c byte) bool" },
+    fmt(
+      [[
+      // isASCII reports whether the c is an ASCII letter.
+      func isASCII(c byte) bool {{
+        return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
+      }}
+      {}
+      ]],
+      {
+        ls.i(1),
+      }
+    )
+  ),
+  ls.s(
+    { trig = "isASCIIUpper", dscr = "func isASCIIUpper(c byte) bool" },
+    fmt(
+      [[
+      // isASCIIUpper reports whether the c is an ASCII upper-case letter.
+      func isASCIIUpper(c byte) bool {{
+        return 'A' <= c && c <= 'Z'
+      }}
+      {}
+      ]],
+      {
+        ls.i(1),
+      }
+    )
+  ),
+  ls.s(
+    { trig = "isASCIILower", dscr = "func isASCIILower(c byte) bool" },
+    fmt(
+      [[
+      // isASCIILower reports whether the c is an ASCII lower-case letter.
+      func isASCIILower(c byte) bool {{
+        return 'a' <= c && c <= 'z'
+      }}
+      {}
+      ]],
+      {
+        ls.i(1),
+      }
+    )
+  ),
+  ls.s(
+    { trig = "isDigit", dscr = "func isDigit(c byte) bool" },
+    fmt(
+      [[
+      // isDigit reports whether the c is an ASCII digit.
+      func isDigit(c byte) bool {{
+        return '0' <= c && c <= '9'
+      }}
+      {}
+      ]],
+      {
+        ls.i(1),
+      }
+    )
+  ),
+  ls.s(
+    { trig = "isHexDigit", dscr = "func isHexDigit(b byte) bool" },
+    fmt(
+      [[
+      // isHexDigit reports whether the b is a hexadecimal digit.
+      func isHexDigit(b byte) bool {{
+        return b >= '0' && b <= '9' || b >= 'a' && b <= 'f' || b >= 'A' && b <= 'F'
+      }}
+      {}
+      ]],
+      {
+        ls.i(1),
+      }
+    )
   ),
 }
 

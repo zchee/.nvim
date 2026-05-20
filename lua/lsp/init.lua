@@ -557,7 +557,6 @@ vim.lsp.config("*", {
 -- https://github.com/neovim/nvim-lspconfig/tree/master/lsp
 -- ["markdown_oxide"] = {},
 -- ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") } },
--- ["taplo"] = require("lsp.taplo"),
 -- ["tilt_ls"] = require("lsp.tilt_ls"),
 -- ["ts_ls"] = require("lsp.ts_ls"),
 -- ["tsgo"] = require("lsp.tsgo"),
@@ -619,6 +618,7 @@ local servers = {
   ["rust_analyzer"] = require("lsp.rust_analyzer"),
   ["sourcekit"] = require("lsp.sourcekit"),
   ["terraformls"] = require("lsp.terraformls"),
+  ["taplo"] = require("lsp.taplo"),
   ["tombi"] = require("lsp.tombi"),
   ["vtsls"] = require("lsp.vtsls"),
   ["yamlls"] = require("lsp.yamlls"),

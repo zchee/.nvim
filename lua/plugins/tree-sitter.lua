@@ -15,19 +15,20 @@ vim.treesitter.language.register("bash", "zsh")
 ---@class ParserInfo[]
 local parser_config = ts_parsers.get_parser_configs()
 
---- goasm: TODO(zchee): development
--- treesitter_parsers_config.goasm = {
---   ---@type InstallInfo
---   install_info = {
---     url = vim.fs.joinpath(src_dir, "github.com/zchee/nvim-goasm"),
---     files = { "src/parser.c" },
---     branch = "main",
---     generate_requires_npm = true,
---     requires_generate_from_grammar = false,
---   },
---   -- filetype = "goasm",
---   maintainers = { "@zchee" },
--- }
+parser_config.goasm = {
+  ---@type InstallInfo
+  install_info = {
+    url = vim.fs.joinpath(util.src_path("github.com/zchee/tree-sitter-goasm")),
+    -- url = "/Users/zchee/src/github.com/zchee/tree-sitter-goasm",
+    -- url = "https://github.com/zchee/tree-sitter-goasm",
+    branch = "main",
+    files = { "src/parser.c" },
+    generate_requires_npm = false,
+    requires_generate_from_grammar = false,
+  },
+  filetype = "goasm",
+  maintainers = { "@zchee" },
+}
 
 --- zsh: TODO(zchee): development
 -- parsers_config.zsh = {
@@ -272,6 +273,7 @@ local parsers = {
   "gn", -- [✓] installed
   -- "gnuplot",            -- [✗] not installed
   "go", -- [✓] installed
+  "goasm", -- [✓] installed
   -- "goctl",              -- [✗] not installed
   -- "godot_resource",     -- [✗] not installed
   "gomod", -- [✓] installed
@@ -511,6 +513,7 @@ vim.opt.runtimepath:append(vim.fs.joinpath(tostring(vim.fn.stdpath("data")), "tr
 --- @diagnostic disable-next-line: missing-fields
 ts_config.setup({
   parser_install_dir = vim.fs.joinpath(tostring(vim.fn.stdpath("data")), "tree-sitter"),
+  sync_install = true,
   ensure_installed = parsers,
   highlight = {
     enable = true,

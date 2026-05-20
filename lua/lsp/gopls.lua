@@ -375,6 +375,7 @@ return {
     analysisProgressReporting = true,
     standaloneTags = {
       "ignore", -- default
+      "bench",
       "tools",
       "integration",
       "wireinject",

@@ -27,7 +27,7 @@ render_markdown.setup({
     left_margin = 0,
     left_pad = 0,
     right_pad = 0,
-    min_width = 0,
+    min_width = 1400,
     border = "thick",
     above = "▄",
     below = "▀",

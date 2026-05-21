@@ -378,6 +378,7 @@ return {
       {
         -- conform.nvim: Override formatters (let LazyVim manage format-on-save via <leader>uf)
         "stevearc/conform.nvim",
+        enabled = false,
         event = "VeryLazy",
         ---@module 'conform'
         ---@class conform.setupOpts

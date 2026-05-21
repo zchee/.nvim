@@ -15,10 +15,10 @@ return {
     dir = util.src_path("github.com/zchee/vim-go-testscript"),
     ft = "testscript",
   },
-  -- {
-  --   dir = util.src_path("github.com/zchee/nvim-goasm"),
-  --   ft = "goasm",
-  -- },
+  {
+    dir = util.src_path("github.com/zchee/tree-sitter-goasm"),
+    lazy = false,
+  },
   {
     dir = util.src_path("github.com/zchee/metafrastis.nvim"),
     lazy = true,

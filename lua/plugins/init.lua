@@ -430,11 +430,12 @@ return {
       },
       {
         "nvimtools/none-ls.nvim",
-        disable = true,
-        -- event = { "BufReadPre", "BufNewFile" },
+        enabled = false,
         dependencies = {
-          "jay-babu/mason-null-ls.nvim",
-          "williamboman/mason.nvim",
+          "nvim-lua/plenary.nvim",
+          "nvimtools/none-ls-extras.nvim",
+          -- "jay-babu/mason-null-ls.nvim",
+          -- "williamboman/mason.nvim",
         },
         config = function()
           require("plugins.null-ls")
@@ -539,20 +540,6 @@ return {
       },
       {
         "folke/lazydev.nvim",
-        opts = {
-          library = {
-            "lazy.nvim",
-            {
-              path = "${3rd}/luv/library",
-              words = { "vim%.uv" },
-            },
-          },
-          integrations = {
-            lspconfig = true,
-            cmp = true,
-            coq = false,
-          },
-        },
       },
       {
         "b0o/schemastore.nvim",
@@ -571,9 +558,8 @@ return {
             "zbirenbaum/copilot.lua",
             opts = {
               filetypes = {
-                ["*"] = true,
-                gitrebase = false,
-                help = false,
+                ["*"] = false,
+                go = true,
               },
               panel = { enabled = false },
               suggestion = {

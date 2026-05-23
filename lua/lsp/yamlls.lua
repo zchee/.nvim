@@ -253,6 +253,14 @@ return {
           "*.workflows.yml",
           "workflows-demos/**/*.yaml",
         },
+        ["https://json.schemastore.org/pre-commit-hooks.json"] = {
+          ".pre-commit-hooks.yml",
+          ".pre-commit-hooks.yaml",
+        },
+        ["https://json.schemastore.org/pre-commit-config.json"] = {
+          ".pre-commit-config.yml",
+          ".pre-commit-config.yaml",
+        },
 
         -- other
         ["https://raw.githubusercontent.com/microsoft/vscode-languageserver-node/main/protocol/metaModel.schema.json"] = {

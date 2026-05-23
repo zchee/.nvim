@@ -1,5 +1,6 @@
 local util = require("util")
 
+-- https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   autostart = true,
@@ -11,7 +12,7 @@ return {
       enableSourceErrorDiagnostics = true,
       globPattern = "*@(.sh|.inc|.bash|.command)", -- globPattern = "*@(.sh|.inc|.bash|.command|.zsh)",
       -- explainshellEndpoint = "",
-      -- logLevel = "info",
+      logLevel = "error",
       includeAllWorkspaceSymbols = true,
       shellcheckArguments = { "-f", "gcc" }, --  "--enable=all"
       shellcheckPath = "/opt/local/bin/shellcheck",

@@ -10,6 +10,7 @@ return {
       [[
 #!/usr/bin/env bash
 set -eo pipefail
+# shellcheck shell=bash
 				]],
       {
         -- ls.i(1, "return err"),

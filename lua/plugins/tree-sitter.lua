@@ -18,9 +18,9 @@ local parser_config = ts_parsers.get_parser_configs()
 parser_config.goasm = {
   ---@type InstallInfo
   install_info = {
-    url = vim.fs.joinpath(util.src_path("github.com/zchee/tree-sitter-goasm")),
+    -- url = vim.fs.joinpath(util.src_path("github.com/zchee/tree-sitter-goasm")),
     -- url = "/Users/zchee/src/github.com/zchee/tree-sitter-goasm",
-    -- url = "https://github.com/zchee/tree-sitter-goasm",
+    url = "https://github.com/zchee/tree-sitter-goasm",
     branch = "main",
     files = { "src/parser.c" },
     generate_requires_npm = false,
@@ -52,6 +52,19 @@ parser_config.cel = {
     generate_requires_npm = true,
     requires_generate_from_grammar = false,
   },
+}
+
+--- modulemap
+parser_config.modulemap = {
+  ---@type InstallInfo
+  install_info = {
+    url = "https://github.com/panicinc/tree-sitter-modulemap",
+    branch = "main",
+    files = { "src/parser.c" },
+    generate_requires_npm = false,
+    requires_generate_from_grammar = false,
+  },
+  -- filetype = "modulemap",
 }
 
 --- kitty
@@ -164,14 +177,15 @@ parser_config.mlir = {
 }
 
 --- fork: swift
---- TODO(zchee): fix
 parser_config.swift = {
   ---@type InstallInfo
   install_info = {
-    url = "https://github.com/zchee/tree-sitter-swift",
-    branch = "dev",
-    files = { "src/parser.c" },
-  },
+    url = util.src_path("github.com/alex-pinkus/tree-sitter-swift"),
+    -- url = "https://github.com/zchee/tree-sitter-swift",
+    files = { "src/parser.c", "src/scanner.c" },
+    generate_requires_npm = false,
+    requires_generate_from_grammar = false,
+  }
 }
 
 -- $ nvim --headless -c 'lua vim.cmd[[TSInstallInfo]]' -c 'q'
@@ -350,6 +364,7 @@ local parsers = {
   "mermaid", -- [✓] installed
   "meson", -- [✓] installed
   "mlir", -- [✓] installed
+  "modulemap", -- [✓] installed
   "mustache", -- [✓] installed
   -- "muttrc",             -- [✗] not installed
   "nasm", -- [✓] installed
@@ -447,7 +462,7 @@ local parsers = {
   -- "surface",            -- [✗] not installed
   -- "svelte",             -- [✗] not installed
   -- "sway",               -- [✗] not installed
-  -- "swift",              -- [✗] not installed, TODO(zchee): install
+  "swift",              -- [✗] not installed
   -- "sxhkdrc",            -- [✗] not installed
   -- "systemtap",          -- [✗] not installed
   -- "t32",                -- [✗] not installed

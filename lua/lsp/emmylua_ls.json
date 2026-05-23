@@ -22,7 +22,6 @@
     "library": [
       "$VIMRUNTIME",
       "/Users/zchee/src/github.com/LuaLS/LLS-Addons/addons/busted/library",
-      "/Users/zchee/src/github.com/LuaLS/LLS-Addons/addons/busted/library",
       "/Users/zchee/src/github.com/LuaLS/LLS-Addons/addons/luassert/library",
       "/Users/zchee/src/github.com/LuaLS/LLS-Addons/addons/luvit/library",
     ],

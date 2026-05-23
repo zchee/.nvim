@@ -1,8 +1,6 @@
 local util = require("util")
 -- local mason_path = require("mason-core.path")
 
-local lazydev = require("lazydev")
-
 -- ---@type LuaDevOptions
 -- require("neodev").setup({
 --   library = {
@@ -23,35 +21,36 @@ local lazydev = require("lazydev")
 --   debug = false,
 -- })
 
----@type lazydev.Config
-lazydev.setup({
-  runtime = vim.env.VIMRUNTIME,
-  ---@type lazydev.Library.spec[]
-  library = {
-    "lazy.nvim",
-    {
-      path = "${3rd}/luv/library",
-      words = { "vim%.uv" },
-    },
-    {
-      -- {
-      --   path = vim.env.VIMRUNTIME .. "lua/vim/_meta",
-      -- },
-      {
-        -- path = util.homebrew_prefix() .. "/opt/lua-language-server/libexec/meta/3rd/luv/library",
-        -- path = mason_path.package_prefix("lua-language-server") .. "libexec/meta/3rd/luv/library"
-      },
-      "plenary.nvim",
-      "nvim-treesitter",
-    },
-  },
-  integrations = {
-    lspconfig = true,
-    cmp = true,
-  },
-  enabled = true,
-  debug = false,
-})
+-- local lazydev = require("lazydev")
+-- ---@type lazydev.Config
+-- lazydev.setup({
+--   runtime = vim.env.VIMRUNTIME,
+--   ---@type lazydev.Library.spec[]
+--   library = {
+--     "lazy.nvim",
+--     {
+--       path = "${3rd}/luv/library",
+--       words = { "vim%.uv" },
+--     },
+--     {
+--       -- {
+--       --   path = vim.env.VIMRUNTIME .. "lua/vim/_meta",
+--       -- },
+--       {
+--         -- path = util.homebrew_prefix() .. "/opt/lua-language-server/libexec/meta/3rd/luv/library",
+--         -- path = mason_path.package_prefix("lua-language-server") .. "libexec/meta/3rd/luv/library"
+--       },
+--       "plenary.nvim",
+--       "nvim-treesitter",
+--     },
+--   },
+--   integrations = {
+--     lspconfig = true,
+--     cmp = true,
+--   },
+--   enabled = true,
+--   debug = false,
+-- })
 
 -- https://github.com/LuaLS/lua-language-server/blob/master/doc/en-us/config.md
 -- https://github.com/LuaLS/lua-language-server/blob/master/locale/en-us/setting.lua

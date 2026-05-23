@@ -3,7 +3,7 @@ local util = require("util")
 -- local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
 
-vim.lsp.log.set_level(vim.log.levels.ERROR) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
+vim.lsp.log.set_level(vim.log.levels.OFF) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
 vim.diagnostic.config({
   underline = false,
   virtual_text = false,
@@ -555,7 +555,6 @@ vim.lsp.config("*", {
 })
 
 -- https://github.com/neovim/nvim-lspconfig/tree/master/lsp
--- ["lua_ls"] = require("lsp.lua_ls"),
 -- ["markdown_oxide"] = {},
 -- ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") } },
 -- ["pyright"] = require("lsp.pyright"),
@@ -571,7 +570,8 @@ local servers = {
   ["gopls"] = require("lsp.gopls"),
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
-  ["emmylua_ls"] = require("lsp.emmylua_ls"),
+  ["lua_ls"] = require("lsp.lua_ls"),
+  -- ["emmylua_ls"] = require("lsp.emmylua_ls"),
   ["neocmake"] = require("lsp.neocmake"),
   ["basedpyright"] = require("lsp.basedpyright"),
   ["protols"] = require("lsp.protols"),

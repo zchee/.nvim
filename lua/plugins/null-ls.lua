@@ -1,4 +1,35 @@
--- local null_ls = require("null-ls")
+local null_ls = require("null-ls")
+
+local formatting = null_ls.builtins.formatting
+local diagnostics = null_ls.builtins.diagnostics
+local code_actions = null_ls.builtins.code_actions
+
+null_ls.setup({
+  sources = {
+    --- Go
+    formatting.gofumpt,
+    require("none-ls.formatting.goimports_rereviser"),
+    --- Lua
+    formatting.stylua,
+    --- Python
+    require("none-ls.formatting.ruff"),
+    require("none-ls.formatting.ruff_format"),
+    --- Rust
+    require("none-ls.formatting.rustfmt"),
+    --- YAML
+    formatting.yamlfmt,
+
+    --- Go
+    diagnostics.golangci_lint,
+    --- Python
+    require("none-ls.diagnostics.ruff"),
+
+    --- Go
+    -- code actions
+    code_actions.gomodifytags,
+    code_actions.impl,
+  },
+})
 
 -- local is_null_ls_formatting_enabled = function()
 --   local file_type = vim.api.nvim_get_option_value("filetype", {scope = "local"})

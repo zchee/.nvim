@@ -430,7 +430,7 @@ return {
       },
       {
         "nvimtools/none-ls.nvim",
-        enabled = false,
+        -- enabled = false,
         dependencies = {
           "nvim-lua/plenary.nvim",
           "nvimtools/none-ls-extras.nvim",
@@ -540,6 +540,21 @@ return {
       },
       {
         "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+          library = {
+            "lazy.nvim",
+            "none-ls.nvim",
+            {
+              path = "${3rd}/luv/library",
+              words = { "vim%.uv" },
+            },
+            "plenary.nvim",
+            vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/busted/library"),
+            vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/library"),
+            vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library"),
+          },
+        },
       },
       {
         "b0o/schemastore.nvim",

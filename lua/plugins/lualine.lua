@@ -22,6 +22,7 @@ lualine.setup({
         "sagaoutline",
         "sagarename",
         "sagatypehierarchy",
+        "snacks_picker_input",
       },
       winbar = {
         "saga_action",
@@ -31,6 +32,7 @@ lualine.setup({
         "sagaoutline",
         "sagarename",
         "sagatypehierarchy",
+        "snacks_picker_input",
       },
     },
     ignore_focus = {},

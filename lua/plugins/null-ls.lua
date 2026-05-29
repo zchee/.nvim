@@ -9,7 +9,7 @@ null_ls.setup({
   sources = {
     --- Go
     formatting.gofumpt,
-    require("none-ls.formatting.goimports_rereviser"),
+    -- require("none-ls.formatting.goimports_rereviser"),
     --- Lua
     formatting.stylua,
     --- Python
@@ -19,6 +19,8 @@ null_ls.setup({
     require("none-ls.formatting.rustfmt"),
     --- YAML
     formatting.yamlfmt,
+    --- Terraform
+    formatting.terraform_fmt,
 
     --- Go
     -- NOTE(zchee): pin the absolute binary so the mise shim

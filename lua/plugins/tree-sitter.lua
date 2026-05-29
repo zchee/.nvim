@@ -185,7 +185,7 @@ parser_config.swift = {
     files = { "src/parser.c", "src/scanner.c" },
     generate_requires_npm = false,
     requires_generate_from_grammar = false,
-  }
+  },
 }
 
 -- $ nvim --headless -c 'lua vim.cmd[[TSInstallInfo]]' -c 'q'
@@ -462,7 +462,7 @@ local parsers = {
   -- "surface",            -- [✗] not installed
   -- "svelte",             -- [✗] not installed
   -- "sway",               -- [✗] not installed
-  "swift",              -- [✗] not installed
+  "swift", -- [✗] not installed
   -- "sxhkdrc",            -- [✗] not installed
   -- "systemtap",          -- [✗] not installed
   -- "t32",                -- [✗] not installed

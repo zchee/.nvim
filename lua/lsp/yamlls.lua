@@ -5,12 +5,13 @@ local util = require("util")
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   -- NOTE(zchee): use self-compiled for disabled "Matches multiple schemas when only one must validate." error
-  cmd = {
-    util.homebrew_binary("node", "node"),
-    util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server"),
-    "--stdio",
-  },
+  -- cmd = {
+  --   util.homebrew_binary("node", "node"),
+  --   util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server"),
+  --   "--stdio",
+  -- },
   -- cmd = { "/opt/local/var/bun/bin/yaml-language-server", "--stdio" },
+  cmd = { util.bun_prefix("yaml-language-server"), "--stdio" },
   root_markers = { ".git" },
   settings = {
     yaml = {
@@ -39,270 +40,388 @@ return {
       maxItemsComputed = 5000,
       schemaStore = {
         enbale = true,
-        url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
+        -- url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
       },
-      customTags = {
-        "python/object/apply",
-        "!!python/object/apply",
+      kubernetesCRDStore = {
+        enbale = true,
       },
       schemas = {
-        -- local : zchee/schema
-        --- Buf
-        ["file:///Users/zchee/src/github.com/zchee/schema/buf.schema.json"] = {
-          "**/buf.yaml",
-          "!buf.gen.*.yaml",
-          "!.github/workflows//buf.yaml",
-        },
-        ["file:///Users/zchee/src/github.com/zchee/schema/buf.gen.schema.json"] = {
-          "buf.gen.yaml",
-          "buf.gen.*.yaml",
-        },
-        --- Cloud Endpoints
-        ["file:///Users/zchee/src/github.com/zchee/schema/service.schema.json"] = {
-          "*.endpoints.yaml",
-        },
-        --- knative.dev
-        ["file:///Users/zchee/src/github.com/zchee/schema/Revision.serving.knative.dev.json"] = {
-          "*.knative.yaml",
-        },
-        --- kaitai-struct-compiler
-        ["file:///Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json"] = {
-          "*.ksy",
-        },
-        --- open-rpc
-        ["file:///Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json"] = {
-          "openrpc.yaml",
-        },
-        -- codecov
-        ["file:///Users/zchee/src/github.com/zchee/schema/codecov.json"] = {
-          "*codecov.yml",
-          "*codecov.yaml",
-        },
-        -- ocb
-        ["file:///Users/zchee/src/github.com/zchee/schema/opentelemetry-collector-builder.schema.json"] = {
-          "otelcol.yaml",
-        },
-        --- mkdocs
-        -- ["file:///Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json"] = {
-        --   "mkdocs.yml",
-        -- },
-
-        -- remote
-        --- Gemini
-        -- ["file:///Users/zchee/src/github.com/zchee/schema/gemini-repoconfig.schema.json"] = {
-        ["https://raw.githubusercontent.com/zchee/schema/main/gemini-repoconfig.schema.json"] = {
-          ".gemini/config.yaml",
-        },
-
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/pre-commit-config.json"] = {
-          ".pre-commit-config.yaml",
-        },
-
-        -- apko
-        ["https://raw.githubusercontent.com/chainguard-dev/apko/main/pkg/build/types/schema.json"] = {
-          "*.apko.yaml",
-          "apko.yaml",
-        },
-        -- azure-pipelines
-        ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/main/service-schema.json"] = {
-          "azure-pipelines.yml",
-        },
-        -- Cloud Run
-        ["https://raw.githubusercontent.com/kubectl-plugin/crd-schema/refs/heads/main/gcp/serving.knative.dev/v1/service.json"] = {
-          "cloud-run/*.yaml",
-        },
-        -- compose
-        ["https://raw.githubusercontent.com/compose-spec/compose-go/refs/heads/main/schema/compose-spec.json"] = {
-          "*compose*.yaml",
-          "*compose*.yml",
-          "*docker-compose*.yaml",
-          "*docker-compose*.yml",
-        },
-        -- discovery (disco)
-        ["https://raw.githubusercontent.com/googleapis/gnostic/master/discovery/discovery.json"] = {
-          "*discovery.yaml",
-        },
-        -- OpenAPI
-        -- ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.1.schema.json"] = {
-        ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.0.4.schema.json"] = {
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/openapi-3.X.json"] = {
+          "openapi.yml",
+          "openapi.yaml",
+          "*openapi*.yaml",
           "*openapi*.yaml",
           "**/openapi-spec/*.yaml",
         },
-        -- skaffold
-        ["https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs-v2/content/en/schemas/v3alpha1.json"] = {
-          "skaffold*.yaml",
-        },
-        -- swagger
-        ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v2.0/schema.json"] = {
-          "*swagger.yaml",
-          "**/swagger-spec/*.yaml",
-        },
-        -- renovate
-        ["https://docs.renovatebot.com/renovate-schema.json"] = {
-          "renovate.json",
-          "renovate.json5",
-          ".renovaterc",
-          ".renovaterc.json",
-        },
-        -- helm charts
-        ["https://raw.githubusercontent.com/open-telemetry/opentelemetry-helm-charts/main/charts/opentelemetry-operator/values.schema.json"] = {
-          "opentelemetry-operator/values.yaml",
-        },
-        -- Taskfile
-        ["https://next.taskfile.dev/schema.json"] = {
-          "Taskfile.yml",
-          "Taskfile.yaml",
-          "Taskfile.dist.yml",
-          "Taskfile.dist.yaml",
-          "*.taskfile.yml",
-          "*.Taskfile.yaml",
-        },
-
-        -- SchemaStore
-        -- appveyor
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/appveyor.json"] = {
-          "*appveyor.yml",
-        },
-        -- circleci
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/circleciconfig.json"] = {
-          ".circleci/config.yml",
-          ".circleci/config.yaml",
-        },
-        -- clang-format
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/clang-format.json"] = {
-          ".clang-format",
-        },
-        -- clangd
-        -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/clangd.json"] = {
-        ["file:///Users/zchee/src/github.com/zchee/schema/clangd.schema.json"] = {
-          ".clangd",
-          "*clangd/config.yaml",
-          -- vim.fs.joinpath(vim.fn.resolve(os.getenv("$XDG_CONFIG_HOME")), "clangd/config.yaml"),
-        },
-        -- CloudBuild
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/cloudbuild.json"] = {
-          "*cloudbuild.yaml",
-          "*cloudbuild.*.yaml",
-        },
-        -- compile-commands.json
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/compile-commands.json"] = {
-          "compile_commands.json",
-        },
-        -- dependabot
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/dependabot-2.0.json"] = {
-          "*.github/dependabot.yaml",
-          "*.github/dependabot.yml",
-        },
-        -- github-action
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json"] = {
-          "*/action.yml",
-          "*/action.yaml",
-          "**/action.yml",
-          "**/action.yaml",
-        },
-        -- github-issue-forms
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-forms.json"] = {
-          ".github/ISSUE_TEMPLATE/*.yml",
-          ".github/ISSUE_TEMPLATE/*.yaml",
-        },
-        -- github-issue-config
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-config.json"] = {
-          ".github/ISSUE_TEMPLATE/config.yml",
-          ".github/ISSUE_TEMPLATE/config.yaml",
-        },
-        -- github-workflow-templates
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow-template-properties.json"] = {
-          ".github/workflow-templates/*.yml",
-          ".github/workflow-templates/*.yaml",
-        },
-        -- github-workflow
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
-          ".github/workflows/*.yml",
-          ".github/workflows/*.yaml",
-        },
-        -- golangci-lint
-        -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/golangci-lint.json"] = {
-        ["https://raw.githubusercontent.com/golangci/golangci-lint/main/jsonschema/golangci.jsonschema.json"] = {
-          ".golangci.yml",
-          ".golangci.yaml",
-        },
-        -- kustomize
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/kustomization.json"] = {
-          "kustomization.yaml",
-          -- "kustomizeconfig.yaml",
-        },
-        -- mkdocs
-        -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/mkdocs-1.0.json"] = {
-        ["https://squidfunk.github.io/mkdocs-material/schema.jso"] = {
-          "mkdocs.yml",
-        },
-        -- oapi-codegen
-        ["https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/main/configuration-schema.json"] = {
-          "oapi-codegen.yml",
-          "oapi-codegen.yaml",
-        },
-        -- yamllint
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/yamllint.json"] = {
-          ".yamllint.yaml",
-        },
-        --- Cloud Workflows
-        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/workflows.json"] = {
-          "workflows.yaml",
-          "*.workflows.yaml",
-          "workflows.yml",
-          "*.workflows.yml",
-          "workflows-demos/**/*.yaml",
-        },
-        ["https://json.schemastore.org/pre-commit-hooks.json"] = {
-          ".pre-commit-hooks.yml",
-          ".pre-commit-hooks.yaml",
-        },
-        ["https://json.schemastore.org/pre-commit-config.json"] = {
-          ".pre-commit-config.yml",
-          ".pre-commit-config.yaml",
-        },
-
-        -- other
-        ["https://raw.githubusercontent.com/microsoft/vscode-languageserver-node/main/protocol/metaModel.schema.json"] = {
-          "metaModel.yaml",
-          "lsp*.yaml",
-        },
-
-        -- kubernetes
-        -- ["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone-strict/all.json"] = {
-        ["kubernetes"] = {
-          "clusterrole.yaml",
-          "clusterrolebinding.yaml",
-          "comfigmap.yaml",
-          "cronjob.yaml",
-          "daemonset*.yaml",
-          "deployment*.yaml",
-          "horizontal_pod_autoscaler.yaml",
-          "hpa.yaml",
-          "ingress.yaml",
-          "namespace.yaml",
-          "pdb.yaml",
-          "pod.yaml",
-          "pod_disruption_budget.yaml",
-          "poddisruptionbudget.yaml",
-          "psp.yaml",
-          "rbac.yaml",
-          "replicaset.yaml",
-          "secret.yaml",
-          "secrets*.yaml",
-          "service*.yaml",
-          "service_account.yaml",
-          "serviceaccount.yaml",
-          "statefulset*.yaml",
-          "gotk-components.yaml", -- fluxcd
+        -- Cloud Run
+        ["https://raw.githubusercontent.com/kubectl-plugin/crd-schema/refs/heads/main/gcp/serving.knative.dev/v1/service.json"] = {
+          "**/service.yaml",
+          "cloud-run/*.yaml",
         },
       },
+      -- customTags = {
+      --   "python/object/apply",
+      --   "!!python/object/apply",
+      -- },
+      -- schemas = require("schemastore").json.schemas({
+      --   replace = {
+      --     -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/openapi-3.X.json"] = {
+      --     --   "*openapi*.yaml",
+      --     --   "**/openapi-spec/*.yaml",
+      --     -- },
+      --     -- ["openapi.json"] = "https://raw.githubusercontent.com/OAI/spec.openapis.org/refs/heads/main/oas/3.0/schema/2024-10-18",
+      --     -- {
+      --     --   name = "openapi%.json",
+      --     --   description = "An OpenAPI documentation file",
+      --     --   url = "https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/openapi-3.X.json",
+      --     --   fileMatch = {
+      --     --   "*openapi*.yaml",
+      --     --   "**/openapi-spec/*.yaml",
+      --     --   },
+      --     -- },
+      --   },
+      --   extra = {
+      --     {
+      --       description = "Golangci-lint Configuration",
+      --       name = "golangci.next.jsonschema.json",
+      --       url =
+      --       "https://raw.githubusercontent.com/golangci/golangci-lint/refs/heads/main/jsonschema/golangci.next.jsonschema.json",
+      --       fileMatch = {
+      --         ".golangci.yml",
+      --         ".golangci.yaml",
+      --       }
+      --     },
+      --     {
+      --       description = "Kubernetes JSON schema",
+      --       name = "kubernetes",
+      --       url =
+      --       "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone-strict/all.json",
+      --       fileMatch = {
+      --         "clusterrole.yaml",
+      --         "clusterrolebinding.yaml",
+      --         "comfigmap.yaml",
+      --         "cronjob.yaml",
+      --         "daemonset*.yaml",
+      --         "deployment*.yaml",
+      --         "horizontal_pod_autoscaler.yaml",
+      --         "hpa.yaml",
+      --         "ingress.yaml",
+      --         "namespace.yaml",
+      --         "pdb.yaml",
+      --         "pod.yaml",
+      --         "pod_disruption_budget.yaml",
+      --         "poddisruptionbudget.yaml",
+      --         "psp.yaml",
+      --         "rbac.yaml",
+      --         "replicaset.yaml",
+      --         "secret.yaml",
+      --         "secrets*.yaml",
+      --         "service*.yaml",
+      --         "service_account.yaml",
+      --         "serviceaccount.yaml",
+      --         "statefulset*.yaml",
+      --       },
+      --     },
+      --     {
+      --       description = "Gemini Repository config JSON schema",
+      --       name = "gemini-repoconfig.schema.json",
+      --       url = "https://raw.githubusercontent.com/zchee/schema/main/gemini-repoconfig.schema.json",
+      --       fileMatch = {
+      --         ".gemini/config.yaml"
+      --       },
+      --     },
+      --     {
+      --       description = "Cloud Run",
+      --       name = "service.json",
+      --       url =
+      --       "https://raw.githubusercontent.com/kubectl-plugin/crd-schema/refs/heads/main/gcp/serving.knative.dev/v1/service.json",
+      --       fileMatch = {
+      --         "cloud-run/*.yaml",
+      --       },
+      --     },
+      --     {
+      --       description = "Compose",
+      --       name = "compose-spec.json",
+      --       url = "https://raw.githubusercontent.com/compose-spec/compose-go/refs/heads/main/schema/compose-spec.json",
+      --       fileMatch = {
+      --         "*compose*.yaml",
+      --         "*compose*.yml",
+      --         "*docker-compose*.yaml",
+      --         "*docker-compose*.yml",
+      --       },
+      --     },
+      --     {
+      --       description = "Google discovery",
+      --       name = "discovery.json",
+      --       url = "https://raw.githubusercontent.com/googleapis/gnostic/master/discovery/discovery.json",
+      --       fileMatch = {
+      --         "*discovery.yaml",
+      --       },
+      --     },
+      --
+      --     ["https://raw.githubusercontent.com/googleapis/gnostic/master/discovery/discovery.json"] = {
+      --       "*discovery.yaml",
+      --     },
+      --   },
+      -- }),
+      -- schemas = {
+      -- local : zchee/schema
+      --- Buf
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/buf.schema.json"] = {
+      --   "**/buf.yaml",
+      --   "!buf.gen.*.yaml",
+      --   "!.github/workflows//buf.yaml",
+      -- },
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/buf.gen.schema.json"] = {
+      --   "buf.gen.yaml",
+      --   "buf.gen.*.yaml",
+      -- },
+      -- --- Cloud Endpoints
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/service.schema.json"] = {
+      --   "*.endpoints.yaml",
+      -- },
+      -- --- knative.dev
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/Revision.serving.knative.dev.json"] = {
+      --   "*.knative.yaml",
+      -- },
+      -- --- kaitai-struct-compiler
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/kaitai-struct-compiler.schema.json"] = {
+      --   "*.ksy",
+      -- },
+      -- --- open-rpc
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/open-rpc.schema.json"] = {
+      --   "openrpc.yaml",
+      -- },
+      -- -- codecov
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/codecov.json"] = {
+      --   "*codecov.yml",
+      --   "*codecov.yaml",
+      -- },
+      -- -- ocb
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/opentelemetry-collector-builder.schema.json"] = {
+      --   "otelcol.yaml",
+      -- },
+      --- mkdocs
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/mkdocs.schema.json"] = {
+      --   "mkdocs.yml",
+      -- },
+
+      -- remote
+      --- Gemini
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/gemini-repoconfig.schema.json"] = {
+      -- ["https://raw.githubusercontent.com/zchee/schema/main/gemini-repoconfig.schema.json"] = {
+      --   ".gemini/config.yaml",
+      -- },
+
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/pre-commit-config.json"] = {
+      --   ".pre-commit-config.yaml",
+      -- },
+
+      -- apko
+      -- ["https://raw.githubusercontent.com/chainguard-dev/apko/main/pkg/build/types/schema.json"] = {
+      --   "*.apko.yaml",
+      --   "apko.yaml",
+      -- },
+      -- azure-pipelines
+      -- ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/main/service-schema.json"] = {
+      --   "azure-pipelines.yml",
+      -- },
+      -- -- Cloud Run
+      -- ["https://raw.githubusercontent.com/kubectl-plugin/crd-schema/refs/heads/main/gcp/serving.knative.dev/v1/service.json"] = {
+      --   "cloud-run/*.yaml",
+      -- },
+      -- -- compose
+      -- ["https://raw.githubusercontent.com/compose-spec/compose-go/refs/heads/main/schema/compose-spec.json"] = {
+      --   "*compose*.yaml",
+      --   "*compose*.yml",
+      --   "*docker-compose*.yaml",
+      --   "*docker-compose*.yml",
+      -- },
+      -- discovery (disco)
+      -- ["https://raw.githubusercontent.com/googleapis/gnostic/master/discovery/discovery.json"] = {
+      --   "*discovery.yaml",
+      -- },
+      -- OpenAPI
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.1.schema.json"] = {
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/openapi.v3.0.4.schema.json"] = {
+      --   "*openapi*.yaml",
+      --   "**/openapi-spec/*.yaml",
+      -- },
+      -- skaffold
+      -- ["https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs-v2/content/en/schemas/v3alpha1.json"] = {
+      --   "skaffold*.yaml",
+      -- },
+      -- swagger
+      -- ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v2.0/schema.json"] = {
+      --   "*swagger.yaml",
+      --   "**/swagger-spec/*.yaml",
+      -- },
+      -- renovate
+      -- ["https://docs.renovatebot.com/renovate-schema.json"] = {
+      --   "renovate.json",
+      --   "renovate.json5",
+      --   ".renovaterc",
+      --   ".renovaterc.json",
+      -- },
+      -- helm charts
+      -- ["https://raw.githubusercontent.com/open-telemetry/opentelemetry-helm-charts/main/charts/opentelemetry-operator/values.schema.json"] = {
+      --   "opentelemetry-operator/values.yaml",
+      -- },
+      -- Taskfile
+      -- ["https://next.taskfile.dev/schema.json"] = {
+      --   "Taskfile.yml",
+      --   "Taskfile.yaml",
+      --   "Taskfile.dist.yml",
+      --   "Taskfile.dist.yaml",
+      --   "*.taskfile.yml",
+      --   "*.Taskfile.yaml",
+      -- },
+
+      -- SchemaStore
+      -- appveyor
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/appveyor.json"] = {
+      --   "*appveyor.yml",
+      -- },
+      -- circleci
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/circleciconfig.json"] = {
+      --   ".circleci/config.yml",
+      --   ".circleci/config.yaml",
+      -- },
+      -- clang-format
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/clang-format.json"] = {
+      --   ".clang-format",
+      -- },
+      -- clangd
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/clangd.json"] = {
+      -- ["file:///Users/zchee/src/github.com/zchee/schema/clangd.schema.json"] = {
+      --   ".clangd",
+      --   "*clangd/config.yaml",
+      --   -- vim.fs.joinpath(vim.fn.resolve(os.getenv("$XDG_CONFIG_HOME")), "clangd/config.yaml"),
+      -- },
+      -- CloudBuild
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/cloudbuild.json"] = {
+      --   "*cloudbuild.yaml",
+      --   "*cloudbuild.*.yaml",
+      -- },
+      -- compile-commands.json
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/compile-commands.json"] = {
+      --   "compile_commands.json",
+      -- },
+      -- dependabot
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/dependabot-2.0.json"] = {
+      --   "*.github/dependabot.yaml",
+      --   "*.github/dependabot.yml",
+      -- },
+      -- github-action
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json"] = {
+      --   "*/action.yml",
+      --   "*/action.yaml",
+      --   "**/action.yml",
+      --   "**/action.yaml",
+      -- },
+      -- github-issue-forms
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-forms.json"] = {
+      --   ".github/ISSUE_TEMPLATE/*.yml",
+      --   ".github/ISSUE_TEMPLATE/*.yaml",
+      -- },
+      -- github-issue-config
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-config.json"] = {
+      --   ".github/ISSUE_TEMPLATE/config.yml",
+      --   ".github/ISSUE_TEMPLATE/config.yaml",
+      -- },
+      -- github-workflow-templates
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow-template-properties.json"] = {
+      --   ".github/workflow-templates/*.yml",
+      --   ".github/workflow-templates/*.yaml",
+      -- },
+      -- github-workflow
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
+      --   ".github/workflows/*.yml",
+      --   ".github/workflows/*.yaml",
+      -- },
+      -- golangci-lint
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/golangci-lint.json"] = {
+      -- ["https://raw.githubusercontent.com/golangci/golangci-lint/main/jsonschema/golangci.jsonschema.json"] = {
+      --   ".golangci.yml",
+      --   ".golangci.yaml",
+      -- },
+      -- kustomize
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/kustomization.json"] = {
+      --   "kustomization.yaml",
+      --   -- "kustomizeconfig.yaml",
+      -- },
+      -- mkdocs
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/mkdocs-1.0.json"] = {
+      -- ["https://squidfunk.github.io/mkdocs-material/schema.jso"] = {
+      --   "mkdocs.yml",
+      -- },
+      -- oapi-codegen
+      -- ["https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/main/configuration-schema.json"] = {
+      --   "oapi-codegen.yml",
+      --   "oapi-codegen.yaml",
+      -- },
+      -- yamllint
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/yamllint.json"] = {
+      --   ".yamllint.yaml",
+      -- },
+      --- Cloud Workflows
+      -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/workflows.json"] = {
+      --   "workflows.yaml",
+      --   "*.workflows.yaml",
+      --   "workflows.yml",
+      --   "*.workflows.yml",
+      --   "workflows-demos/**/*.yaml",
+      -- },
+      -- ["https://json.schemastore.org/pre-commit-hooks.json"] = {
+      --   ".pre-commit-hooks.yml",
+      --   ".pre-commit-hooks.yaml",
+      -- },
+      -- ["https://json.schemastore.org/pre-commit-config.json"] = {
+      --   ".pre-commit-config.yml",
+      --   ".pre-commit-config.yaml",
+      -- },
+
+      -- other
+      -- ["https://raw.githubusercontent.com/microsoft/vscode-languageserver-node/main/protocol/metaModel.schema.json"] = {
+      --   "metaModel.yaml",
+      --   "lsp*.yaml",
+      -- },
+
+      -- kubernetes
+      -- ["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone-strict/all.json"] = {
+      -- ["kubernetes"] = {
+      --   "clusterrole.yaml",
+      --   "clusterrolebinding.yaml",
+      --   "comfigmap.yaml",
+      --   "cronjob.yaml",
+      --   "daemonset*.yaml",
+      --   "deployment*.yaml",
+      --   "horizontal_pod_autoscaler.yaml",
+      --   "hpa.yaml",
+      --   "ingress.yaml",
+      --   "namespace.yaml",
+      --   "pdb.yaml",
+      --   "pod.yaml",
+      --   "pod_disruption_budget.yaml",
+      --   "poddisruptionbudget.yaml",
+      --   "psp.yaml",
+      --   "rbac.yaml",
+      --   "replicaset.yaml",
+      --   "secret.yaml",
+      --   "secrets*.yaml",
+      --   "service*.yaml",
+      --   "service_account.yaml",
+      --   "serviceaccount.yaml",
+      --   "statefulset*.yaml",
+      --   "gotk-components.yaml", -- fluxcd
+      -- },
+      -- },
     },
   },
   on_new_config = function(new_config, _)
     -- disable format on kustomization.yaml
     if string.find(vim.api.nvim_buf_get_name(0), "kustomization.yaml") then
-      new_config.settings.yaml.format.enable = true
+      new_config.settings.yaml.format.enable = false
     end
   end,
 }

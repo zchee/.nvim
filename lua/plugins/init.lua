@@ -334,6 +334,9 @@ return {
             event = "LspAttach",
           },
           {
+            "b0o/schemastore.nvim",
+          },
+          {
             dir = util.src_path("github.com/LuaLS/LLS-Addons"), -- "LuaLS/LLS-Addons",
             ft = "lua",
           },
@@ -555,9 +558,6 @@ return {
             vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library"),
           },
         },
-      },
-      {
-        "b0o/schemastore.nvim",
       },
       {
         "ray-x/lsp_signature.nvim",

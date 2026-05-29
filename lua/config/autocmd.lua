@@ -452,6 +452,33 @@ vim.api.nvim_create_autocmd("LspAttach", {
     })
   end,
 })
+
+-- none-ls (nvimtools/none-ls.nvim) format on save.
+-- Go is handled by the LspCodeActionFormat autocmd below, so it is omitted here.
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = autocmd_lsp_format,
+  pattern = {
+    "*.lua",
+    "*.py",
+    "*.rs",
+    "*.yaml",
+    "*.yml",
+    "*.tf",
+    "*.tfvars",
+  },
+  callback = function(e)
+    vim.lsp.buf.format({
+      async = false,
+      bufnr = e.buf,
+      trimTrailingWhitespace = true,
+      insertFinalNewline = true,
+      trimFinalNewlines = true,
+      filter = function(client)
+        return client.name == "null-ls"
+      end,
+    })
+  end,
+})
 local augroup_code_action_format = vim.api.nvim_create_augroup("LspCodeActionFormat", { clear = false })
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = augroup_code_action_format,

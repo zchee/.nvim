@@ -1,4 +1,5 @@
 local null_ls = require("null-ls")
+local util = require("util")
 
 local formatting = null_ls.builtins.formatting
 local diagnostics = null_ls.builtins.diagnostics
@@ -20,7 +21,17 @@ null_ls.setup({
     formatting.yamlfmt,
 
     --- Go
-    diagnostics.golangci_lint,
+    -- NOTE(zchee): pin the absolute binary so the mise shim
+    -- (~/.local/share/mise/shims/golangci-lint), which may sit earlier in the
+    -- GUI/kitty PATH, is never invoked; the shim prints "mise ERROR ... not
+    -- currently active" to stdout, which none-ls then feeds to vim.json.decode
+    -- and crashes with "failed to decode json: ... invalid token at character 1".
+    -- format = "json_raw" additionally degrades any future non-JSON stdout to
+    -- "no diagnostics" instead of throwing a hard generator error.
+    diagnostics.golangci_lint.with({
+      command = util.go_path("bin", "golangci-lint"),
+      generator_opts = { format = "json_raw" },
+    }),
     --- Python
     require("none-ls.diagnostics.ruff"),
 

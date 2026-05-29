@@ -433,12 +433,10 @@ return {
       },
       {
         "nvimtools/none-ls.nvim",
-        -- enabled = false,
+        event = "VeryLazy",
         dependencies = {
-          "nvim-lua/plenary.nvim",
           "nvimtools/none-ls-extras.nvim",
-          -- "jay-babu/mason-null-ls.nvim",
-          -- "williamboman/mason.nvim",
+          "nvim-lua/plenary.nvim",
         },
         config = function()
           require("plugins.null-ls")

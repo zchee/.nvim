@@ -538,13 +538,13 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 })
 
 -- FocusGained
--- github.com/vovkasm/input-source-switcher
+-- github.com/zchee/imectl
 vim.api.nvim_create_autocmd({ "FocusGained" }, {
   group = autocmd_user,
   pattern = { "*" },
   callback = function()
-    if vim.fn.executable("issw") then
-      vim.fn.jobstart("issw com.apple.keylayout.ABC", { detach = true })
+    if vim.fn.executable("imectl") then
+      vim.fn.jobstart("imectl set com.apple.keylayout.ABC", { detach = true })
     end
   end,
 })

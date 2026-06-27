@@ -22,6 +22,11 @@ copilot.setup({
   -- copilot_model = "gpt-41-copilot",
   --- @class vim.lsp.Config : vim.lsp.ClientConfig
   server_opts_overrides = {
+    -- Disable Keychain encryption of the OAuth token to stop the auth popup on every file open.
+    -- See the server_opts_overrides comment on the copilot-cmp spec in lua/plugins/init.lua for details.
+    cmd_env = {
+      GITHUB_COPILOT_AUTH_TOKEN_ENCRYPTION = "false",
+    },
     settings = {
       telemetry = {
         telemetryLevel = "off",

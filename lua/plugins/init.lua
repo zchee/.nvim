@@ -635,6 +635,22 @@ return {
                   "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"
                 ),
               },
+              -- Stop copilot-language-server from encrypting its OAuth token with the macOS Keychain.
+              -- When encryption is on, the server fetches a "KeytarMasterKey" from the Keychain
+              -- (service=copilot-language-server, account=oauth-token-key). The Keychain "Always Allow"
+              -- ACL is bound to the code signature + path of the node binary that was granted access,
+              -- but Homebrew's node is ad-hoc signed and lives under a version-specific Cellar path
+              -- (e.g. Cellar/node/26.4.0/bin/node) that changes on every upgrade. So each node update
+              -- invalidates the ACL and the Keychain auth popup reappears on every file open.
+              -- Injecting the env var equivalent of `internal.auth.tokenEncryption = "false"` makes the
+              -- server store the token in plaintext (under ~/.config/github-copilot), eliminating the prompt.
+              -- The env var name derives from the server's internal rus() (camelCase -> SNAKE_CASE)
+              -- transform joined with the GITHUB_COPILOT_ prefix.
+              server_opts_overrides = {
+                cmd_env = {
+                  GITHUB_COPILOT_AUTH_TOKEN_ENCRYPTION = "false",
+                },
+              },
             },
             copilot_model = "gpt-41-copilot",
           },

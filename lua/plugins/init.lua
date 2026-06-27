@@ -453,6 +453,7 @@ return {
         config = function()
           require("plugins.aerial")
           vim.keymap.set("n", "<Space>o", function()
+            ---@diagnostic disable-next-line
             require("aerial").snacks_picker({ layout = { preset = "sidebar", preview = "main" } })
           end, { desc = "Symbols" })
         end,
@@ -463,7 +464,7 @@ return {
   -- Completion
   {
     "hrsh7th/nvim-cmp",
-    event = { "InsertEnter", "CmdlineEnter" },
+    event = { "VeryLazy" }, -- , "InsertEnter", "CmdlineEnter"
     dependencies = {
       {
         "hrsh7th/cmp-nvim-lsp",

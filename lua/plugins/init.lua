@@ -1580,6 +1580,7 @@ return {
         opts.server.default_settings = vim.tbl_deep_extend("force", opts.server.default_settings or {}, {
           ["rust-analyzer"] = {
             cargo = {
+              features = "all",
               allTargets = false,
               allFeatures = true,
               loadOutDirsFromCheck = true,
@@ -1588,8 +1589,16 @@ return {
                 invocationStrategy = "once",
               },
               extraEnv = {
+                RUSTFLAGS = os.getenv("RUSTFLAGS"),
                 CARGO_TARGET_DIR = "target/rust-analyzer",
                 SKIP_WASM_BUILD = "1",
+              },
+            },
+            check = {
+              extraEnv = {
+                CC = "clang",
+                CXX = "clang++",
+                VIRTUAL_ENV = vim.fn.getcwd() .. "/.venv",
               },
             },
             procMacro = {

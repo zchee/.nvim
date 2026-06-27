@@ -573,6 +573,8 @@ return {
               filetypes = {
                 ["*"] = false,
                 go = true,
+                lua = true,
+                sh = true,
               },
               panel = { enabled = false },
               suggestion = {
@@ -587,16 +589,16 @@ return {
                   dismiss = "<C-]>",
                 },
               },
-              --
-              -- copilot_node_command = util.homebrew_binary("node", "node"),
-              -- server = {
-              --   type = "nodejs",
-              --   -- custom_server_filepath = "/opt/local/lib/node_modules/@github/copilot-language-server/dist/language-server.js",
-              --   custom_server_filepath = vim.fs.joinpath(
-              --     util.getenv("BUN_INSTALL"),
-              --     "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"
-              --   ),
-              -- },
+
+              copilot_node_command = util.homebrew_binary("node", "node"),
+              server = {
+                type = "nodejs",
+                -- custom_server_filepath = "/opt/local/lib/node_modules/@github/copilot-language-server/dist/language-server.js",
+                custom_server_filepath = vim.fs.joinpath(
+                  util.getenv("BUN_INSTALL"),
+                  "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"
+                ),
+              },
             },
             copilot_model = "gpt-41-copilot",
           },

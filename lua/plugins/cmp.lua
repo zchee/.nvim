@@ -323,11 +323,11 @@ cmp.setup({
       name = "copilot",
       priority = 30,
       group_index = 30,
-      -- ---@param ctx cmp.Context
+      ---@param ctx cmp.Context
       entry_filter = function(_, ctx)
         if util.contains({ "go" }, ctx.filetype) then
           -- NOTE(zchee): only trigger Comment
-          return string.find(ctx.cursor_line, "^%s*//") ~= nil
+          return string.find(ctx.cursor_line, "^%s*//") ~= nil or string.find(ctx.cursor_line, 'fmt%.Errorf%("') ~= nil
         end
         return util.contains(ignore_filetypes, ctx.filetype) ~= nil
       end,

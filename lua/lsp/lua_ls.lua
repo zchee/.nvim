@@ -93,9 +93,9 @@ return {
           "duplicate-set-field",
         },
         libraryFiles = "Opened",
-        workspaceDelay = 3000,
+        workspaceDelay = 300,
         workspaceEvent = "OnChange", -- "OnSave",
-        workspaceRate = 100,
+        workspaceRate = 500,
       },
       format = {
         enable = true,
@@ -171,9 +171,4 @@ return {
     },
   },
   offsetEncodings = { "utf-16" },
-  -- on_init = function(client)
-  --   if client.server_capabilities then
-  --     client.server_capabilities.semanticTokensProvider = nil -- turn off semantic tokens
-  --   end
-  -- end,
 }

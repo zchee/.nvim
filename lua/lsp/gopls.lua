@@ -97,8 +97,8 @@ end
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.go_path("bin", "gopls"), "serve" },
-  -- cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" },
+  -- cmd = { util.go_path("bin", "gopls"), "serve" },
+  cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" },
   filetypes = { "go", "gotmpl", "gomod", "gowork" },
   root_dir = function(bufnr, on_dir)
     local fname = vim.api.nvim_buf_get_name(bufnr)
@@ -169,25 +169,27 @@ return {
     end,
   },
 
-  handlers = {
-    -- for tiny_inline_diagnostic
-    ["textDocument/publishDiagnostics"] = function() end,
-    -- ["textDocument/rangeFormatting"] = function(...)
-    --   vim.lsp.handlers["textDocument/rangeFormatting"](...)
-    --   if vim.fn.getbufinfo("%")[1].changed == 1 then
-    --     vim.cmd("noautocmd write")
-    --   end
-    -- end,
-    -- ["textDocument/formatting"] = function(...)
-    --   vim.lsp.handlers["textDocument/formatting"](...)
-    --   if vim.fn.getbufinfo("%")[1].changed == 1 then
-    --     vim.cmd("noautocmd write")
-    --   end
-    -- end,
-  },
+  -- handlers = {
+  --   -- for tiny_inline_diagnostic
+  --   -- ["textDocument/publishDiagnostics"] = function() end,
+  --   -- ["textDocument/rangeFormatting"] = function(...)
+  --   --   vim.lsp.handlers["textDocument/rangeFormatting"](...)
+  --   --   if vim.fn.getbufinfo("%")[1].changed == 1 then
+  --   --     vim.cmd("noautocmd write")
+  --   --   end
+  --   -- end,
+  --   -- ["textDocument/formatting"] = function(...)
+  --   --   vim.lsp.handlers["textDocument/formatting"](...)
+  --   --   if vim.fn.getbufinfo("%")[1].changed == 1 then
+  --   --     vim.cmd("noautocmd write")
+  --   --   end
+  --   -- end,
+  -- },
 
-  init_options = {
-    -- env = {},
+  settings = {
+    env = {
+      GOGC = "off",
+    },
     -- buildFlags = {},
     directoryFilters = {
       "-**/asm", -- mmcloughlin/avo
@@ -206,8 +208,7 @@ return {
     usePlaceholders = true,
     deepCompletion = true,
     completeUnimported = true,
-    completionBudget = "10ms", -- default: "100ms"
-    -- importsSource = "gopls", -- "off", "gopls", "goimports"
+    completionBudget = "100ms", -- default: "100ms", "10ms"
     matcher = "CaseSensitive", -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
     symbolMatcher = "CaseSensitive", -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
     symbolStyle = "Dynamic", -- "Package", "Full", "Dynamic"
@@ -391,6 +392,7 @@ return {
     -- mcpTools = {},
     renameMovesSubpackages = true,
     fileWatcher = "fsnotify", -- "off", "fsnotify", "poll"
+    moveType = true,
     testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
   },
 

@@ -56,7 +56,7 @@
     "globals": [],
     "globalsRegex": [],
     "severity": {},
-    "diagnosticInterval": 500
+    "diagnosticInterval": 50
   },
   "documentColor": {
     "enable": true

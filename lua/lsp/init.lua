@@ -3,7 +3,7 @@
 -- local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
 
-vim.lsp.log.set_level(vim.log.levels.ERROR) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
+vim.lsp.log.set_level(vim.log.levels.OFF) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
 vim.diagnostic.config({
   underline = false,
   virtual_text = false,

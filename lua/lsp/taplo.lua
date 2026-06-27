@@ -21,13 +21,14 @@ return {
           "https://taplo.tamasfe.dev/schema_index.json",
         },
         associations = {
-          [".*/\\.?codex/config.toml"] = "https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/core/config.schema.json",
+          -- [".*/\\.?codex/config.toml"] = "taplo://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/core/config.schema.json",
           -- [".*/\\.?codex/config.toml"] = "file:///Users/zchee/src/github.com/zchee/schema/codex.schema.json",
-          [".*/pyproject.toml"] = "file:///Users/zchee/src/github.com/zchee/schema/pyproject.uv.schema.json",
+          -- [".*/pyproject.toml"] = "taplo:///Users/zchee/src/github.com/zchee/schema/pyproject.uv.schema.json",
+          ["tombi/config.toml"] = "taplo://www.schemastore.org/tombi.json",
         },
         cache = {
-          memoryExpiration = 60, -- default: 60
-          diskExpiration = 600, -- default: 600
+          memoryExpiration = 120, -- default: 60
+          diskExpiration = 1200, -- default: 600
         },
       },
       completion = {

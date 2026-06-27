@@ -6,4 +6,11 @@ return {
   filetypes = { "toml" },
   -- NOTE(zchee): tombi config exists in `~/.config/tombi/config.toml`
   settings = {},
+  handlers = {
+    ["window/logMessage"] = function(_, result, _)
+      if result.type > vim.lsp.protocol.MessageType.Error then
+        return
+      end
+    end,
+  },
 }

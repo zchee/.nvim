@@ -5,6 +5,66 @@ compat.patch_quickfile_module(require("snacks.quickfile"))
 
 ---@class snacks.Config: snacks.plugins.Config
 snacks.setup({
+  ---@type table<string, snacks.win.Config>
+  styles = {
+    help = {
+      position = "float",
+      backdrop = false,
+      border = "top",
+      row = -1,
+      width = 0,
+      height = 0.3,
+    },
+    notification = {
+      border = true,
+      zindex = 100,
+      ft = "markdown",
+      wo = {
+        winblend = 5,
+        wrap = false,
+        conceallevel = 2,
+        colorcolumn = "",
+      },
+      bo = { filetype = "snacks_notif" },
+    },
+    terminal = {
+      bo = {
+        filetype = "snacks_terminal",
+      },
+      wo = {},
+      stack = true,
+      keys = {
+        q = "hide",
+        gf = function(self)
+          local f = vim.fn.findfile(vim.fn.expand("<cfile>"), "**")
+          if f == "" then
+            Snacks.notify.warn("No file under cursor")
+          else
+            self:hide()
+            vim.schedule(function()
+              vim.cmd("e " .. f)
+            end)
+          end
+        end,
+        term_normal = {
+          "<esc>",
+          function(self)
+            self.esc_timer = self.esc_timer or vim.uv.new_timer()
+            if self.esc_timer:is_active() then
+              self.esc_timer:stop()
+              vim.cmd("stopinsert")
+            else
+              self.esc_timer:start(200, 0, function() end)
+              return "<esc>"
+            end
+          end,
+          mode = "t",
+          expr = true,
+          desc = "Double escape to normal mode",
+        },
+      },
+    },
+  },
   animate = { enabled = false },
   bigfile = { enabled = true },
   dashboard = { enabled = false },
@@ -327,6 +387,9 @@ snacks.setup({
   scroll = { enabled = false },
   statuscolumn = { enabled = false },
   terminal = {
+    bo = {
+      filetype = "snacks_terminal",
+    },
     win = {
       max_width = 300,
       max_height = 300,

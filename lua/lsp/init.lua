@@ -591,7 +591,10 @@ for server, config in pairs(servers) do
   vim.lsp.enable(server, true)
 end
 
-vim.keymap.set({ "n" }, "K", "<Cmd>Lspsaga hover_doc<CR>", { silent = true })
+-- vim.keymap.set({ "n" }, "K", "<Cmd>Lspsaga hover_doc<CR>", { silent = true })
+vim.keymap.set({ "n" }, "K", function()
+  require("hover").open()
+end, { desc = "hover.nvim (open)" })
 vim.keymap.set({ "n" }, "<C-]>", function()
   require("snacks").picker.lsp_definitions()
 end, { silent = true })

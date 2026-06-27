@@ -11,10 +11,66 @@ function M.cmp_or(val, default)
   return val
 end
 
----Switch returns function instead of table
----http://lua-users.org/wiki/SwitchStatement
+--- Dynamically builds an ultra-fast if-elseif dispatch function.
 ---
----Usage:
+--- @param default_code string Lua code snippet for the default (fallback) case.
+--- @param cases_config table A table mapping keys to their target Lua code snippets.
+--- @return function The generated optimized function.
+---
+---```lua
+---local my_fast_switch = util.switch(
+---  "return 0", -- default case
+---  {
+---    ["add"] = "local a, b = ...; return a + b",
+---    ["sub"] = "local a, b = ...; return a - b",
+---    ["mul"] = "local a, b = ...; return a * b"
+---  }
+---)
+---
+---local function calculate(operation, x, y)
+---  return my_fast_switch(operation, x, y)
+---end
+---
+---print(calculate("add", 100, 50)) -- 150
+---print(calculate("sub", 100, 50)) -- 50
+---```
+function M.fast_switch(default_code, cases_config)
+  -- Initialize the function signature (accepts varargs ...)
+  local code_lines = { "return function(key, ...)" }
+  local is_first = true
+
+  for k, v in ipairs(cases_config) do
+    -- Handle quotes based on the key's type
+    local condition = type(k) == "string" and ('"' .. k .. '"') or tostring(k)
+
+    if is_first then
+      table.insert(code_lines, "  if key == " .. condition .. " then")
+      is_first = false
+    else
+      table.insert(code_lines, "  elseif key == " .. condition .. " then")
+    end
+    -- Inline the execution block
+    table.insert(code_lines, "    " .. v)
+  end
+
+  if not is_first then
+    table.insert(code_lines, "  else")
+    table.insert(code_lines, "    " .. default_code)
+    table.insert(code_lines, "  end")
+  end
+  table.insert(code_lines, "end")
+
+  -- Concatenate the lines into a single Lua code string
+  local final_code = table.concat(code_lines, "\n")
+
+  -- Compile into bytecode using loadstring and return the generated function
+  local chunk = assert(loadstring(final_code), "Failed to compile switch")
+  return chunk()
+end
+
+--- [Switch returns function instead of table](https://lua-users.org/wiki/SwitchStatement)
+--- Usage:
+--- ```lua
 --- for case = 1,4 do
 ---   switch(case) {
 ---     [1] = function() print("one") end,
@@ -22,6 +78,7 @@ end
 ---     default = function(x) print("default",x) end,
 ---   }
 --- end
+--- ```
 ---
 ---@param case any
 ---@return function
@@ -50,6 +107,9 @@ function M.is_exists(path)
   end
 end
 
+--- Returns true if the given table contains the specified element string,
+--- false otherwise.
+---
 ---@param tbl string[]
 ---@param element string
 ---@return boolean
@@ -62,8 +122,7 @@ function M.contains(tbl, element)
   return false
 end
 
----
----Returns the value of the process environment variable `varname`.
+--- Returns the value of the process environment variable `varname`.
 ---
 ---@param varname string
 ---@return string?
@@ -72,8 +131,7 @@ function M.getenv(varname)
   return tostring(os.getenv(varname))
 end
 
----
----expands env path and reads symbolic link.
+--- Expands env path and reads symbolic link.
 ---
 ---@param path string
 ---@return string
@@ -81,32 +139,28 @@ function M.readlink(path)
   return vim.uv.fs_readlink(path) or ""
 end
 
----
----Return XDG_CACHE_HOME
+--- Return XDG_CACHE_HOME env path wihth symbolic link resolved
 ---
 ---@return string
 function M.xdg_cache_home()
   return tostring(M.readlink(tostring(os.getenv("XDG_CACHE_HOME"))))
 end
 
----
----Return XDG_CONFIG_HOME
+--- Return XDG_CONFIG_HOME env path wihth symbolic link resolved
 ---
 ---@return string
 function M.xdg_config_home()
   return tostring(M.readlink(tostring(os.getenv("XDG_CONFIG_HOME"))))
 end
 
----
----Return XDG_DATA_HOME
+--- Return XDG_DATA_HOME env path wihth symbolic link resolved
 ---
 ---@return string
 function M.xdg_data_home()
   return tostring(M.readlink(tostring(os.getenv("XDG_DATA_HOME"))))
 end
 
----
----Return XDG_STATE_HOME
+--- Return XDG_STATE_HOME env path wihth symbolic link resolved
 ---
 ---@return string
 function M.xdg_state_home()
@@ -131,8 +185,7 @@ function M.src_path(...)
   return vim.fs.joinpath(vim.uv.os_homedir(), "src", ...)
 end
 
----
----Returns the UNIX prefix directory according to the macOS cpu architecture.
+--- Returns the UNIX prefix directory according to the macOS cpu architecture.
 ---
 ---@param ... string
 ---@return string
@@ -148,8 +201,7 @@ function M.prefix(...)
   return vim.fs.joinpath(tostring(prefix), ...)
 end
 
----
----Returns the Homebrew prefix directory according to the macOS cpu architecture.
+--- Returns the Homebrew prefix directory according to the macOS cpu architecture.
 ---
 ---@return string
 function M.homebrew_prefix()
@@ -175,6 +227,8 @@ function M.homebrew_portable_ruby(binary)
   return vim.fs.joinpath(prefix, "Library/Homebrew/vendor/portable-ruby/current/bin", binary)
 end
 
+--- Returns the Homebrew binary path for the given formula and binary name.
+---
 ---@param formula string homebrew formula name
 ---@param binary string binary name
 ---@return string
@@ -182,18 +236,32 @@ function M.homebrew_binary(formula, binary)
   return vim.fs.joinpath(M.homebrew_prefix(), "opt", formula, "bin", binary)
 end
 
+--- Returns the bun binary path for the given binary name.
+---
 ---@param binary string binary name
 ---@return string
 function M.bun_prefix(binary)
   return tostring(vim.fs.joinpath(os.getenv("BUN_INSTALL"), "bin", binary))
 end
 
+--- Returns the pnpm binary path for the given binary name.
+---
 ---@param binary string binary name
 ---@return string
 function M.pnpm_prefix(binary)
   return tostring(vim.fs.joinpath(os.getenv("PNPM_HOME"), binary))
 end
 
+--- Returns the rbenv binary path for the given binary name.
+---
+---@param binary string binary name
+---@return string
+function M.rbenv_prefix(binary)
+  return tostring(vim.fs.joinpath(os.getenv("RBENV_ROOT"), "shims", binary))
+end
+
+--- Registers a callback function to be executed when the "VeryLazy" event is triggered.
+---
 ---@param fn fun()
 M.on_very_lazy = function(fn)
   vim.api.nvim_create_autocmd("User", {
@@ -205,6 +273,8 @@ M.on_very_lazy = function(fn)
   })
 end
 
+--- Loads the specified modules either immediately or lazily based on whether a file is opened at startup.
+---
 ---@param modules string[] modules like "autocmds" | "options" | "keymaps"
 M.lazy_load = function(modules)
   -- when no file is opened at startup
@@ -224,6 +294,8 @@ M.lazy_load = function(modules)
   end
 end
 
+--- Registers a callback function to be executed when an LSP client attaches to a buffer.
+---
 ---@param on_attach fun(client, bufnr)
 function M.on_attach(on_attach)
   vim.api.nvim_create_autocmd("LspAttach", {

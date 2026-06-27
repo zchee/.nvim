@@ -1,14 +1,19 @@
-local null_ls = require("null-ls")
 local util = require("util")
+
+local h = require("null-ls.helpers")
+local log = require("null-ls.logger")
+local null_ls = require("null-ls")
+local u = require("null-ls.utils")
 
 local formatting = null_ls.builtins.formatting
 local diagnostics = null_ls.builtins.diagnostics
 local code_actions = null_ls.builtins.code_actions
 
 null_ls.setup({
+  log_level = "error",
   sources = {
     --- Go
-    formatting.gofumpt,
+    -- formatting.gofumpt,
     -- require("none-ls.formatting.goimports_rereviser"),
     --- Lua
     formatting.stylua,
@@ -30,17 +35,86 @@ null_ls.setup({
     -- and crashes with "failed to decode json: ... invalid token at character 1".
     -- format = "json_raw" additionally degrades any future non-JSON stdout to
     -- "no diagnostics" instead of throwing a hard generator error.
-    diagnostics.golangci_lint.with({
-      command = util.go_path("bin", "golangci-lint"),
-      generator_opts = { format = "json_raw" },
-    }),
+    -- diagnostics.golangci_lint.with({
+    --   generator_opts = {
+    --     command = util.go_path("bin", "golangci-lint"),
+    --     to_stdin = true,
+    --     from_stderr = false,
+    --     ignore_stderr = true,
+    --     multiple_files = true,
+    --     args = h.cache.by_bufnr(function(params)
+    --       -- params.command respects prefer_local and only_local options
+    --       local version = vim.system({ params.command, "version" }, { text = true }):wait().stdout
+    --       if not version then
+    --         -- early return if not found version
+    --         return {}
+    --       end
+    --       -- from observation the version can be either v2.x.x or 2.x.x
+    --       -- depending on packaging
+    --       if version:match("version v2.0.") or version:match("version 2.0.") then
+    --         -- for v2.0.{0,1,2} Go submodules (with golangci-lint config at
+    --         -- the project root) require "relative-path-mode: gomod" or cwd
+    --         -- set to where the golangci-lint config file is and $DIRNAME
+    --         -- in extra_args
+    --         return {
+    --           "run",
+    --           "--output.text.path=/dev/null",
+    --           "--fix=false",
+    --           "--show-stats=false",
+    --           "--output.json.path=stdout",
+    --         }
+    --       elseif version:match("version v2") or version:match("version 2") then
+    --         return {
+    --           "run",
+    --           "--output.text.path=/dev/null",
+    --           "--fix=false",
+    --           "--show-stats=false",
+    --           "--output.json.path=stdout",
+    --           "--path-mode=abs",
+    --         }
+    --       else
+    --         return { "run", "--output.text.path=/dev/null", "--fix=false", "--out-format=json" }
+    --       end
+    --     end),
+    --     check_exit_code = function(code)
+    --       return code <= 2
+    --     end,
+    --     on_output = function(params)
+    --       local diags = {}
+    --       if params.output["Report"] and params.output["Report"]["Error"] then
+    --         log:warn(params.output["Report"]["Error"])
+    --         return diags
+    --       end
+    --       local issues = params.output["Issues"]
+    --       if type(issues) == "table" then
+    --         for _, d in ipairs(issues) do
+    --           -- prepend cwd to filename to get absolute path unless
+    --           -- already absolute
+    --           local filename = d.Pos.Filename
+    --           if filename:sub(1, #params.cwd) ~= params.cwd then
+    --             filename = u.path.join(params.cwd, d.Pos.Filename)
+    --           end
+    --           table.insert(diags, {
+    --             source = string.format("golangci-lint: %s", d.FromLinter),
+    --             row = d.Pos.Line,
+    --             col = d.Pos.Column,
+    --             message = d.Text,
+    --             severity = h.diagnostics.severities["warning"],
+    --             filename = filename,
+    --           })
+    --         end
+    --       end
+    --       return diags
+    --     end,
+    --   },
+    -- }),
     --- Python
     require("none-ls.diagnostics.ruff"),
 
     --- Go
     -- code actions
-    code_actions.gomodifytags,
-    code_actions.impl,
+    -- code_actions.gomodifytags,
+    -- code_actions.impl,
   },
 })
 

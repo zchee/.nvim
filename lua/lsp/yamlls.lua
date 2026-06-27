@@ -4,13 +4,6 @@ local util = require("util")
 --- https://github.com/redhat-developer/yaml-language-server/blob/main/src/languageserver/handlers/settingsHandlers.ts
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  -- NOTE(zchee): use self-compiled for disabled "Matches multiple schemas when only one must validate." error
-  -- cmd = {
-  --   util.homebrew_binary("node", "node"),
-  --   util.src_path("github.com/redhat-developer/yaml-language-server/bin/yaml-language-server"),
-  --   "--stdio",
-  -- },
-  -- cmd = { "/opt/local/var/bun/bin/yaml-language-server", "--stdio" },
   cmd = { util.bun_prefix("yaml-language-server"), "--stdio" },
   root_markers = { ".git" },
   settings = {
@@ -49,7 +42,7 @@ return {
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/openapi-3.X.json"] = {
           "openapi.yml",
           "openapi.yaml",
-          "*openapi*.yaml",
+          "*openapi*.yml",
           "*openapi*.yaml",
           "**/openapi-spec/*.yaml",
         },
@@ -58,7 +51,75 @@ return {
           "**/service.yaml",
           "cloud-run/*.yaml",
         },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json"] = {
+          "action.yml",
+          "action.yaml",
+        },
+        ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
+          ".github/workflows/*.yml",
+          ".github/workflows/*.yaml",
+        },
       },
+      -- schemas = require("schemastore").json.schemas({
+      --   extra = {
+      --     {
+      --       description = "Golangci-lint Configuration",
+      --       name = "golangci.next.jsonschema.json",
+      --       url = "https://raw.githubusercontent.com/golangci/golangci-lint/refs/heads/main/jsonschema/golangci.next.jsonschema.json",
+      --       fileMatch = {
+      --         ".golangci.yml",
+      --         ".golangci.yaml",
+      --       },
+      --     },
+      --     {
+      --       name = "github-action.json",
+      --       url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json",
+      --       fileMatch = {
+      --         "*/action.ya?ml",
+      --       },
+      --     },
+      --     {
+      --       name = "github-workflow.json",
+      --       url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json",
+      --       fileMatch = {
+      --         ".github/workflows/*.yml",
+      --         "**/.github/workflows/*.yaml",
+      --       },
+      --       -- github-workflow
+      --       -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
+      --       --   ".github/workflows/*.yml",
+      --       --   ".github/workflows/*.yaml",
+      --       -- },
+      --     },
+      --     -- github-action
+      --     -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-action.json"] = {
+      --     --   "*/action.yml",
+      --     --   "*/action.yaml",
+      --     --   "**/action.yml",
+      --     --   "**/action.yaml",
+      --     -- },
+      --     -- github-issue-forms
+      --     -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-forms.json"] = {
+      --     --   ".github/ISSUE_TEMPLATE/*.yml",
+      --     --   ".github/ISSUE_TEMPLATE/*.yaml",
+      --     -- },
+      --     -- github-issue-config
+      --     -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-issue-config.json"] = {
+      --     --   ".github/ISSUE_TEMPLATE/config.yml",
+      --     --   ".github/ISSUE_TEMPLATE/config.yaml",
+      --     -- },
+      --     -- github-workflow-templates
+      --     -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow-template-properties.json"] = {
+      --     --   ".github/workflow-templates/*.yml",
+      --     --   ".github/workflow-templates/*.yaml",
+      --     -- },
+      --     -- github-workflow
+      --     -- ["https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json"] = {
+      --     --   ".github/workflows/*.yml",
+      --     --   ".github/workflows/*.yaml",
+      --     -- },
+      --   },
+      -- }),
       -- customTags = {
       --   "python/object/apply",
       --   "!!python/object/apply",
@@ -418,10 +479,10 @@ return {
       -- },
     },
   },
-  on_new_config = function(new_config, _)
-    -- disable format on kustomization.yaml
-    if string.find(vim.api.nvim_buf_get_name(0), "kustomization.yaml") then
-      new_config.settings.yaml.format.enable = false
-    end
-  end,
+  -- on_new_config = function(new_config, _)
+  --   -- disable format on kustomization.yaml
+  --   if string.find(vim.api.nvim_buf_get_name(0), "kustomization.yaml") then
+  --     new_config.settings.yaml.format.enable = false
+  --   end
+  -- end,
 }

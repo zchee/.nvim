@@ -146,7 +146,12 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
   group = autocmd_user,
   pattern = "*",
-  callback = function()
+  callback = function(args)
+    --[[ NOTE(zchee): ignore gitcommit filetype ]]
+    local ft = vim.api.nvim_get_option_value("filetype", { buf = args.buf })
+    if ft == "gitcommit" then
+      return
+    end
     if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then --  and not vim.bo.filetype == "gitcommit" and not vim.bo.filetype == "gitrebase"
       vim.cmd([[
         execute "silent! keepjumps normal! g`\"zt\""

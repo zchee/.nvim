@@ -3,6 +3,44 @@
 -- local lspconfig = require("lspconfig")
 local lspconfig_configs = require("lspconfig.configs")
 
+-- Work around a Neovim 0.13-dev regression in the semantic-tokens capability.
+--
+-- STHighlighter registers a buffer-wide `LspNotify` autocmd (keyed by buffer,
+-- not by client), so `didOpen`/`didChange` from *any* attached client invokes
+-- `STHighlighter:send_request(client_id)`. That method calls
+-- `self:reset_timer(client_id)` *before* it guards `client and state`, and
+-- `reset_timer` dereferences `state.timer` unconditionally. For a client whose
+-- per-client `state` was never created -- i.e. one that does not advertise
+-- `textDocument/semanticTokens`, or whose `on_attach` has not run yet -- `state`
+-- is nil and the autocmd throws:
+--   semantic_tokens.lua: attempt to index local 'state' (a nil value)
+-- This fires on Go buffers as soon as a second (non-semantic-token) client
+-- touches the buffer. Patch the shared STHighlighter metatable (intentionally
+-- exposed as `__STHighlighter`) to early-return when no state exists, mirroring
+-- the guard `send_request` already applies a few lines later. Once upstream
+-- ships the fix the guard is a harmless no-op (state is non-nil). Wrapped in a
+-- pcall and existence checks so config loading never breaks if a future Neovim
+-- removes the escape hatch or renames the method.
+pcall(function()
+  local st = require("vim.lsp.semantic_tokens")
+  local STHighlighter = st.__STHighlighter
+  if not STHighlighter or type(STHighlighter.reset_timer) ~= "function" then
+    return
+  end
+  if STHighlighter.__reset_timer_state_guard then
+    return
+  end
+  STHighlighter.__reset_timer_state_guard = true
+
+  local orig_reset_timer = STHighlighter.reset_timer
+  function STHighlighter:reset_timer(client_id)
+    if not self.client_state[client_id] then
+      return
+    end
+    return orig_reset_timer(self, client_id)
+  end
+end)
+
 vim.lsp.log.set_level(vim.log.levels.OFF) -- "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"
 vim.diagnostic.config({
   underline = false,

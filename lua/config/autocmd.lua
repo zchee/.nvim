@@ -430,29 +430,29 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 -- })
 
 -- BufWritePre
-local autocmd_lsp_format = vim.api.nvim_create_augroup("LspFormat", { clear = true })
-vim.api.nvim_create_autocmd("LspAttach", {
-  group = autocmd_lsp_format,
-  pattern = {
-    -- "*.lua",
-    "*.zig",
-  },
-  callback = function(args)
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      buffer = args.buf,
-      callback = function()
-        vim.lsp.buf.format({
-          async = false,
-          trimTrailingWhitespace = true,
-          insertFinalNewline = true,
-          trimFinalNewlines = true,
-          id = args.data.client_id,
-        })
-      end,
-    })
-  end,
-})
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--   group = autocmd_lsp_format,
+--   pattern = {
+--     -- "*.lua",
+--     "*.zig",
+--   },
+--   callback = function(args)
+--     vim.api.nvim_create_autocmd("BufWritePre", {
+--       buffer = args.buf,
+--       callback = function()
+--         vim.lsp.buf.format({
+--           async = false,
+--           trimTrailingWhitespace = true,
+--           insertFinalNewline = true,
+--           trimFinalNewlines = true,
+--           id = args.data.client_id,
+--         })
+--       end,
+--     })
+--   end,
+-- })
 
+local autocmd_lsp_format = vim.api.nvim_create_augroup("LspFormat", { clear = true })
 -- none-ls (nvimtools/none-ls.nvim) format on save.
 -- Go is handled by the LspCodeActionFormat autocmd below, so it is omitted here.
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -461,32 +461,39 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     "*.lua",
     "*.py",
     "*.rs",
-    "*.yaml",
-    "*.yml",
     "*.tf",
     "*.tfvars",
+    "*.ts",
+    "*.yaml",
+    "*.yml",
+    "*.zig",
   },
-  callback = function(e)
-    vim.lsp.buf.format({
+  callback = function(args)
+    ---@class vim.lsp.buf.format.Opts
+    local opts = {
       async = false,
-      bufnr = e.buf,
+      bufnr = args.buf,
       trimTrailingWhitespace = true,
       insertFinalNewline = true,
       trimFinalNewlines = true,
       filter = function(client)
         return client.name == "null-ls"
       end,
-    })
+    }
+    vim.lsp.buf.format(opts)
   end,
 })
+
 local augroup_code_action_format = vim.api.nvim_create_augroup("LspCodeActionFormat", { clear = false })
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = augroup_code_action_format,
   pattern = {
     "*.go",
+    "*.toml",
   },
-  callback = function(e)
-    if string.find(tostring(vim.uv.fs_realpath(vim.api.nvim_buf_get_name(e.buf))), "bytedance/sonic") then -- ignore bytedance/sonic
+  callback = function(args)
+    local buf_name = vim.api.nvim_buf_get_name(args.buf)
+    if string.find(buf_name, "bytedance/sonic") then -- ignore bytedance/sonic
       return
     end
 
@@ -499,7 +506,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
     }
 
     ---@type table<integer, {error: lsp.ResponseError?, result: any}>?
-    local result = vim.lsp.buf_request_sync(e.buf, "textDocument/codeAction", params)
+    local result = vim.lsp.buf_request_sync(args.buf, "textDocument/codeAction", params)
     for cid, res in pairs(result or {}) do
       for _, r in pairs(res.result or {}) do
         if r.edit then

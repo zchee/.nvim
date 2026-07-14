@@ -59,6 +59,9 @@ return {
           ".github/workflows/*.yml",
           ".github/workflows/*.yaml",
         },
+        ["https://www.schemastore.org/codex-skill-metadata.json"] = {
+          "**/agents/openai.yaml",
+        },
       },
       -- schemas = require("schemastore").json.schemas({
       --   extra = {

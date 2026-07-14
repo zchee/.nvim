@@ -32,8 +32,7 @@ return {
       analysis = {
         autoImportCompletions = true,
         autoSearchPaths = true,
-        diagnosticMode = "openFilesOnly", -- "workspace",
-        -- logLevel = "Error",
+        diagnosticMode = "workspace", -- "workspace", "openFilesOnly",
         inlayHints = {
           variableTypes = true,
           callArgumentNames = true,

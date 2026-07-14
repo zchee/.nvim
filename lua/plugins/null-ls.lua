@@ -18,8 +18,8 @@ null_ls.setup({
     --- Lua
     formatting.stylua,
     --- Python
-    require("none-ls.formatting.ruff"),
-    require("none-ls.formatting.ruff_format"),
+    -- require("none-ls.formatting.ruff"),
+    -- require("none-ls.formatting.ruff_format"),
     --- Rust
     require("none-ls.formatting.rustfmt"),
     --- YAML

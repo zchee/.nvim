@@ -3,7 +3,7 @@ local util = require("util")
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.bun_prefix("vscode-json-language-server"), "--stdio" },
-  filetypes = { "json", "json5", "jsonschema" },
+  filetypes = { "json", "jsonc", "json5", "jsonschema" },
   -- https://github.com/microsoft/vscode/blob/main/extensions/json-language-features/package.json
   settings = {
     json = {
@@ -45,11 +45,16 @@ return {
         -- },
         -- extra = {
         --   {
-        --     name = "codex.hooks.schema.json",
+        --     name = "Codex Hooks",
         --     description = "Codex hooks JSON Schema",
+        --     fileMatch = ".*/%.?codex/hooks.json",
         --     url = "https://raw.githubusercontent.com/zchee/schema/refs/heads/main/codex.hooks.schema.json",
-        --     -- fileMatch = { ".*/%.codex/hooks.json" },
-        --     fileMatch = ".?codex/hooks.json$",
+        --   },
+        --   {
+        --     name = "Codex Plugin Manifest",
+        --     description = "OpenAI Codex plugin manifest file",
+        --     fileMatch = "**/%.codex-plugin/plugin.json",
+        --     url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/codex-plugin-manifest.json",
         --   },
         -- },
       }),

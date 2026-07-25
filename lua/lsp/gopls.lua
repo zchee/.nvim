@@ -189,6 +189,7 @@ return {
   settings = {
     env = {
       GOGC = "off",
+      GOMEMLIMIT = "2GiB",
     },
     -- buildFlags = {},
     directoryFilters = {
@@ -393,6 +394,7 @@ return {
     renameMovesSubpackages = true,
     fileWatcher = "fsnotify", -- "off", "fsnotify", "poll"
     moveType = true,
+    moveDeclaration = true,
     testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
   },
 

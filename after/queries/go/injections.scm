@@ -108,3 +108,31 @@
    (#lua-match? @injection.content "^`[\n|\t| ]*\{.*\}[\n|\t| ]*`$")
    (#offset! @injection.content 0 1 0 -1)
    (#set! injection.language "json")))
+
+; ----------------------------------------------------------------
+; printf format verbs inside raw string literals
+;
+; Upstream nvim-treesitter only injects the printf parser into
+; (interpreted_string_literal), so `fmt.Fprintf(&req, `GET %s%s`, ...)`
+; loses the @character.printf highlight that the quoted form gets.
+
+((call_expression
+  function: (selector_expression
+    field: (field_identifier) @_method)
+  arguments: (argument_list
+    .
+    (raw_string_literal
+      (raw_string_literal_content) @injection.content)))
+ (#any-of? @_method "Printf" "Sprintf" "Fatalf" "Scanf" "Errorf" "Skipf" "Logf")
+ (#set! injection.language "printf"))
+
+((call_expression
+  function: (selector_expression
+    field: (field_identifier) @_method)
+  arguments: (argument_list
+    (_)
+    .
+    (raw_string_literal
+      (raw_string_literal_content) @injection.content)))
+ (#any-of? @_method "Fprintf" "Fscanf" "Appendf" "Sscanf")
+ (#set! injection.language "printf"))

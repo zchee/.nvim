@@ -1,6 +1,6 @@
-; Code token from: https://github.com/ray-x/go.nvim/blob/master/after/queries/go/injections.scm
-
 ;; extends
+;
+; Code token from: https://github.com/ray-x/go.nvim/blob/master/after/queries/go/injections.scm
 
 ; inject sql in single line strings
 ; e.g. db.GetContext(ctx, "SELECT * FROM users WHERE name = 'John'")

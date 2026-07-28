@@ -387,7 +387,8 @@ return {
           aggressive_mode = false,
           excluded_lsp_clients = {
             "gopls",
-            "rust_analyzer",
+            -- rustaceanvim names its client "rust-analyzer", not "rust_analyzer".
+            "rust-analyzer",
             "taplo",
           },
           grace_period = 60 * 15,
@@ -1530,77 +1531,90 @@ return {
     -- Rust
     {
       "mrcjkb/rustaceanvim",
-      opts = function(_, opts)
-        local prev_on_attach = opts.server and opts.server.on_attach
-        opts.tools = vim.tbl_deep_extend("force", opts.tools or {}, {
+      -- rustaceanvim exposes no `setup()`: it is configured through `vim.g.rustaceanvim`
+      -- and lazy-loads itself from its own ftplugin, so lazy.nvim must not manage it
+      -- via `opts`/`config` (that path calls `require("rustaceanvim").setup(opts)`).
+      lazy = false,
+      init = function()
+        -- Keymaps live on LspAttach rather than in `server.on_attach`: rustaceanvim
+        -- merges `vim.lsp.config["rust-analyzer"]` over its own `server` table with
+        -- "force", so the global `vim.lsp.config("*")` on_attach set in lua/lsp/init.lua
+        -- would silently replace ours.
+        vim.api.nvim_create_autocmd("LspAttach", {
+          group = vim.api.nvim_create_augroup("rustaceanvim_keymaps", { clear = true }),
+          callback = function(args)
+            local client = vim.lsp.get_client_by_id(args.data.client_id)
+            if not client or client.name ~= "rust-analyzer" then
+              return
+            end
+
+            local kopts = { silent = true, buffer = args.buf }
+            local map = vim.keymap.set
+
+            map("n", "<leader>ra", function()
+              vim.cmd.RustLsp("codeAction")
+            end, vim.tbl_extend("force", kopts, { desc = "Rust code action" }))
+            map("n", "<leader>rd", function()
+              vim.cmd.RustLsp("debuggables")
+            end, vim.tbl_extend("force", kopts, { desc = "Rust debuggables" }))
+            map("n", "<leader>rr", function()
+              vim.cmd.RustLsp("runnables")
+            end, vim.tbl_extend("force", kopts, { desc = "Rust runnables" }))
+            map("n", "<leader>rR", function()
+              vim.cmd.RustLsp({ "runnables", bang = true })
+            end, vim.tbl_extend("force", kopts, { desc = "Rerun last runnable" }))
+            map("n", "<leader>rt", function()
+              vim.cmd.RustLsp("testables")
+            end, vim.tbl_extend("force", kopts, { desc = "Rust testables" }))
+            map("n", "<leader>rT", function()
+              vim.cmd.RustLsp({ "testables", bang = true })
+            end, vim.tbl_extend("force", kopts, { desc = "Rerun last test" }))
+            map("n", "<leader>rm", function()
+              vim.cmd.RustLsp("expandMacro")
+            end, vim.tbl_extend("force", kopts, { desc = "Expand macro" }))
+            map("n", "<leader>rc", function()
+              vim.cmd.RustLsp("openCargo")
+            end, vim.tbl_extend("force", kopts, { desc = "Open Cargo.toml" }))
+            map("n", "<leader>rp", function()
+              vim.cmd.RustLsp("parentModule")
+            end, vim.tbl_extend("force", kopts, { desc = "Parent module" }))
+            map("n", "<leader>rj", function()
+              vim.cmd.RustLsp("joinLines")
+            end, vim.tbl_extend("force", kopts, { desc = "Join lines" }))
+            map("n", "<leader>rs", function()
+              vim.cmd.RustLsp("ssr")
+            end, vim.tbl_extend("force", kopts, { desc = "Structural search replace" }))
+            map("n", "<leader>re", function()
+              vim.cmd.RustLsp("explainError")
+            end, vim.tbl_extend("force", kopts, { desc = "Explain error" }))
+            map("n", "<leader>rD", function()
+              vim.cmd.RustLsp("renderDiagnostic")
+            end, vim.tbl_extend("force", kopts, { desc = "Render diagnostic" }))
+            map("n", "<leader>rv", function()
+              vim.cmd.RustLsp({ "view", "hir" })
+            end, vim.tbl_extend("force", kopts, { desc = "View HIR" }))
+            map("n", "<leader>rV", function()
+              vim.cmd.RustLsp({ "view", "mir" })
+            end, vim.tbl_extend("force", kopts, { desc = "View MIR" }))
+            map("n", "K", function()
+              vim.cmd.RustLsp({ "hover", "actions" })
+            end, vim.tbl_extend("force", kopts, { desc = "Rust hover actions" }))
+          end,
+        })
+
+        ---@type rustaceanvim.Opts
+        local opts = {}
+        opts.tools = {
           float_win_config = { border = "rounded", auto_focus = true },
           code_actions = { ui_select_fallback = true },
-          rustc = { edition = "2024" },
-        })
-        opts.server = opts.server or {}
-        opts.server.on_attach = function(client, bufnr)
-          if prev_on_attach then
-            prev_on_attach(client, bufnr)
-          end
-          local kopts = { silent = true, buffer = bufnr }
-          local map = vim.keymap.set
-
-          map("n", "<leader>ra", function()
-            vim.cmd.RustLsp("codeAction")
-          end, vim.tbl_extend("force", kopts, { desc = "Rust code action" }))
-          map("n", "<leader>rd", function()
-            vim.cmd.RustLsp("debuggables")
-          end, vim.tbl_extend("force", kopts, { desc = "Rust debuggables" }))
-          map("n", "<leader>rr", function()
-            vim.cmd.RustLsp("runnables")
-          end, vim.tbl_extend("force", kopts, { desc = "Rust runnables" }))
-          map("n", "<leader>rR", function()
-            vim.cmd.RustLsp({ "runnables", bang = true })
-          end, vim.tbl_extend("force", kopts, { desc = "Rerun last runnable" }))
-          map("n", "<leader>rt", function()
-            vim.cmd.RustLsp("testables")
-          end, vim.tbl_extend("force", kopts, { desc = "Rust testables" }))
-          map("n", "<leader>rT", function()
-            vim.cmd.RustLsp({ "testables", bang = true })
-          end, vim.tbl_extend("force", kopts, { desc = "Rerun last test" }))
-          map("n", "<leader>rm", function()
-            vim.cmd.RustLsp("expandMacro")
-          end, vim.tbl_extend("force", kopts, { desc = "Expand macro" }))
-          map("n", "<leader>rc", function()
-            vim.cmd.RustLsp("openCargo")
-          end, vim.tbl_extend("force", kopts, { desc = "Open Cargo.toml" }))
-          map("n", "<leader>rp", function()
-            vim.cmd.RustLsp("parentModule")
-          end, vim.tbl_extend("force", kopts, { desc = "Parent module" }))
-          map("n", "<leader>rj", function()
-            vim.cmd.RustLsp("joinLines")
-          end, vim.tbl_extend("force", kopts, { desc = "Join lines" }))
-          map("n", "<leader>rs", function()
-            vim.cmd.RustLsp("ssr")
-          end, vim.tbl_extend("force", kopts, { desc = "Structural search replace" }))
-          map("n", "<leader>re", function()
-            vim.cmd.RustLsp("explainError")
-          end, vim.tbl_extend("force", kopts, { desc = "Explain error" }))
-          map("n", "<leader>rD", function()
-            vim.cmd.RustLsp("renderDiagnostic")
-          end, vim.tbl_extend("force", kopts, { desc = "Render diagnostic" }))
-          map("n", "<leader>rv", function()
-            vim.cmd.RustLsp({ "view", "hir" })
-          end, vim.tbl_extend("force", kopts, { desc = "View HIR" }))
-          map("n", "<leader>rV", function()
-            vim.cmd.RustLsp({ "view", "mir" })
-          end, vim.tbl_extend("force", kopts, { desc = "View MIR" }))
-          map("n", "K", function()
-            vim.cmd.RustLsp({ "hover", "actions" })
-          end, vim.tbl_extend("force", kopts, { desc = "Rust hover actions" }))
-        end
-        opts.server.default_settings = vim.tbl_deep_extend("force", opts.server.default_settings or {}, {
+          rustc = { default_edition = "2024" },
+        }
+        opts.server = {}
+        opts.server.default_settings = {
           ["rust-analyzer"] = {
             cargo = {
               features = "all",
               allTargets = false,
-              allFeatures = true,
-              loadOutDirsFromCheck = true,
               buildScripts = {
                 enable = true,
                 invocationStrategy = "once",
@@ -1612,6 +1626,8 @@ return {
               },
             },
             check = {
+              command = "clippy",
+              extraArgs = { "--all", "--", "-W", "clippy::all" },
               extraEnv = {
                 CC = "clang",
                 CXX = "clang++",
@@ -1622,17 +1638,13 @@ return {
               enable = true,
               attributes = { enable = true },
             },
-            checkOnSave = {
-              command = "clippy",
-              extraArgs = { "--all", "--", "-W", "clippy::all" },
-            },
+            checkOnSave = true,
             diagnostics = {
               enable = true,
               experimental = { enable = true },
               styleLints = { enable = true },
             },
             inlayHints = {
-              enable = true,
               chainingHints = { enable = true },
               typeHints = { enable = true, hideClosureInitialization = true },
               parameterHints = { enable = true },
@@ -1661,7 +1673,6 @@ return {
             lens = {
               enable = true,
               references = {
-                enable = true,
                 adt = { enable = true },
                 enumVariant = { enable = true },
                 method = { enable = true },
@@ -1696,21 +1707,18 @@ return {
               },
               links = { enable = true },
             },
-            typing = {
-              autoClosingAngleBrackets = { enable = true },
-            },
             workspace = {
               symbol = {
                 search = { kind = "all_symbols" },
               },
             },
             files = {
-              excludeDirs = { ".git", "node_modules", ".direnv", "target/debug/build" },
+              exclude = { ".git", "node_modules", ".direnv", "target/debug/build" },
             },
           },
-        })
+        }
         opts.dap = { autoload_configurations = true }
-        return opts
+        vim.g.rustaceanvim = opts
       end,
     },
     -- {

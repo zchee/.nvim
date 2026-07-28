@@ -5,7 +5,10 @@ return {
     "--configuration=release",
     "--scratch-path=.build",
     "--default-workspace-type=swiftPM",
+    -- Repeat the flag per feature: it is a swift-argument-parser array option,
+    -- which does not split on commas, and unknown values are silently dropped.
     "--experimental-feature=on-type-formatting",
+    "--experimental-feature=structured-logs",
   },
   filetypes = { "swift" },
   root_markers = { "Package.swift", "compile_commands.json" },

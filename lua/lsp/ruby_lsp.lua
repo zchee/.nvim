@@ -85,7 +85,7 @@ local util = require("util")
 return {
   cmd = function(dispatchers, config)
     return vim.lsp.rpc.start(
-      { util.rbenv_prefix("ruby-lsp"), "--beta", "--use-launcher" },
+      { util.homebrew_binary("ruby-lsp", "ruby-lsp"), "--beta", "--use-launcher" },
       dispatchers,
       config and config.root_dir and { cwd = config.cmd_cwd or config.root_dir }
     )

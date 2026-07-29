@@ -62,6 +62,9 @@ return {
         ["https://www.schemastore.org/codex-skill-metadata.json"] = {
           "**/agents/openai.yaml",
         },
+        ["https://raw.githubusercontent.com/Yeachan-Heo/gajae-code/refs/heads/dev/schemas/config.schema.json"] = {
+          "**/.gjc/agent/config.yml",
+        },
       },
       -- schemas = require("schemastore").json.schemas({
       --   extra = {

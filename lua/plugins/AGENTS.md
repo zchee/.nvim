@@ -31,6 +31,7 @@ below and in each row's description.
 | `codecompanion.lua` | olimorris/codecompanion.nvim: chat/inline AI; anthropic adapter, mcphub + codecompanion-history extensions |
 | `comment.lua` | numToStr/Comment.nvim; patches `Comment.ft` via `comment_compat` for nil-safe TS-parser commentstring lookup |
 | `comment_compat.lua` | Internal shim (no upstream repo) patching `Comment.ft.calculate` against a nil Tree-sitter parser crash |
+| `copilot-chat.lua` | Options table for CopilotC-Nvim/CopilotChat.nvim; claude-opus-4.6 model, ReviewStaged/ReviewUnstaged git-diff prompts |
 | `copilot.lua` | zbirenbaum/copilot.lua; go/lua/sh allowlist, `copilot_model = "gpt-41-copilot"`, Keychain-encryption opt-out; tested by `tests/copilot_config_spec.lua` |
 | `crates.lua` | Options table for saecki/crates.nvim; LSP mode with `<leader>rc*` keymap group bound in `lsp.on_attach` |
 | `dap.lua` | mfussenegger/nvim-dap + mason-nvim-dap + nvim-dap-go; ensures delve/js/python adapters via Mason |

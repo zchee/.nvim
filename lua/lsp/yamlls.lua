@@ -65,6 +65,9 @@ return {
         ["https://raw.githubusercontent.com/Yeachan-Heo/gajae-code/refs/heads/dev/schemas/config.schema.json"] = {
           "**/.gjc/agent/config.yml",
         },
+        ["https://raw.githubusercontent.com/Yeachan-Heo/gajae-code/refs/heads/dev/schemas/models.schema.json"] = {
+          "**/.gjc/agent/models.yml",
+        },
       },
       -- schemas = require("schemastore").json.schemas({
       --   extra = {

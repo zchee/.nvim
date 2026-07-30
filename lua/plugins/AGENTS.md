@@ -31,7 +31,7 @@ below and in each row's description.
 | `codecompanion.lua` | olimorris/codecompanion.nvim: chat/inline AI; anthropic adapter, mcphub + codecompanion-history extensions |
 | `comment.lua` | numToStr/Comment.nvim; patches `Comment.ft` via `comment_compat` for nil-safe TS-parser commentstring lookup |
 | `comment_compat.lua` | Internal shim (no upstream repo) patching `Comment.ft.calculate` against a nil Tree-sitter parser crash |
-| `copilot.lua` | zbirenbaum/copilot.lua config; DEAD from `init.lua` (only commented refs + `tests/copilot_config_spec.lua`) |
+| `copilot.lua` | zbirenbaum/copilot.lua; go/lua/sh allowlist, `copilot_model = "gpt-41-copilot"`, Keychain-encryption opt-out; tested by `tests/copilot_config_spec.lua` |
 | `dap.lua` | mfussenegger/nvim-dap + mason-nvim-dap + nvim-dap-go; ensures delve/js/python adapters via Mason |
 | `diagram.lua` | 3rd/diagram.nvim: Mermaid/PlantUML/D2/gnuplot rendering in Markdown buffers via image.nvim |
 | `dressing.lua` | stevearc/dressing.nvim: `vim.ui.input`/`select` overrides; DEAD — plugin loads as a bare dependency, `setup()` never runs |
@@ -95,7 +95,7 @@ below and in each row's description.
   Rust-only `LspAttach` keymap group.
 - Several config modules are orphaned — present on disk but not reachable
   from any active (uncommented) spec in `init.lua`: `blink.lua`, `chatgpt.lua`
-  / `chatgpt.json`, `copilot.lua`, `dressing.lua`, `focus.lua`, `gemini.lua`,
+  / `chatgpt.json`, `dressing.lua`, `focus.lua`, `gemini.lua`,
   `lspsaga.lua` (lspsaga is actually configured directly in `lua/lsp/init.lua`),
   `mcphub.lua`, `obsidian.lua`, `smart-splits.lua`, `todo.lua`, `toggleterm.lua`,
   `tree.lua`, and `avante/init.lua` / `avante/keys.lua`. Do not assume a file's
@@ -145,7 +145,7 @@ below and in each row's description.
 - `lua/util` (`require("util")`) supplies `util.src_path()` for local plugin
   `dir =` entries, `util.homebrew_binary()`/`util.bun_prefix()`/`util.go_path()`
   for resolving LSP/tool binaries referenced from plugin configs (e.g.
-  `dap.lua`'s delve path, `copilot-cmp`'s node binary in `init.lua`).
+  `dap.lua`'s delve path, `copilot.lua`'s node binary).
 - `lua/lsp` interplay: `rustaceanvim.lua` deliberately owns the
   `rust-analyzer` client instead of `lua/lsp/rust_analyzer.lua` (per the
   repo's LSP conventions); `lspsaga` is configured directly in

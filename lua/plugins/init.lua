@@ -606,58 +606,12 @@ return {
         dependencies = {
           {
             "zbirenbaum/copilot.lua",
-            opts = {
-              filetypes = {
-                ["*"] = false,
-                go = true,
-                lua = true,
-                sh = true,
-              },
-              panel = { enabled = false },
-              suggestion = {
-                enabled = false,
-                auto_trigger = false,
-                keymap = {
-                  accept = "<C-j>",
-                  accept_word = "<M-k>",
-                  accept_line = "<M-j>",
-                  next = "<M-]>",
-                  prev = "<M-[>",
-                  dismiss = "<C-]>",
-                },
-              },
-
-              copilot_node_command = util.homebrew_binary("node", "node"),
-              server = {
-                type = "nodejs",
-                -- custom_server_filepath = "/opt/local/lib/node_modules/@github/copilot-language-server/dist/language-server.js",
-                custom_server_filepath = vim.fs.joinpath(
-                  util.getenv("BUN_INSTALL"),
-                  "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"
-                ),
-              },
-              -- Stop copilot-language-server from encrypting its OAuth token with the macOS Keychain.
-              -- When encryption is on, the server fetches a "KeytarMasterKey" from the Keychain
-              -- (service=copilot-language-server, account=oauth-token-key). The Keychain "Always Allow"
-              -- ACL is bound to the code signature + path of the node binary that was granted access,
-              -- but Homebrew's node is ad-hoc signed and lives under a version-specific Cellar path
-              -- (e.g. Cellar/node/26.4.0/bin/node) that changes on every upgrade. So each node update
-              -- invalidates the ACL and the Keychain auth popup reappears on every file open.
-              -- Injecting the env var equivalent of `internal.auth.tokenEncryption = "false"` makes the
-              -- server store the token in plaintext (under ~/.config/github-copilot), eliminating the prompt.
-              -- The env var name derives from the server's internal rus() (camelCase -> SNAKE_CASE)
-              -- transform joined with the GITHUB_COPILOT_ prefix.
-              server_opts_overrides = {
-                cmd_env = {
-                  GITHUB_COPILOT_AUTH_TOKEN_ENCRYPTION = "false",
-                },
-              },
-            },
-            copilot_model = "gpt-41-copilot",
+            config = function()
+              require("plugins.copilot")
+            end,
           },
         },
         config = function()
-          -- require("plugins.copilot")
           require("copilot_cmp").setup({
             event = { "InsertEnter", "LspAttach" },
             fix_pairs = false,

@@ -21,7 +21,6 @@ modules in a fixed order.
 | `autocmd.lua` (650 lines) | `FileType`/`BufNewFile`/`BufEnter`/`BufWinEnter`/`BufWritePre`/`LspTokenUpdate`/`User` autocmds, incl. macOS SDK/header path wiring |
 | `command.lua` (249 lines) | User commands: `Help`, `TrimSpace`, `LuaVimInspect`, `LuaSnipEdit`, `ManV`, `TerminalV`, `LspServerInfo`, `TSInspectTree`, `DiagramToggle` |
 | `highlight.lua` (172 lines) | `vim.hl.priorities` tuning + `hi(name, val)` wrapper defining `@treesitter`/`@lsp` highlight overrides per language |
-| `which_key.lua` | Legacy `which-key` v1-style `setup()`/`register()` config (guarded by `pcall(require, "which-key")`) |
 
 ## For AI Agents
 
@@ -55,12 +54,6 @@ modules in a fixed order.
   `vim.api.nvim_set_hl` directly, to stay consistent and to get
   the priority ordering documented at the top of the file
   (`vim.hl.priorities.syntax/treesitter/semantic_tokens/diagnostics/user`).
-- `which_key.lua` is written against `which-key.nvim`'s legacy `v1` API
-  (`register`, `key_labels`, `popup_mappings`) — verify whether the
-  `which-key` spec in `lua/plugins/` still uses this module before editing
-  it; if the plugin has since moved to the modern `spec`-based API, this
-  file may be stale/unused (confirm via `lua/plugins/init.lua` before
-  trusting its config takes effect).
 
 ### Testing Requirements
 No spec files target this directory directly. Sanity-check syntax and load
@@ -91,9 +84,8 @@ For isolated checks of a single file: `nvim --headless -u NONE -c "set rtp+=." -
 ...)`).
 
 ### External
-`folke/lazy.nvim` (bootstrap target of `lazy.lua`); `which-key.nvim`
-(`which_key.lua`, legacy API); `rg`/ripgrep (referenced by `grepprg` in
-`nvim.lua`); macOS Xcode Command Line Tools / SDK headers (path wiring in
-`autocmd.lua`).
+`folke/lazy.nvim` (bootstrap target of `lazy.lua`); `rg`/ripgrep (referenced
+by `grepprg` in `nvim.lua`); macOS Xcode Command Line Tools / SDK headers
+(path wiring in `autocmd.lua`).
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->

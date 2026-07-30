@@ -68,6 +68,7 @@ below and in each row's description.
 | `treesitter_compat.lua` | Internal shim (`patch_query_predicates`) patching nvim-treesitter query-predicate registration for nightly Neovim |
 | `ts_context_commentstring.lua` | JoosepAlviste/nvim-ts-context-commentstring; sets `vim.g.skip_ts_context_commentstring_module` |
 | `ts_context_commentstring_compat.lua` | Internal shim guarding `is_treesitter_active` against a nil Tree-sitter parser |
+| `which-key.lua` | Options table for folke/which-key.nvim (modern preset, custom icon glyphs); consumed as `opts = require(...)` |
 
 ## Subdirectories
 | Directory | Purpose |

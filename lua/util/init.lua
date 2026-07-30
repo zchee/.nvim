@@ -179,12 +179,6 @@ function M.src_path(...)
   return vim.fs.joinpath(vim.uv.os_homedir(), "src", ...)
 end
 
----@param ... string
----@return string
-function M.src_path(...)
-  return vim.fs.joinpath(vim.uv.os_homedir(), "src", ...)
-end
-
 --- Returns the UNIX prefix directory according to the macOS cpu architecture.
 ---
 ---@param ... string

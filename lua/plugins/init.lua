@@ -1367,32 +1367,6 @@ return {
       "saecki/crates.nvim",
       opts = require("plugins.crates"),
     },
-    {
-      "mfussenegger/nvim-dap",
-      opts = function(_, opts)
-        local dap = require("dap")
-        dap.adapters.lldb = {
-          type = "executable",
-          command = "/opt/homebrew/opt/llvm/bin/lldb-dap",
-          name = "lldb",
-        }
-        dap.configurations.rust = {
-          {
-            name = "Launch",
-            type = "lldb",
-            request = "launch",
-            program = function()
-              return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/target/debug/", "file")
-            end,
-            cwd = "${workspaceFolder}",
-            stopOnEntry = false,
-            args = {},
-            runInTerminal = false,
-          },
-        }
-        return opts
-      end,
-    },
 
     -- marp.nvim: Markdown presentations
     {

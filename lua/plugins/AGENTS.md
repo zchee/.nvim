@@ -33,6 +33,7 @@ below and in each row's description.
 | `comment_compat.lua` | Internal shim (no upstream repo) patching `Comment.ft.calculate` against a nil Tree-sitter parser crash |
 | `copilot.lua` | zbirenbaum/copilot.lua config; DEAD from `init.lua` (only commented refs + `tests/copilot_config_spec.lua`) |
 | `dap.lua` | mfussenegger/nvim-dap + mason-nvim-dap + nvim-dap-go; ensures delve/js/python adapters via Mason |
+| `diagram.lua` | 3rd/diagram.nvim: Mermaid/PlantUML/D2/gnuplot rendering in Markdown buffers via image.nvim |
 | `dressing.lua` | stevearc/dressing.nvim: `vim.ui.input`/`select` overrides; DEAD — plugin loads as a bare dependency, `setup()` never runs |
 | `fidget.lua` | j-hui/fidget.nvim: LSP progress UI; effectively stock defaults, prior tuned config left commented above it |
 | `focus.lua` | nvim-focus/focus.nvim (owner unconfirmed in repo): autoresize focused split; DEAD — no plugin spec anywhere |
@@ -41,6 +42,7 @@ below and in each row's description.
 | `gitsigns.lua` | lewis6991/gitsigns.nvim; overrides default sign highlight groups with custom fg/bg hex colors |
 | `illuminate.lua` | RRethy/vim-illuminate; patches reference/regex/treesitter providers via `illuminate_compat` before `configure()` |
 | `illuminate_compat.lua` | Internal shim guarding vim-illuminate's Tree-sitter locals provider against nil/invalid-line errors |
+| `image.lua` | 3rd/image.nvim `opts` table (kitty backend); integration toggles nested under `integrations`, sizing keys top-level |
 | `lspsaga.lua` | nvimdev/lspsaga.nvim config; DEAD/duplicate — lspsaga is actually set up in `lua/lsp/init.lua:87-88` |
 | `lualine.lua` | nvim-lualine/lualine.nvim; `equinusocio_material` theme, disables statusline/winbar for lspsaga float filetypes |
 | `mason.lua` | williamboman/mason.nvim; minimal setup — 8 concurrent installers, `github:mason-org/mason-registry` |

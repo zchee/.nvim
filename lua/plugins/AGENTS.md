@@ -29,6 +29,7 @@ below and in each row's description.
 | `claudecode.lua` | coder/claudecode.nvim: Claude Code IDE bridge; `terminal_cmd` launches `omc --yolo` in a snacks float |
 | `cmp.lua` | hrsh7th/nvim-cmp + autopairs/LuaSnip/lspkind glue; Tree-sitter-aware autopair rules for Go string/bracket pairs |
 | `codecompanion.lua` | olimorris/codecompanion.nvim: chat/inline AI; anthropic adapter, mcphub + codecompanion-history extensions |
+| `codecov.lua` | zchee/codecov.nvim (local plugin) setup: coverage sign colors, api.codecov.io endpoint, token via CODECOV_NVIM_API_TOKEN |
 | `comment.lua` | numToStr/Comment.nvim; patches `Comment.ft` via `comment_compat` for nil-safe TS-parser commentstring lookup |
 | `comment_compat.lua` | Internal shim (no upstream repo) patching `Comment.ft.calculate` against a nil Tree-sitter parser crash |
 | `copilot-chat.lua` | Options table for CopilotC-Nvim/CopilotChat.nvim; claude-opus-4.6 model, ReviewStaged/ReviewUnstaged git-diff prompts |

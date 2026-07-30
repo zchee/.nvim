@@ -1610,6 +1610,11 @@ return {
           rustc = { default_edition = "2024" },
         }
         opts.server = {}
+        -- Resolve rust-analyzer through rustup, not PATH: mason.nvim prepends its
+        -- bin dir, so a bare "rust-analyzer" picks up Mason's stale standalone
+        -- binary, which cannot load nightly-toolchain crate graphs (E0432
+        -- "unresolved import" on every external crate).
+        opts.server.cmd = { "rustup", "run", "nightly", "rust-analyzer" }
         opts.server.default_settings = {
           ["rust-analyzer"] = {
             cargo = {

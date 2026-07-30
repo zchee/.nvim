@@ -1,138 +1,191 @@
-local util = require("util")
+-- Loaded from the rustaceanvim spec's `init` in lua/plugins/init.lua, so it
+-- runs before rustaceanvim's own ftplugin reads `vim.g.rustaceanvim`.
+
+-- Keymaps live on LspAttach rather than in `server.on_attach`: rustaceanvim
+-- merges `vim.lsp.config["rust-analyzer"]` over its own `server` table with
+-- "force", so the global `vim.lsp.config("*")` on_attach set in lua/lsp/init.lua
+-- would silently replace ours.
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("rustaceanvim_keymaps", { clear = true }),
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if not client or client.name ~= "rust-analyzer" then
+      return
+    end
+
+    local kopts = { silent = true, buffer = args.buf }
+    local map = vim.keymap.set
+
+    map("n", "<leader>ra", function()
+      vim.cmd.RustLsp("codeAction")
+    end, vim.tbl_extend("force", kopts, { desc = "Rust code action" }))
+    map("n", "<leader>rd", function()
+      vim.cmd.RustLsp("debuggables")
+    end, vim.tbl_extend("force", kopts, { desc = "Rust debuggables" }))
+    map("n", "<leader>rr", function()
+      vim.cmd.RustLsp("runnables")
+    end, vim.tbl_extend("force", kopts, { desc = "Rust runnables" }))
+    map("n", "<leader>rR", function()
+      vim.cmd.RustLsp({ "runnables", bang = true })
+    end, vim.tbl_extend("force", kopts, { desc = "Rerun last runnable" }))
+    map("n", "<leader>rt", function()
+      vim.cmd.RustLsp("testables")
+    end, vim.tbl_extend("force", kopts, { desc = "Rust testables" }))
+    map("n", "<leader>rT", function()
+      vim.cmd.RustLsp({ "testables", bang = true })
+    end, vim.tbl_extend("force", kopts, { desc = "Rerun last test" }))
+    map("n", "<leader>rm", function()
+      vim.cmd.RustLsp("expandMacro")
+    end, vim.tbl_extend("force", kopts, { desc = "Expand macro" }))
+    map("n", "<leader>rc", function()
+      vim.cmd.RustLsp("openCargo")
+    end, vim.tbl_extend("force", kopts, { desc = "Open Cargo.toml" }))
+    map("n", "<leader>rp", function()
+      vim.cmd.RustLsp("parentModule")
+    end, vim.tbl_extend("force", kopts, { desc = "Parent module" }))
+    map("n", "<leader>rj", function()
+      vim.cmd.RustLsp("joinLines")
+    end, vim.tbl_extend("force", kopts, { desc = "Join lines" }))
+    map("n", "<leader>rs", function()
+      vim.cmd.RustLsp("ssr")
+    end, vim.tbl_extend("force", kopts, { desc = "Structural search replace" }))
+    map("n", "<leader>re", function()
+      vim.cmd.RustLsp("explainError")
+    end, vim.tbl_extend("force", kopts, { desc = "Explain error" }))
+    map("n", "<leader>rD", function()
+      vim.cmd.RustLsp("renderDiagnostic")
+    end, vim.tbl_extend("force", kopts, { desc = "Render diagnostic" }))
+    map("n", "<leader>rv", function()
+      vim.cmd.RustLsp({ "view", "hir" })
+    end, vim.tbl_extend("force", kopts, { desc = "View HIR" }))
+    map("n", "<leader>rV", function()
+      vim.cmd.RustLsp({ "view", "mir" })
+    end, vim.tbl_extend("force", kopts, { desc = "View MIR" }))
+    map("n", "K", function()
+      vim.cmd.RustLsp({ "hover", "actions" })
+    end, vim.tbl_extend("force", kopts, { desc = "Rust hover actions" }))
+  end,
+})
 
 ---@type rustaceanvim.Opts
-vim.g.rustaceanvim = {
-  tools = {
-    rustc = {
-      default_edition = "2024",
-    },
-  },
-  ---@type rustaceanvim.lsp.ClientOpts
-  server = {
-    auto_attach = true,
-    -- auto_attach = function(bufnr)
-    --   if #vim.bo[bufnr].buftype > 0 then
-    --     return false
-    --   end
-    --   local path = vim.api.nvim_buf_get_name(bufnr)
-    --   if not require('rustaceanvim.os').is_valid_file_path(path) then
-    --     return false
-    --   end
-    --   local cmd = require('rustaceanvim.types.internal').evaluate(RustaceanConfig.server.cmd)
-    --   if type(cmd) == 'function' then
-    --     -- This could be a function that connects via a TCP socket, so we don't want to evaluate it.
-    --     return true
-    --   end
-    --   ---@cast cmd string[]
-    --   local rs_bin = cmd[1]
-    --   return vim.fn.executable(rs_bin) == 1
-    -- end,
-    cmd = { "rustup", "run", "nightly", "rust-analyzer" },
-    --- Defaults to `nil`, which means rustaceanvim will use the built-in async root directory detection
-    ---@type nil | string | fun(filename: string, default: fun(filename: string):string|nil):string|nil
-    root_dir = nil,
-    ra_multiplex = {
-      ---@type boolean
-      enable = true,
-      ---@type string
-      host = "127.0.0.1", -- default
-      ---@type integer
-      port = 27631, -- default
-    },
-    -- settings = {
-    --   server = {
-    --     extraEnv = {
-    --       ["RUSTUP_TOOLCHAIN"] = "nightly",
-    --       ["RUSTFLAGS"] = os.getenv("RUSTFLAGS"),
-    --       ["CHALK_OVERFLOW_DEPTH"] = "100000000",
-    --       ["CHALK_SOLVER_MAX_SIZE"] = "100000000",
-    --     },
-    --   },
-    --   ["rust-analyzer"] = {
-    --     completion = {
-    --       fullFunctionSignatures = {
-    --         enable = true,
-    --       },
-    --       hideDeprecated = true,
-    --     },
-    --     diagnostics = {
-    --       experimental = "enable",
-    --     },
-    --     inlayHints = {
-    --       bindingModeHints = {
-    --         enable = true,
-    --       },
-    --       closureCaptureHints = {
-    --         enable = true,
-    --       },
-    --       genericParameterHints = {
-    --         lifetime = {
-    --           enable = true,
-    --         },
-    --         type = {
-    --           enable = true,
-    --         },
-    --       },
-    --       implicitSizedBoundHints = {
-    --         enable = true,
-    --       },
-    --       lifetimeElisionHints = {
-    --         useParameterNames = true,
-    --       },
-    --     },
-    --     runnables = {
-    --       extraArgs = { "--release" },
-    --     },
-    --   }
-    -- },
-    default_settings = {
-      ["rust-analyzer"] = {
-        completion = {
-          fullFunctionSignatures = {
-            enable = true,
-          },
-          hideDeprecated = true,
-        },
-        diagnostics = {
-          experimental = "enable",
-        },
-        inlayHints = {
-          bindingModeHints = {
-            enable = true,
-          },
-          closureCaptureHints = {
-            enable = true,
-          },
-          genericParameterHints = {
-            lifetime = {
-              enable = true,
-            },
-            type = {
-              enable = true,
-            },
-          },
-          implicitSizedBoundHints = {
-            enable = true,
-          },
-          lifetimeElisionHints = {
-            useParameterNames = true,
-          },
-        },
-        runnables = {
-          extraArgs = { "--release" },
-        },
+local opts = {}
+opts.tools = {
+  float_win_config = { border = "rounded", auto_focus = true },
+  code_actions = { ui_select_fallback = true },
+  rustc = { default_edition = "2024" },
+}
+opts.server = {}
+-- Resolve rust-analyzer through rustup, not PATH: mason.nvim prepends its
+-- bin dir, so a bare "rust-analyzer" picks up Mason's stale standalone
+-- binary, which cannot load nightly-toolchain crate graphs (E0432
+-- "unresolved import" on every external crate).
+opts.server.cmd = { "rustup", "run", "nightly", "rust-analyzer" }
+opts.server.default_settings = {
+  ["rust-analyzer"] = {
+    cargo = {
+      features = "all",
+      allTargets = false,
+      buildScripts = {
+        enable = true,
+        invocationStrategy = "once",
+      },
+      extraEnv = {
+        RUSTFLAGS = os.getenv("RUSTFLAGS"),
+        CARGO_TARGET_DIR = "target/rust-analyzer",
+        SKIP_WASM_BUILD = "1",
       },
     },
-    standalone = true,
-    status_notify_level = false,
-    capabilities = require("rustaceanvim.config.server").create_client_capabilities(),
-  },
-  dap = {
-    adapter = {
-      type = "executable",
-      command = "/opt/homebrew/opt/llvm/bin/lldb-dap",
-      name = "lldb",
+    check = {
+      command = "clippy",
+      extraArgs = { "--all", "--", "-W", "clippy::all" },
+      extraEnv = {
+        CC = "clang",
+        CXX = "clang++",
+        VIRTUAL_ENV = vim.fn.getcwd() .. "/.venv",
+      },
     },
-    autoload_configurations = true,
+    procMacro = {
+      enable = true,
+      attributes = { enable = true },
+    },
+    checkOnSave = true,
+    diagnostics = {
+      enable = true,
+      experimental = { enable = true },
+      styleLints = { enable = true },
+    },
+    inlayHints = {
+      chainingHints = { enable = true },
+      typeHints = { enable = true, hideClosureInitialization = true },
+      parameterHints = { enable = true },
+      closureReturnTypeHints = { enable = "with_block" },
+      lifetimeElisionHints = { enable = "skip_trivial", useParameterNames = true },
+      maxLength = 25,
+      bindingModeHints = { enable = true },
+      closureCaptureHints = { enable = true },
+      discriminantHints = { enable = "fieldless" },
+      expressionAdjustmentHints = { enable = "reborrow" },
+      rangeExclusiveHints = { enable = true },
+    },
+    completion = {
+      autoimport = { enable = true },
+      postfix = { enable = true },
+      callable = { snippets = "fill_arguments" },
+      fullFunctionSignatures = { enable = true },
+      privateEditable = { enable = true },
+      hideDeprecated = true,
+    },
+    imports = {
+      granularity = { group = "module" },
+      prefix = "self",
+      preferNoStd = false,
+    },
+    lens = {
+      enable = true,
+      references = {
+        adt = { enable = true },
+        enumVariant = { enable = true },
+        method = { enable = true },
+        trait = { enable = true },
+      },
+      implementations = { enable = true },
+      run = { enable = true },
+      debug = { enable = true },
+    },
+    semanticHighlighting = {
+      operator = {
+        specialization = { enable = true },
+      },
+      punctuation = {
+        enable = true,
+        specialization = { enable = true },
+      },
+      strings = { enable = true },
+    },
+    hover = {
+      actions = {
+        enable = true,
+        references = { enable = true },
+        run = { enable = true },
+        debug = { enable = true },
+        gotoTypeDef = { enable = true },
+        implementations = { enable = true },
+      },
+      documentation = {
+        enable = true,
+        keywords = { enable = true },
+      },
+      links = { enable = true },
+    },
+    workspace = {
+      symbol = {
+        search = { kind = "all_symbols" },
+      },
+    },
+    files = {
+      exclude = { ".git", "node_modules", ".direnv", "target/debug/build" },
+    },
   },
 }
+opts.dap = { autoload_configurations = true }
+vim.g.rustaceanvim = opts

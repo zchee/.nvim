@@ -56,6 +56,7 @@ below and in each row's description.
 | `neo_tree_compat.lua` | Internal shim guarding neo-tree's cursor-hijack handler against `Invalid 'win'` errors |
 | `null-ls.lua` | nvimtools/none-ls.nvim; pins `golangci-lint` to an absolute path to dodge a mise-shim stdout/JSON crash |
 | `obsidian.lua` | obsidian-nvim/obsidian.nvim: "knowledge" vault, snacks.pick picker; DEAD — spec fully commented out in `init.lua` |
+| `oil.lua` | Options table for stevearc/oil.nvim; `default_file_explorer = true` with icon/permissions/size/mtime columns |
 | `render-markdown.lua` | MeanderingProgrammer/render-markdown.nvim; renders `markdown`/`Avante`/`codecompanion`/`copilot-chat` filetypes |
 | `rustaceanvim.lua` | mrcjkb/rustaceanvim; keymaps bound on `LspAttach`, not `server.on_attach`, so the global on_attach can't clobber them |
 | `scrollbar.lua` | petertriho/nvim-scrollbar; adds Cursor/Search/Error/Warn marks with a 50ms throttle |

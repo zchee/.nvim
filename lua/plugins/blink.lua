@@ -403,18 +403,47 @@ blink.setup({
       show_without_menu = false, -- Show the ghost text when the menu is closed
     },
   },
+  cmdline = {
+    enabled = false,
+    keymap = {
+      preset = "none",
+      ["<Tab>"] = {
+        function(cmp)
+          if cmp.is_ghost_text_visible() and not cmp.is_menu_visible() then
+            return cmp.select_and_accept()
+          end
+        end,
+        "show_and_insert",
+        "select_next",
+      },
+      ["<CR>"] = { "accept_and_enter", "fallback" },
+      ["<Up>"] = { "select_prev", "fallback" },
+      ["<Down>"] = { "select_next", "fallback" },
+    },
+    completion = {
+      menu = {
+        auto_show = false,
+      },
+      list = {
+        selection = {
+          preselect = false,
+          auto_insert = true,
+        },
+      },
+    },
+  },
   fuzzy = {
-    implementation = "prefer_rust_with_warning",
+    implementation = "rust",
     max_typos = 0,
-    -- max_typos = function(keyword) -- Allows for a number of typos relative to the length of the query Set this to 0 to match the behavior of fzf
-    --   return math.floor(#keyword / 2)
-    -- end,
     -- upstream annotates FuzzyConfigFrecency as (exact) with `path` required,
     -- but setup() merges the stdpath("state") default at runtime
     ---@diagnostic disable-next-line: missing-fields
     frecency = { -- boosts recently/frequently used items
       enabled = true,
     },
+    -- max_typos = function(keyword) -- Allows for a number of typos relative to the length of the query Set this to 0 to match the behavior of fzf
+    --   return math.floor(#keyword / 2)
+    -- end,
     use_proximity = true, -- Proximity bonus boosts the score of items matching nearby words
     -- Controls which sorts to use and in which order, falling back to the next sort if the first one returns nil
     -- You may pass a function instead of a string to customize the sorting
@@ -482,35 +511,6 @@ blink.setup({
       Event = "󱐋",
       Operator = "󰪚",
       TypeParameter = "󰬛",
-    },
-  },
-  cmdline = {
-    enabled = false,
-    keymap = {
-      preset = "none",
-      ["<Tab>"] = {
-        function(cmp)
-          if cmp.is_ghost_text_visible() and not cmp.is_menu_visible() then
-            return cmp.select_and_accept()
-          end
-        end,
-        "show_and_insert",
-        "select_next",
-      },
-      ["<CR>"] = { "accept_and_enter", "fallback" },
-      ["<Up>"] = { "select_prev", "fallback" },
-      ["<Down>"] = { "select_next", "fallback" },
-    },
-    completion = {
-      menu = {
-        auto_show = false,
-      },
-      list = {
-        selection = {
-          preselect = false,
-          auto_insert = true,
-        },
-      },
     },
   },
 })

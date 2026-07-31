@@ -914,16 +914,6 @@ return {
       end,
     },
     {
-      "RRethy/vim-illuminate",
-      event = "BufRead",
-      dependencies = {
-        "nvim-treesitter/nvim-treesitter",
-      },
-      config = function()
-        require("plugins.illuminate")
-      end,
-    },
-    {
       "petertriho/nvim-scrollbar",
       event = "VeryLazy",
       config = function()

@@ -398,6 +398,19 @@ snacks.setup({
   },
   toggle = { enabled = false },
   win = { enabled = false },
-  words = { enabled = false },
+  words = {
+    -- replaces vim-illuminate: its treesitter provider required the
+    -- nvim-treesitter locals Lua module, which the main branch removed
+    enabled = true,
+    debounce = 100, -- parity with illuminate's delay = 100
+  },
   zen = { enabled = false },
 })
+
+-- reference navigation, parity with vim-illuminate's default <a-n>/<a-p>
+vim.keymap.set("n", "<M-n>", function()
+  require("snacks").words.jump(vim.v.count1, true)
+end, { silent = true, desc = "Next reference" })
+vim.keymap.set("n", "<M-p>", function()
+  require("snacks").words.jump(-vim.v.count1, true)
+end, { silent = true, desc = "Prev reference" })

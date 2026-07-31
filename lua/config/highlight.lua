@@ -24,6 +24,7 @@ local hi_none = "None"
 -- nvim default
 hi("WinBar", { fg = "None", bg = hi_none })
 hi("diffRemoved", { fg = "red", bg = hi_none })
+hi("LspReferenceText", { fg = hi_none, bg = hi_none, underline = true })
 
 -- plugins
 hi("BlinkCmpMenuSelection", { link = "WildMenu" })

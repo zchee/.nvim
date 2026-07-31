@@ -135,8 +135,9 @@ vim.keymap.set(
 )
 vim.keymap.set({ "n" }, "gs", "<cmd>Switch<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "gx", "<Plug>(openbrowser-smart-search)", { silent = true })
-vim.keymap.set({ "n" }, "j", "<Plug>(accelerated_jk_gj)", { nowait = true, silent = true })
-vim.keymap.set({ "n" }, "k", "<Plug>(accelerated_jk_gk)", { nowait = true, silent = true })
+-- j/k acceleration maps live on the accelerated-jk.nvim spec's `keys` in
+-- lua/plugins/init.lua: mapping them here would overwrite lazy.nvim's
+-- load-on-first-press stubs with a then-undefined <Plug> target.
 vim.keymap.set({ "n" }, "Q", "gq", { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "s", "A", { nowait = true, noremap = true, silent = true })
 vim.keymap.set({ "n" }, "w", "w", { nowait = true, silent = true })

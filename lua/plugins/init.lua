@@ -46,13 +46,6 @@ return {
     end,
   },
 
-  -- Lazy
-  {
-    "vhyrro/luarocks.nvim",
-    lazy = false,
-    priority = 1000,
-    config = true,
-  },
 
   -- AI
   -- Codex (OpenAI Codex CLI): side-panel terminal wrapper.
@@ -593,7 +586,7 @@ return {
     },
     {
       "nvim-neo-tree/neo-tree.nvim",
-      lazy = false,
+      cmd = "Neotree",
       dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-web-devicons",
@@ -1280,7 +1273,7 @@ return {
     {
       {
         "ziglang/zig.vim",
-        lazy = false,
+        ft = "zig",
       },
     },
 
@@ -1317,7 +1310,6 @@ return {
   {
     {
       "zchee/accelerated-jk.nvim",
-      lazy = false,
       keys = {
         { "j", "<Plug>(accelerated_jk_gj)", mode = "n", nowait = true, silent = true },
         { "k", "<Plug>(accelerated_jk_gk)", mode = "n", nowait = true, silent = true },
@@ -1462,7 +1454,7 @@ return {
     },
     {
       "wakatime/vim-wakatime",
-      lazy = false,
+      event = "VeryLazy",
       opts = {
         -- cli_path = util.homebrew_binary("wakatime-cli", "wakatime-cli"),
         -- python_binary = util.homebrew_binary("python@3.14", "python3"),

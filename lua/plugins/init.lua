@@ -279,7 +279,6 @@ return {
           "BufNewFile",
         },
         dependencies = {
-          "hrsh7th/cmp-nvim-lsp",
           {
             "nvimdev/lspsaga.nvim",
             event = "VeryLazy",
@@ -437,110 +436,26 @@ return {
 
   -- Completion
   {
-    "hrsh7th/nvim-cmp",
-    event = { "VeryLazy" }, -- , "InsertEnter", "CmdlineEnter"
+    "saghen/blink.cmp",
+    -- Track main; build the fuzzy matcher from source. RUSTFLAGS must be
+    -- unset for the build: the global export in .zprofile overrides blink's
+    -- own .cargo/config.toml rustflags and strips the macOS-required
+    -- "-undefined dynamic_lookup" link args, failing the link with
+    -- unresolved mlua/luaL_* symbols -- the root cause of the previous
+    -- failed migration attempt.
+    -- v2's blink.lib loader resolves <repo>/lib/lib*.dylib.<commit7>, so the
+    -- built artifact must be copied there under the current commit hash.
+    build = 'env -u RUSTFLAGS cargo build --release && mkdir -p lib && cp target/release/libblink_cmp_fuzzy.dylib "lib/libblink_cmp_fuzzy.dylib.$(git rev-parse HEAD | cut -c1-7)"',
+    event = { "InsertEnter" },
     dependencies = {
-      {
-        "hrsh7th/cmp-nvim-lsp",
-      },
-      {
-        "hrsh7th/cmp-buffer",
-      },
-      {
-        "hrsh7th/cmp-path",
-      },
-      {
-        "hrsh7th/cmp-cmdline",
-      },
-      {
-        "dmitmel/cmp-cmdline-history",
-      },
-      {
-        "hrsh7th/cmp-nvim-lsp-document-symbol",
-      },
-      {
-        "hrsh7th/cmp-nvim-lsp-signature-help",
-      },
-      {
-        "petertriho/cmp-git",
-      },
-      {
-        "tamago324/cmp-zsh",
-        opts = {
-          zshrc = true,
-          filetypes = { "zsh" },
-        },
-      },
-      -- {
-      -- 	"chrisgrieser/nvim-lsp-endhints",
-      -- 	event = "LspAttach",
-      -- 	opts = {
-      -- 		icons = {
-      -- 			type = "󰜁 ",
-      -- 			parameter = "󰏪 ",
-      -- 			offspec = " ",
-      -- 			unknown = " ",
-      -- 		},
-      -- 		label = {
-      -- 			padding = 1,
-      -- 			marginLeft = 0,
-      -- 			bracketedParameters = true,
-      -- 		},
-      -- 		autoEnableHints = true,
-      -- 	},
-      -- },
-      {
-        "onsails/lspkind-nvim",
-      },
-      {
-        "SmiteshP/nvim-navic",
-      },
-      {
-        "ray-x/cmp-treesitter",
-      },
-      {
-        "echasnovski/mini.pairs",
-      },
-      {
-        "windwp/nvim-autopairs",
-        event = { "InsertEnter" },
-      },
+      -- blink.cmp v2 split its Rust/native runtime into a separate plugin.
+      "saghen/blink.lib",
       {
         "L3MON4D3/LuaSnip",
-        dependencies = {
-          {
-            "saadparwaiz1/cmp_luasnip",
-          },
-        },
         build = "make install_jsregexp",
       },
       {
-        "folke/lazydev.nvim",
-        ft = "lua",
-        opts = {
-          library = {
-            "lazy.nvim",
-            "none-ls.nvim",
-            {
-              path = "${3rd}/luv/library",
-              words = { "vim%.uv" },
-            },
-            "plenary.nvim",
-            vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/busted/library"),
-            vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/library"),
-            vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library"),
-          },
-        },
-      },
-      {
-        "ray-x/lsp_signature.nvim",
-        event = "InsertEnter",
-      },
-      {
-        "echasnovski/mini.icons",
-      },
-      {
-        "zbirenbaum/copilot-cmp",
+        "fang2hou/blink-copilot",
         dependencies = {
           {
             "zbirenbaum/copilot.lua",
@@ -549,141 +464,35 @@ return {
             end,
           },
         },
-        config = function()
-          require("copilot_cmp").setup({
-            event = { "InsertEnter", "LspAttach" },
-            fix_pairs = false,
-          })
-        end,
       },
-      -- {
-      --   "zbirenbaum/copilot.lua",
-      --   event = "InsertEnter",
-      --   build = "bun i -g @github/copilot-language-server@latest",
-      --   config = function()
-      --     require("plugins.copilot")
-      --   end,
-      -- },
+      {
+        "windwp/nvim-autopairs",
+        event = { "InsertEnter" },
+      },
+      "echasnovski/mini.icons",
     },
     config = function()
-      require("plugins.cmp")
+      require("plugins.blink")
     end,
   },
-  -- {
-  --   {
-  --     "saghen/blink.cmp",
-  --     lazy = false,
-  --     event = "InsertEnter",
-  --     build = "RUSTFLAGS='-C target-cpu=apple-m3 -C opt-level=3 -C force-frame-pointers=on -C debug-assertions=off -C incremental=on -C overflow-checks=off -C link-arg=-undefined -C link-arg=dynamic_lookup' cargo build -v --release",
-  --     dependencies = {
-  --       -- sources
-  --       {
-  --         "L3MON4D3/LuaSnip",
-  --         build = "make install_jsregexp",
-  --       },
-  --       "fang2hou/blink-copilot",
-  --       {
-  --         "zbirenbaum/copilot.lua",
-  --       },
-  --       "echasnovski/mini.icons",
-  --       "nvim-tree/nvim-web-devicons",
-  --       "windwp/nvim-autopairs",
-  --       "ray-x/lsp_signature.nvim",
-  --       {
-  --         "b0o/schemastore.nvim",
-  --         ft = { "json", "yaml" },
-  --       },
-  --     },
-  --     config = function()
-  --       require("plugins.blink")
-  --     end,
-  --     opts_extend = { "sources.default" }
-  --   },
-  -- {
-  --   "zbirenbaum/copilot.lua",
-  --   cmd = "Copilot",
-  --   build = "bun i -g @github/copilot-language-server@latest",
-  --   opts = {
-  --     panel = { enabled = false },
-  --     suggestion = { enabled = false },
-  --     filetypes = {
-  --       -- ["*"] = false,
-  --       help = false,
-  --       markdown = true,
-  --       sh = false,
-  --     },
-  --     copilot_node_command = util.homebrew_binary("node", "node"),
-  --     server = {
-  --       type = "nodejs",
-  --       custom_server_filepath = vim.fs.joinpath(
-  --         util.getenv("BUN_INSTALL"),
-  --         "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"),
-  --     },
-  --     copilot_model = "gpt-4o-copilot",
-  --     server_opts_overrides = {
-  --       autostart = false,
-  --       trace = "off",
-  --       init_options = {
-  --         github = {
-  --           copilot = {
-  --             selectedCompletionModel = "gpt-4o-copilot",
-  --           },
-  --         },
-  --         enableAutoCompletions = false,
-  --         inlineSuggest = {
-  --           enable = false,
-  --         },
-  --         editor = {
-  --           showEditorCompletions = false,
-  --           enableAutoCompletions = false,
-  --           delayCompletions = false,
-  --           -- filterCompletions = ["editor", "filterCompletions"],
-  --         },
-  --         advanced = {
-  --           displayStyle = "node",
-  --           -- secretKey = ["advanced", "secret_key"],
-  --           length = 0,
-  --           -- stops = ["advanced", "stops"],
-  --           -- temperature = ["advanced", "temperature"],
-  --           -- topP = ["advanced", "top_p"],
-  --           indentationMode = false,
-  --           inlineSuggestCount = 0,   -- #completions for getCompletions
-  --           listCount = 0,            -- #completions for panel
-  --           -- debugOverrideProxyUrl = ["advanced", "debug.overrideProxyUrl"],
-  --           -- debugTestOverrideProxyUrl = ["advanced", "debug.testOverrideProxyUrl"],
-  --           -- debugEnableGitHubTelemetry = ["advanced", "debug.githubCTSIntegrationEnabled"],
-  --           -- debugOverrideEngine = ["advanced", "debug.overrideEngine"],
-  --           -- debugShowScores = ["advanced", "debug.showScores"],
-  --           -- debugOverrideLogLevels = ["advanced", "debug.overrideLogLevels"],
-  --           -- debugFilterLogCategories = ["advanced", "debug.filterLogCategories"],
-  --           -- debugUseSuffix = ["advanced", "debug.useSuffix"],
-  --           -- debugAcceptSelfSignedCertificate = ["advanced", "debug.acceptSelfSignedCertificate"]
-  --         },
-  --       },
-  --     },
-  --   },
-  -- },
-  --   {
-  --     "saghen/blink.compat",
-  --   },
-  --   {
-  --     "folke/lazydev.nvim",
-  --     opts = {
-  --       library = {
-  --         "lazy.nvim",
-  --         {
-  --           path = "${3rd}/luv/library",
-  --           words = { "vim%.uv" },
-  --         },
-  --       },
-  --       integrations = {
-  --         lspconfig = true,
-  --         cmp = true,
-  --         coq = false,
-  --       },
-  --     },
-  --   },
-  -- },
+  {
+    "folke/lazydev.nvim",
+    ft = "lua",
+    opts = {
+      library = {
+        "lazy.nvim",
+        "none-ls.nvim",
+        {
+          path = "${3rd}/luv/library",
+          words = { "vim%.uv" },
+        },
+        "plenary.nvim",
+        vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/busted/library"),
+        vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/library"),
+        vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library"),
+      },
+    },
+  },
   {
     "numToStr/Comment.nvim",
     event = "VeryLazy",

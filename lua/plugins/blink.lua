@@ -1,7 +1,15 @@
+-- Loaded from the blink.cmp spec's config in lua/plugins/init.lua.
+--
+-- The spec tracks blink.cmp main and builds the fuzzy matcher from source
+-- (prebuilt download stays off). The pre-2025-10 migration failed because a
+-- broken RUSTFLAGS build line left no Rust matcher and "prefer_rust" fell
+-- back to the Lua matcher SILENTLY -- whose weak filterText handling drops
+-- exactly the gopls deep/unimported candidates. Hence
+-- "prefer_rust_with_warning": if the source build ever breaks again, it must
+-- be loud, not a quiet completion downgrade.
 local blink = require("blink.cmp")
 
 local np = require("nvim-autopairs")
-local np_cmp_autopairs = require("nvim-autopairs.completion.cmp")
 local np_rule = require("nvim-autopairs.rule")
 local np_ts_conds = require("nvim-autopairs.ts-conds")
 
@@ -14,14 +22,27 @@ np.setup({
     "AvanteInput",
     "TelescopePrompt",
   },
-  fast_wrap = {},
+  fast_wrap = {
+    map = "<M-e>",
+    chars = { "{", "[", "(", '"', "'" },
+    pattern = [=[[%'%"%>%]%)%}%,%`]]=],
+    end_key = "$",
+    avoid_move_to_end = true,
+    before_key = "h",
+    after_key = "l",
+    cursor_pos_before = true,
+    keys = "qwertyuiopzxcvbnmasdfghjkl",
+    highlight = "Search",
+    highlight_grey = "Comment",
+    manual_position = true,
+    use_virt_lines = true,
+  },
   map_bs = true,
   map_cr = true,
   check_ts = true,
-  -- ts_config = {
-  --   lua = { "string" },
-  --   go = { "string", "template_string", "property", "field", "field_identifier", "function.method.call", "variable", "constant", "module", "type", "attribute", "keyword" },
-  -- },
+  ts_config = {
+    go = { "string" },
+  },
   disable_in_macro = false,
   ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
   enable_moveright = true,
@@ -57,52 +78,6 @@ ls_loader_lua.load({
   },
 })
 
-local on_confirm_done = function(opts)
-  opts = vim.tbl_deep_extend("force", {
-    filetypes = np_cmp_autopairs.filetypes,
-  }, opts or {})
-
-  return function(event)
-    if event.commit_character then
-      return
-    end
-
-    local entry = event.entry
-    local commit_character = entry:get_commit_characters()
-    local bufnr = vim.api.nvim_get_current_buf() ---@cast bufnr integer
-    local filetype = vim.api.nvim_get_option_value("filetype", {})
-    local item = entry:get_completion_item()
-
-    -- Without options and fallback
-    if not opts.filetypes[filetype] and not opts.filetypes["*"] then
-      return
-    end
-
-    if opts.filetypes[filetype] == false then
-      return
-    end
-
-    -- If filetype is nil then use *
-    local completion_options = opts.filetypes[filetype] or opts.filetypes["*"]
-
-    local rules = vim.tbl_filter(function(rule)
-      return completion_options[rule.key_map]
-    end, np.get_buf_rules(bufnr))
-
-    -- TODO(zchee):
-    -- Error executing vim.schedule lua callback: /Users/zchee/.config/nvim/lua/zchee/plugins/cmp.lua:312: attempt to call field 'handler' (a nil value)
-    -- stack traceback:
-    --         /Users/zchee/.config/nvim/lua/zchee/plugins/cmp.lua:312: in function 'callback'
-    --         ...im/site/pack/packer/opt/nvim-cmp/lua/cmp/utils/event.lua:47: in function 'emit'
-    --         ...hare/nvim/site/pack/packer/opt/nvim-cmp/lua/cmp/core.lua:505: in function ''
-    --         vim/_editor.lua: in function <vim/_editor.lua:0>
-    for char, value in pairs(completion_options) do
-      if value and value.handler and vim.tbl_contains(value.kind, item.kind) then
-        value.handler(char, item, bufnr, rules, commit_character)
-      end
-    end
-  end
-end
 
 -- vim.api.nvim_create_autocmd('User', {
 --   pattern = 'BlinkCmpMenuOpen',
@@ -159,6 +134,15 @@ blink.setup({
         module = "blink-copilot",
         score_offset = 100,
         async = true,
+        -- Same restriction the old cmp entry_filter enforced: in Go buffers,
+        -- only offer Copilot on comment lines or inside fmt.Errorf format
+        -- strings.
+        should_show_items = function(ctx)
+          if vim.bo[ctx.bufnr].filetype ~= "go" then
+            return true
+          end
+          return ctx.line:find("^%s*//") ~= nil or ctx.line:find('fmt%.Errorf%("') ~= nil
+        end,
         opts = {
           max_completions = 3,
           kind_name = "Copilot",
@@ -172,28 +156,6 @@ blink.setup({
           },
         },
       },
-      avante = {
-        name = "Avante",
-        module = "blink-cmp-avante",
-        async = true,
-        opts = {
-          kind_icons = {
-            Avante = "󰖷",
-          },
-          avante = {
-            command = {
-              enable = function()
-                return vim.bo.filetype == "AvanteInput"
-              end,
-            },
-            mention = {
-              enable = function()
-                return vim.bo.filetype == "AvanteInput"
-              end,
-            },
-          },
-        },
-      },
       lazydev = {
         name = "LazyDev",
         module = "lazydev.integrations.blink",
@@ -202,14 +164,8 @@ blink.setup({
       },
     },
     per_filetype = {
-      AvanteInput = {
-        "avante",
-        inherit_default = false,
-      },
-      codecompanion = {
-        "codecompanion",
-        inherit_default = false,
-      },
+      -- codecompanion registers its own blink source/filetype mapping at
+      -- runtime (providers/completion/blink/setup.lua) -- do not list it here.
       go = {
         "lsp",
         "snippets",
@@ -223,19 +179,19 @@ blink.setup({
         "snippets",
         "path",
         "buffer",
-        inherit_default = false,
+        inherit_defaults = false,
       },
       sh = {
         "lsp",
         "snippets",
         "path",
         "buffer",
-        inherit_default = false,
+        inherit_defaults = false,
       },
       snacks_picker_input = {
         "path",
         "buffer",
-        inherit_default = false,
+        inherit_defaults = false,
       },
     },
     ---@param ctx blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
@@ -258,16 +214,7 @@ blink.setup({
     preset = "none",
     ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
     ["<C-e>"] = { "hide", "fallback" },
-    ["<CR>"] = {
-      "accept",
-      ---@param cmp blink.cmp.API
-      function(cmp)
-        return cmp.accept({
-          callback = on_confirm_done,
-        })
-      end,
-      "fallback",
-    },
+    ["<CR>"] = { "accept", "fallback" },
     ["<Tab>"] = { "snippet_forward", "fallback" },
     ["<S-Tab>"] = { "snippet_backward", "fallback" },
     ["<Up>"] = { "select_prev", "fallback" },
@@ -297,12 +244,9 @@ blink.setup({
       show_on_backspace_after_insert_enter = true,
       show_on_trigger_character = true, -- When true, will show the completion window after typing a trigger character
       show_on_insert = true,
-      show_on_blocked_trigger_characters = function()
-        if vim.bo.filetype == "markdown" then
-          return { " ", "\n", "\t", ".", "/", "(", "[" }
-        end
-        return { " ", "\n", "\t" }
-      end,
+      -- v2 no longer accepts a function here (the old draft special-cased
+      -- markdown with a larger blocked set).
+      show_on_blocked_trigger_characters = { " ", "\n", "\t" },
       show_on_accept_on_trigger_character = true, -- will show the completion window when the cursor comes after a trigger character after accepting an item
       show_on_insert_on_trigger_character = true, -- will show the completion window when the cursor comes after a trigger character when entering insert mode
       show_on_x_blocked_trigger_characters = { "'", '"', "(", "{", "[" },
@@ -461,14 +405,13 @@ blink.setup({
     },
   },
   fuzzy = {
-    implementation = "prefer_rust",
+    implementation = "prefer_rust_with_warning",
     max_typos = 0,
     -- max_typos = function(keyword) -- Allows for a number of typos relative to the length of the query Set this to 0 to match the behavior of fzf
     --   return math.floor(#keyword / 2)
     -- end,
-    use_frecency = true, -- Frecency tracks the most recently/frequently used items and boosts the score of the item
+    frecency = { enabled = true }, -- boosts recently/frequently used items
     use_proximity = true, -- Proximity bonus boosts the score of items matching nearby words
-    use_unsafe_no_lock = true, -- disables the lock and fsync when writing to the frecency database.
     -- Controls which sorts to use and in which order, falling back to the next sort if the first one returns nil
     -- You may pass a function instead of a string to customize the sorting
     sorts = {
@@ -479,9 +422,8 @@ blink.setup({
       "score",
       "sort_text",
     },
-    prebuilt_binaries = {
-      download = false,
-    },
+    -- v2 loads the matcher from <repo>/lib/ via blink.lib; the spec's build
+    -- cmd compiles it from source and copies it there (no prebuilt download).
   },
   signature = {
     enabled = true,

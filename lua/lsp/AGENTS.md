@@ -155,7 +155,7 @@ table below).
   `lspconfig.setup()`.
 - UI/capability plugins configured centrally in `init.lua`: `hover.nvim`,
   `lspsaga.nvim`, `lspkind.nvim`, `lsp-endhints.nvim`,
-  `tiny-inline-diagnostic.nvim`, `actions-preview.nvim`, `cmp_nvim_lsp`,
+  `tiny-inline-diagnostic.nvim`, `actions-preview.nvim`, `blink.cmp` (capabilities),
   `SchemaStore.nvim` (`jsonls.lua`).
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->

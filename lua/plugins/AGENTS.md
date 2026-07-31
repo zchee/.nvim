@@ -11,7 +11,7 @@
 `lua/plugins/<name>.lua` module via `config = function() require("plugins.<name>") end`
 (a few plugins instead pass the module's return value straight through as
 `opts`). Several plugin specs in `init.lua` are commented out wholesale
-(avante.nvim, blink.cmp, obsidian.nvim, older copilot.lua variants); their
+(avante.nvim, obsidian.nvim, older copilot.lua variants); their
 config modules remain on disk as dead code — see the orphaned-file notes
 below and in each row's description.
 
@@ -20,14 +20,13 @@ below and in each row's description.
 |------|-------------|
 | `init.lua` | Full `LazySpec` table (~48 plugin specs); dispatches to `require("plugins.<name>")`; several specs commented out |
 | `aerial.lua` | stevearc/aerial.nvim: symbol outline; lsp/treesitter/markdown/asciidoc/man backends, `prefer_left` placement |
-| `blink.lua` | saghen/blink.cmp + autopairs/LuaSnip glue; DEAD — its lazy spec is entirely commented out in `init.lua` |
+| `blink.lua` | saghen/blink.cmp (v2, main branch + blink.lib): LuaSnip preset, blink-copilot source, rust fuzzy built from source |
 | `bqf.lua` | kevinhwang91/nvim-bqf: better quickfix; rounded auto-preview window, 60/30-line preview heights |
 | `bufferline.lua` | akinsho/bufferline.nvim; `numbers = "buffer_id"`, `nvim_lsp` diagnostics indicator |
 | `chatgpt.json` | Prompt-template data for `chatgpt.lua`; DEAD — no `ChatGPT.nvim` spec exists in `init.lua` |
 | `chatgpt.lua` | jackMort/ChatGPT.nvim config; API key via `op read op://...`; DEAD — no active spec references it |
 | `chowcho.lua` | tkmpypy/chowcho.nvim: window picker; rounded border, custom `<C-w>` window-select keymaps |
 | `claudecode.lua` | coder/claudecode.nvim: Claude Code IDE bridge; `terminal_cmd` launches `omc --yolo` in a snacks float |
-| `cmp.lua` | hrsh7th/nvim-cmp + autopairs/LuaSnip/lspkind glue; Tree-sitter-aware autopair rules for Go string/bracket pairs |
 | `codecompanion.lua` | olimorris/codecompanion.nvim: chat/inline AI; anthropic adapter, mcphub + codecompanion-history extensions |
 | `codecov.lua` | zchee/codecov.nvim (local plugin) setup: coverage sign colors, api.codecov.io endpoint, token via CODECOV_NVIM_API_TOKEN |
 | `comment.lua` | numToStr/Comment.nvim; patches `Comment.ft` via `comment_compat` for nil-safe TS-parser commentstring lookup |
@@ -164,7 +163,7 @@ below and in each row's description.
 - [lazy.nvim](https://github.com/folke/lazy.nvim) — the plugin manager this
   entire directory's `LazySpec` table targets.
 - Major plugin ecosystems wired here: nvim-treesitter (parsing/highlighting),
-  nvim-cmp (completion; blink.cmp present but currently dead/commented),
+  blink.cmp v2 + blink.lib (completion; rust fuzzy matcher built from source),
   nvim-dap + Mason (debugging), Telescope + snacks.nvim (pickers/UI), Git
   tooling (gitsigns, diffview.nvim, fugit2.nvim), and AI assistants
   (claudecode.nvim, codecompanion.nvim, CopilotChat.nvim, codex.nvim, and

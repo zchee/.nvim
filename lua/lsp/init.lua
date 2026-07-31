@@ -480,9 +480,9 @@ local default_capabilities_config = function()
   ---@type lsp.ClientCapabilities
   local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-  -- merge cmp_nvim_lsp client capabilities
-  capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
-  -- capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
+  -- merge blink.cmp client capabilities (second arg false: the base above
+  -- already starts from make_client_capabilities())
+  capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
 
   -- if capabilities.workspace then
   --   capabilities.workspace.didChangeWatchedFiles = {

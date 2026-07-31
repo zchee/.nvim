@@ -43,8 +43,6 @@ below and in each row's description.
 | `gemini.lua` | Gemini AI completion/inline-hints plugin (`require("gemini")`, owner unconfirmed); DEAD — no plugin spec anywhere |
 | `github-preview.lua` | wallpants/github-preview.nvim: live Markdown preview server bound to `127.0.0.1:6041` |
 | `gitsigns.lua` | lewis6991/gitsigns.nvim; overrides default sign highlight groups with custom fg/bg hex colors |
-| `illuminate.lua` | RRethy/vim-illuminate; patches reference/regex/treesitter providers via `illuminate_compat` before `configure()` |
-| `illuminate_compat.lua` | Internal shim guarding vim-illuminate's Tree-sitter locals provider against nil/invalid-line errors |
 | `image.lua` | 3rd/image.nvim `opts` table (kitty backend); integration toggles nested under `integrations`, sizing keys top-level |
 | `lspsaga.lua` | nvimdev/lspsaga.nvim config; DEAD/duplicate — lspsaga is actually set up in `lua/lsp/init.lua:87-88` |
 | `lualine.lua` | nvim-lualine/lualine.nvim; `equinusocio_material` theme, disables statusline/winbar for lspsaga float filetypes |
@@ -61,15 +59,16 @@ below and in each row's description.
 | `rustaceanvim.lua` | mrcjkb/rustaceanvim; keymaps bound on `LspAttach`, not `server.on_attach`, so the global on_attach can't clobber them |
 | `scrollbar.lua` | petertriho/nvim-scrollbar; adds Cursor/Search/Error/Warn marks with a 50ms throttle |
 | `smart-splits.lua` | mrjones2014/smart-splits.nvim: multiplexer-aware split nav/resize; DEAD — no plugin spec anywhere in `init.lua` |
-| `snacks.lua` | folke/snacks.nvim; patches quickfile Tree-sitter race via `snacks_compat` before the multi-module `setup()` |
+| `snacks.lua` | folke/snacks.nvim; quickfile race patch via `snacks_compat`; `words` enabled (replaces vim-illuminate) with <M-n>/<M-p> jumps |
 | `snacks_compat.lua` | Internal shim working around a snacks.quickfile Tree-sitter "Decoration provider" race on fast buffer loads |
 | `telescope.lua` | nvim-telescope/telescope.nvim; custom `fd`-based `find_files` excluding `.git`/`_tmp`, `live_grep` scoped to LSP workspace roots |
 | `todo-comment.lua` | Options table for folke/todo-comments.nvim; consumed as `opts = require("plugins.todo-comment")`, not via `config` |
 | `todo.lua` | Legacy TODO-highlighter (`require("todo")`, distinct from todo-comments.nvim); DEAD — superseded by `todo-comment.lua` |
 | `toggleterm.lua` | akinsho/toggleterm.nvim; custom `<BS>t` `open_mapping`; DEAD — no plugin spec exists in `init.lua` at all |
-| `tree-sitter.lua` | nvim-treesitter/nvim-treesitter (master branch); registers custom parsers/filetypes (goasm, tiltfile, helm->gotmpl, zsh->bash) |
+| `tree-sitter.lua` | nvim-treesitter (main branch): FileType-driven `vim.treesitter.start()`/indentexpr, install_dir `tree-sitter-main`, :TSEnsureInstalled |
 | `tree.lua` | nvim-tree/nvim-tree.lua config; DEAD — superseded by the inline `stevearc/oil.nvim` spec in `init.lua` |
-| `treesitter_compat.lua` | Internal shim (`patch_query_predicates`) patching nvim-treesitter query-predicate registration for nightly Neovim |
+| `treesitter_parsers.lua` | Parser list for :TSEnsureInstalled (ported master ensure_installed) |
+| `treesitter_selection.lua` | Hand-rolled incremental selection (gnn/grn/grm/grc); replaces the removed master module; tested by `tests/treesitter_selection_spec.lua` |
 | `ts_context_commentstring.lua` | JoosepAlviste/nvim-ts-context-commentstring; sets `vim.g.skip_ts_context_commentstring_module` |
 | `ts_context_commentstring_compat.lua` | Internal shim guarding `is_treesitter_active` against a nil Tree-sitter parser |
 | `which-key.lua` | Options table for folke/which-key.nvim (modern preset, custom icon glyphs); consumed as `opts = require(...)` |

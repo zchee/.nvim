@@ -549,21 +549,14 @@ return {
   -- Treesitter
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "master",
-    event = { "BufReadPost", "BufNewFile" },
-    cmd = {
-      "TSInstallInfo",
-    },
+    branch = "main",
+    -- the main branch does not support lazy-loading (upstream README)
+    lazy = false,
     build = ":TSUpdate",
     dependencies = {
       "JoosepAlviste/nvim-ts-context-commentstring",
       "yamatsum/nvim-nonicons",
     },
-    init = function(plugin)
-      require("lazy.core.loader").add_to_rtp(plugin)
-      require("nvim-treesitter.query_predicates")
-      require("plugins.treesitter_compat").patch_query_predicates()
-    end,
     config = function()
       require("plugins.tree-sitter")
     end,

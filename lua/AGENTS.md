@@ -27,6 +27,7 @@ below). The entry point that requires into this tree is the repo root
 | `lualine/` | Custom lualine statusline theme (see lualine/AGENTS.md) |
 | `luasnippets/` | LuaSnip snippet definitions, one file per target filetype (see luasnippets/AGENTS.md) |
 | `none-ls/` | Custom none-ls.nvim formatter/diagnostic source builders (see none-ls/AGENTS.md) |
+| `nvim-treesitter/` | `parsers.lua` overlay shadowing the plugin registry by rtp order (custom/forked grammars survive install.lua's reload_parsers) — documented here, no separate AGENTS.md |
 | `plugins/` | `lazy.nvim` `LazySpec` plugin specs (see plugins/AGENTS.md) |
 | `util/` | Shared path/prefix/XDG helper module used across the whole config (see util/AGENTS.md) |
 

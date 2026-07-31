@@ -7,11 +7,8 @@ local rep = require("luasnip.extras").rep
 -- local partial = require("luasnip.extras").partial
 
 local function in_func()
-  local ok, ts_utils = pcall(require, "nvim-treesitter.ts_utils")
-  if not ok then
-    return false
-  end
-  local current_node = ts_utils.get_node_at_cursor()
+  -- core API; nvim-treesitter main no longer ships ts_utils
+  local current_node = vim.treesitter.get_node()
   if not current_node then
     return false
   end

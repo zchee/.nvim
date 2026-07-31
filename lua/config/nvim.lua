@@ -21,11 +21,12 @@ local util = require("util")
 
 vim.env.MANWIDTH = 999
 
--- -- Remote Plugins:
--- vim.g.loaded_python_provider    = 1 -- $VIMRUNTIME/autoload/provider/python.vim
--- vim.g.loaded_node_provider      = 1 -- $VIMRUNTIME/autoload/provider/node.vim
--- vim.g.loaded_ruby_provider      = 1 -- $VIMRUNTIME/autoload/provider/ruby.vim
--- vim.g.loaded_perl_provider      = 1 -- $VIMRUNTIME/autoload/provider/perl.vim
+-- Remote Plugins: disable provider probing entirely (no rplugins in use).
+-- Note: 0 disables a provider; any other value leaves the probe enabled.
+vim.g.loaded_python3_provider = 0 -- $VIMRUNTIME/autoload/provider/python3.vim
+vim.g.loaded_node_provider = 0 -- $VIMRUNTIME/autoload/provider/node.vim
+vim.g.loaded_ruby_provider = 0 -- $VIMRUNTIME/autoload/provider/ruby.vim
+vim.g.loaded_perl_provider = 0 -- $VIMRUNTIME/autoload/provider/perl.vim
 -- vim.g.no_man_maps               = 1
 -- vim.g.ft_man_folding_enable     = 0
 -- vim.g.man_hardwrap              = false

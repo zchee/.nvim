@@ -78,7 +78,6 @@ ls_loader_lua.load({
   },
 })
 
-
 -- vim.api.nvim_create_autocmd('User', {
 --   pattern = 'BlinkCmpMenuOpen',
 --   callback = function()
@@ -410,7 +409,12 @@ blink.setup({
     -- max_typos = function(keyword) -- Allows for a number of typos relative to the length of the query Set this to 0 to match the behavior of fzf
     --   return math.floor(#keyword / 2)
     -- end,
-    frecency = { enabled = true }, -- boosts recently/frequently used items
+    -- upstream annotates FuzzyConfigFrecency as (exact) with `path` required,
+    -- but setup() merges the stdpath("state") default at runtime
+    ---@diagnostic disable-next-line: missing-fields
+    frecency = { -- boosts recently/frequently used items
+      enabled = true,
+    },
     use_proximity = true, -- Proximity bonus boosts the score of items matching nearby words
     -- Controls which sorts to use and in which order, falling back to the next sort if the first one returns nil
     -- You may pass a function instead of a string to customize the sorting

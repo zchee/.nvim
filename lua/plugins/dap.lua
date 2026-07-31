@@ -367,15 +367,9 @@ dap.listeners.before.event_exited["dapui_config"] = function()
   dapui.close({ layout = 1 })
 end
 
-vim.api.nvim_set_keymap(
-  "n",
-  "<LocalLeader>dp",
-  "<cmd>lua require'dap'.toggle_breakpoint()<CR>",
-  { noremap = true, silent = true }
-)
-vim.api.nvim_set_keymap(
-  "n",
-  "<LocalLeader>dc",
-  "<cmd>lua require'dap'.continue()<CR>",
-  { noremap = true, silent = true }
-)
+vim.keymap.set("n", "<LocalLeader>dp", function()
+  require("dap").toggle_breakpoint()
+end, { silent = true, desc = "DAP: toggle breakpoint" })
+vim.keymap.set("n", "<LocalLeader>dc", function()
+  require("dap").continue()
+end, { silent = true, desc = "DAP: continue" })

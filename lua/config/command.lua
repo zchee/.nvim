@@ -153,9 +153,8 @@ vim.api.nvim_create_user_command("TSInspectTree", function(opts)
 
   vim.api.nvim_win_set_width(0, 250)
   vim.opt_local.number = false
-  vim.api.nvim_buf_set_keymap(0, "n", "q", "<Cmd>q<CR>", {
-    noremap = true,
-    script = true,
+  vim.keymap.set("n", "q", "<Cmd>q<CR>", {
+    buffer = true,
     desc = "Quick quit the current window",
   })
 end, {

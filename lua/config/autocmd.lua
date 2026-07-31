@@ -34,9 +34,9 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     vim.opt_local.colorcolumn = ""
 
-    vim.api.nvim_buf_set_keymap(0, "n", "u", "<C-u>", { silent = true })
-    vim.api.nvim_buf_set_keymap(0, "n", "d", "<C-d>", { silent = true })
-    vim.api.nvim_buf_set_keymap(0, "n", "q", ":q<CR>", { silent = true })
+    vim.keymap.set("n", "u", "<C-u>", { buffer = true, silent = true })
+    vim.keymap.set("n", "d", "<C-d>", { buffer = true, silent = true })
+    vim.keymap.set("n", "q", "<Cmd>q<CR>", { buffer = true, silent = true })
   end,
 })
 

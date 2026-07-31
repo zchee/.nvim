@@ -1,2 +1,2 @@
-vim.api.nvim_set_keymap("n", "@", "^", { nowait = true, noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "^", "@", { nowait = true, noremap = true, silent = true })
+vim.keymap.set("n", "@", "^", { nowait = true, silent = true })
+vim.keymap.set("n", "^", "@", { nowait = true, silent = true })

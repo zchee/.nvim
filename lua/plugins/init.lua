@@ -438,7 +438,10 @@ return {
     -- failed migration attempt.
     -- v2's blink.lib loader resolves <repo>/lib/lib*.dylib.<commit7>, so the
     -- built artifact must be copied there under the current commit hash.
-    build = 'env -u RUSTFLAGS cargo build --release && mkdir -p lib && cp target/release/libblink_cmp_fuzzy.dylib "lib/libblink_cmp_fuzzy.dylib.$(git rev-parse HEAD | cut -c1-7)"',
+    -- Old-hash dylibs are pruned only after a successful build; if the build
+    -- fails, implementation = "rust" hard-errors instead of silently reusing
+    -- a stale matcher. After :Lazy update, verify this build ran.
+    build = 'env -u RUSTFLAGS cargo build --release && mkdir -p lib && rm -f lib/libblink_cmp_fuzzy.dylib.* && cp target/release/libblink_cmp_fuzzy.dylib "lib/libblink_cmp_fuzzy.dylib.$(git rev-parse HEAD | cut -c1-7)"',
     event = { "InsertEnter" },
     dependencies = {
       -- blink.cmp v2 split its Rust/native runtime into a separate plugin.

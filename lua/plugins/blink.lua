@@ -274,7 +274,7 @@ blink.setup({
       enabled = true,
       min_width = 40,
       max_height = 50,
-      border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+      -- border inherits vim.o.winborder
       winblend = 0,
       winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
       scrolloff = 2, -- Keep the cursor X lines away from the top/bottom of the window
@@ -473,7 +473,7 @@ blink.setup({
       min_width = 1,
       max_width = 100,
       max_height = 10,
-      border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" }, -- Defaults to `vim.o.winborder` on nvim 0.11+ or 'padded' when not defined/<=0.10
+      -- border inherits vim.o.winborder
       winblend = 0,
       winhighlight = "Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder",
       scrollbar = true, -- Note that the gutter will be disabled when border ~= 'none'

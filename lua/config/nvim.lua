@@ -220,6 +220,10 @@ vim.opt.wildmenu = true
 vim.opt.wildmode = { "longest", "full" }
 vim.opt.wildoptions = "pum"
 vim.opt.winblend = 0
+-- default border for all floating windows opened without an explicit
+-- border; plugins that set their own border (or a different style, e.g.
+-- gitsigns/dap "single") still win
+vim.opt.winborder = "rounded"
 vim.opt.winminwidth = 5
 vim.opt.wrap = true
 vim.opt.writebackup = true

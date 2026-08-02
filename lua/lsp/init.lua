@@ -76,7 +76,8 @@ hover.config({
   },
   ---@type vim.api.keyset.win_config
   preview_opts = {
-    border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+    -- explicit: hover.nvim's own default is "single", not vim.o.winborder
+    border = "rounded",
   },
   preview_window = false,
   title = false,

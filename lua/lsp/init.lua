@@ -84,200 +84,6 @@ hover.config({
   mouse_delay = 1000,
 })
 
-local lspsaga = require("lspsaga")
-lspsaga.setup({
-  ui = {
-    winbar_prefix = "",
-    border = "rounded",
-    devicon = true,
-    foldericon = true,
-    title = true,
-    expand = "⊞",
-    collapse = "⊟",
-    code_action = " ", -- "💡",
-    lines = { "┗", "┣", "┃", "━", "┏" },
-    kind = {},
-    button = { "", "" },
-    imp_sign = "󰳛 ", -- " ", "󰳛 "
-    use_nerd = true,
-  },
-  hover = {
-    max_width = 0.9,
-    max_height = 1,
-    open_link = "gx",
-    open_cmd = "!chrome",
-  },
-  diagnostic = {
-    show_layout = "float",
-    show_normal_height = 10,
-    jump_num_shortcut = true,
-    auto_preview = false,
-    max_width = 0.8,
-    max_height = 0.6,
-    max_show_width = 0.9,
-    max_show_height = 0.6,
-    wrap_long_lines = true,
-    extend_relatedInformation = false,
-    diagnostic_only_current = false,
-    keys = {
-      exec_action = "o",
-      quit = "q",
-      toggle_or_jump = "<CR>",
-      quit_in_show = { "q", "<ESC>" },
-    },
-  },
-  code_action = {
-    num_shortcut = true,
-    show_server_name = false,
-    extend_gitsigns = false,
-    only_in_cursor = true,
-    max_height = 0.3,
-    cursorline = true,
-    keys = {
-      quit = "<C-c>",
-      exec = "<CR>",
-    },
-  },
-  lightbulb = {
-    enable = true,
-    sign = false,
-    debounce = 10,
-    sign_priority = 40,
-    virtual_text = true,
-    enable_in_insert = true,
-    ignore = {
-      clients = {},
-      ft = {},
-    },
-  },
-  scroll_preview = {
-    scroll_down = "<C-f>",
-    scroll_up = "<C-b>",
-  },
-  request_timeout = 2000,
-  finder = {
-    max_height = 0.5,
-    left_width = 0.4,
-    methods = {},
-    default = "ref+imp",
-    layout = "float",
-    silent = false,
-    filter = {},
-    fname_sub = nil,
-    sp_inexist = false,
-    sp_global = false,
-    ly_botright = false,
-    number = vim.o.number,
-    relativenumber = vim.o.relativenumber,
-    keys = {
-      shuttle = "[w",
-      toggle_or_open = "o",
-      vsplit = "s",
-      split = "i",
-      tabe = "t",
-      tabnew = "r",
-      quit = "q",
-      close = "<Esc>",
-    },
-  },
-  definition = {
-    width = 0.6,
-    height = 0.5,
-    save_pos = false,
-    number = vim.o.number,
-    relativenumber = vim.o.relativenumber,
-    keys = {
-      edit = "o",
-      vsplit = "v",
-      split = "s",
-      tabe = "t",
-      tabnew = "<C-t>",
-      quit = "q",
-      close = "<Esc>",
-    },
-  },
-  rename = {
-    in_select = false,
-    auto_save = false,
-    project_max_width = 0.5,
-    project_max_height = 0.5,
-    keys = {
-      quit = "<C-k>",
-      exec = "<CR>",
-      select = "x",
-    },
-  },
-  symbol_in_winbar = {
-    enable = true,
-    separator = " ",
-    hide_keyword = false,
-    ignore_patterns = nil,
-    show_file = true,
-    folder_level = 1,
-    color_mode = true,
-    delay = 300,
-  },
-  outline = {
-    win_position = "right",
-    win_width = 30,
-    auto_preview = true,
-    detail = true,
-    auto_close = true,
-    close_after_jump = false,
-    layout = "normal",
-    max_height = 0.5,
-    left_width = 0.3,
-    keys = {
-      toggle_or_jump = "o",
-      quit = "q",
-      jump = "e",
-    },
-  },
-  callhierarchy = {
-    layout = "float",
-    left_width = 0.2,
-    keys = {
-      edit = "o",
-      vsplit = "s",
-      split = "i",
-      tabe = "t",
-      close = "<Esc>",
-      quit = "q",
-      shuttle = "[w",
-      toggle_or_req = "u",
-    },
-  },
-  typehierarchy = {
-    layout = "float",
-    left_width = 0.2,
-    keys = {
-      edit = "e",
-      vsplit = "s",
-      split = "i",
-      tabe = "t",
-      close = "<Esc>",
-      quit = "q",
-      shuttle = "[w",
-      toggle_or_req = "u",
-    },
-  },
-  implement = {
-    enable = true,
-    sign = true,
-    lang = {},
-    virtual_text = false,
-    priority = 100,
-  },
-  beacon = {
-    enable = false,
-    frequency = 7,
-  },
-  floaterm = {
-    height = 0.7,
-    width = 0.7,
-  },
-})
-
 local lspkind = require("lspkind")
 lspkind.init({
   mode = "symbol_text",
@@ -629,24 +435,29 @@ for server, config in pairs(servers) do
   vim.lsp.enable(server, true)
 end
 
--- vim.keymap.set({ "n" }, "K", "<Cmd>Lspsaga hover_doc<CR>", { silent = true })
 vim.keymap.set({ "n" }, "K", function()
   require("hover").open()
 end, { desc = "hover.nvim (open)" })
 vim.keymap.set({ "n" }, "<C-]>", function()
   require("snacks").picker.lsp_definitions()
 end, { silent = true })
-vim.keymap.set({ "n" }, "<C-k>", "<Cmd>Lspsaga signature_help<CR>", { silent = true })
+vim.keymap.set({ "n" }, "<C-k>", function()
+  vim.lsp.buf.signature_help()
+end, { silent = true, desc = "LSP signature help" })
 -- vim.keymap.set({ "n", "v" }, "<BS>ac", function() actions_preview.code_actions({}) end, { silent = true })
 vim.keymap.set({ "n", "v" }, "<BS>ac", function()
   require("snacks").picker.actions()
 end, { silent = true })
-vim.keymap.set({ "n" }, "<BS>ca", "<Cmd>Lspsaga code_action<CR>", { silent = true })
+vim.keymap.set({ "n" }, "<BS>ca", function()
+  vim.lsp.buf.code_action()
+end, { silent = true, desc = "LSP code action" })
 vim.keymap.set({ "n" }, "<BS>f", "<Cmd>lua vim.lsp.buf.format({ async = false })<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<BS>gci", "<Cmd>Lspsaga incoming_calls<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<BS>gco", "<Cmd>Lspsaga outgoing_calls<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<BS>ge", "<Cmd>Lspsaga show_line_diagnostics<CR>", { silent = true })
-vim.keymap.set({ "n" }, "<BS>gh", "<Cmd>Lspsaga lsp_finder<CR>", { silent = true })
+vim.keymap.set({ "n" }, "<BS>gci", "<Cmd>Trouble lsp_incoming_calls toggle<CR>", { silent = true })
+vim.keymap.set({ "n" }, "<BS>gco", "<Cmd>Trouble lsp_outgoing_calls toggle<CR>", { silent = true })
+vim.keymap.set({ "n" }, "<BS>ge", function()
+  vim.diagnostic.open_float({ scope = "line" })
+end, { silent = true, desc = "Line diagnostics" })
+vim.keymap.set({ "n" }, "<BS>gh", "<Cmd>Trouble lsp toggle<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<BS>gi", function()
   require("snacks").picker.lsp_implementations()
 end, { silent = true })
@@ -655,11 +466,15 @@ vim.keymap.set({ "n" }, "<BS>gk", function()
   local new_virtual_text = not vim.diagnostic.config().virtual_text
   vim.diagnostic.config({ virtual_lines = new_virtual_lines, virtual_text = new_virtual_text })
 end, { silent = true })
-vim.keymap.set({ "n" }, "<BS>gp", "<Cmd>Lspsaga peek_definition<CR>", { silent = true })
+vim.keymap.set({ "n" }, "<BS>gp", function()
+  require("overlook").open_definition()
+end, { silent = true, desc = "Peek definition" })
 vim.keymap.set({ "n" }, "<BS>gr", function()
   require("snacks").picker.lsp_references()
 end, { silent = true })
 vim.keymap.set({ "n" }, "<BS>gt", function()
   require("snacks").picker.lsp_type_definitions()
 end, { silent = true })
-vim.keymap.set({ "n" }, "<Space>e", "<Cmd>Lspsaga rename<CR>", { silent = true })
+vim.keymap.set({ "n" }, "<Space>e", function()
+  vim.lsp.buf.rename()
+end, { silent = true, desc = "LSP rename" })

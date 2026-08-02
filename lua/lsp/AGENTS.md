@@ -154,7 +154,7 @@ table below).
   to register non-lspconfig servers such as `tsgo`), never for
   `lspconfig.setup()`.
 - UI/capability plugins configured centrally in `init.lua`: `hover.nvim`,
-  `lspsaga.nvim`, `lspkind.nvim`, `lsp-endhints.nvim`,
+  `lspkind.nvim`, `lsp-endhints.nvim`,
   `tiny-inline-diagnostic.nvim`, `actions-preview.nvim`, `blink.cmp` (capabilities),
   `SchemaStore.nvim` (`jsonls.lua`).
 

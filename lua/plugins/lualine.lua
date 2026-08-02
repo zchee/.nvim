@@ -15,23 +15,9 @@ lualine.setup({
     },
     disabled_filetypes = {
       statusline = {
-        "saga_action",
-        "sagacallhierarchy",
-        "sagadiagnostic",
-        "sagafinder",
-        "sagaoutline",
-        "sagarename",
-        "sagatypehierarchy",
         "snacks_picker_input",
       },
       winbar = {
-        "saga_action",
-        "sagacallhierarchy",
-        "sagadiagnostic",
-        "sagafinder",
-        "sagaoutline",
-        "sagarename",
-        "sagatypehierarchy",
         "snacks_picker_input",
       },
     },

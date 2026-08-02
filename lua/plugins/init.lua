@@ -272,14 +272,6 @@ return {
           "BufNewFile",
         },
         dependencies = {
-          {
-            "nvimdev/lspsaga.nvim",
-            event = "VeryLazy",
-            dependencies = {
-              "nvim-treesitter/nvim-treesitter",
-              "nvim-tree/nvim-web-devicons",
-            },
-          },
           "onsails/lspkind-nvim",
           "williamboman/mason-lspconfig.nvim",
           {

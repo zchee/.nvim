@@ -44,8 +44,7 @@ below and in each row's description.
 | `github-preview.lua` | wallpants/github-preview.nvim: live Markdown preview server bound to `127.0.0.1:6041` |
 | `gitsigns.lua` | lewis6991/gitsigns.nvim; overrides default sign highlight groups with custom fg/bg hex colors |
 | `image.lua` | 3rd/image.nvim `opts` table (kitty backend); integration toggles nested under `integrations`, sizing keys top-level |
-| `lspsaga.lua` | nvimdev/lspsaga.nvim config; DEAD/duplicate — lspsaga is actually set up in `lua/lsp/init.lua:87-88` |
-| `lualine.lua` | nvim-lualine/lualine.nvim; `equinusocio_material` theme, disables statusline/winbar for lspsaga float filetypes |
+| `lualine.lua` | nvim-lualine/lualine.nvim; `equinusocio_material` theme, disables statusline/winbar for the snacks picker input filetype |
 | `mason.lua` | williamboman/mason.nvim; minimal setup — 8 concurrent installers, `github:mason-org/mason-registry` |
 | `matchup.lua` | andymass/vim-matchup; disables built-in matchparen (`matchparen.enabled = 0`) in favor of Tree-sitter matching |
 | `mcphub.lua` | ravitemer/mcphub.nvim: MCP server hub; DEAD in `init.lua`'s active path — plugin loads bare, `setup()` never called |
@@ -99,7 +98,6 @@ below and in each row's description.
 - Several config modules are orphaned — present on disk but not reachable
   from any active (uncommented) spec in `init.lua`: `blink.lua`, `chatgpt.lua`
   / `chatgpt.json`, `dressing.lua`, `focus.lua`, `gemini.lua`,
-  `lspsaga.lua` (lspsaga is actually configured directly in `lua/lsp/init.lua`),
   `mcphub.lua`, `obsidian.lua`, `smart-splits.lua`, `todo.lua`, `toggleterm.lua`,
   `tree.lua`, and `avante/init.lua` / `avante/keys.lua`. Do not assume a file's
   presence means it is wired up — grep `init.lua` for
@@ -151,8 +149,7 @@ below and in each row's description.
   `dap.lua`'s delve path, `copilot.lua`'s node binary).
 - `lua/lsp` interplay: `rustaceanvim.lua` deliberately owns the
   `rust-analyzer` client instead of `lua/lsp/rust_analyzer.lua` (per the
-  repo's LSP conventions); `lspsaga` is configured directly in
-  `lua/lsp/init.lua`, making `lua/plugins/lspsaga.lua` a dead duplicate;
+  repo's LSP conventions);
   `garbage-day.nvim`'s `excluded_lsp_clients` in `init.lua` references the
   `rust-analyzer` client name rustaceanvim registers.
 - `lua/config` supplies `vim.opt`/keymap/autocmd baseline that many specs'

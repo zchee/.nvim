@@ -25,6 +25,7 @@ comment.
 | `dts.lua` | Devicetree: `autoindent=true`, `expandtab=false` (tabs) |
 | `gitcommit.lua` | Git commit msg: `colorcolumn=72`, `expandtab`, 4-space indent |
 | `gitconfig.lua` | Git config: `comments`/`commentstring` for `#`, `noexpandtab`, 4-space indent |
+| `helm.lua` | Go-template commentstring for Helm charts (vim-helm ftdetect port) |
 | `go.lua` | Go: `noexpandtab` (tabs), 4-space `shiftwidth`/`softtabstop`/`tabstop` |
 | `json.lua` | JSON: `expandtab`, 2-space indent, `conceallevel=0` |
 | `json5.lua` | JSON5: `expandtab`, `shiftwidth=0`, `tabstop=4` (no `softtabstop`) |

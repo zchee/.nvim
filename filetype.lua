@@ -3,6 +3,16 @@ local util = require("util")
 local joinpath = vim.fs.joinpath
 local cache_home = util.xdg_cache_home()
 
+-- vim-helm ftdetect port: <root>/templates/**.{yaml,tpl,txt} is a Helm
+-- template only when Chart.yaml sits at <root>; return nil otherwise so the
+-- path falls through to the yaml/gotmpl rules.
+local function helm_chart_template(path)
+  local root = path:match("^(.*)/templates/")
+  if root and vim.uv.fs_stat(root .. "/Chart.yaml") then
+    return "helm"
+  end
+end
+
 vim.filetype.add({
   extension = {
     s = require("filetypes.goasm").detect,
@@ -44,6 +54,8 @@ vim.filetype.add({
     swigcxx = "swig",
     tbd = "yaml",
     tfstate = "teraterm",
+    -- helmfile templated values (vim-helm ftdetect port)
+    gotmpl = "helm",
     tmpl = "gotmpl",
     tpl = "gotmpl",
     ts = "typescript",
@@ -91,6 +103,13 @@ vim.filetype.add({
     Tiltfile = "tiltfile",
   },
   pattern = {
+    -- vim-helm ftdetect port: chart templates (Chart.yaml-gated, nil falls
+    -- through to yaml/gotmpl), helmfile manifests, and helm values files
+    [".*/templates/.*%.ya?ml"] = helm_chart_template,
+    [".*/templates/.*%.tpl"] = helm_chart_template,
+    [".*/templates/.*%.txt"] = helm_chart_template,
+    [".*/helmfile[^/]*%.ya?ml"] = "helm",
+    [".*/values[^/]*%.ya?ml"] = "yaml.helm-values",
     [".*%.go%.tpl"] = "gotmpl",
     [".*%.keymap"] = "devicetree",
     [".*%.llms%.txt"] = "markdown",

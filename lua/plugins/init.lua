@@ -1232,33 +1232,12 @@ return {
       },
     },
 
-    -- Helm
-    {
-      {
-        "towolf/vim-helm",
-        ft = "helm",
-      },
-    },
-
-    -- graphql
-    {
-      {
-        "jparise/vim-graphql",
-        ft = "graphql",
-      },
-    },
-
     -- tmux
     {
       "ericpruitt/tmux.vim",
       ft = "tmux",
     },
 
-    -- Zsh
-    {
-      "chrisbra/vim-zsh",
-      ft = "zsh",
-    },
   },
 
   -- Utilities

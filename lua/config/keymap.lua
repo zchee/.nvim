@@ -126,13 +126,14 @@ vim.keymap.set({ "n" }, "<Up>", "<Up>", { nowait = true, noremap = true, silent 
 vim.keymap.set({ "n" }, "@", "^", { nowait = true, silent = true })
 vim.keymap.set({ "n" }, "^", "@", { nowait = true, silent = true })
 vim.keymap.set({ "n" }, "b", "b", { nowait = true, silent = true })
-vim.keymap.del("n", "gcc")
-vim.keymap.set(
-  { "n" },
-  "gc",
-  "<Plug>(comment_toggle_linewise_current)",
-  { noremap = false, silent = true, nowait = true }
-)
+-- Plain gc toggles the current line (pre-native Comment.nvim habit kept
+-- after moving to built-in commenting). Same implementation as the bundled
+-- default gcc mapping (runtime/lua/vim/_defaults.lua); a plain "gcc" rhs
+-- cannot work here because an rhs starting with its own lhs is excluded
+-- from remapping. The x-mode gc operator stays the built-in default.
+vim.keymap.set({ "n" }, "gc", function()
+  return require("vim._comment").operator() .. "_"
+end, { expr = true, silent = true, nowait = true, desc = "Comment current line" })
 vim.keymap.set({ "n" }, "gs", "<cmd>Switch<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "gx", "<Plug>(openbrowser-smart-search)", { silent = true })
 -- j/k acceleration maps live on the accelerated-jk.nvim spec's `keys` in

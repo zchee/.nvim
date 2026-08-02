@@ -430,17 +430,6 @@ return {
       },
     },
   },
-  {
-    "numToStr/Comment.nvim",
-    event = "VeryLazy",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "JoosepAlviste/nvim-ts-context-commentstring",
-    },
-    config = function()
-      require("plugins.comment")
-    end,
-  },
 
   -- DAP
   {

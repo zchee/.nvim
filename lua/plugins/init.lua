@@ -337,67 +337,17 @@ return {
         end,
       },
       {
-        -- conform.nvim: Override formatters (let LazyVim manage format-on-save via <leader>uf)
+        -- conform.nvim: formatting, successor of the none-ls sources
         "stevearc/conform.nvim",
-        enabled = false,
         event = "VeryLazy",
-        ---@module 'conform'
-        ---@class conform.setupOpts
-        opts = {
-          formatters = {
-            goimports_rereviser = {
-              meta = {
-                url = "https://github.com/zchee/goimports-rereviser",
-                description = "Right imports sorting & code formatting tool (reviser of goimports-reviser)",
-              },
-              command = "goimports-rereviser",
-              args = { "-use-cache=true", "-cache-fast-skip=true", "-rm-unused", "-set-alias", "-format", "$FILENAME" }, -- , "-project-name=github.com/zchee/pandaemonium"
-              stdin = false,
-            },
-            stylua = {
-              command = "/opt/homebrew/bin/stylua",
-              env = {
-                YAMLFIX_SEQUENCE_STYLE = "block_style",
-              },
-            },
-          },
-          formatters_by_ft = {
-            ---@diagnostic disable: assign-type-mismatch: push
-            go = { "goimports_rereviser", lsp_format = "first" },
-            goasm = { "asmfmt", lsp_format = "first" },
-            lua = { "stylua", lsp_format = "never" },
-            python = { "ruff_format", "ruff_fix" }, -- , "ruff_organize_imports"
-            rust = { "rustfmt" },
-            zig = { "zigfmt" },
-            toml = false,
-            typescript = false,
-            javascript = false,
-            typescriptreact = false,
-            javascriptreact = false,
-            terraform = { "terraform_fmt" },
-            bash = { "shfmt" },
-            sh = { "shfmt" },
-            yaml = false,
-            json = false,
-            markdown = false,
-            ---@diagnostic enable: assign-type-mismatch: pop
-          },
-          format_on_save = {
-            -- I recommend these options. See :help conform.format for details.
-            lsp_format = "fallback",
-            timeout_ms = 500,
-          },
-        },
+        opts = require("plugins.conform"),
       },
       {
-        "nvimtools/none-ls.nvim",
-        event = "VeryLazy",
-        dependencies = {
-          "nvimtools/none-ls-extras.nvim",
-          "nvim-lua/plenary.nvim",
-        },
+        -- nvim-lint: diagnostics, successor of the none-ls sources
+        "mfussenegger/nvim-lint",
+        event = { "BufReadPost", "BufNewFile" },
         config = function()
-          require("plugins.null-ls")
+          require("plugins.lint")
         end,
       },
       {
@@ -469,7 +419,6 @@ return {
     opts = {
       library = {
         "lazy.nvim",
-        "none-ls.nvim",
         {
           path = "${3rd}/luv/library",
           words = { "vim%.uv" },

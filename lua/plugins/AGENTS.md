@@ -31,6 +31,7 @@ below and in each row's description.
 | `codecov.lua` | zchee/codecov.nvim (local plugin) setup: coverage sign colors, api.codecov.io endpoint, token via CODECOV_NVIM_API_TOKEN |
 | `comment.lua` | numToStr/Comment.nvim; patches `Comment.ft` via `comment_compat` for nil-safe TS-parser commentstring lookup |
 | `comment_compat.lua` | Internal shim (no upstream repo) patching `Comment.ft.calculate` against a nil Tree-sitter parser crash |
+| `conform.lua` | Options table for stevearc/conform.nvim; none-ls formatting successor (stylua/rustfmt/yamlfmt/terraform_fmt + goimports-rereviser), manual format via <BS>f |
 | `copilot-chat.lua` | Options table for CopilotC-Nvim/CopilotChat.nvim; claude-opus-4.6 model, ReviewStaged/ReviewUnstaged git-diff prompts |
 | `copilot.lua` | zbirenbaum/copilot.lua; go/lua/sh allowlist, `copilot_model = "gpt-41-copilot"`, Keychain-encryption opt-out; tested by `tests/copilot_config_spec.lua` |
 | `crates.lua` | Options table for saecki/crates.nvim; LSP mode with `<leader>rc*` keymap group bound in `lsp.on_attach` |
@@ -45,6 +46,7 @@ below and in each row's description.
 | `github-preview.lua` | wallpants/github-preview.nvim: live Markdown preview server bound to `127.0.0.1:6041` |
 | `gitsigns.lua` | lewis6991/gitsigns.nvim; overrides default sign highlight groups with custom fg/bg hex colors |
 | `image.lua` | 3rd/image.nvim `opts` table (kitty backend); integration toggles nested under `integrations`, sizing keys top-level |
+| `lint.lua` | mfussenegger/nvim-lint setup; none-ls diagnostics successor (ruff, golangci-lint pinned past the mise shim), FileType-triggered |
 | `lualine.lua` | nvim-lualine/lualine.nvim; `equinusocio_material` theme, disables statusline/winbar for the snacks picker input filetype |
 | `mason.lua` | williamboman/mason.nvim; minimal setup — 8 concurrent installers, `github:mason-org/mason-registry` |
 | `matchup.lua` | andymass/vim-matchup; disables built-in matchparen (`matchparen.enabled = 0`) in favor of Tree-sitter matching |
@@ -52,7 +54,6 @@ below and in each row's description.
 | `metafrastis.lua` | zchee/metafrastis.nvim (local plugin): translation popup; DeepL provider, disk+memory cache with USD cost guard |
 | `neo-tree.lua` | nvim-neo-tree/neo-tree.nvim; patches cursor-hijack via `neo_tree_compat`; filesystem/buffers/git_status/document_symbols sources |
 | `neo_tree_compat.lua` | Internal shim guarding neo-tree's cursor-hijack handler against `Invalid 'win'` errors |
-| `null-ls.lua` | nvimtools/none-ls.nvim; pins `golangci-lint` to an absolute path to dodge a mise-shim stdout/JSON crash |
 | `obsidian.lua` | obsidian-nvim/obsidian.nvim: "knowledge" vault, snacks.pick picker; DEAD — spec fully commented out in `init.lua` |
 | `oil.lua` | Options table for stevearc/oil.nvim; `default_file_explorer = true` with icon/permissions/size/mtime columns |
 | `render-markdown.lua` | MeanderingProgrammer/render-markdown.nvim; renders `markdown`/`Avante`/`codecompanion`/`copilot-chat` filetypes |

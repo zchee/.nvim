@@ -18,7 +18,7 @@ modules in a fixed order.
 | `lazy.lua` | `lazy.nvim` bootstrap `LazyConfig` (paths, git, ui, performance, disabled rtp plugins) + `require("lazy").setup(require("plugins"), lazy_config)` |
 | `nvim.lua` | Large `vim.opt`/`vim.g` block: editor options, disabled built-in providers/plugins (mostly commented out) |
 | `keymap.lua` (372 lines) | `mapleader`/`maplocalleader` + global keymaps across n/i/v/x/c/t modes, plus a `live_grep_from_project_git_root` helper |
-| `autocmd.lua` (650 lines) | `FileType`/`BufNewFile`/`BufEnter`/`BufWinEnter`/`BufWritePre`/`LspTokenUpdate`/`User` autocmds, incl. macOS SDK/header path wiring |
+| `autocmd.lua` (650 lines) | `FileType`/`BufNewFile`/`BufEnter`/`BufWinEnter`/`BufWritePre`/`LspTokenUpdate`/`User` autocmds, incl. macOS SDK/header path wiring; auto-:nohlsearch vim.on_key hook (hlsearch.nvim successor) |
 | `command.lua` (249 lines) | User commands: `Help`, `TrimSpace`, `LuaVimInspect`, `LuaSnipEdit`, `ManV`, `TerminalV`, `LspServerInfo`, `TSInspectTree`, `DiagramToggle` |
 | `highlight.lua` (172 lines) | `vim.hl.priorities` tuning + `hi(name, val)` wrapper defining `@treesitter`/`@lsp` highlight overrides per language |
 

@@ -632,6 +632,19 @@ vim.api.nvim_create_autocmd("User", {
   end,
 })
 
+-- Auto :nohlsearch, replacing the abandoned nvimdev/hlsearch.nvim: search
+-- highlighting turns on only for search-related keys and clears as soon as
+-- any other normal-mode key is pressed. <C-q> (keymap.lua) still force-clears.
+vim.on_key(function(char)
+  if vim.fn.mode() == "n" then
+    local key = vim.fn.keytrans(char)
+    local searching = vim.tbl_contains({ "<CR>", "n", "N", "*", "#", "/", "?" }, key)
+    if searching ~= vim.o.hlsearch then
+      vim.o.hlsearch = searching
+    end
+  end
+end, vim.api.nvim_create_namespace("auto_hlsearch"))
+
 -- Debug:
 -- vim.api.nvim_create_autocmd(
 --   {

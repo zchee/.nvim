@@ -1346,13 +1346,6 @@ return {
       },
     },
     {
-      "nvimdev/hlsearch.nvim",
-      event = "BufWinEnter",
-      config = function()
-        require("hlsearch").setup()
-      end,
-    },
-    {
       "andymass/vim-matchup",
       event = { "BufReadPost", "BufNewFile" },
       config = function()

@@ -864,10 +864,12 @@ return {
       end,
     },
     {
-      "petertriho/nvim-scrollbar",
+      -- satellite.nvim: scrollbar with diagnostics/gitsigns/search marks
+      -- (successor of the dormant petertriho/nvim-scrollbar)
+      "lewis6991/satellite.nvim",
       event = "VeryLazy",
       config = function()
-        require("plugins.scrollbar")
+        require("plugins.satellite")
       end,
     },
     {

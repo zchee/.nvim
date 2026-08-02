@@ -37,6 +37,7 @@ below and in each row's description.
 | `dap.lua` | mfussenegger/nvim-dap + mason-nvim-dap + nvim-dap-go; ensures delve/js/python adapters via Mason |
 | `diagram.lua` | 3rd/diagram.nvim: Mermaid/PlantUML/D2/gnuplot rendering in Markdown buffers via image.nvim |
 | `diffview.lua` | sindrets/diffview.nvim setup: horizontal diff2 layout, winbar info, conflict-choose keymaps via diffview.actions |
+| `dropbar.lua` | Bekaboo/dropbar.nvim: winbar breadcrumbs (lspsaga symbol_in_winbar successor); pick on <leader>; |
 | `dressing.lua` | stevearc/dressing.nvim: `vim.ui.input`/`select` overrides; DEAD — plugin loads as a bare dependency, `setup()` never runs |
 | `fidget.lua` | j-hui/fidget.nvim: LSP progress UI; effectively stock defaults, prior tuned config left commented above it |
 | `focus.lua` | nvim-focus/focus.nvim (owner unconfirmed in repo): autoresize focused split; DEAD — no plugin spec anywhere |

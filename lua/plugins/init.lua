@@ -705,6 +705,26 @@ return {
         require("plugins.lualine")
       end,
     },
+    {
+      -- dropbar.nvim: winbar breadcrumbs (replaces lspsaga's symbol_in_winbar)
+      "Bekaboo/dropbar.nvim",
+      event = "VeryLazy",
+      dependencies = {
+        "nvim-tree/nvim-web-devicons",
+      },
+      keys = {
+        {
+          "<leader>;",
+          function()
+            require("dropbar.api").pick()
+          end,
+          desc = "Winbar pick",
+        },
+      },
+      config = function()
+        require("plugins.dropbar")
+      end,
+    },
     -- {
     --   -- incline.nvim: Floating statusline (replaces lualine)
     --   "b0o/incline.nvim",

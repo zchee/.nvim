@@ -291,7 +291,10 @@ blink.setup({
       end,
       draw = {
         align_to = "label", -- Aligns the keyword you"ve typed to a component in the menu. "none" to disable, or "cursor" to align to the cursor
-        padding = 1, -- Left and right padding, optionally { left, right } for different padding on each side
+        -- Spaces between the border and the row content on each side. The
+        -- upstream docstring advertises { left, right }, but blink.lib's
+        -- validator only accepts a number -- a table fails setup() entirely.
+        padding = 2,
         gap = 1, -- Gap between columns
         treesitter = { "lsp" }, -- Use treesitter to highlight the label text for the given list of sources
         columns = { -- Components to render, grouped by column

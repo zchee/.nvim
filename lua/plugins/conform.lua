@@ -18,6 +18,23 @@ return {
     stylua = {
       command = util.homebrew_binary("stylua", "stylua"),
     },
+    tombi = {
+      command = util.homebrew_binary("tombi", "tombi"),
+      -- In stdin mode tombi resolves its config from the CWD (verified: not
+      -- from --stdin-filename), and it has no --config flag, so pyproject
+      -- buffers run with cwd pointed at a directory whose tombi.toml sets
+      -- indent-width = 4 (ported from taplo's pyproject on_attach override).
+      -- The real --stdin-filename is kept, so schema detection is unchanged.
+      -- Caveat: a project's own [tool.tombi]/tombi.toml is bypassed for
+      -- pyproject.toml files.
+      cwd = function(_, ctx)
+        if vim.fs.basename(ctx.filename) == "pyproject.toml" then
+          local config_home = vim.env.XDG_CONFIG_HOME
+            or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
+          return vim.fs.joinpath(config_home, "tombi", "pyproject")
+        end
+      end,
+    },
   },
   formatters_by_ft = {
     go = { "goimports_rereviser", lsp_format = "first" },
@@ -27,6 +44,10 @@ return {
     rust = { "rustfmt" },
     zig = { "zigfmt" },
     terraform = { "terraform_fmt" },
+    -- taplo's LSP formatting retired with the server; tombi LSP keeps
+    -- formatting.enabled = false, so the CLI here is the single toml
+    -- formatter (per-project pyproject indent via [tool.tombi])
+    toml = { "tombi" },
     bash = { "shfmt" },
     sh = { "shfmt" },
     yaml = { "yamlfmt" },

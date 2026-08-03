@@ -311,7 +311,7 @@ return {
             "gopls",
             -- rustaceanvim names its client "rust-analyzer", not "rust_analyzer".
             "rust-analyzer",
-            "taplo",
+            "tombi",
           },
           grace_period = 60 * 15,
           wakeup_delay = 500,

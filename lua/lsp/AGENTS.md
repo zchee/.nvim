@@ -50,10 +50,9 @@ table below).
 | `ruff_lsp.lua` | No cmd field; disables hover in favor of Pyright; autostart=false in init_options. NOT registered. |
 | `rust_analyzer.lua` | Execs `rustup run <toolchain> rust-analyzer`; NOT registered (rustaceanvim owns it); has a test spec. |
 | `sourcekit.lua` | Bare `sourcekit-lsp` on PATH (no util helper); swift ft; repeats --experimental-feature. Registered. |
-| `taplo.lua` | taplo lsp stdio via util.homebrew_binary; schema catalogs; on_attach widens pyproject.toml indent. Registered. |
 | `terraformls.lua` | terraform-ls via util.homebrew_binary(terraform-ls-head); -req-concurrency=16. Registered. |
 | `tilt_ls.lua` | tilt lsp start via util.homebrew_binary(tilt-head). NOT registered. |
-| `tombi.lua` | tombi lsp via util.homebrew_binary; toml ft, overlaps with taplo.lua (both active). Registered. |
+| `tombi.lua` | tombi lsp via util.homebrew_binary; sole TOML server (taplo retired); diagnostics on, formatting via conform. Registered. |
 | `ts_ls.lua` | typescript-language-server via util.homebrew_binary. NOT registered. |
 | `tsgo.lua` | cmd hardcodes personal go/src/microsoft/typescript-go path. Dead; init.lua registers tsgo inline instead. |
 | `vtsls.lua` | Bare `vtsls --stdio` on PATH (no util helper); move-to-file action, reference code lenses. Registered. |
@@ -125,7 +124,7 @@ table below).
   (e.g. `gopls.lua`'s `settings.*` mirrors `golang.org/x/tools/gopls`
   settings; `yamlls.lua`'s mirrors `redhat-developer/yaml-language-server`).
 - `on_attach` is used sparingly per-file for buffer-local capability
-  overrides (`ruff_lsp.lua` disabling hover, `taplo.lua` widening indent
+  overrides (`ruff_lsp.lua` disabling hover
   for `pyproject.toml`), while global behavior lives in `init.lua`.
 - `root_markers` is preferred over the legacy `root_dir` function; a few
   files (`gopls.lua`, `zizmor.lua`, `xor.lua`) still use a `root_dir`
@@ -147,7 +146,7 @@ table below).
 
 ### External
 - The language server binaries themselves (gopls, rust-analyzer, clangd,
-  basedpyright, lua-language-server, yaml-language-server, taplo, tombi,
+  basedpyright, lua-language-server, yaml-language-server, tombi,
   zls, sourcekit-lsp, etc.), installed via Homebrew/mise/bun/go and
   resolved through the `util` helpers above.
 - `nvim-lspconfig` — only for `lspconfig.configs` (used by `register_lsp()`

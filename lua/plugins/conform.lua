@@ -4,6 +4,38 @@
 -- fall back to LSP formatting at the call site.
 local util = require("util")
 
+-- Cache of go.mod module paths keyed by go.mod path, invalidated on mtime
+-- change, so write-time -project-name resolution stays off the disk for
+-- unchanged modules.
+local gomod_modules = {}
+
+---@param dirname string
+---@return string?
+local function go_module_path(dirname)
+  local gomod = vim.fs.find("go.mod", { upward = true, path = dirname, type = "file" })[1]
+  if not gomod then
+    return nil
+  end
+  local stat = vim.uv.fs_stat(gomod)
+  local mtime = stat and stat.mtime.sec or -1
+  local cached = gomod_modules[gomod]
+  if not cached or cached.mtime ~= mtime then
+    cached = { mtime = mtime }
+    local f = io.open(gomod, "r")
+    if f then
+      for line in f:lines() do
+        cached.module = line:match('^%s*module%s+"?([^%s"]+)')
+        if cached.module then
+          break
+        end
+      end
+      f:close()
+    end
+    gomod_modules[gomod] = cached
+  end
+  return cached.module
+end
+
 return {
   -- restored from the pre-migration conform draft; set
   -- vim.b.disable_autoformat (buffer) or vim.g.disable_autoformat (global)
@@ -35,7 +67,18 @@ return {
         description = "Right imports sorting & code formatting tool (reviser of goimports-reviser)",
       },
       command = util.go_path("bin", "goimports-rereviser"),
-      args = { "-use-cache=true", "-cache-fast-skip=true", "-rm-unused", "-set-alias", "-format", "$FILENAME" },
+      -- -project-name pins project-import grouping to the buffer's nearest
+      -- go.mod; omitted when none is found (module-less scratch files), in
+      -- which case the binary falls back to its own detection.
+      args = function(_, ctx)
+        local args = { "-use-cache=true", "-cache-fast-skip=true", "-rm-unused", "-set-alias", "-format" }
+        local module = go_module_path(ctx.dirname)
+        if module then
+          table.insert(args, "-project-name=" .. module)
+        end
+        table.insert(args, "$FILENAME")
+        return args
+      end,
       stdin = false,
     },
     stylua = {

@@ -95,8 +95,7 @@ return {
       -- pyproject.toml files.
       cwd = function(_, ctx)
         if vim.fs.basename(ctx.filename) == "pyproject.toml" then
-          local config_home = vim.env.XDG_CONFIG_HOME
-            or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
+          local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
           return vim.fs.joinpath(config_home, "tombi", "pyproject")
         end
       end,

@@ -82,7 +82,8 @@ end, {
 })
 
 vim.api.nvim_create_user_command("LuaSnipEdit", function()
-  vim.cmd([[ silent command! LuaSnipEdit :lua require("luasnip.loaders").edit_snippet_files() ]])
+  -- requiring a lazy-loaded plugin module loads the plugin on demand
+  require("luasnip.loaders").edit_snippet_files()
 end, {
   desc = "Edit LuaSnip source.",
 })

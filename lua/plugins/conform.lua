@@ -1,10 +1,22 @@
 -- Returned as `opts` for stevearc/conform.nvim in lua/plugins/init.lua.
--- Successor of the none-ls formatting sources. Formatting stays manual via
--- the <BS>f keymap in lua/lsp/init.lua (none-ls had no format-on-save);
--- filetypes without an entry fall back to LSP formatting at the call site.
+-- Successor of the none-ls formatting sources; manual formatting stays on
+-- the <BS>f keymap in lua/lsp/init.lua, and filetypes without an entry
+-- fall back to LSP formatting at the call site.
 local util = require("util")
 
 return {
+  -- restored from the pre-migration conform draft; set
+  -- vim.b.disable_autoformat (buffer) or vim.g.disable_autoformat (global)
+  -- to opt out
+  format_on_save = function(bufnr)
+    if vim.b[bufnr].disable_autoformat or vim.g.disable_autoformat then
+      return
+    end
+    return {
+      lsp_format = "fallback",
+      timeout_ms = 500,
+    }
+  end,
   formatters = {
     goimports_rereviser = {
       meta = {

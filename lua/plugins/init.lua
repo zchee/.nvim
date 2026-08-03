@@ -513,6 +513,8 @@ return {
     {
       "folke/snacks.nvim",
       lazy = false,
+      -- load before other startup plugins so snacks can patch vim.notify etc.
+      priority = 1000,
       config = function()
         require("plugins.snacks")
       end,

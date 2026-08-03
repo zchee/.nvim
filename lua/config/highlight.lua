@@ -27,6 +27,14 @@ hi("diffRemoved", { fg = "red", bg = hi_none })
 hi("LspReferenceText", { fg = hi_none, bg = hi_none, underline = true })
 
 -- plugins
+-- blink.cmp defaults link BlinkCmpMenu/Border to Pmenu (#202122). The
+-- nvim-cmp era popup rendered on the editor Normal background (#010101)
+-- because its winhighlight pointed at these then-undefined groups, so pin
+-- them to Normal to keep that look (blink sets its links with default=true,
+-- which never overrides these).
+hi("BlinkCmpMenu", { link = "Normal" })
+hi("BlinkCmpSource", { link = "Normal" })
+hi("BlinkCmpMenuBorder", { link = "Normal" })
 hi("BlinkCmpMenuSelection", { link = "WildMenu" })
 hi("@comment.note.comment", { link = "comment" })
 

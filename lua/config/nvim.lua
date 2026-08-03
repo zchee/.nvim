@@ -143,7 +143,11 @@ vim.opt.scrollback = 100000
 vim.opt.scrolljump = 6
 vim.opt.scrolloff = 8 -- default: 0
 vim.opt.secure = true
-vim.opt.shada = { "'20", "<50", "s10" }
+-- "h": don't re-apply hlsearch to the restored last-search pattern at
+-- startup -- the auto-:nohlsearch on_key hook (autocmd.lua) only clears on
+-- the first typed key, so without it every freshly opened file showed the
+-- previous session's matches (e.g. one Search cell at each EOL for \s*$).
+vim.opt.shada = { "'20", "<50", "s10", "h" }
 vim.opt.shiftround = true
 vim.opt.shiftwidth = 2
 vim.opt.shortmess:append("c") -- atOIc " default: filnxtToOF

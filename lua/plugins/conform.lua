@@ -49,6 +49,7 @@ return {
     -- (e.g. when goimports-rereviser's import rewriting or stylua feel too
     -- intrusive per write). Everything currently formats on save.
     local manual_only = {
+      objc = true,
       go = false,
       lua = false,
     }

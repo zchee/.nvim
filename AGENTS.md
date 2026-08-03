@@ -18,7 +18,7 @@ through native `vim.lsp.config()` / `vim.lsp.enable()` — not
 |------|-------------|
 | `init.lua` | Entrypoint: VSCode branch, leader keys, RPC server fallback, lazy.nvim bootstrap |
 | `filetype.lua` | Custom `vim.filetype.add()` overrides for extensions, filenames, and patterns |
-| `CLAUDE.md` | Claude Code guidance (structure overview and key conventions) |
+| `CLAUDE.md` | Symlink to `AGENTS.md` (every documented directory carries one so Claude Code loads the same docs) |
 | `README.md` | One-line repo description |
 | `.stylua.toml` | StyLua formatter profile (2-space indent) |
 | `.gitignore` / `.gitleaksignore` | VCS and secret-scan exclusions |

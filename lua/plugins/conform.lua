@@ -12,6 +12,17 @@ return {
     if vim.b[bufnr].disable_autoformat or vim.g.disable_autoformat then
       return
     end
+    -- Per-filetype toggle: set an entry to true to skip write-time
+    -- formatting for that filetype and keep only the manual <BS>f path
+    -- (e.g. when goimports-rereviser's import rewriting or stylua feel too
+    -- intrusive per write). Everything currently formats on save.
+    local manual_only = {
+      go = false,
+      lua = false,
+    }
+    if manual_only[vim.bo[bufnr].filetype] then
+      return
+    end
     return {
       lsp_format = "fallback",
       timeout_ms = 500,

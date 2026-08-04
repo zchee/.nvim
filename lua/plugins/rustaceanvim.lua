@@ -84,7 +84,90 @@ opts.server = {}
 -- bin dir, so a bare "rust-analyzer" picks up Mason's stale standalone
 -- binary, which cannot load nightly-toolchain crate graphs (E0432
 -- "unresolved import" on every external crate).
-opts.server.cmd = { "rustup", "run", "nightly", "rust-analyzer" }
+local rustup_cmd = { "rustup", "run", "nightly", "rust-analyzer" }
+
+-- rust-analyzer holds its whole index in memory and has no on-disk cache, so
+-- every nvim restart re-pays it (~3.9s on ganja-code once the build-script
+-- cache is warm). lspmux keeps one rust-analyzer per workspace alive between
+-- editor sessions and hands the already-indexed instance to the next client
+-- -- the same trick lua/lsp/gopls.lua uses with `-remote=unix;`. Only
+-- rust-analyzer is routed through it; every other server in lua/lsp keeps its
+-- own direct cmd.
+--
+-- lspmux needs a single executable path, so the toolchain is resolved here
+-- instead of wrapping the rustup shim. Anything that fails -- no lspmux, no
+-- rustup, daemon refuses to start -- falls back to spawning rust-analyzer
+-- directly, because a slow LSP beats no LSP.
+---@return string[]
+local function rust_analyzer_cmd()
+  -- Escape hatch: RUSTACEANVIM_NO_LSPMUX=1 nvim ... spawns rust-analyzer
+  -- directly, for comparing against the shared instance or for bisecting a
+  -- problem that might be the proxy's fault.
+  if vim.env.RUSTACEANVIM_NO_LSPMUX then
+    return rustup_cmd
+  end
+  local lspmux = vim.fn.exepath("lspmux")
+  if lspmux == "" then
+    return rustup_cmd
+  end
+  local which = vim.system({ "rustup", "which", "--toolchain", "nightly", "rust-analyzer" }):wait()
+  local server_path = vim.trim(which.stdout or "")
+  if which.code ~= 0 or server_path == "" then
+    return rustup_cmd
+  end
+  -- `status` exits non-zero when nothing is listening on lspmux's socket;
+  -- detach a daemon in that case so no launchd/systemd unit is needed.
+  if vim.system({ lspmux, "status" }):wait().code ~= 0 then
+    vim.system({ lspmux, "server" }, { detach = true })
+    vim.wait(2000, function()
+      return vim.system({ lspmux, "status" }):wait().code == 0
+    end, 100)
+    if vim.system({ lspmux, "status" }):wait().code ~= 0 then
+      return rustup_cmd
+    end
+  end
+  return { lspmux, "client", "--server-path", server_path }
+end
+
+-- Passed as a function, not its result: this module is required from the
+-- spec's `init`, which lazy.nvim runs on every startup, and rustaceanvim
+-- evaluates server.cmd only when it actually starts the server
+-- (config/internal.lua's types.evaluate). Calling it here would put a
+-- `rustup which` plus an `lspmux status` subprocess on the startup path of
+-- every nvim session, Rust or not. Re-evaluating per start is also what
+-- restarts the daemon if it died between sessions.
+opts.server.cmd = rust_analyzer_cmd
+
+-- rust-analyzer compiles every build script and proc macro itself before it
+-- can expand macros, and it inherits this shell's RUSTFLAGS. The release
+-- tuning in there (lto=fat, opt-level=3, codegen-units=1, mir-opt-level=4,
+-- ...) buys nothing for analysis but dominates a cold start: measured on
+-- ganja-code with an empty target dir, the build phase took 39.1s with the
+-- full flags versus 8.1s with only target-cpu. Those artifacts are never
+-- linked into a real binary -- they live in cargo.extraEnv's own target dir
+-- and exist purely to be run at expansion time.
+--
+-- Only the flags that change cfg evaluation are kept: crates gated on
+-- target_feature (gxhash needs aes) mis-analyze or fail to build without the
+-- matching target-cpu/target-feature. Parsing rather than hardcoding keeps
+-- this correct when .zprofile's RUSTFLAGS change.
+---@return string
+local function analysis_rustflags()
+  local tokens = vim.split(os.getenv("RUSTFLAGS") or "", "%s+", { trimempty = true })
+  local kept = {}
+  local i = 1
+  while i <= #tokens do
+    local token = tokens[i]
+    -- "-C target-cpu=native" (two tokens) and "-Ctarget-cpu=native" (one)
+    local value = (token == "-C" or token == "-Z") and tokens[i + 1] or token:match("^%-[CZ](.+)$")
+    local width = (token == "-C" or token == "-Z") and 2 or 1
+    if value and (vim.startswith(value, "target-cpu=") or vim.startswith(value, "target-feature=")) then
+      vim.list_extend(kept, vim.list_slice(tokens, i, i + width - 1))
+    end
+    i = i + width
+  end
+  return table.concat(kept, " ")
+end
 opts.server.default_settings = {
   ["rust-analyzer"] = {
     cargo = {
@@ -95,7 +178,7 @@ opts.server.default_settings = {
         invocationStrategy = "once",
       },
       extraEnv = {
-        RUSTFLAGS = os.getenv("RUSTFLAGS"),
+        RUSTFLAGS = analysis_rustflags(),
         CARGO_TARGET_DIR = "target/rust-analyzer",
         SKIP_WASM_BUILD = "1",
       },

@@ -457,86 +457,25 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 --   end,
 -- })
 
-local autocmd_lsp_format = vim.api.nvim_create_augroup("LspFormat", { clear = true })
--- none-ls (nvimtools/none-ls.nvim) format on save.
--- Go is handled by the LspCodeActionFormat autocmd below, so it is omitted here.
-vim.api.nvim_create_autocmd("BufWritePre", {
-  group = autocmd_lsp_format,
-  pattern = {
-    "*.lua",
-    "*.py",
-    "*.rs",
-    "*.tf",
-    "*.tfvars",
-    "*.ts",
-    "*.yaml",
-    "*.yml",
-    "*.zig",
-  },
-  callback = function(args)
-    ---@class vim.lsp.buf.format.Opts
-    local opts = {
-      async = false,
-      bufnr = args.buf,
-      trimTrailingWhitespace = true,
-      insertFinalNewline = true,
-      trimFinalNewlines = true,
-      filter = function(client)
-        return client.name == "null-ls"
-      end,
-    }
-    vim.lsp.buf.format(opts)
-  end,
-})
+-- Write-time formatting lives entirely in conform.nvim (lua/plugins/conform.lua),
+-- whose BufWritePre autocmd runs last on every buffer. Two hand-rolled
+-- BufWritePre groups used to sit in front of it and were removed:
+--
+--   LspFormat            filtered on client.name == "null-ls", so it stopped
+--                        doing anything the moment none-ls was retired.
+--   LspCodeActionFormat  ran gopls source.organizeImports plus a second
+--                        vim.lsp.buf.format() for *.go/*.toml -- the format
+--                        pass duplicated conform's go lsp_format = "first",
+--                        and its formatting_options (tabSize = 1,
+--                        insertSpaces = false) contradicted the tombi indent
+--                        settings for TOML.
+--
+-- Trade-off accepted with the removal: goimports-rereviser does not add
+-- imports for unresolved identifiers (verified), so saving no longer pulls in
+-- a missing import the way gopls organizeImports did. Use the LSP code action
+-- on demand for that.
 
-local augroup_code_action_format = vim.api.nvim_create_augroup("LspCodeActionFormat", { clear = false })
-vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-  group = augroup_code_action_format,
-  pattern = {
-    "*.go",
-    "*.toml",
-  },
-  callback = function(args)
-    local buf_name = vim.api.nvim_buf_get_name(args.buf)
-    if string.find(buf_name, "bytedance/sonic") then -- ignore bytedance/sonic
-      return
-    end
-
-    ---@type vim.lsp.buf.code_action.Opts
-    local params = vim.lsp.util.make_range_params(vim.api.nvim_get_current_win(), "utf-16")
-    params.context = {
-      diagnostics = {},
-      only = { "source.organizeImports" },
-      triggerKind = 2,
-    }
-
-    ---@type table<integer, {error: lsp.ResponseError?, result: any}>?
-    local result = vim.lsp.buf_request_sync(args.buf, "textDocument/codeAction", params)
-    for cid, res in pairs(result or {}) do
-      for _, r in pairs(res.result or {}) do
-        if r.edit then
-          local enc = (vim.lsp.get_client_by_id(cid) or {}).offset_encoding or "utf-16"
-          vim.lsp.util.apply_workspace_edit(r.edit, enc)
-        end
-      end
-    end
-
-    --- @type vim.lsp.buf.format.Opts
-    local opts = {
-      async = false,
-      -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#formattingOptions
-      formatting_options = {
-        tabSize = 1,
-        insertSpaces = false,
-        trimTrailingWhitespace = true,
-        insertFinalNewline = true,
-        trimFinalNewlines = true,
-      },
-    }
-    vim.lsp.buf.format(opts)
-  end,
-})
-
+-- FocusGained
 -- FocusGained
 -- github.com/zchee/imectl
 vim.api.nvim_create_autocmd({ "FocusGained" }, {

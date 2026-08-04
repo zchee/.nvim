@@ -124,6 +124,9 @@ hi("@character.printf", { link = "PreProc" })
 -- gomod
 hi("@string.special.gomod", { link = "String" })
 
+-- Rust
+hi("@constant.rust", { fg = "#bae57d", bg = hi_none, bold = true })
+
 -- Lua
 hi("@namespace.builtin.lua", { link = "@type.builtin" })
 hi("@string.regexp.lua", { link = "String" })

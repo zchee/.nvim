@@ -67,10 +67,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
----@type rustaceanvim.Opts
+---@class rustaceanvim.Opts
 local opts = {}
 opts.tools = {
-  float_win_config = { border = "rounded", auto_focus = true },
+  -- auto_focus is what makes `K` jump the cursor into the hover window
+  -- (hover_actions.lua calls nvim_set_current_win only when it is set). Left
+  -- at the upstream default so the cursor stays in the buffer; the float is
+  -- still focusable, so a second `K` enters it to pick an action -- that is
+  -- vim.lsp.util.open_floating_preview's focus_id path, not rustaceanvim's.
+  float_win_config = { border = "rounded", auto_focus = false },
   code_actions = { ui_select_fallback = true },
   rustc = { default_edition = "2024" },
 }

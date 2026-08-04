@@ -131,6 +131,7 @@ vim.keymap.set({ "n" }, "b", "b", { nowait = true, silent = true })
 -- default gcc mapping (runtime/lua/vim/_defaults.lua); a plain "gcc" rhs
 -- cannot work here because an rhs starting with its own lhs is excluded
 -- from remapping. The x-mode gc operator stays the built-in default.
+vim.keymap.del({ "n" }, "gcc")
 vim.keymap.set({ "n" }, "gc", function()
   return require("vim._comment").operator() .. "_"
 end, { expr = true, silent = true, nowait = true, desc = "Comment current line" })

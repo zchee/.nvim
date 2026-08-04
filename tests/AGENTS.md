@@ -14,6 +14,7 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 ## Key Files
 | File | Description |
 |------|-------------|
+| `conform_organize_imports_spec.lua` | `lua/plugins/conform.lua` — the `lsp_organize_imports` formatter with a stubbed `vim.lsp.buf_request_sync` (gopls does not attach in headless Neovim): asserts the Go chain order, WorkspaceEdit extraction, that edits land in the returned lines and never in the buffer, the stale-lines guard, and the empty/nil-response no-ops |
 | `copilot_config_spec.lua` | `lua/plugins/copilot.lua` — stubs `package.preload["copilot"]` to capture the config passed to `copilot.setup()`; asserts panel/inline-suggestion UI stay disabled (cmp owns completion UI) and `advanced.inlineSuggestCount`/`advanced.listCount` are positive, in copilot.lua's `settings.advanced` shape (not VS Code's `github.copilot.advanced` shape) |
 | `goasm_filetype_spec.lua` | `lua/filetypes/goasm.lua` — `detect()` across all three heuristics (Plan 9 header include, Go arch-suffixed filename, sibling `.go` file) plus the plain-`asm` fallback, using real temp files/buffers |
 | `neo_tree_compat_spec.lua` | `lua/plugins/neo_tree_compat.lua` — `is_invalid_win_error`, `get_node_safely` (suppresses a known stale-window `nui` error, rethrows anything else), `hijack_cursor_handler` (moves the cursor to the filename start, no-ops when `neo_tree_source` is unavailable, tolerates the stale-window failure), and `patch_hijack_cursor_module` idempotency |

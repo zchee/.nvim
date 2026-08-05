@@ -52,19 +52,29 @@ assert_equal("-", args[#args], "stdin marker must be the final argument")
 assert_equal("$FILENAME", args[#args - 1], "$FILENAME must precede the stdin marker")
 assert_equal("--stdin-filepath", args[#args - 2], "--stdin-filepath must precede $FILENAME")
 
--- 2. a project shipping its own config keeps it: forcing --config would
--- silently override what taplo would have discovered by walking upward
+assert_equal(nil, taplo.cwd(taplo, { dirname = "/", filename = "/x.toml", buf = 0 }), "no project config, no cwd")
+
+-- 2. a project shipping its own config keeps it, and taplo has to be run from
+-- the directory holding that config. taplo resolves both config discovery and
+-- its [[rule]] include globs against the process CWD -- not --stdin-filepath,
+-- not the config file's location -- so running anywhere else silently drops
+-- the project's rules and falls back to taplo's defaults (column_width = 80,
+-- array_auto_expand = true), which is exactly what re-wrapped a long
+-- single-line array in ~/src/github.com/zchee/agent.
 local tmp = vim.fs.joinpath(vim.fn.tempname(), "proj", "nested")
 vim.fn.mkdir(tmp, "p")
 -- the config sits one level above the buffer, so this also covers the upward walk
-local project_config = vim.fs.joinpath(vim.fs.dirname(tmp), ".taplo.toml")
+local project_root = vim.fs.dirname(tmp)
+local project_config = vim.fs.joinpath(project_root, ".taplo.toml")
 assert_equal(0, vim.fn.writefile({ "[formatting]" }, project_config), "failed to write the fixture config")
 
-local project_args = taplo.args(taplo, { dirname = tmp, filename = tmp .. "/x.toml", buf = 0 })
+local ctx = { dirname = tmp, filename = tmp .. "/x.toml", buf = 0 }
+local project_args = taplo.args(taplo, ctx)
 for _, a in ipairs(project_args) do
   assert_truthy(a ~= "--config", "a project .taplo.toml must not be overridden by --config")
 end
 assert_equal("format", project_args[1], "subcommand stays first without --config")
 assert_equal("-", project_args[#project_args], "stdin marker stays last without --config")
+assert_equal(project_root, taplo.cwd(taplo, ctx), "taplo must run from the project config's directory")
 
 print("OK: conform_taplo_spec passed")

@@ -101,7 +101,7 @@ local function organize_imports_edits(bufnr)
   return edits, offset_encoding
 end
 
----Path to the personal taplo config, used unless the project ships its own.
+---Where to run taplo, and whether to point it at the personal config.
 ---
 ---taplo owns TOML formatting because its `[[rule]]` blocks scope options per
 ---file; tombi's format rules are global only, so the same per-file behaviour
@@ -109,16 +109,29 @@ end
 ---~/.config/tombi plus a cwd-routing function here. tombi keeps the LSP side
 ---(diagnostics + schema store) with its own formatting disabled, so the two
 ---do not collide.
+---
+---Everything hinges on one measured fact: taplo resolves BOTH its config
+---discovery and its `[[rule]]` include globs against the process CWD, not
+---against --stdin-filepath and not against the config file's own location.
+---So a project's config is honoured by running taplo from the directory that
+---holds it -- which is also what makes a relative include like
+---`include = ["sub/*.toml"]` match, exactly as it would for someone running
+---taplo by hand at their project root. Running from the buffer's directory
+---instead finds the config but silently drops those rules, and passing
+-----config while sitting elsewhere drops them too.
 ---@param dirname string
----@return string[]
-local function taplo_config_args(dirname)
-  -- A project's own config wins: taplo discovers .taplo.toml/taplo.toml by
-  -- walking up from the file, and passing --config would silently override it.
-  if vim.fs.find({ ".taplo.toml", "taplo.toml" }, { upward = true, path = dirname, type = "file" })[1] then
-    return {}
+---@return string? cwd
+---@return string[] args
+local function taplo_invocation(dirname)
+  local project = vim.fs.find({ ".taplo.toml", "taplo.toml" }, { upward = true, path = dirname, type = "file" })[1]
+  if project then
+    return vim.fs.dirname(project), {}
   end
+  -- No project config: point at the personal one explicitly, since taplo would
+  -- otherwise find nothing and fall back to its defaults (column_width = 80,
+  -- array_auto_expand = true). Its globs are absolute for the same CWD reason.
   local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
-  return { "--config", vim.fs.joinpath(config_home, "taplo", "taplo.toml") }
+  return nil, { "--config", vim.fs.joinpath(config_home, "taplo", "taplo.toml") }
 end
 
 ---@class conform.setupOpts
@@ -242,10 +255,14 @@ return {
       -- non-zero exit and empty stdout, so conform reports the error and
       -- leaves the buffer alone rather than truncating it (verified).
       args = function(_, ctx)
+        local _, config_args = taplo_invocation(ctx.dirname)
         local args = { "format" }
-        vim.list_extend(args, taplo_config_args(ctx.dirname))
+        vim.list_extend(args, config_args)
         vim.list_extend(args, { "--stdin-filepath", "$FILENAME", "-" })
         return args
+      end,
+      cwd = function(_, ctx)
+        return (taplo_invocation(ctx.dirname))
       end,
     },
   },

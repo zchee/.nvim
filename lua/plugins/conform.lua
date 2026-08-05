@@ -101,7 +101,49 @@ local function organize_imports_edits(bufnr)
   return edits, offset_encoding
 end
 
+---Path to the personal taplo config, used unless the project ships its own.
+---
+---taplo owns TOML formatting because its `[[rule]]` blocks scope options per
+---file; tombi's format rules are global only, so the same per-file behaviour
+---previously needed a full tombi config copy per file type under
+---~/.config/tombi plus a cwd-routing function here. tombi keeps the LSP side
+---(diagnostics + schema store) with its own formatting disabled, so the two
+---do not collide.
+---@param dirname string
+---@return string[]
+local function taplo_config_args(dirname)
+  -- A project's own config wins: taplo discovers .taplo.toml/taplo.toml by
+  -- walking up from the file, and passing --config would silently override it.
+  if vim.fs.find({ ".taplo.toml", "taplo.toml" }, { upward = true, path = dirname, type = "file" })[1] then
+    return {}
+  end
+  local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
+  return { "--config", vim.fs.joinpath(config_home, "taplo", "taplo.toml") }
+end
+
+---@class conform.setupOpts
 return {
+  formatters_by_ft = {
+    go = { "lsp_organize_imports", "goimports_rereviser", lsp_format = "first" },
+    goasm = { "asmfmt", lsp_format = "first" },
+    lua = { "stylua", lsp_format = "never" },
+    python = function(bufnr)
+      if require("conform").get_formatter_info("ruff_format", bufnr).available then
+        return { "ruff_format", "ruff_fix", "ruff_organize_imports" }
+      end
+      return {}
+    end,
+    -- python = { "ruff_format", "ruff_fix" },
+    rust = { "rustfmt" },
+    zig = { "zigfmt" },
+    terraform = { "terraform_fmt" },
+    -- tombi LSP keeps formatting.enabled = false and only serves diagnostics
+    -- and schemas, so the taplo CLI here is the single toml formatter
+    toml = { "taplo" },
+    bash = { "shfmt" },
+    sh = { "shfmt" },
+    yaml = { "yamlfmt" },
+  },
   -- restored from the pre-migration conform draft; set
   -- vim.b.disable_autoformat (buffer) or vim.g.disable_autoformat (global)
   -- to opt out
@@ -184,44 +226,27 @@ return {
     stylua = {
       command = util.homebrew_binary("stylua", "stylua"),
     },
-    tombi = {
-      command = util.homebrew_binary("tombi", "tombi"),
-      -- In stdin mode tombi resolves its config from the CWD (verified: not
-      -- from --stdin-filename), and it has no --config flag, so pyproject and
-      -- Cargo.toml buffers run with cwd pointed at directories whose
-      -- tombi.toml is a full copy of the main config with indent-width = 4
-      -- (pyproject: ported from taplo's on_attach override; Cargo: keeps the
-      -- hand-written 4-space array style, e.g. ganja-code).
-      -- The real --stdin-filename is kept, so schema detection is unchanged.
-      -- Caveat: a project's own [tool.tombi]/tombi.toml is bypassed for
-      -- these two basenames.
-      cwd = function(_, ctx)
-        local routed = {
-          ["pyproject.toml"] = "pyproject",
-          ["Cargo.toml"] = "cargo",
-        }
-        local dir = routed[vim.fs.basename(ctx.filename)]
-        if dir then
-          local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
-          return vim.fs.joinpath(config_home, "tombi", dir)
-        end
+    taplo = {
+      command = util.homebrew_binary("taplo", "taplo"),
+      -- --config has to sit after the subcommand, so the whole arg list is
+      -- rebuilt rather than prepended to conform's builtin.
+      --
+      -- ~/.config/taplo/taplo.toml carries the per-file rules that used to be
+      -- separate tombi config copies: pyproject.toml and Cargo.toml keep
+      -- 4-space indent, everything else 2. The codex copy is gone because
+      -- taplo never inserts a blank line between a table and its nested
+      -- table, which is the only reason that copy existed.
+      --
+      -- Caveat: taplo is TOML v1.0 only. A file using v1.1 syntax (multi-line
+      -- inline tables -- ~/.config/tombi/config.toml itself does) fails with a
+      -- non-zero exit and empty stdout, so conform reports the error and
+      -- leaves the buffer alone rather than truncating it (verified).
+      args = function(_, ctx)
+        local args = { "format" }
+        vim.list_extend(args, taplo_config_args(ctx.dirname))
+        vim.list_extend(args, { "--stdin-filepath", "$FILENAME", "-" })
+        return args
       end,
     },
-  },
-  formatters_by_ft = {
-    go = { "lsp_organize_imports", "goimports_rereviser", lsp_format = "first" },
-    goasm = { "asmfmt", lsp_format = "first" },
-    lua = { "stylua", lsp_format = "never" },
-    python = { "ruff_format", "ruff_fix" },
-    rust = { "rustfmt" },
-    zig = { "zigfmt" },
-    terraform = { "terraform_fmt" },
-    -- taplo's LSP formatting retired with the server; tombi LSP keeps
-    -- formatting.enabled = false, so the CLI here is the single toml
-    -- formatter (per-project pyproject indent via [tool.tombi])
-    toml = { "tombi" },
-    bash = { "shfmt" },
-    sh = { "shfmt" },
-    yaml = { "yamlfmt" },
   },
 }

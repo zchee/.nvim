@@ -29,7 +29,7 @@ below and in each row's description.
 | `claudecode.lua` | coder/claudecode.nvim: Claude Code IDE bridge; `terminal_cmd` launches `omc --yolo` in a snacks float |
 | `codecompanion.lua` | olimorris/codecompanion.nvim: chat/inline AI; anthropic adapter, mcphub + codecompanion-history extensions |
 | `codecov.lua` | zchee/codecov.nvim (local plugin) setup: coverage sign colors, api.codecov.io endpoint, token via CODECOV_NVIM_API_TOKEN |
-| `conform.lua` | Options table for stevearc/conform.nvim; none-ls formatting successor (stylua/rustfmt/yamlfmt/terraform_fmt/tombi + goimports-rereviser), manual format via <BS>f; pyproject/Cargo 4-space via cwd hack; `lsp_organize_imports` Lua formatter leads the Go chain (source.organizeImports, the one thing rereviser cannot do) |
+| `conform.lua` | Options table for stevearc/conform.nvim; none-ls formatting successor (stylua/rustfmt/yamlfmt/terraform_fmt/taplo + goimports-rereviser), manual format via <BS>f; TOML goes through taplo (`~/.config/taplo/taplo.toml`, whose `[[rule]]` blocks replaced the tombi cwd-routing hack -- tombi's format rules are global only; tombi stays LSP-only), and a project's own `.taplo.toml` suppresses `--config`; `lsp_organize_imports` Lua formatter leads the Go chain (source.organizeImports, the one thing rereviser cannot do) |
 | `copilot-chat.lua` | Options table for CopilotC-Nvim/CopilotChat.nvim; claude-opus-4.6 model, ReviewStaged/ReviewUnstaged git-diff prompts |
 | `copilot.lua` | zbirenbaum/copilot.lua; go/lua/sh allowlist, `copilot_model = "gpt-41-copilot"`, Keychain-encryption opt-out; tested by `tests/copilot_config_spec.lua` |
 | `crates.lua` | Options table for saecki/crates.nvim; LSP mode with `<leader>rc*` keymap group bound in `lsp.on_attach` |

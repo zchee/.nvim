@@ -14,7 +14,7 @@ return {
       -- explainshellEndpoint = "",
       logLevel = "error",
       includeAllWorkspaceSymbols = true,
-      shellcheckArguments = { "-f", "gcc" }, --  "--enable=all"
+      shellcheckArguments = { "-f", "gcc", "-s", "bash" }, --  "--enable=all"
       shellcheckPath = "/opt/local/bin/shellcheck",
       shfmt = {
         path = util.homebrew_binary("shfmt", "shfmt"),

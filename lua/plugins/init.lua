@@ -46,7 +46,6 @@ return {
     end,
   },
 
-
   -- AI
   -- Codex (OpenAI Codex CLI): side-panel terminal wrapper.
   -- The plugin can't pass `--dangerously-bypass-approvals-and-sandbox`
@@ -1239,7 +1238,6 @@ return {
       "ericpruitt/tmux.vim",
       ft = "tmux",
     },
-
   },
 
   -- Utilities
@@ -1385,9 +1383,9 @@ return {
       "wakatime/vim-wakatime",
       event = "VeryLazy",
       opts = {
-        -- cli_path = util.homebrew_binary("wakatime-cli", "wakatime-cli"),
-        -- python_binary = util.homebrew_binary("python@3.14", "python3"),
-        -- status_bar_enabled = true,
+        cli_path = util.homebrew_binary("wakatime-cli-head", "wakatime-cli"),
+        python_binary = util.homebrew_binary("python@3.14", "python3"),
+        status_bar_enabled = false,
       },
     },
   },

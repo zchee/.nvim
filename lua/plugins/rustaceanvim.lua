@@ -86,23 +86,21 @@ opts.server = {}
 -- "unresolved import" on every external crate).
 local rustup_cmd = { "rustup", "run", "nightly", "rust-analyzer" }
 
--- rust-analyzer holds its whole index in memory and has no on-disk cache, so
--- every nvim restart re-pays it (~3.9s on ganja-code once the build-script
--- cache is warm). lspmux keeps one rust-analyzer per workspace alive between
--- editor sessions and hands the already-indexed instance to the next client
--- -- the same trick lua/lsp/gopls.lua uses with `-remote=unix;`. Only
--- rust-analyzer is routed through it; every other server in lua/lsp keeps its
--- own direct cmd.
+-- rust-analyzer holds its whole index in memory and has no on-disk cache,
+-- so every nvim restart re-pays it (~4.5s on ganja-code once the
+-- build-script cache is warm). github.com/zchee/lspmux keeps one
+-- rust-analyzer per workspace alive between editor sessions. This is NOT
+-- the upstream lspmux 0.3 multiplexer that broke lsp_definitions: the
+-- rewrite allows a single active client per instance and hands documents
+-- and in-flight requests over explicitly on reconnect, and its test suite
+-- pins exactly the two-sessions-then-definition regression that killed
+-- the old proxy.
 --
--- lspmux needs a single executable path, so the toolchain is resolved here
--- instead of wrapping the rustup shim. Anything that fails -- no lspmux, no
--- rustup, daemon refuses to start -- falls back to spawning rust-analyzer
--- directly, because a slow LSP beats no LSP.
+-- Anything that fails -- no lspmux, no rustup, daemon refuses to start --
+-- falls back to spawning rust-analyzer directly, because a slow LSP beats
+-- no LSP. RUSTACEANVIM_NO_LSPMUX=1 bypasses the daemon for bisecting.
 ---@return string[]
 local function rust_analyzer_cmd()
-  -- Escape hatch: RUSTACEANVIM_NO_LSPMUX=1 nvim ... spawns rust-analyzer
-  -- directly, for comparing against the shared instance or for bisecting a
-  -- problem that might be the proxy's fault.
   if vim.env.RUSTACEANVIM_NO_LSPMUX then
     return rustup_cmd
   end
@@ -115,10 +113,12 @@ local function rust_analyzer_cmd()
   if which.code ~= 0 or server_path == "" then
     return rustup_cmd
   end
-  -- `status` exits non-zero when nothing is listening on lspmux's socket;
-  -- detach a daemon in that case so no launchd/systemd unit is needed.
+  -- `status` exits non-zero when no daemon is listening; detach one in
+  -- that case so no launchd unit is needed. The daemon resolves its own
+  -- socket path (it knows about the broken-XDG_RUNTIME_DIR trap).
   if vim.system({ lspmux, "status" }):wait().code ~= 0 then
-    vim.system({ lspmux, "server" }, { detach = true })
+    local log_file = vim.fs.joinpath(vim.fn.stdpath("log"), "lspmux.log")
+    vim.system({ lspmux, "server", "--log-file", log_file }, { detach = true })
     vim.wait(2000, function()
       return vim.system({ lspmux, "status" }):wait().code == 0
     end, 100)
@@ -131,11 +131,9 @@ end
 
 -- Passed as a function, not its result: this module is required from the
 -- spec's `init`, which lazy.nvim runs on every startup, and rustaceanvim
--- evaluates server.cmd only when it actually starts the server
--- (config/internal.lua's types.evaluate). Calling it here would put a
--- `rustup which` plus an `lspmux status` subprocess on the startup path of
--- every nvim session, Rust or not. Re-evaluating per start is also what
--- restarts the daemon if it died between sessions.
+-- evaluates server.cmd only when it actually starts the server. Calling
+-- it here would put subprocess probes on every session's startup path,
+-- Rust or not; re-evaluating per start also respawns a died daemon.
 opts.server.cmd = rust_analyzer_cmd
 
 -- rust-analyzer compiles every build script and proc macro itself before it

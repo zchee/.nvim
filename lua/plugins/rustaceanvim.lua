@@ -84,6 +84,12 @@ opts.server = {}
 -- bin dir, so a bare "rust-analyzer" picks up Mason's stale standalone
 -- binary, which cannot load nightly-toolchain crate graphs (E0432
 -- "unresolved import" on every external crate).
+--
+-- Last resort only, for when `rustup which` below fails outright: `rustup
+-- run` takes <TOOLCHAIN> <COMMAND>, so the channel has to be named here,
+-- and naming it also exports RUSTUP_TOOLCHAIN for the whole analysis,
+-- overriding any rust-toolchain.toml. The normal path resolves the
+-- project's own toolchain instead.
 local rustup_cmd = { "rustup", "run", "nightly", "rust-analyzer" }
 
 -- rust-analyzer holds its whole index in memory and has no on-disk cache,
@@ -108,7 +114,12 @@ local function rust_analyzer_cmd()
   if lspmux == "" then
     return rustup_cmd
   end
-  local which = vim.system({ "rustup", "which", "--toolchain", "nightly", "rust-analyzer" }):wait()
+  local which = vim
+    .system({ "rustup", "which", "rust-analyzer" }, {
+      cwd = vim.fs.root(0, { "Cargo.toml", "rust-toolchain.toml" }) or vim.uv.cwd(),
+      env = { RUSTUP_AUTO_INSTALL = "0" },
+    })
+    :wait()
   local server_path = vim.trim(which.stdout or "")
   if which.code ~= 0 or server_path == "" then
     return rustup_cmd

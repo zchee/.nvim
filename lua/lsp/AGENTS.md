@@ -81,7 +81,7 @@ table below).
 - `vim.lsp.config("*", { capabilities = ..., on_attach = ..., root_markers
   = { ".git" } })` sets defaults for every server; per-server files only
   need to override what differs.
-- LSP keymaps (`K`, `<C-]>`, `<BS>gr`, `<Space>e`, etc.) are defined once,
+- LSP keymaps (`K`, `<C-]>`, `<LocalLeader>gr`, `<Leader>e`, etc.) are defined once,
   globally, at the bottom of `init.lua` — do not add per-server keymaps in
   a `<server>.lua` file.
 - Cross-cutting `on_attach` quirks (bashls/lua_ls early return, dockerls

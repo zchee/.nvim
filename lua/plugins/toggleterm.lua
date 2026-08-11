@@ -1,9 +1,9 @@
 local toggleterm = require("toggleterm")
 
 vim.cmd([[
-autocmd TermEnter term://*toggleterm#* tnoremap <silent><BS>t <Cmd>exe v:count1 . "ToggleTerm"<CR>
-nnoremap <silent><BS>t <Cmd>exe v:count1 . "ToggleTerm"<CR>
-inoremap <silent><BS>t <Esc><Cmd>exe v:count1 . "ToggleTerm"<CR>
+autocmd TermEnter term://*toggleterm#* tnoremap <silent><LocalLeader>t <Cmd>exe v:count1 . "ToggleTerm"<CR>
+nnoremap <silent><LocalLeader>t <Cmd>exe v:count1 . "ToggleTerm"<CR>
+inoremap <silent><LocalLeader>t <Esc><Cmd>exe v:count1 . "ToggleTerm"<CR>
 ]])
 
 toggleterm.setup({
@@ -14,7 +14,7 @@ toggleterm.setup({
       return vim.o.columns * 0.4
     end
   end,
-  open_mapping = [[<BS>t]],
+  open_mapping = [[<LocalLeader>t]],
   ---@param t Terminal
   on_create = function(t)
     _ = t

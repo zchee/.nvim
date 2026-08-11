@@ -65,7 +65,7 @@ return {
       autoinstall = false,
     },
     keys = {
-      { "<leader>ax", "<cmd>CodexToggle<cr>", desc = "Toggle Codex (sidebar)" },
+      { "<Leader>ax", "<cmd>CodexToggle<cr>", desc = "Toggle Codex (sidebar)" },
     },
   },
   {
@@ -137,21 +137,21 @@ return {
     "CopilotC-Nvim/CopilotChat.nvim",
     opts = require("plugins.copilot-chat"),
     keys = {
-      { "<leader>ax", false },
-      { "<leader>ao", "<cmd>CopilotChatOpen<cr>", desc = "Open Chat" },
-      { "<leader>aq", "<cmd>CopilotChatClose<cr>", desc = "Close Chat" },
-      { "<leader>ar", "<cmd>CopilotChatReset<cr>", desc = "Reset Chat" },
-      { "<leader>am", "<cmd>CopilotChatModels<cr>", desc = "Select Model" },
-      { "<leader>aP", "<cmd>CopilotChatPrompts<cr>", desc = "Prompt Library" },
-      { "<leader>ae", "<cmd>CopilotChatExplain<cr>", desc = "Explain Code", mode = { "n", "v" } },
-      { "<leader>af", "<cmd>CopilotChatFix<cr>", desc = "Fix Code", mode = { "n", "v" } },
-      { "<leader>aO", "<cmd>CopilotChatOptimize<cr>", desc = "Optimize Code", mode = { "n", "v" } },
-      { "<leader>at", "<cmd>CopilotChatTests<cr>", desc = "Generate Tests", mode = { "n", "v" } },
-      { "<leader>ad", "<cmd>CopilotChatDocs<cr>", desc = "Generate Docs", mode = { "n", "v" } },
-      { "<leader>aR", "<cmd>CopilotChatReview<cr>", desc = "Review Code", mode = { "n", "v" } },
-      { "<leader>ag", "<cmd>CopilotChatReviewStaged<cr>", desc = "Review Staged Diff" },
-      { "<leader>aG", "<cmd>CopilotChatReviewUnstaged<cr>", desc = "Review Unstaged Diff" },
-      { "<leader>aW", "<cmd>CopilotChatWorkspace<cr>", desc = "Workspace Chat" },
+      { "<Leader>ax", false },
+      { "<Leader>ao", "<cmd>CopilotChatOpen<cr>", desc = "Open Chat" },
+      { "<Leader>aq", "<cmd>CopilotChatClose<cr>", desc = "Close Chat" },
+      { "<Leader>ar", "<cmd>CopilotChatReset<cr>", desc = "Reset Chat" },
+      { "<Leader>am", "<cmd>CopilotChatModels<cr>", desc = "Select Model" },
+      { "<Leader>aP", "<cmd>CopilotChatPrompts<cr>", desc = "Prompt Library" },
+      { "<Leader>ae", "<cmd>CopilotChatExplain<cr>", desc = "Explain Code", mode = { "n", "v" } },
+      { "<Leader>af", "<cmd>CopilotChatFix<cr>", desc = "Fix Code", mode = { "n", "v" } },
+      { "<Leader>aO", "<cmd>CopilotChatOptimize<cr>", desc = "Optimize Code", mode = { "n", "v" } },
+      { "<Leader>at", "<cmd>CopilotChatTests<cr>", desc = "Generate Tests", mode = { "n", "v" } },
+      { "<Leader>ad", "<cmd>CopilotChatDocs<cr>", desc = "Generate Docs", mode = { "n", "v" } },
+      { "<Leader>aR", "<cmd>CopilotChatReview<cr>", desc = "Review Code", mode = { "n", "v" } },
+      { "<Leader>ag", "<cmd>CopilotChatReviewStaged<cr>", desc = "Review Staged Diff" },
+      { "<Leader>aG", "<cmd>CopilotChatReviewUnstaged<cr>", desc = "Review Unstaged Diff" },
+      { "<Leader>aW", "<cmd>CopilotChatWorkspace<cr>", desc = "Workspace Chat" },
     },
   },
   -- {
@@ -188,9 +188,9 @@ return {
   --       },
   --     },
   --     mappings = {
-  --       ask = "<leader>aa",
-  --       edit = "<leader>aE",
-  --       refresh = "<leader>aS",
+  --       ask = "<Leader>aa",
+  --       edit = "<Leader>aE",
+  --       refresh = "<Leader>aS",
   --     },
   --     behaviour = {
   --       auto_suggestions = false,
@@ -359,7 +359,7 @@ return {
         },
         config = function()
           require("plugins.aerial")
-          vim.keymap.set("n", "<Space>o", function()
+          vim.keymap.set("n", "<Leader>o", function()
             ---@diagnostic disable-next-line
             require("aerial").snacks_picker({ layout = { preset = "sidebar", preview = "main" } })
           end, { desc = "Symbols" })
@@ -537,56 +537,56 @@ return {
       event = "LspAttach",
       keys = {
         {
-          "<leader>pd",
+          "<Leader>pd",
           function()
             require("overlook").open_definition()
           end,
           desc = "Peek Definition",
         },
         {
-          "<leader>pc",
+          "<Leader>pc",
           function()
             require("overlook").close_all()
           end,
           desc = "Close All Popups",
         },
         {
-          "<leader>pu",
+          "<Leader>pu",
           function()
             require("overlook").restore_one()
           end,
           desc = "Restore Last Popup",
         },
         {
-          "<leader>pU",
+          "<Leader>pU",
           function()
             require("overlook").restore_all()
           end,
           desc = "Restore All Popups",
         },
         {
-          "<leader>pf",
+          "<Leader>pf",
           function()
             require("overlook").toggle_focus()
           end,
           desc = "Toggle Focus",
         },
         {
-          "<leader>ps",
+          "<Leader>ps",
           function()
             require("overlook").open_in_split()
           end,
           desc = "Open in Split",
         },
         {
-          "<leader>pv",
+          "<Leader>pv",
           function()
             require("overlook").open_in_vsplit()
           end,
           desc = "Open in VSplit",
         },
         {
-          "<leader>po",
+          "<Leader>po",
           function()
             require("overlook").open_in_original()
           end,
@@ -609,7 +609,7 @@ return {
       opts = require("plugins.oil"),
       keys = {
         { "-", "<cmd>Oil<cr>", desc = "Open parent directory" },
-        { "<leader>e", "<cmd>Oil<cr>", desc = "File Explorer (Oil)" },
+        { "<Leader>e", "<cmd>Oil<cr>", desc = "File Explorer (Oil)" },
       },
     },
     {
@@ -653,7 +653,7 @@ return {
       },
       keys = {
         {
-          "<leader>;",
+          "<Leader>;",
           function()
             require("dropbar.api").pick()
           end,
@@ -796,7 +796,7 @@ return {
         "Fugit2Graph",
       },
       keys = {
-        { "<Space>g", mode = "n", "<cmd>Fugit2<cr>" },
+        { "<Leader>g", mode = "n", "<cmd>Fugit2<cr>" },
       },
       ---@module 'fugit2'
       ---@type Fugit2Config
@@ -829,15 +829,15 @@ return {
         "nvim-tree/nvim-web-devicons",
       },
       keys = {
-        { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Git Diff (working tree)" },
-        { "<leader>gD", "<cmd>DiffviewOpen HEAD~1<cr>", desc = "Diff vs previous commit" },
-        { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File History" },
-        { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", desc = "Branch History" },
-        { "<leader>gq", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
-        { "<leader>gm", "<cmd>DiffviewOpen main...HEAD<cr>", desc = "Diff vs main branch" },
-        { "<leader>gM", "<cmd>DiffviewOpen master...HEAD<cr>", desc = "Diff vs master branch" },
-        { "<leader>gs", "<cmd>DiffviewOpen --staged<cr>", desc = "Staged changes" },
-        { "<leader>gt", "<cmd>DiffviewToggleFiles<cr>", desc = "Toggle file panel" },
+        { "<Leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Git Diff (working tree)" },
+        { "<Leader>gD", "<cmd>DiffviewOpen HEAD~1<cr>", desc = "Diff vs previous commit" },
+        { "<Leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File History" },
+        { "<Leader>gH", "<cmd>DiffviewFileHistory<cr>", desc = "Branch History" },
+        { "<Leader>gq", "<cmd>DiffviewClose<cr>", desc = "Close Diffview" },
+        { "<Leader>gm", "<cmd>DiffviewOpen main...HEAD<cr>", desc = "Diff vs main branch" },
+        { "<Leader>gM", "<cmd>DiffviewOpen master...HEAD<cr>", desc = "Diff vs master branch" },
+        { "<Leader>gs", "<cmd>DiffviewOpen --staged<cr>", desc = "Staged changes" },
+        { "<Leader>gt", "<cmd>DiffviewToggleFiles<cr>", desc = "Toggle file panel" },
       },
       config = function()
         require("plugins.diffview")
@@ -979,7 +979,7 @@ return {
       --       lsp_keymaps = false, -- set to false to disable gopls/lsp keymap
       --       lsp_codelens = true, -- set to false to disable codelens, true by default, you can use a function
       --       -- function(bufnr)
-      --       --    vim.api.nvim_buf_set_keymap(bufnr, "n", "<space>F", "<cmd>lua vim.lsp.buf.formatting()<CR>", {noremap=true, silent=true})
+      --       --    vim.api.nvim_buf_set_keymap(bufnr, "n", "<Leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", {noremap=true, silent=true})
       --       -- end
       --       -- to setup a table of codelens
       --       golangci_lint = {
@@ -1275,7 +1275,7 @@ return {
       opts = require("plugins.which-key"),
       keys = {
         {
-          "<leader>?",
+          "<Leader>?",
           function()
             require("which-key").show({ global = false })
           end,
@@ -1334,9 +1334,9 @@ return {
       "gbprod/yanky.nvim",
       event = "VeryLazy",
       keys = {
-        { "<leader>p", false },
+        { "<Leader>p", false },
         {
-          "<leader>sy",
+          "<Leader>sy",
           function()
             require("telescope").extensions.yank_history.yank_history({})
           end,

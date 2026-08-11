@@ -58,17 +58,17 @@ return {
       normal = { "<C-c>", "<Esc>", "q" },
       insert = { "<C-c>" },
     },
-    ask = "<Space>aa",
-    edit = "<Space>ae",
-    refresh = "<Space>af",
-    focus = "<Space>af",
-    stop = "<leader>aS",
+    ask = "<Leader>aa",
+    edit = "<Leader>ae",
+    refresh = "<Leader>af",
+    focus = "<Leader>af",
+    stop = "<Leader>aS",
     toggle = {
-      default = "<leader>at",
-      debug = "<leader>ad",
-      hint = "<leader>ah",
-      suggestion = "<leader>as",
-      repomap = "<leader>aR",
+      default = "<Leader>at",
+      debug = "<Leader>ad",
+      hint = "<Leader>ah",
+      suggestion = "<Leader>as",
+      repomap = "<Leader>aR",
     },
     sidebar = {
       apply_all = "A",
@@ -84,11 +84,11 @@ return {
       close_from_input = nil, -- e.g., { normal = "<Esc>", insert = "<C-d>" }
     },
     files = {
-      add_current = "<leader>ac", -- Add current buffer to selected files
-      add_all_buffers = "<leader>aB", -- Add all buffer files to selected files
+      add_current = "<Leader>ac", -- Add current buffer to selected files
+      add_all_buffers = "<Leader>aB", -- Add all buffer files to selected files
     },
-    select_model = "<leader>a?", -- Select model command
-    select_history = "<leader>ah", -- Select history command
+    select_model = "<Leader>a?", -- Select model command
+    select_history = "<Leader>ah", -- Select history command
   },
   windows = {
     position = "right",

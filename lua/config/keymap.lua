@@ -1,6 +1,3 @@
-vim.g.mapleader = " "
-vim.g.maplocalleader = "<BS>"
-
 local autocmd_user = vim.api.nvim_create_augroup("AutocmdUser", { clear = true })
 
 -- " Map Leader:
@@ -113,8 +110,8 @@ local live_grep_from_project_git_root = function()
 
   require("telescope.builtin").live_grep(opts)
 end
-vim.keymap.set({ "n" }, "<BS>cc", "<cmd>set cursorcolumn!<CR>", { noremap = true })
-vim.keymap.set({ "n" }, "<BS>ci", "<cmd>Inspect<CR>", { noremap = true, silent = true })
+vim.keymap.set({ "n" }, "<LocalLeader>cc", "<cmd>set cursorcolumn!<CR>", { noremap = true })
+vim.keymap.set({ "n" }, "<LocalLeader>ci", "<cmd>Inspect<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "<C-g>", live_grep_from_project_git_root, { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "<C-p>", "<cmd>Telescope find_files<CR>", { noremap = true, silent = true })
 vim.keymap.set({ "n" }, "<C-q>", "<cmd>nohlsearch<CR>", { noremap = true, silent = true })

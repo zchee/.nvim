@@ -29,14 +29,14 @@ below and in each row's description.
 | `claudecode.lua` | coder/claudecode.nvim: Claude Code IDE bridge; `terminal_cmd` launches `omc --yolo` in a snacks float |
 | `codecompanion.lua` | olimorris/codecompanion.nvim: chat/inline AI; anthropic adapter, mcphub + codecompanion-history extensions |
 | `codecov.lua` | zchee/codecov.nvim (local plugin) setup: coverage sign colors, api.codecov.io endpoint, token via CODECOV_NVIM_API_TOKEN |
-| `conform.lua` | Options table for stevearc/conform.nvim; none-ls formatting successor (stylua/rustfmt/yamlfmt/terraform_fmt/taplo + goimports-rereviser), manual format via <BS>f; TOML goes through taplo (`~/.config/taplo/taplo.toml`, whose `[[rule]]` blocks replaced the tombi cwd-routing hack -- tombi's format rules are global only; tombi stays LSP-only), and a project's own `.taplo.toml` suppresses `--config`; `lsp_organize_imports` Lua formatter leads the Go chain (source.organizeImports, the one thing rereviser cannot do) |
+| `conform.lua` | Options table for stevearc/conform.nvim; none-ls formatting successor (stylua/rustfmt/yamlfmt/terraform_fmt/taplo + goimports-rereviser), manual format via <LocalLeader>f; TOML goes through taplo (`~/.config/taplo/taplo.toml`, whose `[[rule]]` blocks replaced the tombi cwd-routing hack -- tombi's format rules are global only; tombi stays LSP-only), and a project's own `.taplo.toml` suppresses `--config`; `lsp_organize_imports` Lua formatter leads the Go chain (source.organizeImports, the one thing rereviser cannot do) |
 | `copilot-chat.lua` | Options table for CopilotC-Nvim/CopilotChat.nvim; claude-opus-4.6 model, ReviewStaged/ReviewUnstaged git-diff prompts |
 | `copilot.lua` | zbirenbaum/copilot.lua; go/lua/sh allowlist, `copilot_model = "gpt-41-copilot"`, Keychain-encryption opt-out; tested by `tests/copilot_config_spec.lua` |
-| `crates.lua` | Options table for saecki/crates.nvim; LSP mode with `<leader>rc*` keymap group bound in `lsp.on_attach` |
+| `crates.lua` | Options table for saecki/crates.nvim; LSP mode with `<Leader>rc*` keymap group bound in `lsp.on_attach` |
 | `dap.lua` | mfussenegger/nvim-dap + mason-nvim-dap + nvim-dap-go; ensures delve/js/python adapters via Mason |
 | `diagram.lua` | 3rd/diagram.nvim: Mermaid/PlantUML/D2/gnuplot rendering in Markdown buffers via image.nvim |
 | `diffview.lua` | sindrets/diffview.nvim setup: horizontal diff2 layout, winbar info, conflict-choose keymaps via diffview.actions |
-| `dropbar.lua` | Bekaboo/dropbar.nvim: winbar breadcrumbs (lspsaga symbol_in_winbar successor); pick on <leader>; |
+| `dropbar.lua` | Bekaboo/dropbar.nvim: winbar breadcrumbs (lspsaga symbol_in_winbar successor); pick on <Leader>; |
 | `dressing.lua` | stevearc/dressing.nvim: `vim.ui.input`/`select` overrides; DEAD — plugin loads as a bare dependency, `setup()` never runs |
 | `fidget.lua` | j-hui/fidget.nvim: LSP progress UI; effectively stock defaults, prior tuned config left commented above it |
 | `focus.lua` | nvim-focus/focus.nvim (owner unconfirmed in repo): autoresize focused split; DEAD — no plugin spec anywhere |
@@ -63,7 +63,7 @@ below and in each row's description.
 | `telescope.lua` | nvim-telescope/telescope.nvim; custom `fd`-based `find_files` excluding `.git`/`_tmp`, `live_grep` scoped to LSP workspace roots |
 | `todo-comment.lua` | Options table for folke/todo-comments.nvim; consumed as `opts = require("plugins.todo-comment")`, not via `config` |
 | `todo.lua` | Legacy TODO-highlighter (`require("todo")`, distinct from todo-comments.nvim); DEAD — superseded by `todo-comment.lua` |
-| `toggleterm.lua` | akinsho/toggleterm.nvim; custom `<BS>t` `open_mapping`; DEAD — no plugin spec exists in `init.lua` at all |
+| `toggleterm.lua` | akinsho/toggleterm.nvim; custom `<LocalLeader>t` `open_mapping`; DEAD — no plugin spec exists in `init.lua` at all |
 | `tree-sitter.lua` | nvim-treesitter (main branch): FileType-driven `vim.treesitter.start()`/indentexpr, install_dir `tree-sitter-main`, :TSEnsureInstalled |
 | `tree.lua` | nvim-tree/nvim-tree.lua config; DEAD — superseded by the inline `stevearc/oil.nvim` spec in `init.lua` |
 | `treesitter_parsers.lua` | Parser list for :TSEnsureInstalled (ported master ensure_installed) |
@@ -125,7 +125,7 @@ below and in each row's description.
 - Options-table modules: the module returns a plain table (no `setup()`
   call) and `init.lua` consumes it as `opts = require("plugins.<name>")`
   (e.g. `todo-comment.lua`).
-- `keys` tables carry `<leader>...` mappings with a `desc` field per entry;
+- `keys` tables carry `<Leader>...` mappings with a `desc` field per entry;
   `cmd` tables list every user command the spec should lazy-load on.
 - `event` triggers cluster around `VeryLazy`, `LspAttach`, `BufReadPost`, and
   `BufNewFile`; `ft` triggers are used for single-filetype plugins.

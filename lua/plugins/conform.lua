@@ -1,7 +1,7 @@
 -- Returned as `opts` for stevearc/conform.nvim in lua/plugins/init.lua.
 -- Successor of the none-ls formatting sources; manual formatting stays on
--- the <BS>f keymap in lua/lsp/init.lua, and filetypes without an entry
--- fall back to LSP formatting at the call site.
+-- the <LocalLeader>f keymap in lua/lsp/init.lua, and filetypes without an
+-- entry fall back to LSP formatting at the call site.
 local util = require("util")
 
 -- Cache of go.mod module paths keyed by go.mod path, invalidated on mtime
@@ -165,7 +165,7 @@ return {
       return
     end
     -- Per-filetype toggle: set an entry to true to skip write-time
-    -- formatting for that filetype and keep only the manual <BS>f path
+    -- formatting for that filetype and keep only the manual <LocalLeader>f path
     -- (e.g. when goimports-rereviser's import rewriting or stylua feel too
     -- intrusive per write). Everything currently formats on save.
     local manual_only = {

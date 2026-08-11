@@ -188,7 +188,6 @@ return {
 
   settings = {
     env = {
-      GOGC = "off",
       GOMEMLIMIT = "2GiB",
     },
     -- buildFlags = {},
@@ -382,15 +381,14 @@ return {
       "integration",
       "wireinject",
     },
-    subdirWatchPatterns = "on", -- "on", "off", "auto"
+    subdirWatchPatterns = "auto", -- "on", "off", "auto"
     reportAnalysisProgressAfter = "5s", -- default: "5s", "1000ms"
     telemetryPrompt = true,
     linkifyShowMessage = false,
     includeReplaceInWorkspace = false,
     zeroConfig = true,
     pullDiagnostics = true,
-    -- gopls Invalid settings: setting option "Annotations": unexpected setting; setting option "codelenses": The 'run_govulncheck' codelens is superseded by the 'vulncheck' codelens. Only 'vulncheck' should be set.; setting option "mcpTools": invalid type []interface {} (want JSON object)
-    -- mcpTools = {},
+    mcpTools = vim.empty_dict(),
     renameMovesSubpackages = true,
     fileWatcher = "fsnotify", -- "off", "fsnotify", "poll"
     moveType = true,

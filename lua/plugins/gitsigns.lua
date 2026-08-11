@@ -118,14 +118,14 @@ local on_attach = function(bufnr)
     mopts.buffer = bufnr
     vim.keymap.set(mode, l, r, mopts)
   end
-  map("n", "<leader>gp", gs.preview_hunk, { desc = "Preview Hunk" })
-  map("n", "<leader>gb", function()
+  map("n", "<Leader>gp", gs.preview_hunk, { desc = "Preview Hunk" })
+  map("n", "<Leader>gb", function()
     gs.blame_line({ full = true })
   end, { desc = "Blame Line" })
-  map("n", "<leader>gB", gs.toggle_current_line_blame, { desc = "Toggle Blame" })
-  map("n", "<leader>hr", gs.reset_hunk, { desc = "Reset Hunk" })
-  map("n", "<leader>hs", gs.stage_hunk, { desc = "Stage Hunk" })
-  map("n", "<leader>hu", gs.undo_stage_hunk, { desc = "Undo Stage Hunk" })
+  map("n", "<Leader>gB", gs.toggle_current_line_blame, { desc = "Toggle Blame" })
+  map("n", "<Leader>hr", gs.reset_hunk, { desc = "Reset Hunk" })
+  map("n", "<Leader>hs", gs.stage_hunk, { desc = "Stage Hunk" })
+  map("n", "<Leader>hu", gs.undo_stage_hunk, { desc = "Undo Stage Hunk" })
 end
 
 local prev_on_attach = gitsigns_config.on_attach

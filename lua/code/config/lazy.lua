@@ -61,7 +61,7 @@ local lazy_config = {
     browser = nil, ---@type string?
     throttle = 20,
     -- custom_keys = {
-    --   ["<localleader>l"] = {
+    --   ["<LocalLeader>l"] = {
     --     function(plugin)
     --       require("lazy.util").float_term({ "lazygit", "log" }, {
     --         cwd = plugin.dir,
@@ -69,7 +69,7 @@ local lazy_config = {
     --     end,
     --     desc = "Open lazygit log",
     --   },
-    --   ["<localleader>t"] = {
+    --   ["<LocalLeader>t"] = {
     --     function(plugin)
     --       require("lazy.util").float_term(nil, {
     --         cwd = plugin.dir,

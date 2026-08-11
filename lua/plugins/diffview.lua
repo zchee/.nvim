@@ -28,9 +28,9 @@ require("diffview").setup({
       { "n", "gf", actions.goto_file_edit, { desc = "Open file" } },
       { "n", "[x", actions.prev_conflict, { desc = "Prev conflict" } },
       { "n", "]x", actions.next_conflict, { desc = "Next conflict" } },
-      { "n", "<leader>co", actions.conflict_choose("ours"), { desc = "Choose ours" } },
-      { "n", "<leader>ct", actions.conflict_choose("theirs"), { desc = "Choose theirs" } },
-      { "n", "<leader>cb", actions.conflict_choose("base"), { desc = "Choose base" } },
+      { "n", "<Leader>co", actions.conflict_choose("ours"), { desc = "Choose ours" } },
+      { "n", "<Leader>ct", actions.conflict_choose("theirs"), { desc = "Choose theirs" } },
+      { "n", "<Leader>cb", actions.conflict_choose("base"), { desc = "Choose base" } },
       { "n", "dx", actions.conflict_choose("none"), { desc = "Delete conflict" } },
     },
     file_panel = {

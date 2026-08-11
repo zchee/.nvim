@@ -30,12 +30,14 @@ modules in a fixed order.
   `autocmd`, `command`, `highlight`, in that fixed sequence. Do not
   reorder without checking for implicit dependencies (e.g. `autocmd.lua`
   and `keymap.lua` both reference `vim.g.mapleader`/`maplocalleader`, which
-  `keymap.lua` itself sets — keep `keymap` before anything relying on the
-  leader keys being defined).
-- `keymap.lua` sets `vim.g.mapleader = " "` and `vim.g.maplocalleader =
-  "<BS>"` — this is the canonical place for leader definitions in the
-  non-VSCode path (compare `lua/code/init.lua`, which sets the same values
-  independently for the VSCode-Neovim path before its own lazy bootstrap).
+  the repo-root `init.lua` sets before lazy.nvim bootstraps).
+- The repo-root `init.lua` sets `vim.g.mapleader = " "` and
+  `vim.g.maplocalleader = vim.keycode("<BS>")` — the canonical place for
+  leader definitions in the non-VSCode path (compare `lua/code/init.lua`,
+  which sets the same values independently for the VSCode-Neovim path
+  before its own lazy bootstrap). `vim.keycode` is load-bearing:
+  `<LocalLeader>` expands by copying the value verbatim, so a literal
+  `"<BS>"` string binds mappings to those four characters, not Backspace.
 - `nvim.lua` contains a large block of commented-out `vim.g.loaded_*`
   built-in-plugin disablers and remote-provider toggles — these are
   intentionally left as reference/toggle points, not dead code to delete

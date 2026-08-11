@@ -6,8 +6,11 @@ end
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
-vim.g.mapleader = " " -- use "<Space>"?
-vim.g.maplocalleader = "<BS>"
+vim.g.mapleader = " "
+-- Must be the real key, not the string "<BS>": <LocalLeader> expands by
+-- copying this value verbatim, so a literal "<BS>" binds mappings to those
+-- four characters instead of Backspace, and nothing ever matches them.
+vim.g.maplocalleader = vim.keycode("<BS>")
 
 -- Ensure Neovim has a usable RPC server address.
 -- When $XDG_RUNTIME_DIR points at an unwritable directory (e.g. a root-owned

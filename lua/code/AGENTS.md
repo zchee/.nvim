@@ -46,7 +46,7 @@ extension itself.
   be duplicated (or factored into `lua/util`, which both trees already
   share) rather than `require`d cross-tree.
 - `code/init.lua` sets `vim.g.mapleader = " "` / `vim.g.maplocalleader =
-  "<BS>"` independently of `lua/config/keymap.lua` — keep these two
+  vim.keycode("<BS>")` independently of the repo-root `init.lua` — keep these two
   definitions in sync by hand if the leader keys ever change, since there is
   no shared source of truth between the two trees.
 - The JIT tuning block at the top of `code/init.lua`

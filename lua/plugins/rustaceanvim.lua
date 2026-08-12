@@ -208,7 +208,16 @@ opts.server.default_settings = {
     checkOnSave = true,
     diagnostics = {
       enable = true,
-      experimental = { enable = true },
+      -- Off (the upstream default) because rust-analyzer's own trait solver
+      -- mismodels async generators: it treats the format_args! temporaries a
+      -- tracing macro expands to as live across an await, so any log call in
+      -- a tokio::spawn'd async fn is reported as a Send/Sync violation on
+      -- core::fmt::rt::Argument -- e.g. "NonNull<()>: Send is not satisfied"
+      -- on the spawn. rustc disagrees, and it is the one that matters: the
+      -- spawn only compiles because it proved the future Send. These surface
+      -- through pull diagnostics (textDocument/diagnostic), which is what
+      -- nvim uses, so they are not visible in publishDiagnostics.
+      experimental = { enable = false },
       styleLints = { enable = true },
     },
     inlayHints = {

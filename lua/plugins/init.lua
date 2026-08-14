@@ -963,14 +963,6 @@ return {
         require("plugins.rustaceanvim")
       end,
     },
-    -- {
-    --   "nwiizo/cargo.nvim",
-    --   -- build = "cargo build --release",
-    --   ft = { "rust", "toml" },
-    --   cmd = { "CargoBuild", "CargoRun", "CargoTest", "CargoCheck", "CargoClippy" },
-    --   opts = { float_window = true, window_width = 0.8, window_height = 0.8 },
-    --   config = true,
-    -- },
     {
       "saecki/crates.nvim",
       opts = require("plugins.crates"),
@@ -986,46 +978,6 @@ return {
         })
       end,
     },
-    -- {
-    --   {
-    --     'mrcjkb/rustaceanvim',
-    --     lazy = false,
-    --     confio = function()
-    --       require("plugins.rustaceanvim")
-    --     end,
-    --   },
-    --   {
-    --     "saecki/crates.nvim",
-    --     config = function()
-    --       require("crates").setup({
-    --         lsp = {
-    --           enabled = false,
-    --           -- on_attach = function(client, bufnr)
-    --           --   -- the same on_attach function as for your other language servers
-    --           --   -- can be ommited if you're using the `LspAttach` autocmd
-    --           -- end,
-    --           actions = true,
-    --           completion = true,
-    --           hover = true,
-    --         },
-    --         completion = {
-    --           cmp = {
-    --             use_custom_kind = true,
-    --             -- optionally change the text and highlight groups
-    --             kind_text = {
-    --               version = "Version",
-    --               feature = "Feature",
-    --             },
-    --             kind_highlight = {
-    --               version = "CmpItemKindVersion",
-    --               feature = "CmpItemKindFeature",
-    --             },
-    --           },
-    --         },
-    --       })
-    --     end,
-    --   },
-    -- },
 
     -- Markdown
     {

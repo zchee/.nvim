@@ -57,7 +57,6 @@ np.add_rules({
 -- Lua
 np.add_rules({
   np_rule("%", "%", "lua"):with_pair(np_ts_conds.is_ts_node({ "string", "comment" })),
-  np_rule("$", "$", "lua"):with_pair(np_ts_conds.is_not_ts_node({ "function" })),
 })
 
 -- Inside a Go interpreted string the quote keys swap: `"` inserts a `''` pair

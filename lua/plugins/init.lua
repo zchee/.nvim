@@ -814,6 +814,19 @@ return {
         libgit2_path = vim.fs.joinpath(util.homebrew_prefix(), "opt/libgit2/lib/libgit2.dylib"),
         gpgme_path = vim.fs.joinpath(util.homebrew_prefix(), "opt/gpgme/lib/libgpgme.dylib"),
         command_timeout = 15000,
+        file_tree_maps = {
+          menu = {
+            commit = "c",
+            diff = "d",
+            branch = "b",
+            push = "P",
+            fetch = "f",
+            pull = "p",
+            forge = "N",
+            stash = "z",
+            cherry_pick = "A",
+          },
+        },
       },
     },
     {

@@ -392,6 +392,104 @@ register_lsp("tsgo", {
   capabilities = default_capabilities_config(),
 })
 
+-- Drop formatting edits that cannot change a single byte.
+--
+-- vscode-json-language-server answers every textDocument/formatting with an
+-- extra edit spanning the end of the last line to (last_line + 1, 0) with an
+-- empty newText -- its way of saying "the formatted document carries no
+-- trailing newline". A Vim buffer always owns that newline, so
+-- vim.lsp.util.apply_text_edits clamps the range back onto the last line and
+-- calls nvim_buf_set_text with an empty replacement: nothing changes, not even
+-- an on_bytes event fires, yet the line still lands on the undo stack. Every
+-- write of such a buffer then leaves an undo entry anchored to the last line,
+-- so a `u` that reaches it parks the cursor at the bottom of the file and
+-- marks the buffer 'modified' while the text is identical.
+--
+-- The filter wraps the client's request rather than vim.lsp.handlers because
+-- conform.nvim asks through client:request_sync, which supplies its own
+-- handler and so never consults the handlers table.
+local formatting_methods = {
+  ["textDocument/formatting"] = true,
+  ["textDocument/rangeFormatting"] = true,
+  ["textDocument/rangesFormatting"] = true,
+}
+
+---@param line string
+---@param character integer LSP character offset in `encoding` units
+---@param encoding string
+---@return integer byte offset, clamped to the line
+local function byte_col(line, character, encoding)
+  local ok, col = pcall(vim.str_byteindex, line, encoding, character, false)
+  return ok and col or #line
+end
+
+---Whether applying `edit` would leave the buffer byte-identical. The range is
+---clamped the same way vim.lsp.util.apply_text_edits clamps it, so an edit
+---reaching past the last line is compared against what it can really replace.
+---@param bufnr integer
+---@param edit lsp.TextEdit
+---@param encoding string
+---@return boolean
+local function is_noop_edit(bufnr, edit, encoding)
+  local s, e = edit.range.start, edit.range["end"]
+  if s.line > e.line or (s.line == e.line and s.character > e.character) then
+    s, e = e, s
+  end
+  local line_count = vim.api.nvim_buf_line_count(bufnr)
+  if s.line >= line_count then
+    return edit.newText == ""
+  end
+  local end_row = math.min(e.line, line_count - 1)
+  local start_line = vim.api.nvim_buf_get_lines(bufnr, s.line, s.line + 1, true)[1]
+  local end_line = end_row == s.line and start_line or vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, true)[1]
+  local start_col = math.min(byte_col(start_line, s.character, encoding), #start_line)
+  local end_col = e.line > end_row and #end_line or math.min(byte_col(end_line, e.character, encoding), #end_line)
+  if end_row < s.line or (end_row == s.line and end_col < start_col) then
+    return edit.newText == ""
+  end
+  local current = table.concat(vim.api.nvim_buf_get_text(bufnr, s.line, start_col, end_row, end_col, {}), "\n")
+  return current == edit.newText
+end
+
+---@type table<integer, true> client ids whose request is already wrapped
+local noop_filtered_clients = {}
+
+---@param client vim.lsp.Client
+local function drop_noop_format_edits(client)
+  if noop_filtered_clients[client.id] then
+    return
+  end
+  noop_filtered_clients[client.id] = true
+
+  local request = client.request
+  ---@diagnostic disable-next-line: duplicate-set-field
+  function client:request(method, params, handler, bufnr)
+    if handler and formatting_methods[method] then
+      local inner = handler
+      handler = function(err, result, ctx, config)
+        local buf = (ctx and ctx.bufnr) or bufnr
+        if type(result) == "table" and result[1] ~= nil and buf and vim.api.nvim_buf_is_valid(buf) then
+          result = vim.tbl_filter(function(edit)
+            return not is_noop_edit(buf, edit, self.offset_encoding or "utf-16")
+          end, result)
+        end
+        return inner(err, result, ctx, config)
+      end
+    end
+    return request(self, method, params, handler, bufnr)
+  end
+end
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("lsp_noop_format_edits", { clear = true }),
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client then
+      drop_noop_format_edits(client)
+    end
+  end,
+})
+
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 vim.lsp.config("*", {
   capabilities = default_capabilities_config(),

@@ -289,7 +289,13 @@ opts.server.default_settings = {
       },
     },
     files = {
-      exclude = { ".git", "node_modules", ".direnv", "target/debug/build", "target/release/build" },
+      exclude = {
+        ".git",
+        "node_modules",
+        ".direnv",
+        "target/debug/build",
+        "target/release/build",
+      },
     },
   },
 }

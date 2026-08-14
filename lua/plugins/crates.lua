@@ -2,7 +2,11 @@
 
 return {
   completion = {
-    crates = { enabled = true, max_results = 8, min_chars = 3 },
+    crates = {
+      enabled = true,
+      max_results = 8,
+      min_chars = 3,
+    },
   },
   lsp = {
     enabled = true,
@@ -12,18 +16,8 @@ return {
       local map = vim.keymap.set
       map("n", "<Leader>rct", crates.toggle, vim.tbl_extend("force", opts, { desc = "Toggle crates" }))
       map("n", "<Leader>rcr", crates.reload, vim.tbl_extend("force", opts, { desc = "Reload crates" }))
-      map(
-        "n",
-        "<Leader>rcv",
-        crates.show_versions_popup,
-        vim.tbl_extend("force", opts, { desc = "Show versions" })
-      )
-      map(
-        "n",
-        "<Leader>rcf",
-        crates.show_features_popup,
-        vim.tbl_extend("force", opts, { desc = "Show features" })
-      )
+      map("n", "<Leader>rcv", crates.show_versions_popup, vim.tbl_extend("force", opts, { desc = "Show versions" }))
+      map("n", "<Leader>rcf", crates.show_features_popup, vim.tbl_extend("force", opts, { desc = "Show features" }))
       map(
         "n",
         "<Leader>rcd",
@@ -34,12 +28,7 @@ return {
       map("v", "<Leader>rcu", crates.update_crates, vim.tbl_extend("force", opts, { desc = "Update crates" }))
       map("n", "<Leader>rcU", crates.upgrade_crate, vim.tbl_extend("force", opts, { desc = "Upgrade crate" }))
       map("v", "<Leader>rcU", crates.upgrade_crates, vim.tbl_extend("force", opts, { desc = "Upgrade crates" }))
-      map(
-        "n",
-        "<Leader>rcA",
-        crates.upgrade_all_crates,
-        vim.tbl_extend("force", opts, { desc = "Upgrade all crates" })
-      )
+      map("n", "<Leader>rcA", crates.upgrade_all_crates, vim.tbl_extend("force", opts, { desc = "Upgrade all crates" }))
       map("n", "<Leader>rcH", crates.open_homepage, vim.tbl_extend("force", opts, { desc = "Open homepage" }))
       map("n", "<Leader>rcR", crates.open_repository, vim.tbl_extend("force", opts, { desc = "Open repository" }))
       map("n", "<Leader>rcD", crates.open_documentation, vim.tbl_extend("force", opts, { desc = "Open docs.rs" }))
@@ -49,5 +38,10 @@ return {
     completion = true,
     hover = true,
   },
-  popup = { border = "rounded", show_version_date = true, max_height = 30, min_width = 20 },
+  popup = {
+    border = "rounded",
+    show_version_date = true,
+    max_height = 30,
+    min_width = 20,
+  },
 }

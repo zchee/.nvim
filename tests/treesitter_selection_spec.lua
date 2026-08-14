@@ -56,10 +56,7 @@ assert_truthy(
 
 sel.node_incremental()
 local third = marks()
-assert_truthy(
-  third[2] <= second[2] and third[4] >= second[4],
-  "second node_incremental must not shrink the selection"
-)
+assert_truthy(third[2] <= second[2] and third[4] >= second[4], "second node_incremental must not shrink the selection")
 
 sel.node_decremental()
 local back = marks()
@@ -72,10 +69,7 @@ assert_equal(second[4], back[4], "node_decremental: end col restored")
 -- the enclosing function spanning all three lines
 sel.scope_incremental()
 local scope1 = marks()
-assert_truthy(
-  scope1[2] <= back[2] and scope1[4] >= back[4],
-  "first scope_incremental must not shrink the selection"
-)
+assert_truthy(scope1[2] <= back[2] and scope1[4] >= back[4], "first scope_incremental must not shrink the selection")
 sel.scope_incremental()
 local scope2 = marks()
 assert_equal(1, scope2[1], "second scope_incremental: reaches the function start")

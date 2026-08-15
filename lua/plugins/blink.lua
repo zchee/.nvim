@@ -387,8 +387,14 @@ blink.setup({
           },
           label = {
             width = { fill = true, max = 60 },
+            -- rust-analyzer carries the import hint in label_detail, so the
+            -- two run together as `type_id()(use std::any::Any)`. Separate
+            -- them; the highlight offsets below account for the space.
             text = function(ctx)
-              return ctx.label .. ctx.label_detail
+              if ctx.label_detail == "" then
+                return ctx.label
+              end
+              return ctx.label .. "  " .. ctx.label_detail
             end,
             highlight = function(ctx)
               -- label and label details
@@ -399,10 +405,10 @@ blink.setup({
                   group = ctx.deprecated and "BlinkCmpLabelDeprecated" or "BlinkCmpLabel",
                 },
               }
-              if ctx.label_detail then
+              if ctx.label_detail ~= "" then
                 table.insert(highlights, {
-                  #ctx.label,
-                  #ctx.label + #ctx.label_detail,
+                  #ctx.label + 1,
+                  #ctx.label + 1 + #ctx.label_detail,
                   group = "BlinkCmpLabelDetail",
                 })
               end

@@ -129,19 +129,6 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
   end,
 })
 
--- local autocmd_colorizer = vim.api.nvim_create_augroup("Colorizer", { clear = false })
--- vim.api.nvim_create_autocmd({ "BufEnter" }, {
---   group = autocmd_colorizer,
---   pattern = {
---     "**/colors/*",
---     "**/highlight.lua",
---     "**/kitty/color.conf",
---   },
---   callback = function()
---     vim.cmd.ColorizerToggle()
---   end,
--- })
-
 -- BufWinEnter
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
   group = autocmd_user,

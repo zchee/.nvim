@@ -957,34 +957,47 @@ return {
         },
       },
     },
-    -- {
-    --   "NvChad/nvim-colorizer.lua",
-    --   lazy = true,
-    --   event = "User Colorizer",
-    --   cmd = {
-    --     "ColorizerAttachToBuffer",
-    --     "ColorizerDetachFromBuffer",
-    --     "ColorizerReloadAllBuffers",
-    --     "ColorizerToggle",
-    --   },
-    --   opts = {
-    --     filetypes = { "lua" },
-    --     user_default_options = {
-    --       RGB = true,
-    --       RRGGBB = true,
-    --       names = true,
-    --       RRGGBBAA = false,
-    --       AARRGGBB = false,
-    --       rgb_fn = false,
-    --       hsl_fn = false,
-    --       css = false,
-    --       css_fn = false,
-    --       mode = "background",
-    --       virtualtext = "■",
-    --     },
-    --     buftypes = {},
-    --   },
-    -- },
+    {
+      "catgoose/nvim-colorizer.lua",
+      cmd = {
+        "ColorizerAttachToBuffer",
+        "ColorizerDetachFromBuffer",
+        "ColorizerReloadAllBuffers",
+        "ColorizerToggle",
+      },
+      init = function()
+        -- Colorizer auto-attaches by filetype, which cannot name these files:
+        -- a colorscheme is plain lua or vim, kitty/color.conf is conf, and the
+        -- ganja themes are json -- filetypes shared with files that must stay
+        -- unhighlighted. So `filetypes` stays empty below and attachment is
+        -- driven from here, by path. Requiring the module is what pulls the
+        -- plugin in, so no separate lazy trigger is needed.
+        vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+          group = vim.api.nvim_create_augroup("colorizer_paths", { clear = true }),
+          pattern = {
+            "*/colors/*",
+            "*/highlight.lua",
+            "*/kitty/color.conf",
+            vim.fs.normalize("~/.config/ganja/themes/*.json"),
+          },
+          callback = function(args)
+            require("colorizer").attach_to_buffer(args.buf)
+          end,
+        })
+      end,
+      opts = {
+        filetypes = {},
+        options = {
+          parsers = {
+            -- colorschemes and theme files carry 8-digit hex and the odd
+            -- rgb()/hsl(); names and 3/6-digit hex are on by default
+            hex = { rrggbbaa = true },
+            rgb = true,
+            hsl = true,
+          },
+        },
+      },
+    },
     {
       "dstein64/vim-startuptime",
       cmd = "StartupTime",

@@ -124,7 +124,6 @@ return {
         previewFields = 100,
       },
       runtime = {
-        builtin = "enable",
         version = "LuaJIT",
         pathStrict = false,
         path = {

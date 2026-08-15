@@ -211,19 +211,23 @@ return {
     end,
   },
   {
+    -- Besides the library, this repoints lua_ls's root_dir at a workspace that
+    -- already covers the file, which is what keeps a jumped-to buffer outside
+    -- the project from landing in the server's settings-less <fallback> scope.
+    -- The LLS-Addons paths are not repeated here: lazydev seeds each workspace
+    -- from the client settings, so lsp/lua_ls.lua's library carries over.
     "folke/lazydev.nvim",
     ft = "lua",
     opts = {
       library = {
         "lazy.nvim",
+        "plenary.nvim",
+        -- lua/nvim-treesitter/parsers.lua shadows the upstream registry
+        "nvim-treesitter",
         {
           path = "${3rd}/luv/library",
           words = { "vim%.uv" },
         },
-        "plenary.nvim",
-        vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/busted/library"),
-        vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/library"),
-        vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library"),
       },
     },
   },

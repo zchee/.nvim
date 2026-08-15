@@ -459,10 +459,17 @@ blink.setup({
       window = {
         min_width = 10,
         max_width = 80,
-        max_height = 20,
+        -- Show the whole doc rather than a scrollable slice of it: scrolling
+        -- the docs is noise while completing. blink still clamps the window
+        -- to the space left on screen (lib/window/init.lua), so this only has
+        -- to be larger than any doc worth reading inline.
+        max_height = 100,
         border = nil, -- Defaults to `vim.o.winborder` on nvim 0.11+ or 'padded' when not defined/<=0.10
         winblend = 0,
         winhighlight = "Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc",
+        -- Self-hiding: blink drops the scrollbar whenever the window height
+        -- reaches the content height (lib/window/scrollbar/geometry.lua), so
+        -- with max_height above it only appears for docs too long to fit.
         scrollbar = true, -- Note that the gutter will be disabled when border ~= 'none'
         -- Which directions to show the documentation window, for each of the possible menu window directions, falling back to the next direction when there's not enough space
         direction_priority = {

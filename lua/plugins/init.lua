@@ -109,7 +109,6 @@ return {
           aggressive_mode = false,
           excluded_lsp_clients = {
             "gopls",
-            -- rustaceanvim names its client "rust-analyzer", not "rust_analyzer".
             "rust-analyzer",
             "tombi",
           },
@@ -137,13 +136,11 @@ return {
         end,
       },
       {
-        -- conform.nvim: formatting, successor of the none-ls sources
         "stevearc/conform.nvim",
         event = "VeryLazy",
         opts = require("plugins.conform"),
       },
       {
-        -- nvim-lint: diagnostics, successor of the none-ls sources
         "mfussenegger/nvim-lint",
         event = { "BufReadPost", "BufNewFile" },
         config = function()
@@ -276,8 +273,7 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
-    -- the main branch does not support lazy-loading (upstream README)
-    lazy = false,
+    lazy = false, -- the main branch does not support lazy-loading (upstream README)
     build = ":TSUpdate",
     dependencies = {
       "JoosepAlviste/nvim-ts-context-commentstring",
@@ -288,28 +284,26 @@ return {
     end,
   },
 
-  -- Telescope
-  {
-    "nvim-telescope/telescope.nvim",
-    cmd = "Telescope",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-lua/popup.nvim",
-      "nvim-telescope/telescope-dap.nvim",
-      "nvim-telescope/telescope-file-browser.nvim",
-      "nvim-telescope/telescope-live-grep-args.nvim",
-      "nvim-telescope/telescope-project.nvim",
-      "nvim-telescope/telescope-ui-select.nvim",
-      "matheusfillipe/grep_app.nvim",
-      "nvim-telescope/telescope-ghq.nvim",
-    },
-    config = function()
-      require("plugins.telescope")
-    end,
-  },
-
   -- UI
   {
+    {
+      "nvim-telescope/telescope.nvim",
+      cmd = "Telescope",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-lua/popup.nvim",
+        "nvim-telescope/telescope-dap.nvim",
+        "nvim-telescope/telescope-file-browser.nvim",
+        "nvim-telescope/telescope-live-grep-args.nvim",
+        "nvim-telescope/telescope-project.nvim",
+        "nvim-telescope/telescope-ui-select.nvim",
+        "matheusfillipe/grep_app.nvim",
+        "nvim-telescope/telescope-ghq.nvim",
+      },
+      config = function()
+        require("plugins.telescope")
+      end,
+    },
     {
       "folke/snacks.nvim",
       lazy = false,
@@ -336,6 +330,11 @@ return {
       -- overlook.nvim: Code peek in floating popups
       "WilliamHsieh/overlook.nvim",
       event = "LspAttach",
+      opts = {
+        border = "rounded",
+        max_width = 100,
+        max_height = 20,
+      },
       keys = {
         {
           "<Leader>pd",
@@ -394,14 +393,8 @@ return {
           desc = "Open in Original",
         },
       },
-      opts = {
-        border = "rounded",
-        max_width = 100,
-        max_height = 20,
-      },
     },
     {
-      -- oil.nvim: File explorer (custom plugin, not a LazyVim extra)
       "stevearc/oil.nvim",
       lazy = false,
       dependencies = {
@@ -409,8 +402,8 @@ return {
       },
       opts = require("plugins.oil"),
       keys = {
-        { "-", "<cmd>Oil<cr>", desc = "Open parent directory" },
-        { "<Leader>e", "<cmd>Oil<cr>", desc = "File Explorer (Oil)" },
+        { "-", "<Cmd>Oil<CR>", desc = "Open parent directory" },
+        { "<Leader>e", "<Cmd>Oil<CR>", desc = "File Explorer (Oil)" },
       },
     },
     {

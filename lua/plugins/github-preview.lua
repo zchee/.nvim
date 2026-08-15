@@ -4,11 +4,12 @@ local github_preview = require("github-preview")
 github_preview.setup({
   host = "127.0.0.1",
   port = 6041, -- p(15) r(17) e(4)
+  allow_multiple_instances = true,
   theme = {
     name = "system",
     high_contrast = true,
   },
-  single_file = false,
+  single_file = true,
   details_tags_open = true, -- define how to render <details> tags on init/content-change. true: <details> tags are rendered open, false: <details> tags are rendered closed
   cursor_line = {
     color = "#4c4e52",

@@ -41,9 +41,9 @@ return {
           "duplicate-set-field",
         },
         libraryFiles = "Opened",
-        workspaceDelay = 300,
+        workspaceDelay = 30, -- 3000
         workspaceEvent = "OnChange", -- "OnSave",
-        workspaceRate = 500,
+        workspaceRate = 100,
       },
       format = {
         enable = true,

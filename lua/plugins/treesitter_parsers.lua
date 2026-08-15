@@ -66,6 +66,7 @@ return {
   "json5",
   "jsonnet",
   "kconfig",
+  "kitty",
   "kotlin",
   "linkerscript",
   "llvm",

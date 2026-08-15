@@ -41,7 +41,6 @@ syntax match dockerfileEnv contained /\<ENV\>/
 
 syntax region dockerfileComment start=/\v^\s*#/ end=/\v$/ contains=dockerfileTodo
 syntax region dockerfileEnvWithComment start="^\s*ENV\>" end="\n" contains=dockerfileEnv
-set commentstring=#\ %s
 
 hi def link dockerfileString String
 hi def link dockerfileKeyword Keyword

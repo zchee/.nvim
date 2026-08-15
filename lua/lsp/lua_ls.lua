@@ -158,10 +158,12 @@ return {
         ignoreDir = {
           ".*_tmp/.*",
         },
+        -- LLS-Addons keeps each addon's definitions one level down, under
+        -- `addons/<name>/module/library`.
         library = {
-          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/busted/library"),
-          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/library"),
-          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/library"),
+          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/busted/module/library"),
+          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/module/library"),
+          vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/module/library"),
         },
         maxPreload = 500000, -- default: 5000, 500000
         preloadFileSize = 50000, -- default: 500, 50000

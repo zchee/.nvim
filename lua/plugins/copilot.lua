@@ -21,6 +21,7 @@ copilot.setup({
     go = true,
     lua = true,
     sh = true,
+    toml = true,
   },
   copilot_node_command = util.homebrew_binary("node", "node"),
   server = {

@@ -38,7 +38,7 @@ through native `vim.lsp.config()` / `vim.lsp.enable()` — not
 | `script/` | Generator scripts (see `script/AGENTS.md`) |
 | `tests/` | Headless regression specs (see `tests/AGENTS.md`) |
 | `docs/` | Notes and references (see `docs/AGENTS.md`) |
-| `.claude/skills/` | Repo-local Claude Code skills: `add-lsp`, `add-plugin` |
+| `.claude/skills/` | Repo-local Claude Code skills: `add-lsp`, `add-plugin`, `nvim-search-plugin` |
 
 ## For AI Agents
 

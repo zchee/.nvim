@@ -85,5 +85,12 @@ parsers.swift = {
   },
   tier = 3,
 }
+parsers.zsh = {
+  -- local checkout; parser.c is pre-generated there
+  install_info = {
+    path = util.src_path("github.com/georgeharker/tree-sitter-zsh"),
+  },
+  tier = 3,
+}
 
 return parsers

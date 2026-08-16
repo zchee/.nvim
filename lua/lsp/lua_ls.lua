@@ -3,9 +3,58 @@ local util = require("util")
 -- https://github.com/LuaLS/lua-language-server/blob/master/doc/en-us/config.md
 -- https://github.com/LuaLS/lua-language-server/blob/master/locale/en-us/setting.lua
 -- https://github.com/LuaLS/lua-language-server/blob/master/script/config/template.lua
+local lua_ls_bin = util.homebrew_binary("lua-language-server-head", "lua-language-server")
+
+-- lua-language-server holds its index in memory only: ~/.cache/lua-language-server
+-- carries just logs and the stdlib meta, no workspace index, so every nvim
+-- restart re-pays it. Measured here: 5.0s to load 1099 files, 1.27GB resident.
+-- github.com/zchee/lspmux keeps one server alive per workspace between editor
+-- sessions, keyed by {binary, args, cwd} -- hence the explicit cwd below.
+--
+-- Deliberately restricted to this config repo. lua_ls starts a client per root
+-- and lspmux keeps every instance resident between sessions, so wrapping all
+-- Lua projects would park 1.27GB per root indefinitely; this is the one
+-- workspace reopened often enough for the trade to pay.
+--
+-- Every failure path falls back to spawning the server directly, because a
+-- slow LSP beats no LSP. LUA_LS_NO_LSPMUX=1 bypasses the daemon for bisecting.
+---@param dispatchers vim.lsp.rpc.Dispatchers
+---@param config vim.lsp.ClientConfig
+---@return vim.lsp.rpc.PublicClient
+local function lua_ls_cmd(dispatchers, config)
+  local function direct()
+    return vim.lsp.rpc.start({ lua_ls_bin }, dispatchers, { cwd = config.root_dir })
+  end
+
+  local root = config.root_dir and vim.uv.fs_realpath(config.root_dir)
+  if vim.env.LUA_LS_NO_LSPMUX or not root or root ~= vim.uv.fs_realpath(vim.fn.stdpath("config")) then
+    return direct()
+  end
+
+  local lspmux = vim.fn.exepath("lspmux")
+  if lspmux == "" then
+    return direct()
+  end
+
+  -- `status` exits non-zero when no daemon is listening; detach one so no
+  -- launchd unit is needed. The daemon resolves its own socket path.
+  if vim.system({ lspmux, "status" }):wait().code ~= 0 then
+    local log_file = vim.fs.joinpath(tostring(vim.fn.stdpath("log")), "lspmux.log")
+    vim.system({ lspmux, "server", "--log-file", log_file }, { detach = true })
+    vim.wait(2000, function()
+      return vim.system({ lspmux, "status" }):wait().code == 0
+    end, 100)
+    if vim.system({ lspmux, "status" }):wait().code ~= 0 then
+      return direct()
+    end
+  end
+
+  return vim.lsp.rpc.start({ lspmux, "client", "--server-path", lua_ls_bin }, dispatchers, { cwd = root })
+end
+
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.homebrew_binary("lua-language-server-head", "lua-language-server") },
+  cmd = lua_ls_cmd,
   root_markers = {
     ".git",
     ".stylua.toml",

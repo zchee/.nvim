@@ -112,8 +112,13 @@ return {
           vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/module/library"),
           vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/module/library"),
         },
-        maxPreload = 500000, -- default: 5000, 500000
-        preloadFileSize = 50000, -- default: 500, 50000
+        -- Both were 100x the upstream defaults, which left no cap at all.
+        -- Measured on this workspace: 1099 files preloaded, and the largest
+        -- Lua file anywhere in scope is nvim's generated vim/_meta/vimfn.gen.lua
+        -- at 431KB -- too close to the 500KB default to keep it, since losing
+        -- it would silently drop every vim.fn signature.
+        maxPreload = 5000, -- default: 5000
+        preloadFileSize = 1000, -- KB; default: 500
         useGitIgnore = true,
         userThirdParty = {},
       },

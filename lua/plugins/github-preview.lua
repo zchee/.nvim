@@ -12,7 +12,7 @@ github_preview.setup({
   single_file = true,
   details_tags_open = true, -- define how to render <details> tags on init/content-change. true: <details> tags are rendered open, false: <details> tags are rendered closed
   cursor_line = {
-    disable = true,
+    disable = false,
     color = "#4c4e52",
     opacity = 0.1,
   },

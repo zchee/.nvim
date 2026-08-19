@@ -36,6 +36,13 @@ hi("BlinkCmpMenu", { link = "Normal" })
 hi("BlinkCmpSource", { link = "Normal" })
 hi("BlinkCmpMenuBorder", { link = "Normal" })
 hi("BlinkCmpMenuSelection", { link = "WildMenu" })
+-- The item-level groups blink draws inside the menu still resolve to Pmenu's
+-- #202122 background. A bare bg = "None" collapses to an empty definition,
+-- which blink's default=true links then win over, so blank them with a link.
+hi("BlinkCmpLabelDetail", { link = hi_none })
+hi("BlinkCmpLabelDescription", { link = hi_none })
+hi("BlinkCmpLabelDeprecated", { link = hi_none })
+hi("BlinkCmpKind", { link = hi_none })
 hi("@comment.note.comment", { link = "comment" })
 
 -- Go

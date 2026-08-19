@@ -20,6 +20,28 @@ local nts = require("nvim-treesitter")
 local install_dir = vim.fs.joinpath(tostring(vim.fn.stdpath("data")), "tree-sitter-main")
 nts.setup({ install_dir = install_dir })
 
+-- tree-sitter-rust reparses every macro token_tree as Rust. When a macro body
+-- is not Rust -- a DSL such as ganja-code's `invocations!` -- that reparse
+-- desyncs and starts pairing string quotes across lines, so the doc comments
+-- between fields render as @string. Upstream already excludes a few macros by
+-- name, so widen that list in place instead of restating the query: the rest
+-- keeps tracking the installed grammar, and a miss leaves upstream untouched.
+local rust_macro_injection_skip = { "invocations" }
+do
+  local file = vim.api.nvim_get_runtime_file("queries/rust/injections.scm", false)[1]
+  if file then
+    local extra = table.concat(vim.tbl_map(function(name)
+      return string.format(" %q", name)
+    end, rust_macro_injection_skip))
+    local src = table.concat(vim.fn.readfile(file), "\n")
+    local patched, hits =
+      src:gsub("%(#not%-any%-of%? @_macro_name ([^)]*)%)", "(#not-any-of? @_macro_name %1" .. extra .. ")", 1)
+    if hits == 1 then
+      vim.treesitter.query.set("rust", "injections", patched)
+    end
+  end
+end
+
 -- Custom/forked grammars live in lua/nvim-treesitter/parsers.lua -- a user
 -- module that shadows the plugin registry by runtimepath order, because
 -- install.lua's reload_parsers() re-requires that module and would wipe any

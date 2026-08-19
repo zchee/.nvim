@@ -536,9 +536,25 @@ end
 vim.keymap.set({ "n" }, "K", function()
   require("hover").open()
 end, { desc = "hover.nvim (open)" })
-vim.keymap.set({ "n" }, "<C-]>", function()
+-- rust-analyzer answers textDocument/definition for an attribute macro only
+-- from inside the identifier: measured on `#[async_trait]`, the `#` and `[`
+-- columns return nothing while every column from `a` onwards resolves. Column
+-- 0 is exactly where the cursor sits after moving onto an attribute line, so
+-- step onto the first identifier character before asking. Servers that answer
+-- on punctuation are unaffected, since the nudge only runs when the cursor is
+-- not already on a word character.
+local function lsp_definitions()
+  local line = vim.api.nvim_get_current_line()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  if not line:sub(col + 1, col + 1):match("[%w_]") then
+    local ident = line:find("[%a_]", col + 1)
+    if ident then
+      vim.api.nvim_win_set_cursor(0, { row, ident - 1 })
+    end
+  end
   require("snacks").picker.lsp_definitions()
-end, { silent = true })
+end
+vim.keymap.set({ "n" }, "<C-]>", lsp_definitions, { silent = true, desc = "LSP definitions" })
 vim.keymap.set({ "n" }, "<C-k>", function()
   vim.lsp.buf.signature_help()
 end, { silent = true, desc = "LSP signature help" })

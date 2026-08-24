@@ -1,6 +1,8 @@
 -- Loaded from the rustaceanvim spec's `init` in lua/plugins/init.lua, so it
 -- runs before rustaceanvim's own ftplugin reads `vim.g.rustaceanvim`.
 
+local util = require("util")
+
 -- Keymaps live on LspAttach rather than in `server.on_attach`: rustaceanvim
 -- merges `vim.lsp.config["rust-analyzer"]` over its own `server` table with
 -- "force", so the global `vim.lsp.config("*")` on_attach set in lua/lsp/init.lua
@@ -177,11 +179,40 @@ local function analysis_rustflags()
   end
   return table.concat(kept, " ")
 end
+
+-- ~/.config/rust/config.dev.toml is the dev/test-profile cargo config this
+-- machine passes by hand (`cargo --config ...`): target-dir on tmpfs,
+-- incremental off. configPath hands it to every cargo rust-analyzer spawns --
+-- metadata, build scripts, clippy, and the RustLsp runnables -- and rust-
+-- analyzer emits the flag ahead of check.extraArgs, so it lands before that
+-- list's own `--` rather than being passed on to clippy-driver.
+--
+-- The path has to be absolute: cargo does no tilde expansion (a literal
+-- "~/..." is parsed as a KEY=VALUE TOML fragment and dies on "key with no
+-- value"), and rust-analyzer joins a relative configPath onto the workspace
+-- root. util.xdg_config_home() is readlink-based, so it answers with the
+-- symlink target -- the dotfiles checkout rather than ~/.config, same file --
+-- and with "" when XDG_CONFIG_HOME is unset or is a real directory. Either way
+-- the stat below is what decides: a path that does not resolve leaves the
+-- setting unset, because cargo hard-errors on a config path it cannot read,
+-- and that kills `cargo metadata` -- the whole client -- not just the check.
+--
+-- CARGO_TARGET_DIR below still wins over the file's build.target-dir (env
+-- beats --config), so analysis keeps its own target/rust-analyzer and never
+-- waits on the tmpfs build lock. Runnables are handed no extraEnv, so those do
+-- build in tmpfs, reusing what the shell already compiled there.
+---@return string?
+local function cargo_dev_config_path()
+  local path = vim.fs.joinpath(util.xdg_config_home(), "rust", "config.dev.toml")
+  return vim.uv.fs_stat(path) and path or nil
+end
+
 opts.server.default_settings = {
   ["rust-analyzer"] = {
     cargo = {
       features = "all",
       allTargets = false,
+      configPath = cargo_dev_config_path(),
       buildScripts = {
         enable = true,
         invocationStrategy = "once",

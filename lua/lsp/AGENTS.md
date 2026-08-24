@@ -39,7 +39,7 @@ table below).
 | `grammarly_lsp.lua` | No cmd field; markdown ft; hardcoded personal clientId. NOT registered. |
 | `graphql.lua` | graphql-lsp via mason-core.path (not util helper). NOT registered. |
 | `helm_ls.lua` | cmd = vim.fn.exepath("helm_ls") (bare, deviates from util convention); autostart=false. Registered. |
-| `jsonls.lua` | vscode-json-language-server via util.bun_prefix; schemastore.nvim + trustedDomains allowlist. Registered. |
+| `jsonls.lua` | vscode-json-language-server via util.bun_prefix; schemastore.nvim + trustedDomains allowlist; a `textDocument/diagnostic` handler drops the JSON-grammar diagnostics on `json5` buffers (the server relaxes its validation only for the literal languageId `jsonc`, so json5 is validated as strict JSON) while keeping the schema ones. Registered. |
 | `lua_ls.lua` | lua-language-server via util.homebrew_binary; workspace.library via util.src_path(LLS-Addons). Registered. |
 | `metals.lua` | metals via util.homebrew_binary; hardcodes Java 8 temurin javaHome, sbt/gradle/maven. NOT registered. |
 | `neocmake.lua` | neocmakelsp via util.homebrew_binary; cmake ft; typo `rotoot_markers` vs `root_markers`. Registered. |

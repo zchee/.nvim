@@ -197,14 +197,39 @@ end
 -- setting unset, because cargo hard-errors on a config path it cannot read,
 -- and that kills `cargo metadata` -- the whole client -- not just the check.
 --
--- CARGO_TARGET_DIR below still wins over the file's build.target-dir (env
--- beats --config), so analysis keeps its own target/rust-analyzer and never
--- waits on the tmpfs build lock. Runnables are handed no extraEnv, so those do
--- build in tmpfs, reusing what the shell already compiled there.
+-- CARGO_TARGET_DIR below still wins over the file's build.target-dir -- an
+-- environment variable beats a --config value, measured -- so analysis keeps a
+-- tree of its own. Runnables are handed no extraEnv, so those do build in the
+-- file's tmpfs target-dir, reusing what the shell has already compiled there.
 ---@return string?
 local function cargo_dev_config_path()
   local path = vim.fs.joinpath(util.xdg_config_home(), "rust", "config.dev.toml")
   return vim.uv.fs_stat(path) and path or nil
+end
+
+-- Where that tree goes. It must not be the shell's own target-dir: cargo locks
+-- a build directory exclusively, and checkOnSave keeps the analysis clippy
+-- running most of the time, so one shared directory would have each waiting on
+-- the other. The differing RUSTFLAGS are not what makes sharing wrong -- cargo
+-- hashes them into the unit path, so both sets coexist rather than invalidating
+-- each other -- it only means the artifacts are additional instead of reused,
+-- which is the wrong thing to add to a RAM disk.
+--
+-- A sibling on the same tmpfs keeps the fast I/O and the clean project tree
+-- while holding its own lock. It is a plain constant rather than something read
+-- back out of config.dev.toml, which would mean parsing TOML to learn a path
+-- this only has to differ from. Without that mount the relative per-crate
+-- directory answers instead, because cargo would otherwise create a real
+-- directory under /Volumes for every crate it analyses.
+local TMPFS_ROOT = "/Volumes/tmpfs"
+
+---@return string
+local function analysis_target_dir()
+  local stat = vim.uv.fs_stat(TMPFS_ROOT)
+  if stat ~= nil and stat.type == "directory" then
+    return vim.fs.joinpath(TMPFS_ROOT, "target-rust-analyzer")
+  end
+  return "target/rust-analyzer"
 end
 
 opts.server.default_settings = {
@@ -219,7 +244,7 @@ opts.server.default_settings = {
       },
       extraEnv = {
         RUSTFLAGS = analysis_rustflags(),
-        CARGO_TARGET_DIR = "target/rust-analyzer",
+        CARGO_TARGET_DIR = analysis_target_dir(),
         SKIP_WASM_BUILD = "1",
       },
     },

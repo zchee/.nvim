@@ -15,6 +15,7 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 | File | Description |
 |------|-------------|
 | `conform_organize_imports_spec.lua` | `lua/plugins/conform.lua` — the `lsp_organize_imports` formatter with a stubbed `vim.lsp.buf_request_sync` (gopls does not attach in headless Neovim): asserts the Go chain order, WorkspaceEdit extraction, that edits land in the returned lines and never in the buffer, the stale-lines guard, and the empty/nil-response no-ops |
+| `conform_oxfmt_json5_spec.lua` | `lua/plugins/conform.lua` — the json5 formatter wiring: `formatters_by_ft.json5` is oxfmt alone with `lsp_format = "never"`, the oxfmt `args` always pass a `--config` (project `.oxfmtrc.*` found upward, else the personal one under `XDG_CONFIG_HOME`) and a `--stdin-filepath` oxfmt can infer a dialect from (`.json`/`.json5`/`.jsonc` pass through case-insensitively, an extensionless `.renovaterc` gains `.json5`), and `format_on_save` returns `never` for json5 while everything else keeps `fallback`. Needs `conform.nvim` installed |
 | `conform_taplo_spec.lua` | `lua/plugins/conform.lua` — the taplo formatter wiring: toml maps to taplo, tombi is no longer a formatter, `--config` lands after the `format` subcommand with the stdin args last, and a project's own `.taplo.toml` found by walking upward suppresses `--config` |
 | `copilot_config_spec.lua` | `lua/plugins/copilot.lua` — stubs `package.preload["copilot"]` to capture the config passed to `copilot.setup()`; asserts panel/inline-suggestion UI stay disabled (cmp owns completion UI) and `advanced.inlineSuggestCount`/`advanced.listCount` are positive, in copilot.lua's `settings.advanced` shape (not VS Code's `github.copilot.advanced` shape) |
 | `goasm_filetype_spec.lua` | `lua/filetypes/goasm.lua` — `detect()` across all three heuristics (Plan 9 header include, Go arch-suffixed filename, sibling `.go` file) plus the plain-`asm` fallback, using real temp files/buffers |
@@ -68,7 +69,7 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 Run any spec with:
 `nvim --headless -u NONE -l tests/<name>_spec.lua`
 Exit code 0 and no output means pass; a thrown `error()` prints a traceback
-and exits non-zero. Run the full suite by looping over all eleven files (no
+and exits non-zero. Run the full suite by looping over all twelve files (no
 runner script exists — invoke each individually, e.g.
 `for f in tests/*_spec.lua; do nvim --headless -u NONE -l "$f" || echo "FAIL: $f"; done`).
 When adding a spec for a new compat shim or filetype detector, follow the
@@ -97,6 +98,7 @@ Tests directly `require()`:
 - `lua/plugins/rustaceanvim.lua`
 - `lua/filetypes/goasm.lua`
 - `lua/lsp/jsonls.lua`, `lua/lsp/rust_analyzer.lua`
+- `lua/plugins/conform.lua` (with `conform.nvim` on the runtimepath)
 
 ### External
 - `nvim` binary on `PATH` to run the specs (`nvim --headless -u NONE -l ...`).

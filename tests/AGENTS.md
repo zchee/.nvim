@@ -20,6 +20,7 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 | `goasm_filetype_spec.lua` | `lua/filetypes/goasm.lua` — `detect()` across all three heuristics (Plan 9 header include, Go arch-suffixed filename, sibling `.go` file) plus the plain-`asm` fallback, using real temp files/buffers |
 | `neo_tree_compat_spec.lua` | `lua/plugins/neo_tree_compat.lua` — `is_invalid_win_error`, `get_node_safely` (suppresses a known stale-window `nui` error, rethrows anything else), `hijack_cursor_handler` (moves the cursor to the filename start, no-ops when `neo_tree_source` is unavailable, tolerates the stale-window failure), and `patch_hijack_cursor_module` idempotency |
 | `rust_analyzer_spec.lua` | `lua/lsp/rust_analyzer.lua` — writes a fake executable `rustup` onto a temp `PATH` to verify `cmd` resolves to `{"rustup","run",<toolchain>,"rust-analyzer"}` when `rustup default` succeeds, and falls back to plain `{"rust-analyzer"}` when it fails or prints no toolchain |
+| `rustaceanvim_cargo_config_spec.lua` | `lua/plugins/rustaceanvim.lua` — the dev cargo config wiring: `cargo.configPath` is the absolute `rust/config.dev.toml` under the symlink-resolved `util.xdg_config_home()` (rust-analyzer passes it to every cargo as `--config`, and cargo expands no `~`), stays unset when that file is missing, and is never a path cargo cannot read when `XDG_CONFIG_HOME` is unset or is a real directory rather than a symlink |
 | `snacks_compat_spec.lua` | `lua/plugins/snacks_compat.lua` — `is_treesitter_quickfile_range_error` matcher, `render_quickfile` (Tree-sitter fast path, syntax fallback on start/redraw failure, re-propagates unknown redraw errors after stopping Tree-sitter), and `patch_quickfile_module` (excluded-language and bigfile skip logic) |
 | `treesitter_selection_spec.lua` | Incremental selection module: init/expand/shrink/scope mark transitions on a scratch lua buffer |
 | `ts_context_commentstring_compat_spec.lua` | `lua/plugins/ts_context_commentstring_compat.lua` — `resolve_parser` (nil-safe, suppresses `get_parser` exceptions) and `patch_utils` (`is_treesitter_active` nil-parser guard, idempotency) |
@@ -55,16 +56,18 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
   error; each spec pins the exact error string it patches around
   (`#find(..., 1, true)` substring checks) — if the upstream error message
   changes, the matcher and its spec need to change together.
-- `rust_analyzer_spec.lua` and `goasm_filetype_spec.lua` are the two specs
-  that touch the real filesystem/`PATH` (temp dirs, a fake executable
-  `rustup`) instead of pure fakes — they clean up (`vim.fn.delete(dir,
-  "rf")`, restore `vim.env.PATH`) even on failure via `pcall`.
+- `rust_analyzer_spec.lua`, `goasm_filetype_spec.lua`, and
+  `rustaceanvim_cargo_config_spec.lua` are the specs that touch the real
+  filesystem/environment (temp dirs, a fake executable `rustup`, a symlinked
+  temp `XDG_CONFIG_HOME`) instead of pure fakes — they clean up
+  (`vim.fn.delete(dir, "rf")`, restore `vim.env.PATH`/`vim.env.XDG_CONFIG_HOME`)
+  even on failure via `pcall`.
 
 ### Testing Requirements
 Run any spec with:
 `nvim --headless -u NONE -l tests/<name>_spec.lua`
 Exit code 0 and no output means pass; a thrown `error()` prints a traceback
-and exits non-zero. Run the full suite by looping over all nine files (no
+and exits non-zero. Run the full suite by looping over all ten files (no
 runner script exists — invoke each individually, e.g.
 `for f in tests/*_spec.lua; do nvim --headless -u NONE -l "$f" || echo "FAIL: $f"; done`).
 When adding a spec for a new compat shim or filetype detector, follow the
@@ -90,6 +93,7 @@ Tests directly `require()`:
   `lua/plugins/illuminate_compat.lua`, `lua/plugins/neo_tree_compat.lua`,
   `lua/plugins/snacks_compat.lua`, `lua/plugins/treesitter_compat.lua`,
   `lua/plugins/ts_context_commentstring_compat.lua`
+- `lua/plugins/rustaceanvim.lua`
 - `lua/filetypes/goasm.lua`
 - `lua/lsp/rust_analyzer.lua`
 

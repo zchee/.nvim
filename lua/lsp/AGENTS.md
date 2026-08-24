@@ -84,6 +84,12 @@ table below).
 - LSP keymaps (`K`, `<C-]>`, `<LocalLeader>gr`, `<Leader>e`, etc.) are defined once,
   globally, at the bottom of `init.lua` — do not add per-server keymaps in
   a `<server>.lua` file.
+- `<LocalLeader>f` (manual format) does not pass a literal `lsp_format`:
+  conform only consults a `formatters_by_ft` entry's own `lsp_format` for
+  keys the caller leaves nil, so a literal would discard a pinned `"never"`.
+  It reads that pin back instead, mirroring `format_on_save` in
+  `lua/plugins/conform.lua`. `json5` pins it because `jsonls` has no JSON5
+  mode and rewrites such a buffer as strict JSON.
 - Cross-cutting `on_attach` quirks (bashls/lua_ls early return, dockerls
   capability stripping, tsserver diagnostic filtering, yamlls stopping
   itself inside Helm template directories) live in `init.lua`'s shared

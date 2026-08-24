@@ -566,7 +566,15 @@ vim.keymap.set({ "n" }, "<LocalLeader>ca", function()
   vim.lsp.buf.code_action()
 end, { silent = true, desc = "LSP code action" })
 vim.keymap.set({ "n" }, "<LocalLeader>f", function()
-  require("conform").format({ async = false, lsp_format = "fallback" })
+  local conform = require("conform")
+  -- Mirrors format_on_save in lua/plugins/conform.lua: conform only consults a
+  -- formatters_by_ft entry's own lsp_format for keys the caller leaves nil, so
+  -- passing a literal "fallback" here would discard a pinned "never". json5
+  -- pins it because vscode-json-language-server has no JSON5 mode and rewrites
+  -- such a buffer as strict JSON, so an unavailable oxfmt must format nothing.
+  local ft_opts = conform.formatters_by_ft[vim.bo.filetype]
+  local pinned = type(ft_opts) == "table" and ft_opts.lsp_format or nil
+  conform.format({ async = false, lsp_format = pinned == "never" and "never" or "fallback" })
 end, { silent = true, desc = "Format buffer (conform)" })
 vim.keymap.set({ "n" }, "<LocalLeader>gci", "<Cmd>Trouble lsp_incoming_calls toggle<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<LocalLeader>gco", "<Cmd>Trouble lsp_outgoing_calls toggle<CR>", { silent = true })

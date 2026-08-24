@@ -18,6 +18,7 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 | `conform_taplo_spec.lua` | `lua/plugins/conform.lua` — the taplo formatter wiring: toml maps to taplo, tombi is no longer a formatter, `--config` lands after the `format` subcommand with the stdin args last, and a project's own `.taplo.toml` found by walking upward suppresses `--config` |
 | `copilot_config_spec.lua` | `lua/plugins/copilot.lua` — stubs `package.preload["copilot"]` to capture the config passed to `copilot.setup()`; asserts panel/inline-suggestion UI stay disabled (cmp owns completion UI) and `advanced.inlineSuggestCount`/`advanced.listCount` are positive, in copilot.lua's `settings.advanced` shape (not VS Code's `github.copilot.advanced` shape) |
 | `goasm_filetype_spec.lua` | `lua/filetypes/goasm.lua` — `detect()` across all three heuristics (Plan 9 header include, Go arch-suffixed filename, sibling `.go` file) plus the plain-`asm` fallback, using real temp files/buffers |
+| `jsonls_json5_diagnostics_spec.lua` | `lua/lsp/jsonls.lua` — the json5 diagnostic filter: `textDocument/diagnostic` reports on a `json5` buffer lose the JSON-grammar diagnostics (`ErrorCode` 0x101-0x106 scanner, 0x201-0x210 parser) and keep the schema ones (no code, or below 0x100, or SchemaUnsupportedFeature/SchemaResolveError at 0x300 and above); `json`/`jsonc`/`jsonschema` buffers are never filtered; `unchanged` reports, response errors, and a wiped buffer pass through untouched. Needs `schemastore.nvim` installed, since jsonls.lua requires it at module scope |
 | `neo_tree_compat_spec.lua` | `lua/plugins/neo_tree_compat.lua` — `is_invalid_win_error`, `get_node_safely` (suppresses a known stale-window `nui` error, rethrows anything else), `hijack_cursor_handler` (moves the cursor to the filename start, no-ops when `neo_tree_source` is unavailable, tolerates the stale-window failure), and `patch_hijack_cursor_module` idempotency |
 | `rust_analyzer_spec.lua` | `lua/lsp/rust_analyzer.lua` — writes a fake executable `rustup` onto a temp `PATH` to verify `cmd` resolves to `{"rustup","run",<toolchain>,"rust-analyzer"}` when `rustup default` succeeds, and falls back to plain `{"rust-analyzer"}` when it fails or prints no toolchain |
 | `rustaceanvim_cargo_config_spec.lua` | `lua/plugins/rustaceanvim.lua` — the dev cargo config wiring: `cargo.configPath` is the absolute `rust/config.dev.toml` under the symlink-resolved `util.xdg_config_home()` (rust-analyzer passes it to every cargo as `--config`, and cargo expands no `~`), stays unset when that file is missing, and is never a path cargo cannot read when `XDG_CONFIG_HOME` is unset or is a real directory rather than a symlink |
@@ -67,7 +68,7 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 Run any spec with:
 `nvim --headless -u NONE -l tests/<name>_spec.lua`
 Exit code 0 and no output means pass; a thrown `error()` prints a traceback
-and exits non-zero. Run the full suite by looping over all ten files (no
+and exits non-zero. Run the full suite by looping over all eleven files (no
 runner script exists — invoke each individually, e.g.
 `for f in tests/*_spec.lua; do nvim --headless -u NONE -l "$f" || echo "FAIL: $f"; done`).
 When adding a spec for a new compat shim or filetype detector, follow the
@@ -95,7 +96,7 @@ Tests directly `require()`:
   `lua/plugins/ts_context_commentstring_compat.lua`
 - `lua/plugins/rustaceanvim.lua`
 - `lua/filetypes/goasm.lua`
-- `lua/lsp/rust_analyzer.lua`
+- `lua/lsp/jsonls.lua`, `lua/lsp/rust_analyzer.lua`
 
 ### External
 - `nvim` binary on `PATH` to run the specs (`nvim --headless -u NONE -l ...`).

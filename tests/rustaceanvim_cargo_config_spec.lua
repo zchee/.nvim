@@ -106,3 +106,46 @@ do
 
   vim.fn.delete(root, "rf")
 end
+
+do
+  -- The analysis target-dir, which reads as redundant beside a configPath that
+  -- already names one and has been deleted on that reasoning before. Deleting
+  -- it is silent and costly: an environment variable beats a --config value, so
+  -- dropping it moves analysis into the shell's own build directory, cargo
+  -- locks a build directory exclusively, and checkOnSave keeps clippy running
+  -- most of the time -- so the two start waiting on each other.
+  local ok, cargo = pcall(cargo_settings, original_config_home)
+  assert(ok, cargo)
+
+  local target_dir = cargo.extraEnv.CARGO_TARGET_DIR
+  assert(
+    type(target_dir) == "string" and target_dir ~= "",
+    "CARGO_TARGET_DIR has to stay set, or analysis shares the shell's build lock"
+  )
+
+  -- An absolute path is only worth handing cargo when its parent really exists;
+  -- otherwise cargo materialises a directory under an absent mount point, once
+  -- per analysed crate.
+  if vim.startswith(target_dir, "/") then
+    local parent = vim.fs.dirname(target_dir)
+    local stat = vim.uv.fs_stat(parent)
+    assert(
+      stat ~= nil and stat.type == "directory",
+      string.format("CARGO_TARGET_DIR %s is absolute, so %s has to exist", target_dir, parent)
+    )
+  end
+
+  -- And whatever it is, it is not the directory the dev config hands the shell.
+  if cargo.configPath ~= nil then
+    local shell_target = nil
+    for _, line in ipairs(vim.fn.readfile(cargo.configPath)) do
+      shell_target = shell_target or line:match('^%s*target%-dir%s*=%s*"([^"]+)"')
+    end
+    if shell_target ~= nil then
+      assert(
+        vim.fs.normalize(target_dir) ~= vim.fs.normalize(shell_target),
+        string.format("analysis must not share the shell's target-dir (%s)", shell_target)
+      )
+    end
+  end
+end

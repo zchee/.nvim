@@ -39,7 +39,7 @@ table below).
 | `grammarly_lsp.lua` | No cmd field; markdown ft; hardcoded personal clientId. NOT registered. |
 | `graphql.lua` | graphql-lsp via mason-core.path (not util helper). NOT registered. |
 | `helm_ls.lua` | cmd = vim.fn.exepath("helm_ls") (bare, deviates from util convention); autostart=false. Registered. |
-| `jsonls.lua` | vscode-json-language-server via util.bun_prefix; schemastore.nvim + trustedDomains allowlist; a `textDocument/diagnostic` handler drops the JSON-grammar diagnostics on `json5` buffers (the server relaxes its validation only for the literal languageId `jsonc`, so json5 is validated as strict JSON) while keeping the schema ones. Registered. |
+| `jsonls.lua` | vscode-json-language-server via util.bun_prefix; schemastore.nvim + trustedDomains allowlist; a `textDocument/diagnostic` handler drops the JSON-grammar diagnostics on `json5` buffers (the server relaxes its validation only for the literal languageId `jsonc`, so json5 is validated as strict JSON) while keeping the schema ones; `<C-]>` on a `$ref` is bound buffer-locally on `LspAttach` and resolves the JSON Pointer through `textDocument/documentLink` (the server exposes no `definitionProvider` at all), parsing the VS Code `#line,column` target fragment back into a position and falling back to the global definition picker anywhere else. Registered. |
 | `lua_ls.lua` | lua-language-server via util.homebrew_binary; workspace.library via util.src_path(LLS-Addons). Registered. |
 | `metals.lua` | metals via util.homebrew_binary; hardcodes Java 8 temurin javaHome, sbt/gradle/maven. NOT registered. |
 | `neocmake.lua` | neocmakelsp via util.homebrew_binary; cmake ft; typo `rotoot_markers` vs `root_markers`. Registered. |
@@ -83,7 +83,14 @@ table below).
   need to override what differs.
 - LSP keymaps (`K`, `<C-]>`, `<LocalLeader>gr`, `<Leader>e`, etc.) are defined once,
   globally, at the bottom of `init.lua` — do not add per-server keymaps in
-  a `<server>.lua` file.
+  a `<server>.lua` file. `jsonls.lua` is the single exception, and only
+  because the difference is in the protocol rather than in taste: the server
+  answers no `textDocument/definition`, so on a JSON buffer `<C-]>` can be
+  served only by `textDocument/documentLink`. It is bound on `LspAttach`
+  rather than in an `on_attach`, since configs resolve through
+  `vim.tbl_deep_extend("force", config["*"], ...)`, which replaces a function
+  instead of merging it and would drop the shared `on_attach` — the same
+  reason `lua/plugins/rustaceanvim.lua` binds its Rust keymaps that way.
 - `<LocalLeader>f` (manual format) does not pass a literal `lsp_format`:
   conform only consults a `formatters_by_ft` entry's own `lsp_format` for
   keys the caller leaves nil, so a literal would discard a pinned `"never"`.

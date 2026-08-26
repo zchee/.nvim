@@ -430,7 +430,7 @@ return {
       -- package pattern, and the load failed silently: every completion in
       -- go/src came back empty. Only visible once before_init actually ran.
       gopls.buildFlags = {
-        "-tags=goexperiment.simd,goexperiment.,runtimesecret",
+        "-tags=goexperiment.simd,goexperiment.runtimesecret",
       }
     end
   end,

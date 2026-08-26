@@ -38,7 +38,7 @@ metafrastis.setup({
       suffix = "[echo]",
     },
     deepl = {
-      api_key = vim.env.DEEPL_AUTH_KEY,
+      api_key = vim.env.ZCHEE_DEEPL_API_KEY,
       base_url = "https://api.deepl.com/v2/translate",
       price_per_million_chars = 25.0,
     },

@@ -291,12 +291,12 @@ local default_capabilities_config = function()
   -- already starts from make_client_capabilities())
   capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
 
-  -- if capabilities.workspace then
-  --   capabilities.workspace.didChangeWatchedFiles = {
-  --     dynamicRegistration = true,
-  --     relativePatternSupport = true,
-  --   }
-  -- end
+  -- Neovim already advertises workspace.didChangeWatchedFiles with both
+  -- dynamicRegistration and relativePatternSupport, and the blink.cmp merge
+  -- above leaves them alone -- read back from the resolved markdown_oxide
+  -- client, the one server here whose upstream docs demand dynamic
+  -- registration (it watches the vault, and its create-unresolved-file code
+  -- action depends on the watcher). Nothing left to force.
 
   ---@type lsp.ClientCapabilities
   local capabilities_override = {

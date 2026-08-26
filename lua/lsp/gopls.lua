@@ -187,239 +187,250 @@ return {
   -- },
 
   settings = {
-    env = {
-      GOMEMLIMIT = "2GiB",
+    gopls = {
+      env = {
+        GOMEMLIMIT = "2GiB",
+      },
+      -- buildFlags = {},
+      directoryFilters = {
+        "-**/asm", -- mmcloughlin/avo
+        -- "-**/example",
+        -- "-**/examples",
+        -- "-**/sample",
+        -- "-**/samples",
+        "-**/kokoro", -- Google kokoro
+        "-**/node_modules", -- Node.js
+        "-external_jsonlib_test", -- bytedance/sonic
+        "-fuzz", -- bytedance/sonic
+        "-generic_test", -- bytedance/sonic
+      },
+      workspaceFiles = {}, -- NOTE(zchee): This setting need only be customized in environments with a custom GOPACKAGESDRIVER
+      completionDocumentation = true,
+      usePlaceholders = true,
+      deepCompletion = true,
+      completeUnimported = true,
+      completionBudget = "100ms", -- default: "100ms", "10ms"
+      matcher = "CaseSensitive", -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
+      symbolMatcher = "CaseSensitive", -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
+      symbolStyle = "Dynamic", -- "Package", "Full", "Dynamic"
+      symbolScope = "workspace", -- "workspace", "all",
+      hoverKind = "FullDocumentation", -- "SingleLine", "NoDocumentation", "SynopsisDocumentation", "FullDocumentation", "Structured"
+      linkTarget = "pkg.go.dev", -- default: "pkg.go.dev",
+      linksInHover = "gopls", -- true, false, "gopls"
+      importShortcut = "Definition", -- "Both", "Link", "Definition"
+      -- golang.org/x/tools/gopls/internal/settings.DefaultAnalyzers
+      analyses = {
+        appends = true,
+        asmdecl = true,
+        assign = true,
+        atomic = true,
+        atomicalign = true,
+        bools = true,
+        buildtag = true,
+        cgocall = true,
+        composite = true,
+        copylock = true,
+        deepequalerrors = true,
+        defers = true,
+        deprecated = false,
+        directive = true,
+        embeddirective = true,
+        errorsas = true,
+        fieldalignment = false,
+        fillreturns = true,
+        framepointer = true,
+        hostport = true,
+        httpresponse = true,
+        ifaceassert = true,
+        infertypeargs = true,
+        loopclosure = true,
+        lostcancel = true,
+        modernize = true,
+        nilfunc = true,
+        nilness = true,
+        nonewvars = true,
+        noresultvalues = true,
+        printf = true,
+        shadow = false,
+        shift = true,
+        sigchanyzer = true,
+        simplifycompositelit = true,
+        simplifyrange = true,
+        simplifyslice = true,
+        slog = true,
+        sortslice = true,
+        stdmethods = true,
+        stdversion = true,
+        stringintconv = true,
+        structtag = true,
+        testinggoroutine = true,
+        tests = true,
+        timeformat = true,
+        unmarshal = true,
+        unreachable = true,
+        unsafeptr = true,
+        unusedfunc = true,
+        unusedparams = true,
+        unusedresult = true,
+        unusedvariable = true,
+        unusedwrite = true,
+        waitgroup = true,
+        yield = true,
+        -- NOTE(zchee): those analyzer is not safe to enable by default
+        appendclipped = true,
+        slicesdelete = true,
+        -- staticcheck: https://staticcheck.dev/docs/checks
+        QF1008 = false, -- Omit embedded fields from selector expression
+        --- non-default
+        SA9003 = false, -- Empty body in an if or else branch
+        ST1000 = false, -- Incorrect or missing package comment
+        ST1003 = true, -- Poorly chosen identifier
+        ST1016 = true, -- Use consistent method receiver names
+        ST1020 = true, -- The documentation of an exported function should start with the function’s name
+        ST1021 = true, -- The documentation of an exported type should start with type’s name
+        ST1022 = true, -- The documentation of an exported variable or constant should start with variable’s name
+        ST1023 = true, -- Redundant type in variable declaration
+      },
+      -- golang.org/x/tools/gopls/internal/settings.InlayHint
+      hints = {
+        parameterNames = true,
+        assignVariableTypes = true,
+        constantValues = true,
+        rangeVariableTypes = true,
+        compositeLiteralTypes = true,
+        compositeLiteralFields = true,
+        functionTypeParameters = true,
+        ignoredError = true,
+      },
+      annotations = {
+        -- golang.org/x/tools/gopls/internal/settings.Annotation
+        ["nil"] = true,
+        escape = true,
+        inline = true,
+        bounds = true,
+      },
+      vulncheck = "Imports", -- "Prompt", "Imports", "Off"
+      -- golang.org/x/tools/gopls/internal/golang/compileropt.CodeLensSource
+      codelenses = {
+        generate = true,
+        regenerate_cgo = true,
+        vulncheck = true,
+        test = true,
+        tidy = true,
+        upgrade_dependency = true,
+        vendor = true,
+      },
+      staticcheck = true,
+      ["local"] = "", -- NOTE(zchee): set dinamically
+      maxFileCacheBytes = 1e9,
+      verboseOutput = false,
+      verboseWorkDoneProgress = false,
+      showBugReports = false,
+      gofumpt = true,
+      completeFunctionCalls = true,
+      semanticTokens = true,
+      -- golang.org/x/tools/gopls/internal/protocol/semtok.Type
+      semanticTokenTypes = {
+        comment = true,
+        ["function"] = true,
+        keyword = true,
+        label = true,
+        macro = true,
+        method = true,
+        namespace = true,
+        number = true,
+        operator = true,
+        parameter = true,
+        property = true,
+        string = true,
+        type = true,
+        typeParameter = true,
+        variable = true,
+      },
+      -- golang.org/x/tools/gopls/internal/protocol/semtok.Modifier
+      semanticTokenModifiers = {
+        defaultLibrary = true,
+        definition = true,
+        readonly = true,
+        static = true,
+        -- non-standard modifiers
+        array = true,
+        bool = true,
+        chan = true,
+        format = true,
+        interface = true,
+        map = true,
+        number = true,
+        pointer = true,
+        signature = true,
+        slice = true,
+        string = true,
+        struct = true,
+        shadowing = true,
+      },
+      newGoFileHeader = true,
+      expandWorkspaceToModule = true,
+      experimentalPostfixCompletions = true,
+      templateExtensions = { "tmpl", "tpl", "gotmpl" },
+      diagnosticsDelay = "1s", -- default: "1s", "100ms"
+      diagnosticsTrigger = "Edit", -- "Edit", "Save",
+      analysisProgressReporting = true,
+      standaloneTags = {
+        "ignore", -- default
+        "bench",
+        "tools",
+        "integration",
+        "wireinject",
+      },
+      subdirWatchPatterns = "auto", -- "on", "off", "auto"
+      reportAnalysisProgressAfter = "5s", -- default: "5s", "1000ms"
+      telemetryPrompt = true,
+      linkifyShowMessage = false,
+      includeReplaceInWorkspace = false,
+      zeroConfig = true,
+      pullDiagnostics = true,
+      mcpTools = vim.empty_dict(),
+      renameMovesSubpackages = true,
+      fileWatcher = "fsnotify", -- "off", "fsnotify", "poll"
+      moveType = true,
+      moveDeclaration = true,
+      testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
     },
-    -- buildFlags = {},
-    directoryFilters = {
-      "-**/asm", -- mmcloughlin/avo
-      -- "-**/example",
-      -- "-**/examples",
-      -- "-**/sample",
-      -- "-**/samples",
-      "-**/kokoro", -- Google kokoro
-      "-**/node_modules", -- Node.js
-      "-external_jsonlib_test", -- bytedance/sonic
-      "-fuzz", -- bytedance/sonic
-      "-generic_test", -- bytedance/sonic
-    },
-    workspaceFiles = {}, -- NOTE(zchee): This setting need only be customized in environments with a custom GOPACKAGESDRIVER
-    completionDocumentation = true,
-    usePlaceholders = true,
-    deepCompletion = true,
-    completeUnimported = true,
-    completionBudget = "100ms", -- default: "100ms", "10ms"
-    matcher = "CaseSensitive", -- "Fuzzy", "CaseInsensitive", "CaseSensitive"
-    symbolMatcher = "CaseSensitive", -- "Fuzzy", "FastFuzzy", "CaseInsensitive", "CaseSensitive"
-    symbolStyle = "Dynamic", -- "Package", "Full", "Dynamic"
-    symbolScope = "workspace", -- "workspace", "all",
-    hoverKind = "FullDocumentation", -- "SingleLine", "NoDocumentation", "SynopsisDocumentation", "FullDocumentation", "Structured"
-    linkTarget = "pkg.go.dev", -- default: "pkg.go.dev",
-    linksInHover = "gopls", -- true, false, "gopls"
-    importShortcut = "Definition", -- "Both", "Link", "Definition"
-    -- golang.org/x/tools/gopls/internal/settings.DefaultAnalyzers
-    analyses = {
-      appends = true,
-      asmdecl = true,
-      assign = true,
-      atomic = true,
-      atomicalign = true,
-      bools = true,
-      buildtag = true,
-      cgocall = true,
-      composite = true,
-      copylock = true,
-      deepequalerrors = true,
-      defers = true,
-      deprecated = false,
-      directive = true,
-      embeddirective = true,
-      errorsas = true,
-      fieldalignment = false,
-      fillreturns = true,
-      framepointer = true,
-      hostport = true,
-      httpresponse = true,
-      ifaceassert = true,
-      infertypeargs = true,
-      loopclosure = true,
-      lostcancel = true,
-      modernize = true,
-      nilfunc = true,
-      nilness = true,
-      nonewvars = true,
-      noresultvalues = true,
-      printf = true,
-      shadow = false,
-      shift = true,
-      sigchanyzer = true,
-      simplifycompositelit = true,
-      simplifyrange = true,
-      simplifyslice = true,
-      slog = true,
-      sortslice = true,
-      stdmethods = true,
-      stdversion = true,
-      stringintconv = true,
-      structtag = true,
-      testinggoroutine = true,
-      tests = true,
-      timeformat = true,
-      unmarshal = true,
-      unreachable = true,
-      unsafeptr = true,
-      unusedfunc = true,
-      unusedparams = true,
-      unusedresult = true,
-      unusedvariable = true,
-      unusedwrite = true,
-      waitgroup = true,
-      yield = true,
-      -- NOTE(zchee): those analyzer is not safe to enable by default
-      appendclipped = true,
-      slicesdelete = true,
-      -- staticcheck: https://staticcheck.dev/docs/checks
-      QF1008 = false, -- Omit embedded fields from selector expression
-      --- non-default
-      SA9003 = false, -- Empty body in an if or else branch
-      ST1000 = false, -- Incorrect or missing package comment
-      ST1003 = true, -- Poorly chosen identifier
-      ST1016 = true, -- Use consistent method receiver names
-      ST1020 = true, -- The documentation of an exported function should start with the function’s name
-      ST1021 = true, -- The documentation of an exported type should start with type’s name
-      ST1022 = true, -- The documentation of an exported variable or constant should start with variable’s name
-      ST1023 = true, -- Redundant type in variable declaration
-    },
-    -- golang.org/x/tools/gopls/internal/settings.InlayHint
-    hints = {
-      parameterNames = true,
-      assignVariableTypes = true,
-      constantValues = true,
-      rangeVariableTypes = true,
-      compositeLiteralTypes = true,
-      compositeLiteralFields = true,
-      functionTypeParameters = true,
-      ignoredError = true,
-    },
-    annotations = {
-      -- golang.org/x/tools/gopls/internal/settings.Annotation
-      ["nil"] = true,
-      escape = true,
-      inline = true,
-      bounds = true,
-    },
-    vulncheck = "Imports", -- "Prompt", "Imports", "Off"
-    -- golang.org/x/tools/gopls/internal/golang/compileropt.CodeLensSource
-    codelenses = {
-      generate = true,
-      regenerate_cgo = true,
-      vulncheck = true,
-      test = true,
-      tidy = true,
-      upgrade_dependency = true,
-      vendor = true,
-    },
-    staticcheck = true,
-    ["local"] = "", -- NOTE(zchee): set dinamically
-    maxFileCacheBytes = 1e9,
-    verboseOutput = false,
-    verboseWorkDoneProgress = false,
-    showBugReports = false,
-    gofumpt = true,
-    completeFunctionCalls = true,
-    semanticTokens = true,
-    -- golang.org/x/tools/gopls/internal/protocol/semtok.Type
-    semanticTokenTypes = {
-      comment = true,
-      ["function"] = true,
-      keyword = true,
-      label = true,
-      macro = true,
-      method = true,
-      namespace = true,
-      number = true,
-      operator = true,
-      parameter = true,
-      property = true,
-      string = true,
-      type = true,
-      typeParameter = true,
-      variable = true,
-    },
-    -- golang.org/x/tools/gopls/internal/protocol/semtok.Modifier
-    semanticTokenModifiers = {
-      defaultLibrary = true,
-      definition = true,
-      readonly = true,
-      static = true,
-      -- non-standard modifiers
-      array = true,
-      bool = true,
-      chan = true,
-      format = true,
-      interface = true,
-      map = true,
-      number = true,
-      pointer = true,
-      signature = true,
-      slice = true,
-      string = true,
-      struct = true,
-      shadowing = true,
-    },
-    newGoFileHeader = true,
-    expandWorkspaceToModule = true,
-    experimentalPostfixCompletions = true,
-    templateExtensions = { "tmpl", "tpl", "gotmpl" },
-    diagnosticsDelay = "1s", -- default: "1s", "100ms"
-    diagnosticsTrigger = "Edit", -- "Edit", "Save",
-    analysisProgressReporting = true,
-    standaloneTags = {
-      "ignore", -- default
-      "bench",
-      "tools",
-      "integration",
-      "wireinject",
-    },
-    subdirWatchPatterns = "auto", -- "on", "off", "auto"
-    reportAnalysisProgressAfter = "5s", -- default: "5s", "1000ms"
-    telemetryPrompt = true,
-    linkifyShowMessage = false,
-    includeReplaceInWorkspace = false,
-    zeroConfig = true,
-    pullDiagnostics = true,
-    mcpTools = vim.empty_dict(),
-    renameMovesSubpackages = true,
-    fileWatcher = "fsnotify", -- "off", "fsnotify", "poll"
-    moveType = true,
-    moveDeclaration = true,
-    testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
   },
 
-  on_new_config = function(new_config, new_root_dir)
-    if is_goos_linux(new_root_dir) then
-      new_config.settings.env = {
-        GOOS = { "linux" },
-      }
+  -- Port of what used to be on_new_config: that hook is an lspconfig concept
+  -- and native vim.lsp.config never calls it, so the per-root overrides below
+  -- had stopped running. before_init is the equivalent seam -- it fires just
+  -- before the initialize request, config.root_dir is already resolved by
+  -- then, and vim.lsp deepcopies the config per client start, so these
+  -- mutations stay scoped to this root instead of leaking into the next Go
+  -- project opened in the same session.
+  --
+  -- gopls types `env` as map[string]string, so each value is a plain string,
+  -- not the single-element list the old hook passed. Assigning into the
+  -- existing table also keeps GOMEMLIMIT, which the old whole-table
+  -- replacement dropped.
+  ---@param config vim.lsp.ClientConfig
+  before_init = function(_, config)
+    local root = config.root_dir
+    if not root then
+      return
     end
 
-    if string.find(new_root_dir, "go/src") then
-      new_config.settings.env = {
-        GOEXPERIMENTAL = {
-          "loopvar,newinliner,jsonv2,greenteagc,randomizedheapbase64,sizespecializedmalloc,goroutineleakprofile,runtimefreegc,simd,runtimesecret",
-        },
-      }
-      new_config.settings.buildFlags = {
-        "goexperiment.loopvar",
-        "goexperiment.newinliner",
-        "goexperiment.jsonv2",
-        "goexperiment.greenteagc",
-        "goexperiment.randomizedheapbase64",
-        "goexperiment.sizespecializedmalloc",
-        "goexperiment.goroutineleakprofile",
-        "goexperiment.runtimefreegc",
-        "goexperiment.simd",
-        "goexperiment.runtimesecret",
+    local gopls = config.settings.gopls
+
+    if is_goos_linux(root) then
+      gopls.env.GOOS = "linux"
+    end
+
+    if string.find(root, "go/src") then
+      gopls.env.GOEXPERIMENT = "simd,runtimesecret"
+      -- buildFlags reaches `go list` verbatim, so the tags have to arrive as
+      -- one -tags= flag. Listing them bare made go list read each name as a
+      -- package pattern, and the load failed silently: every completion in
+      -- go/src came back empty. Only visible once before_init actually ran.
+      gopls.buildFlags = {
+        "-tags=goexperiment.simd,goexperiment.,runtimesecret",
       }
     end
   end,

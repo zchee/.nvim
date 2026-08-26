@@ -99,7 +99,7 @@ end
 return {
   -- cmd = { util.go_path("bin", "gopls"), "serve" },
   cmd = { util.go_path("bin", "gopls"), "-remote=unix;/tmp/gopls.sock", "serve" },
-  filetypes = { "go", "gotmpl", "gomod", "gowork" },
+  filetypes = { "go", "gotmpl", "gomod", "gowork", "goasm" },
   root_dir = function(bufnr, on_dir)
     local fname = vim.api.nvim_buf_get_name(bufnr)
     get_mod_cache_dir()

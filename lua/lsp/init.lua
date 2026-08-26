@@ -500,8 +500,13 @@ vim.lsp.config("*", {
 -- https://github.com/neovim/nvim-lspconfig/tree/master/lsp
 -- ["buf_ls"] = require("lsp.buf_ls"),
 -- ["emmylua_ls"] = require("lsp.emmylua_ls"),
--- ["markdown_oxide"] = {},
 -- ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") } },
+--   marksman stays out: it skips git-ignored files, so the agent memory
+--   trees under the git-ignored claude/projects/ are invisible to it, and
+--   rooted at that repository .git it spends 50s indexing before answering
+--   nothing. markdown_oxide below covers the same links. Its edge -- broken
+--   link diagnostics plus a "Create `file.md`" code action -- only pays off
+--   on tracked documentation trees.
 -- ["pyright"] = require("lsp.pyright"),
 -- ["rust_analyzer"] = require("lsp.rust_analyzer"), -- rustaceanvim owns the rust-analyzer client (see lua/plugins/init.lua). Enabling this as well attaches a second rust-analyzer to every Rust buffer.
 -- ["tilt_ls"] = require("lsp.tilt_ls"),
@@ -517,6 +522,7 @@ local servers = {
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
+  ["markdown_oxide"] = require("lsp.markdown_oxide"),
   ["neocmake"] = require("lsp.neocmake"),
   ["basedpyright"] = require("lsp.basedpyright"),
   ["protols"] = require("lsp.protols"),

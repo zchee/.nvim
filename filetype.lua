@@ -21,6 +21,7 @@ vim.filetype.add({
     alfredappearance = "json",
     apinotes = "yaml",
     asm = "nasm",
+    bash = "bash",
     bttpreset = "json",
     cnf = "ini",
     conf = "conf",

@@ -245,7 +245,16 @@ return {
   end,
   formatters = {
     clang_format = {
-      prepend_args = { "-style=file:/Users/zchee/.config/llvm/.clang-format" },
+      -- -style=file:<path> does not fall back the way a bare -style=file does:
+      -- given a path it cannot read, clang-format exits 1 with empty stdout
+      -- (measured), so conform reports a failed format instead of formatting.
+      -- Passing no -style at all leaves it searching upward for .clang-format
+      -- on its own, which is the better answer whenever this file is absent --
+      -- another machine, or a checkout without the dotfiles tree.
+      prepend_args = function()
+        local path = vim.fs.joinpath(util.xdg_config_home(), "llvm/.clang-format")
+        return vim.uv.fs_stat(path) and { "-style=file:" .. path } or {}
+      end,
     },
     -- Runs the server's source.organizeImports as a formatter, restoring the
     -- one thing the retired LspCodeActionFormat autocmd did that no CLI here

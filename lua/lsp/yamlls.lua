@@ -23,7 +23,7 @@ return {
       disableDefaultProperties = false,
       disableAdditionalProperties = false,
       suggest = {
-        parentSkeletonSelectedFirst = true,
+        parentSkeletonSelectedFirst = false,
       },
       style = {
         flowMapping = "allow", -- "allow" | "forbid"

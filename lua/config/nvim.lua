@@ -309,6 +309,15 @@ vim.g.perl_no_sync_on_sub = 0
 vim.g.perl_no_sync_on_global_var = 0
 vim.g.perl_sync_dist = 100
 
+-- Markdown:
+-- $VIMRUNTIME/ftplugin/markdown.vim sets `expandtab tabstop=4 softtabstop=4
+-- shiftwidth=4` buffer-locally, so the global shiftwidth=2 above is the one
+-- setting that never reaches a markdown buffer. That 4 is the recommended
+-- style inherited from Gruber's 2004 Markdown, not a CommonMark requirement:
+-- CommonMark nests a list at the parent item's content offset (2 columns for
+-- `- `), and 4 columns past it opens an indented code block instead.
+vim.g.markdown_recommended_style = 0
+
 vim.g.markdown_fenced_languages = {
   "c",
   "console=sh",

@@ -150,7 +150,13 @@ vim.filetype.add({
     ["/private/etc/sudoers.d/.*"] = "sudoers",
     ["[Dd]ockerfile.*[^.vim|^.lua]"] = "dockerfile",
     ["~/Library/Application Support/Code - Insiders/User/keybindings.json"] = "json5",
-    [joinpath(cache_home, "go/go-build/**")] = "go",
+    -- vim.filetype.add matches `pattern` keys as Lua patterns, not globs, and
+    -- an unescaped one here matched nothing: `-` is the lazy quantifier, so
+    -- "go-build" stood for "gbuild"/"gobuild" and never the real directory,
+    -- while `**` is not a wildcard at all. vim.pesc escapes the whole prefix,
+    -- the `.` of .cache included; the match is unanchored, so `/.*` is what
+    -- carries the "everything under here" the `**` was reaching for.
+    [vim.pesc(joinpath(cache_home, "go", "go-build")) .. "/.*"] = "go",
     [".*README.(%a+)"] = function(_, _, ext)
       util.switch(ext)({
         ["md"] = function()

@@ -18,6 +18,7 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 | `conform_oxfmt_json5_spec.lua` | `lua/plugins/conform.lua` — the json5 formatter wiring: `formatters_by_ft.json5` is oxfmt alone with `lsp_format = "never"`, the oxfmt `args` always pass a `--config` (project `.oxfmtrc.*` found upward, else the personal one under `XDG_CONFIG_HOME`) and a `--stdin-filepath` oxfmt can infer a dialect from (`.json`/`.json5`/`.jsonc` pass through case-insensitively, an extensionless `.renovaterc` gains `.json5`), and `format_on_save` returns `never` for json5 while everything else keeps `fallback`. Needs `conform.nvim` installed |
 | `conform_taplo_spec.lua` | `lua/plugins/conform.lua` — the taplo formatter wiring: toml maps to taplo, tombi is no longer a formatter, `--config` lands after the `format` subcommand with the stdin args last, and a project's own `.taplo.toml` found by walking upward suppresses `--config` |
 | `copilot_config_spec.lua` | `lua/plugins/copilot.lua` — stubs `package.preload["copilot"]` to capture the config passed to `copilot.setup()`; asserts panel/inline-suggestion UI stay disabled (cmp owns completion UI) and `advanced.inlineSuggestCount`/`advanced.listCount` are positive, in copilot.lua's `settings.advanced` shape (not VS Code's `github.copilot.advanced` shape) |
+| `go_build_cache_filetype_spec.lua` | `filetype.lua` — the Go build-cache pattern: an object under `<XDG_CACHE_HOME>/go/go-build/` is detected as Go source, while `go/gobuild/` and `go/other/` are not. `vim.filetype.add` reads `pattern` keys as Lua patterns, so the glob spelling this entry started with matched nothing at all (`-` is the lazy quantifier, `**` is not a wildcard) and failed silently; the two near-miss assertions are what stop an unescaped rewrite from passing. Reloads `filetype.lua` against a temp `XDG_CACHE_HOME` |
 | `goasm_filetype_spec.lua` | `lua/filetypes/goasm.lua` — `detect()` across all three heuristics (Plan 9 header include, Go arch-suffixed filename, sibling `.go` file) plus the plain-`asm` fallback, using real temp files/buffers |
 | `jsonls_json5_diagnostics_spec.lua` | `lua/lsp/jsonls.lua` — the json5 diagnostic filter: `textDocument/diagnostic` reports on a `json5` buffer lose the JSON-grammar diagnostics (`ErrorCode` 0x101-0x106 scanner, 0x201-0x210 parser) and keep the schema ones (no code, or below 0x100, or SchemaUnsupportedFeature/SchemaResolveError at 0x300 and above); `json`/`jsonc`/`jsonschema` buffers are never filtered; `unchanged` reports, response errors, and a wiped buffer pass through untouched. Needs `schemastore.nvim` installed, since jsonls.lua requires it at module scope |
 | `jsonls_ref_definition_spec.lua` | `lua/lsp/jsonls.lua` — the `$ref` jump: `LspAttach` binds `<C-]>` buffer-locally for `jsonls` and for no other client, a cursor inside a `"$ref"` pointer resolves through `textDocument/documentLink` (never `textDocument/definition`, which this server does not implement) and lands on the target's *value* node via the 1-indexed `#line,column` fragment, and a cursor outside every link falls back to the definition picker without moving. Needs `schemastore.nvim` installed, since jsonls.lua requires it at module scope |
@@ -60,18 +61,23 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
   error; each spec pins the exact error string it patches around
   (`#find(..., 1, true)` substring checks) — if the upstream error message
   changes, the matcher and its spec need to change together.
-- `rust_analyzer_spec.lua`, `goasm_filetype_spec.lua`, and
-  `rustaceanvim_cargo_config_spec.lua` are the specs that touch the real
+- `rust_analyzer_spec.lua`, `goasm_filetype_spec.lua`,
+  `rustaceanvim_cargo_config_spec.lua`, and
+  `go_build_cache_filetype_spec.lua` are the specs that touch the real
   filesystem/environment (temp dirs, a fake executable `rustup`, a symlinked
-  temp `XDG_CONFIG_HOME`) instead of pure fakes — they clean up
-  (`vim.fn.delete(dir, "rf")`, restore `vim.env.PATH`/`vim.env.XDG_CONFIG_HOME`)
-  even on failure via `pcall`.
+  temp `XDG_CONFIG_HOME`, a temp `XDG_CACHE_HOME`) instead of pure fakes — they
+  clean up (`vim.fn.delete(dir, "rf")`, restore
+  `vim.env.PATH`/`vim.env.XDG_CONFIG_HOME`/`vim.env.XDG_CACHE_HOME`) even on
+  failure via `pcall`. Both specs that build a path from a temp directory
+  resolve it through `vim.uv.fs_realpath` first: `util.xdg_*_home()` resolves
+  symlinks, and on macOS `tempname()` sits under `/var`, itself a link to
+  `/private/var`.
 
 ### Testing Requirements
 Run any spec with:
 `nvim --headless -u NONE -l tests/<name>_spec.lua`
 Exit code 0 and no output means pass; a thrown `error()` prints a traceback
-and exits non-zero. Run the full suite by looping over all twelve files (no
+and exits non-zero. Run the full suite by looping over all fifteen files (no
 runner script exists — invoke each individually, e.g.
 `for f in tests/*_spec.lua; do nvim --headless -u NONE -l "$f" || echo "FAIL: $f"; done`).
 When adding a spec for a new compat shim or filetype detector, follow the
@@ -101,6 +107,10 @@ Tests directly `require()`:
 - `lua/filetypes/goasm.lua`
 - `lua/lsp/jsonls.lua`, `lua/lsp/rust_analyzer.lua`
 - `lua/plugins/conform.lua` (with `conform.nvim` on the runtimepath)
+
+`go_build_cache_filetype_spec.lua` instead `dofile`s the repo-root
+`filetype.lua`, which pulls in `lua/util/init.lua` and `lua/filetypes/goasm.lua`
+as a side effect.
 
 ### External
 - `nvim` binary on `PATH` to run the specs (`nvim --headless -u NONE -l ...`).

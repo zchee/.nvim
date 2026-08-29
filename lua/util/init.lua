@@ -139,32 +139,57 @@ function M.readlink(path)
   return vim.uv.fs_readlink(path) or ""
 end
 
---- Return XDG_CACHE_HOME env path wihth symbolic link resolved
+--- Return the XDG base directory `varname` names, symbolic links resolved.
+---
+--- fs_realpath, not fs_readlink: readlink answers only for a path that is
+--- itself a symlink and nil for anything else, so on a machine where only
+--- ~/.config is a link -- ~/.cache real, ~/.local/{share,state} reached
+--- through a linked ~/.local -- three of the four callers below collapsed to
+--- "". vim.fs.joinpath drops that empty leading segment, which turned every
+--- built path relative: the go-build filetype pattern never matched again.
+---
+--- Falls back to the XDG default under $HOME when the variable is unset, and
+--- to the unresolved path when it does not exist yet, so the answer is always
+--- absolute. It may still name a path that is not there -- callers handing it
+--- to a tool that hard-errors on an unreadable path must stat it first.
+---
+---@param varname string
+---@param default string relative to $HOME, per the XDG base directory spec
+---@return string
+local function xdg_home(varname, default)
+  local dir = os.getenv(varname)
+  if dir == nil or dir == "" then
+    dir = vim.fs.joinpath(vim.uv.os_homedir(), default)
+  end
+  return vim.uv.fs_realpath(dir) or dir
+end
+
+--- Return XDG_CACHE_HOME env path with symbolic links resolved.
 ---
 ---@return string
 function M.xdg_cache_home()
-  return tostring(M.readlink(tostring(os.getenv("XDG_CACHE_HOME"))))
+  return xdg_home("XDG_CACHE_HOME", ".cache")
 end
 
---- Return XDG_CONFIG_HOME env path wihth symbolic link resolved
+--- Return XDG_CONFIG_HOME env path with symbolic links resolved.
 ---
 ---@return string
 function M.xdg_config_home()
-  return tostring(M.readlink(tostring(os.getenv("XDG_CONFIG_HOME"))))
+  return xdg_home("XDG_CONFIG_HOME", ".config")
 end
 
---- Return XDG_DATA_HOME env path wihth symbolic link resolved
+--- Return XDG_DATA_HOME env path with symbolic links resolved.
 ---
 ---@return string
 function M.xdg_data_home()
-  return tostring(M.readlink(tostring(os.getenv("XDG_DATA_HOME"))))
+  return xdg_home("XDG_DATA_HOME", ".local/share")
 end
 
---- Return XDG_STATE_HOME env path wihth symbolic link resolved
+--- Return XDG_STATE_HOME env path with symbolic links resolved.
 ---
 ---@return string
 function M.xdg_state_home()
-  return tostring(M.readlink(tostring(os.getenv("XDG_STATE_HOME"))))
+  return xdg_home("XDG_STATE_HOME", ".local/state")
 end
 
 ---@param ... string

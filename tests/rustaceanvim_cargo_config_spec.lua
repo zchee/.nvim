@@ -7,9 +7,11 @@
 -- be an absolute path that exists. cargo does no tilde expansion, rust-analyzer
 -- joins a relative path onto the workspace root, and a path cargo cannot read
 -- fails `cargo metadata` outright, which loses the whole client rather than one
--- check. The path comes from util.xdg_config_home(), which is readlink-based:
--- it resolves a symlinked XDG_CONFIG_HOME to its target and answers "" for
--- anything else.
+-- check. The path comes from util.xdg_config_home(), which is realpath-based:
+-- it resolves XDG_CONFIG_HOME through every symlink on the way, falls back to
+-- ~/.config when the variable is unset, and always answers with an absolute
+-- path -- one that may still not exist, which is what the stat guard in
+-- cargo_dev_config_path() is for.
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
@@ -60,13 +62,17 @@ end
 do
   local root, real, link = symlinked_config_home()
   vim.fn.writefile({ "[build]" }, vim.fs.joinpath(real, "rust", "config.dev.toml"))
+  -- fs_realpath resolves the whole path, so the expectation has to as well: on
+  -- macOS tempname() sits under /var, itself a link to /private/var. Resolve it
+  -- while the tree is still there -- the delete below makes it unresolvable.
+  local expected = vim.fs.joinpath(assert(vim.uv.fs_realpath(real)), "rust", "config.dev.toml")
 
   local ok, cargo = pcall(cargo_settings, link)
   vim.fn.delete(root, "rf")
   assert(ok, cargo)
 
   assert_equal(
-    vim.fs.joinpath(real, "rust", "config.dev.toml"),
+    expected,
     cargo.configPath,
     "configPath should be the dev cargo config under the resolved XDG_CONFIG_HOME"
   )
@@ -83,11 +89,12 @@ do
 end
 
 do
-  -- Environments util.xdg_config_home() cannot answer for: XDG_CONFIG_HOME
-  -- unset (a GUI/launchd-started nvim) or pointing at a real directory rather
-  -- than a symlink. Losing the dev config there is acceptable; handing cargo a
-  -- path that does not resolve is not, so the only invariant is that a set
-  -- configPath is always readable.
+  -- The environments a readlink-based xdg_config_home() used to answer "" for:
+  -- XDG_CONFIG_HOME pointing at a real directory rather than a symlink, and
+  -- XDG_CONFIG_HOME unset (a GUI/launchd-started nvim). "" made vim.fs.joinpath
+  -- drop its leading segment and hand cargo a relative path; both now resolve.
+  -- A real directory holding the file must therefore produce a configPath, and
+  -- in every case a set configPath has to be readable.
   local root = vim.fn.tempname()
   assert(vim.fn.mkdir(vim.fs.joinpath(root, "rust"), "p") == 1, "temp config home should be created")
   vim.fn.writefile({ "[build]" }, vim.fs.joinpath(root, "rust", "config.dev.toml"))
@@ -95,6 +102,14 @@ do
   for _, config_home in ipairs({ root, vim.NIL }) do
     local ok, cargo = pcall(cargo_settings, config_home ~= vim.NIL and config_home or nil)
     assert(ok, cargo)
+
+    if config_home ~= vim.NIL then
+      assert_equal(
+        vim.fs.joinpath(assert(vim.uv.fs_realpath(root)), "rust", "config.dev.toml"),
+        cargo.configPath,
+        "a real-directory XDG_CONFIG_HOME holding the dev config should still produce a configPath"
+      )
+    end
 
     if cargo.configPath ~= nil then
       assert(

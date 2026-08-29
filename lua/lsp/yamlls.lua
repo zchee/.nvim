@@ -32,11 +32,11 @@ return {
       keyOrdering = false,
       maxItemsComputed = 5000,
       schemaStore = {
-        enbale = true,
+        enable = true,
         -- url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/api/json/catalog.json",
       },
       kubernetesCRDStore = {
-        enbale = true,
+        enable = true,
       },
       schemas = {
         ["https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/openapi-3.X.json"] = {

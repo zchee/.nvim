@@ -184,6 +184,7 @@ end
 ---@class conform.setupOpts
 return {
   formatters_by_ft = {
+    c = { "clang_format" },
     go = { "lsp_organize_imports", "goimports_rereviser", lsp_format = "first" },
     goasm = { "asmfmt", lsp_format = "first" },
     -- lsp_format = "never" is load-bearing, not decoration: format_on_save
@@ -243,6 +244,9 @@ return {
     }
   end,
   formatters = {
+    clang_format = {
+      prepend_args = { "-style=file:/Users/zchee/.config/llvm/.clang-format" },
+    },
     -- Runs the server's source.organizeImports as a formatter, restoring the
     -- one thing the retired LspCodeActionFormat autocmd did that no CLI here
     -- replaces: adding imports for unresolved identifiers (verified that

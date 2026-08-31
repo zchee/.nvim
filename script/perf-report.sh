@@ -11,6 +11,9 @@
 #     grid, so there is no 8 ms detection floor and no probe-timer noise
 #   - embed UI latency: attach->first-flush and input->flush from a direct
 #     msgpack-RPC UI client (script/ui-latency.lua), clean vs full config
+#   - perfetto trace export: one full-config startup merged into a Chrome
+#     trace-event JSON by script/perf-trace.lua, written outside the tmp
+#     dir for ui.perfetto.dev
 #   - first-insert probe: wall time of the InsertEnter dispatch fed at
 #     UIEnter+3 s and whether blink.cmp was already loaded before it
 #   - burst vs warmup split: plugins tagged in vim.g.warmup_loaded (by a
@@ -470,3 +473,17 @@ awk -F= '
         full_attach - clean_attach, full_input - clean_input
   }
 ' "$ui_clean" "$ui_full"
+
+# Perfetto trace export (round-3.5 item 2): merge one full-config startup
+# into a Chrome trace-event JSON, reusing a --startuptime log this report
+# already produced. The file lands OUTSIDE $tmp so it survives this
+# script's cleanup trap; open it at ui.perfetto.dev.
+echo ""
+echo "== perfetto trace export: script/perf-trace.lua =="
+trace_out="${TMPDIR:-/tmp}/nvim-perf-trace.json"
+if nvim -l script/perf-trace.lua --out "$trace_out" \
+  --startuptime "$tmp/full_headless2.log" >/dev/null 2>&1; then
+  echo "  trace written: $trace_out (open in ui.perfetto.dev)"
+else
+  echo "  trace export failed (non-fatal)"
+fi

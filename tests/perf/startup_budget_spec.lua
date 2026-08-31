@@ -203,10 +203,8 @@ local idle_absent = {
   "satellite.nvim", -- BufReadPost
   "yanky.nvim", -- TextYankPost
   "hbac.nvim", -- BufAdd
-  "chowcho.nvim", -- module-loader only (no live entry point)
   "open-browser.vim", -- <Plug>(openbrowser-smart-search) stub
   "switch.vim", -- cmd Switch
-  "vim-operator-replace", -- <Plug> stub
   "vim-operator-surround", -- <Plug> stubs
   "vim-operator-convert-case", -- <Plug> stub
   "vim-operator-user", -- dependency of the operator that loads first

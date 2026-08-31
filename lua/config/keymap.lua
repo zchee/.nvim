@@ -302,7 +302,6 @@ vim.keymap.set(
 --   { noremap = true, silent = true, desc = "Comment toggle blockwise (visual)" }
 -- )
 
--- " xmap                <LocalLeader>    <Plug>(operator-replace)
 -- vim.keymap.set({ "x" }, "<C-t>", "<Plug>(TranslateW)", { silent = true })
 --
 -- xnoremap               <silent>nu :lua require"treesitter-unit".select()<CR>

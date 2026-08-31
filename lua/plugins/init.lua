@@ -642,25 +642,13 @@ return {
 
   -- Operator
   {
-    -- The three kana/vim-operator-user operators load from stubs on their
+    -- The two kana/vim-operator-user operators load from stubs on their
     -- <Plug> targets (the accelerated-jk pattern): the typed maps in
     -- lua/config/keymap.lua keep their noremap lhs, and an rhs starting with
     -- <Plug> is always remapped, so the stub fires on first press, loads the
     -- plugin (vim-operator-user rides along as a dependency), and re-feeds.
     -- Stubbing <Plug> lhs adds no typed-key prefixes, so operator-pending
     -- timeout behavior is untouched.
-    {
-      "kana/vim-operator-replace",
-      -- No live mapping references <Plug>(operator-replace) (the one in
-      -- lua/config/keymap.lua is commented out); the stub keeps the target
-      -- reachable for runtime-added maps at zero burst cost.
-      keys = {
-        { "<Plug>(operator-replace)", mode = { "n", "v" } },
-      },
-      dependencies = {
-        "kana/vim-operator-user",
-      },
-    },
     {
       "rhysd/vim-operator-surround",
       -- td/ti/tr visual maps in lua/config/keymap.lua feed these.
@@ -716,18 +704,6 @@ return {
       keys = {
         { "<Plug>(openbrowser-smart-search)", mode = { "n", "v" } },
       },
-    },
-    {
-      "tkmpypy/chowcho.nvim",
-      -- No live entry point: every win_keymap_set() call in
-      -- lua/plugins/chowcho.lua is commented out, so the VeryLazy load only
-      -- paid setup cost for an unreachable picker. Module-loader lazy keeps
-      -- require("chowcho")/require("plugins.chowcho") working if a map
-      -- returns; restore-or-remove is tracked with the round-2 lead.
-      lazy = true,
-      config = function()
-        require("plugins.chowcho")
-      end,
     },
   },
 

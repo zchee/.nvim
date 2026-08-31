@@ -13,6 +13,14 @@
 -- plugin. This file owns nothing but blink.setup().
 local blink = require("blink.cmp")
 
+-- Safety net for the warmup-abort race: plugins/luasnip.lua defers its
+-- snippet-dir scan to the warmup's luasnip-snippets tick when a warmup is
+-- mid-flight, and an insert landing between those ticks aborts the warmup
+-- with the scan still pending. This config ends both load chains (the
+-- warmup's terminal tick and the lazy InsertEnter dependency chain), and
+-- the loader is idempotent, so exactly one scan happens on every path.
+require("plugins.luasnip").load_snippets()
+
 -- vim.api.nvim_create_autocmd('User', {
 --   pattern = 'BlinkCmpMenuOpen',
 --   callback = function()

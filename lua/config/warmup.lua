@@ -107,16 +107,21 @@ local function prerequire(plugin_name, mods)
 end
 
 -- copilot.setup() blocks on `node --version` (copilot.lsp.nodejs caches the
--- result in node_version). This seed runs the same probe through async
+-- result in node_version). The seed runs the same probe through async
 -- vim.system and fills that cache off the main thread; the copilot unit's
 -- gate waits for done (bounded by its gate_timeout_ms, after which the tick
--- proceeds and eats the synchronous probe -- slower, never wrong).
-local seed = { done = false }
+-- proceeds and eats the synchronous probe -- slower, never wrong). The probe
+-- spawn and the copilot.lsp.nodejs module pull are separate ticks: the spawn
+-- is sub-ms and goes first so the probe overlaps the ticks between, while
+-- the module pull pays require cost and runs just before the copilot tick.
+local seed = { done = false, version = nil }
 
-local function seed_copilot_node()
-  prerequire("copilot.lua", { "copilot.lsp.nodejs" })
-  local nodejs = package.loaded["copilot.lsp.nodejs"]
-  if not nodejs or nodejs.node_version then
+local function spawn_copilot_node_probe()
+  local lazy_config = package.loaded["lazy.core.config"]
+  local plugin = lazy_config and lazy_config.plugins["copilot.lua"]
+  if not plugin or (plugin._ and plugin._.loaded) then
+    -- nothing to seed: no lazy-managed copilot here (spec envs), or it is
+    -- already configured -- don't leave the gate waiting on a probe
     seed.done = true
     return
   end
@@ -126,15 +131,25 @@ local function seed_copilot_node()
     local version = result.stdout and result.stdout:match("^v(%S+)")
     local major = version and tonumber(version:match("^(%d+)%."))
     if result.code == 0 and major and major >= 22 then
-      -- matches the cache copilot's own get_node_version() would set; a
-      -- too-old or unparsable node stays unseeded so copilot's synchronous
-      -- path re-probes and reports its usual error
-      nodejs.node_version = version
+      -- the shape copilot's own get_node_version() would cache; a too-old
+      -- or unparsable node stays unseeded so copilot's synchronous path
+      -- re-probes and reports its usual error
+      seed.version = version
     end
     seed.done = true
   end)
   if not ok then
     seed.done = true
+  end
+end
+
+--- Copies a completed probe result into copilot.lsp.nodejs's cache. Runs in
+--- the module-pull tick and again from the copilot gate, so a probe that
+--- finishes between the two still lands before copilot.setup().
+local function seed_copilot_node_cache()
+  local nodejs = package.loaded["copilot.lsp.nodejs"]
+  if nodejs and not nodejs.node_version and seed.version then
+    nodejs.node_version = seed.version
   end
 end
 
@@ -150,26 +165,8 @@ end
 ---@type WarmupUnit[]
 M.units = {
   { name = "mini.icons", plugin = "mini.icons" },
-  {
-    name = "luasnip-modules",
-    prewarm = function()
-      -- plugins/luasnip.lua (the LuaSnip spec config, run by the next tick)
-      -- requires these directly or through from_lua.load(); the plugin is
-      -- not loaded yet, so pull them via prerequire to keep the config tick
-      -- to setup() and snippet-registration work only.
-      prerequire("LuaSnip", {
-        "luasnip",
-        "luasnip.loaders.from_lua",
-        "luasnip.loaders.util",
-        "luasnip.nodes.snippet",
-        "luasnip.util.jsregexp",
-        "luasnip.extras.fmt",
-      })
-    end,
-  },
-  { name = "LuaSnip", plugin = "LuaSnip" },
   { name = "blink.lib", plugin = "blink.lib" },
-  { name = "copilot-node-seed", prewarm = seed_copilot_node },
+  { name = "copilot-node-probe", prewarm = spawn_copilot_node_probe },
   {
     name = "vim.lsp",
     prewarm = function()
@@ -179,10 +176,21 @@ M.units = {
     end,
   },
   {
+    name = "copilot-nodejs",
+    prewarm = function()
+      prerequire("copilot.lua", { "copilot.lsp.nodejs" })
+      seed_copilot_node_cache()
+    end,
+  },
+  {
     name = "copilot.lua",
     plugin = "copilot.lua",
     gate = function()
-      return seed.done
+      if not seed.done then
+        return false
+      end
+      seed_copilot_node_cache()
+      return true
     end,
   },
   { name = "blink-copilot", plugin = "blink-copilot" },
@@ -200,6 +208,86 @@ M.units = {
     end,
   },
   { name = "nvim-autopairs", plugin = "nvim-autopairs" },
+  -- The luasnip ticks sit late in the sequence on purpose: ticks in the
+  -- first ~10 ms after the delay window interleave with post-startup
+  -- background work and measure 2-4x their quiet cost, and these are the
+  -- heaviest units of the run.
+  {
+    name = "luasnip-modules-1",
+    prewarm = function()
+      -- plugins/luasnip.lua (the LuaSnip spec config, run three ticks
+      -- below) pulls the whole ~48-module luasnip graph, measured ~8 ms as
+      -- one tick, so it is split at the util/ boundary (~4 ms per half).
+      -- The plugin is not loaded yet, so prerequire. The leaves are listed
+      -- explicitly; a module renamed upstream just shifts its cost to a
+      -- later tick (prerequire pcalls each require).
+      prerequire("LuaSnip", {
+        "luasnip.util.types",
+        "luasnip.util.events",
+        "luasnip.util.log",
+        "luasnip.util.str",
+        "luasnip.util.dict",
+        "luasnip.util.path",
+        "luasnip.util.table",
+        "luasnip.util.lazy_table",
+        "luasnip.util.auto_table",
+        "luasnip.util.vimversion",
+        "luasnip.util.time",
+        "luasnip.util.ext_opts",
+        "luasnip.util.pattern_tokenizer",
+        "luasnip.util.directed_graph",
+        "luasnip.util.feedkeys",
+        "luasnip.util.select",
+        "luasnip.util.mark",
+        "luasnip.util.environ",
+        "luasnip.util._builtin_vars",
+        "luasnip.util.extend_decorator",
+        "luasnip.util.jsregexp",
+      })
+    end,
+  },
+  {
+    name = "luasnip-modules-2",
+    prewarm = function()
+      -- second half of the luasnip graph: the session/nodes/loaders hubs
+      -- pull their remaining subtrees on top of the util leaves above
+      prerequire("LuaSnip", {
+        "luasnip.session.snippet_collection",
+        "luasnip.nodes.snippet",
+        "luasnip",
+        "luasnip.loaders.data",
+        "luasnip.loaders.fs_watchers",
+        "luasnip.loaders.util",
+        "luasnip.loaders.from_lua",
+        "luasnip.extras.fmt",
+      })
+    end,
+  },
+  { name = "LuaSnip", plugin = "LuaSnip" },
+  {
+    name = "luasnip-snippets-1",
+    prewarm = function()
+      -- One half of the snippet-dir scan plugins/luasnip.lua deferred to
+      -- these ticks because the warmup was mid-flight during its config.
+      -- The halves are split by filetype: go.lua alone costs as much as
+      -- every other snippet file combined. An abort before either tick is
+      -- covered by plugins/blink.lua calling the same idempotent loader
+      -- from either chain's end.
+      local luasnip_config = package.loaded["plugins.luasnip"]
+      if luasnip_config then
+        luasnip_config.load_snippets_half(1)
+      end
+    end,
+  },
+  {
+    name = "luasnip-snippets-2",
+    prewarm = function()
+      local luasnip_config = package.loaded["plugins.luasnip"]
+      if luasnip_config then
+        luasnip_config.load_snippets_half(2)
+      end
+    end,
+  },
   {
     name = "blink-modules-1",
     prewarm = function()

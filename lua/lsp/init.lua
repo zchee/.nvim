@@ -287,9 +287,11 @@ local default_capabilities_config = function()
   ---@type lsp.ClientCapabilities
   local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-  -- merge blink.cmp client capabilities (second arg false: the base above
-  -- already starts from make_client_capabilities())
-  capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
+  -- merge blink.cmp client capabilities via the static snapshot module: a
+  -- require("blink.cmp") here would load blink at LSP-init time and defeat its
+  -- InsertEnter trigger. tests/lsp_capabilities_snapshot_spec.lua pins the
+  -- snapshot against blink's live output.
+  capabilities = vim.tbl_deep_extend("force", capabilities, require("lsp.capabilities"))
 
   -- Neovim already advertises workspace.didChangeWatchedFiles with both
   -- dynamicRegistration and relativePatternSupport, and the blink.cmp merge

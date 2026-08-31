@@ -350,7 +350,6 @@ local servers = {
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
   ["markdown_oxide"] = require("lsp.markdown_oxide"),
-  ["neocmake"] = require("lsp.neocmake"),
   ["basedpyright"] = require("lsp.basedpyright"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
   ["sourcekit"] = require("lsp.sourcekit"),

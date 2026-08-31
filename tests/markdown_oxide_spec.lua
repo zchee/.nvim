@@ -9,10 +9,10 @@
 --     configuration section at all, so an LSP `settings` table would sit in the
 --     config doing nothing while looking authoritative. Its knobs live in
 --     `~/.config/moxide/settings.toml` or a per-vault `.moxide.toml`.
---   * nvim-lspconfig's own lsp/markdown_oxide.lua carries the cmd fallback,
---     the root markers, and an on_attach that registers the daily-note
---     commands. vim.lsp.config merges with tbl_deep_extend("force"), so an
---     on_attach or root_markers here would silently replace those.
+--   * Since nvim-lspconfig was removed from the dep tree, this config is the
+--     only source of the root markers and the daily-note on_attach that used
+--     to come from nvim-lspconfig's lsp/markdown_oxide.lua; both must stay
+--     inlined here or they silently disappear.
 --   * It indexes files that git ignores. That is the whole reason marksman was
 --     rejected: the agent memory trees live under a git-ignored
 --     claude/projects/, invisible to a server that honours .gitignore.
@@ -49,20 +49,18 @@ assert_true(vim.uv.fs_stat(config.cmd[1]) ~= nil, ("markdown-oxide is not instal
 assert_equal(1, #config.filetypes, "markdown_oxide serves markdown only (no mdx dialect support)")
 assert_equal("markdown", config.filetypes[1], "filetype must be markdown")
 assert_equal(nil, config.settings, "the server never pulls workspace/configuration, so settings would be dead weight")
-assert_equal(nil, config.on_attach, "an on_attach here would replace nvim-lspconfig's daily-note commands")
-assert_equal(nil, config.root_markers, "root markers stay with nvim-lspconfig so the nearest .moxide.toml still wins")
-
-local lspconfig_default = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "nvim-lspconfig", "lsp", "markdown_oxide.lua")
 assert_true(
-  vim.uv.fs_stat(lspconfig_default) ~= nil,
-  ("nvim-lspconfig is not installed at %s -- run: nvim --headless '+Lazy! sync' +qa"):format(lspconfig_default)
+  type(config.on_attach) == "function",
+  "the daily-note on_attach was inlined from nvim-lspconfig and must not disappear"
 )
-local defaults = dofile(lspconfig_default)
-assert_true(defaults.on_attach ~= nil, "nvim-lspconfig must still supply the on_attach this config leans on")
-assert_true(defaults.root_markers ~= nil, "nvim-lspconfig must still supply the root markers this config leans on")
+assert_true(type(config.root_markers) == "table", "the root markers were inlined from nvim-lspconfig")
 assert_true(
-  vim.tbl_contains(defaults.root_markers, ".git"),
+  vim.tbl_contains(config.root_markers, ".git"),
   "the .git marker is what roots a vault that carries no .moxide.toml"
+)
+assert_true(
+  vim.tbl_contains(config.root_markers, ".moxide.toml"),
+  "a per-vault .moxide.toml must still win over the repository .git"
 )
 
 -- The live half: a vault whose notes git ignores, which is the shape of the

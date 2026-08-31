@@ -55,6 +55,7 @@ end
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = lua_ls_cmd,
+  filetypes = { "lua" },
   root_markers = {
     ".git",
     ".stylua.toml",

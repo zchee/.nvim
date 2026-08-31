@@ -4,6 +4,7 @@ local util = require("util")
 return {
   cmd = { util.homebrew_binary("tombi", "tombi"), "lsp" },
   filetypes = { "toml" },
+  root_markers = { "tombi.toml", "pyproject.toml", ".git" },
   -- NOTE(zchee): tombi config exists in `~/.config/tombi/config.toml`
   settings = {},
   handlers = {

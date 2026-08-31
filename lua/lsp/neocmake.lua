@@ -4,7 +4,7 @@ local util = require("util")
 return {
   cmd = { util.homebrew_binary("neocmakelsp", "neocmakelsp"), "stdio" },
   filetypes = { "cmake" },
-  rotoot_markers = { "CMakeLists.txt", "CMakePresets.json", "CTestConfig.cmake", ".git", "build", "cmake" },
+  root_markers = { "CMakeLists.txt", "CMakePresets.json", "CTestConfig.cmake", ".git", "build", "cmake" },
   settings = {
     format = {
       enable = false,

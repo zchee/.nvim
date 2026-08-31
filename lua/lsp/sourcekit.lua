@@ -12,6 +12,19 @@ return {
   },
   filetypes = { "swift" },
   root_markers = { "Package.swift", "compile_commands.json" },
+  capabilities = {
+    workspace = {
+      didChangeWatchedFiles = {
+        dynamicRegistration = true,
+      },
+    },
+    textDocument = {
+      diagnostic = {
+        dynamicRegistration = true,
+        relatedDocumentSupport = true,
+      },
+    },
+  },
   -- get_language_id = function(_, ftype)
   --   local t = { objc = "objective-c", objcpp = "objective-cpp" }
   --   return t[ftype] or ftype

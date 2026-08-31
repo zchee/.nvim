@@ -198,6 +198,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 return {
   cmd = { util.bun_prefix("vscode-json-language-server"), "--stdio" },
   filetypes = { "json", "jsonc", "json5", "jsonschema" },
+  init_options = {
+    -- The server registers its formatter only when asked to at initialize
+    -- time; without this every textDocument/formatting request returns null.
+    provideFormatter = true,
+  },
   handlers = {
     ["textDocument/diagnostic"] = filter_json5_syntax_diagnostics,
   },

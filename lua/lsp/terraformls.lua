@@ -6,6 +6,14 @@ return {
   cmd = { util.homebrew_binary("terraform-ls-head", "terraform-ls"), "serve", "-req-concurrency=16" },
   filetypes = { "terraform", "terraform-vars" },
   root_markers = { ".terraform.lock.hcl", ".terraform", ".git" },
+  capabilities = {
+    experimental = {
+      showReferencesCommandId = "client.showReferences",
+    },
+  },
+  on_attach = function(_, bufnr)
+    vim.lsp.codelens.enable(true, { bufnr = bufnr })
+  end,
   -- root_dir = require("lspconfig").util.root_pattern(
   --   ".terraform",
   --   ".terraform.lock.hcl",

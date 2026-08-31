@@ -1,7 +1,6 @@
--- Colorscheme-parity falsifier (round-2 plan R0.2).
+-- Colorscheme-parity falsifier (round-2 plan R0.2 / R3.1).
 --
--- Run with the FULL config loaded (no -u NONE):
---   nvim --headless -l script/hl-dump.lua [outfile]
+--   nvim --headless -l script/hl-dump.lua [outfile] [--reapply]
 --
 -- Serializes the complete global highlight namespace -- every group with
 -- all attributes including links, cterm, blend, and default flags -- in
@@ -10,13 +9,29 @@
 -- unchanged config must be byte-identical; that diff is the falsifier for
 -- the R3.1 colorscheme port.
 --
--- config.highlight is required explicitly because the config defers it to
--- VeryLazy, which never fires headless; firing the real VeryLazy event
--- would also load every VeryLazy plugin and pollute the dump with groups
--- unrelated to the colorscheme parity question, so only the highlight
--- override module is pulled in.
+-- `nvim -l` script mode never loads the user config ('loadplugins' is off
+-- and init.lua is skipped), so the startup paint is replayed here
+-- explicitly: apply the colorscheme, then the config.highlight overrides
+-- if that module still exists (pre-R3.1 it repainted on VeryLazy; post-
+-- R3.1 the overrides live inside the colorscheme and the require quietly
+-- no-ops). Running headless with the full config instead would miss the
+-- VeryLazy overrides and drown the dump in plugin-defined groups.
+--
+-- --reapply re-issues :colorscheme after the startup paint, simulating a
+-- user re-applying it mid-session; the dump must not change (round-1's
+-- known gap was overrides lost on re-apply).
 
+vim.cmd.colorscheme("equinusocio_material")
 pcall(require, "config.highlight")
+
+local outfile
+for _, a in ipairs(_G.arg or {}) do
+  if a == "--reapply" then
+    vim.cmd.colorscheme("equinusocio_material")
+  else
+    outfile = a
+  end
+end
 
 --- Canonical, deterministic rendering of one highlight attribute value.
 local function fmt(value)
@@ -60,9 +75,8 @@ for _, name in ipairs(names) do
 end
 local body = table.concat(lines, "\n") .. "\n"
 
-local out = _G.arg and _G.arg[1]
-if out then
-  local f = assert(io.open(out, "w"))
+if outfile then
+  local f = assert(io.open(outfile, "w"))
   f:write(body)
   f:close()
 else

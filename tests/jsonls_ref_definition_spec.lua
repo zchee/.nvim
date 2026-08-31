@@ -1,5 +1,5 @@
 ---@diagnostic disable: undefined-global
--- Regression spec for the `$ref` jump in lua/lsp/jsonls.lua.
+-- Regression spec for the `$ref` jump in lsp/jsonls.lua.
 --
 -- vscode-json-language-server exposes no definitionProvider, so <C-]> on a
 -- `"$ref": "#/$defs/Foo"` can only be served by textDocument/documentLink. Two
@@ -20,18 +20,13 @@ vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
   vim.fn.getcwd() .. "/lua/?/init.lua",
+  -- The server config migrated to the native runtimepath form at the repo
+  -- root (lsp/jsonls.lua), so require("lsp.jsonls") resolves through this
+  -- entry rather than lua/. Its SchemaStore catalog now loads in before_init,
+  -- so schemastore.nvim need not be on the runtimepath here.
+  vim.fn.getcwd() .. "/?.lua",
   package.path,
 }, ";")
-
--- lua/lsp/jsonls.lua pulls its schema catalog from b0o/SchemaStore.nvim at
--- module scope, so the spec needs the plugin on the runtimepath that the real
--- config gets from lazy.nvim (lua/config/lazy.lua roots it at stdpath("data")).
-local schemastore = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "schemastore.nvim")
-assert(
-  vim.uv.fs_stat(schemastore),
-  ("schemastore.nvim is not installed at %s -- run: nvim --headless '+Lazy! sync' +qa"):format(schemastore)
-)
-vim.opt.runtimepath:append(schemastore)
 
 local function assert_equal(expected, actual, message)
   if expected ~= actual then

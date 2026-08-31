@@ -27,7 +27,7 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 | `jsonls_ref_definition_spec.lua` | `lua/lsp/jsonls.lua` — the `$ref` jump: `LspAttach` binds `<C-]>` buffer-locally for `jsonls` and for no other client, a cursor inside a `"$ref"` pointer resolves through `textDocument/documentLink` (never `textDocument/definition`, which this server does not implement) and lands on the target's *value* node via the 1-indexed `#line,column` fragment, and a cursor outside every link falls back to the definition picker without moving. Needs `schemastore.nvim` installed, since jsonls.lua requires it at module scope |
 | `markdown_oxide_spec.lua` | `lua/lsp/markdown_oxide.lua` — the config shape that leans on nvim-lspconfig's defaults: `cmd` is the bare homebrew binary (a subcommand would start the daily-note CLI instead of the server), markdown is the only filetype, and `settings`, `on_attach` and `root_markers` all stay absent, since `vim.lsp.config` merges with `tbl_deep_extend("force")` and would replace the upstream on_attach and markers, while a `settings` table would never be read at all. Then the live half: against the real binary, an inline `[x](target.md)` link inside a git-ignored folder still resolves — the property that ruled marksman out. Needs `markdown-oxide` and `nvim-lspconfig` installed |
 | `neo_tree_compat_spec.lua` | `lua/plugins/neo_tree_compat.lua` — `is_invalid_win_error`, `get_node_safely` (suppresses a known stale-window `nui` error, rethrows anything else), `hijack_cursor_handler` (moves the cursor to the filename start, no-ops when `neo_tree_source` is unavailable, tolerates the stale-window failure), and `patch_hijack_cursor_module` idempotency |
-| `rust_analyzer_spec.lua` | `lua/lsp/rust_analyzer.lua` — writes a fake executable `rustup` onto a temp `PATH` to verify `cmd` resolves to `{"rustup","run",<toolchain>,"rust-analyzer"}` when `rustup default` succeeds, and falls back to plain `{"rust-analyzer"}` when it fails or prints no toolchain |
+| `perf/startup_budget_spec.lua` | Plan Phase 4.1 budget harness — boots the FULL user config in pty sessions (`jobstart` with `pty = true`) and asserts the lazy load-graph shape: blink.cmp/copilot/schemastore unloaded at 3 s no-file idle and nvim-lspconfig absent as a spec; gopls attaches to a Go fixture with blink.cmp still unloaded; schemastore materializes on a JSON buffer. Starts a gopls daemon if `/tmp/gopls.sock` is absent (forwarder mode). Timing numbers are reported by `script/perf-report.sh`, never asserted here |
 | `rustaceanvim_cargo_config_spec.lua` | `lua/plugins/rustaceanvim.lua` — the dev cargo config wiring: `cargo.configPath` is the absolute `rust/config.dev.toml` under the symlink-resolved `util.xdg_config_home()` (rust-analyzer passes it to every cargo as `--config`, and cargo expands no `~`), stays unset when that file is missing, and is never a path cargo cannot read. Since `util.xdg_config_home()` became realpath-based it also pins the case that used to collapse to `""` and hand cargo a relative path: a real-directory `XDG_CONFIG_HOME` holding the file still yields a `configPath`. Also pins the analysis `CARGO_TARGET_DIR`, which has been deleted once as redundant: it stays set, never equals the `target-dir` that same config hands the shell, and is absolute only when its parent mount exists |
 | `snacks_compat_spec.lua` | `lua/plugins/snacks_compat.lua` — `is_treesitter_quickfile_range_error` matcher, `render_quickfile` (Tree-sitter fast path, syntax fallback on start/redraw failure, re-propagates unknown redraw errors after stopping Tree-sitter), and `patch_quickfile_module` (excluded-language and bigfile skip logic) |
 | `treesitter_selection_spec.lua` | Incremental selection module: init/expand/shrink/scope mark transitions on a scratch lua buffer |
@@ -64,11 +64,10 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
   error; each spec pins the exact error string it patches around
   (`#find(..., 1, true)` substring checks) — if the upstream error message
   changes, the matcher and its spec need to change together.
-- `rust_analyzer_spec.lua`, `goasm_filetype_spec.lua`,
-  `rustaceanvim_cargo_config_spec.lua`, and
+- `goasm_filetype_spec.lua`, `rustaceanvim_cargo_config_spec.lua`, and
   `go_build_cache_filetype_spec.lua` are the specs that touch the real
-  filesystem/environment (temp dirs, a fake executable `rustup`, a symlinked
-  temp `XDG_CONFIG_HOME`, a temp `XDG_CACHE_HOME`) instead of pure fakes — they
+  filesystem/environment (temp dirs, a symlinked temp `XDG_CONFIG_HOME`, a
+  temp `XDG_CACHE_HOME`) instead of pure fakes — they
   clean up (`vim.fn.delete(dir, "rf")`, restore
   `vim.env.PATH`/`vim.env.XDG_CONFIG_HOME`/`vim.env.XDG_CACHE_HOME`) even on
   failure via `pcall`. Both specs that build a path from a temp directory
@@ -108,7 +107,7 @@ Tests directly `require()`:
   `lua/plugins/ts_context_commentstring_compat.lua`
 - `lua/plugins/rustaceanvim.lua`
 - `lua/filetypes/goasm.lua`
-- `lua/lsp/jsonls.lua`, `lua/lsp/rust_analyzer.lua`
+- `lsp/jsonls.lua` (repo-root native lsp/ dir)
 - `lua/plugins/conform.lua` (with `conform.nvim` on the runtimepath)
 
 `go_build_cache_filetype_spec.lua` instead `dofile`s the repo-root
@@ -117,7 +116,7 @@ as a side effect.
 
 ### External
 - `nvim` binary on `PATH` to run the specs (`nvim --headless -u NONE -l ...`).
-- `rust_analyzer_spec.lua` additionally requires a POSIX shell (`#!/bin/sh`
-  fake `rustup` script, `chmod`) — will not run as-is on a non-POSIX host.
+- `perf/startup_budget_spec.lua` additionally requires the full plugin set
+  installed (it boots the real config) and a `gopls` binary for the daemon.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->

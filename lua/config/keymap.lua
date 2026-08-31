@@ -89,7 +89,7 @@ vim.keymap.set({ "v", "x" }, "tr", "<Plug>(operator-surround-replace)", { silent
 -- vim.keymap.set({ "n" }, "*", "<Plug>(asterisk-gz*)", { nowait = true, silent = true })
 -- vim.keymap.set({ "n" }, "-", "<Cmd>NvimTreeToggle<CR>", { noremap = true, silent = true, nowait = true })
 -- vim.keymap.set({ "n" }, "-", "<Cmd>NvimTreeToggle<CR>", { noremap = true, silent = true, nowait = true })
-vim.keymap.set({ "n" }, "-", "<Cmd>Neotree toggle dir=%:p:h:h<CR>", { noremap = true, silent = true, nowait = true })
+vim.keymap.set({ "n" }, "_", "<Cmd>Neotree toggle dir=%:p:h:h<CR>", { noremap = true, silent = true, nowait = true })
 local live_grep_from_project_git_root = function()
   local function is_git_repo()
     vim.fn.system("git rev-parse --is-inside-work-tree")

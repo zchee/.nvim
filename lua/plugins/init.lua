@@ -445,7 +445,6 @@ return {
       end,
       keys = {
         { "-", "<Cmd>Oil<CR>", desc = "Open parent directory" },
-        { "<Leader>e", "<Cmd>Oil<CR>", desc = "File Explorer (Oil)" },
       },
     },
     {

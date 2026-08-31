@@ -350,7 +350,6 @@ local servers = {
   ["lua_ls"] = require("lsp.lua_ls"),
   ["markdown_oxide"] = require("lsp.markdown_oxide"),
   ["basedpyright"] = require("lsp.basedpyright"),
-  ["ruby_lsp"] = require("lsp.ruby_lsp"),
   ["yamlls"] = require("lsp.yamlls"),
 }
 for server, config in pairs(servers) do

@@ -437,3 +437,36 @@ end
 EOF
 
 nvim -u NONE --headless -l "$report" "$tmp"
+
+# Embed UI latency (round-3.5 item 3): a direct msgpack-RPC UI client
+# measures attach->first-flush and input->flush against `nvim --embed`,
+# clean and full config. Unlike the pty runs above these numbers carry no
+# `script -q` DSR/termresponse artifact (the pty runs stay because the
+# probe JSON rides on them and the pty delta is still a valid comparison).
+echo ""
+echo "== embed UI latency: msgpack-RPC client, no pty/DSR artifact =="
+ui_clean="$tmp/ui_clean.txt"
+ui_full="$tmp/ui_full.txt"
+if nvim -l script/ui-latency.lua --clean --socket-free >|"$ui_clean" 2>&1; then
+  sed 's/^/  [clean] /' "$ui_clean"
+else
+  echo "  [clean] ui-latency failed:"
+  sed 's/^/    /' "$ui_clean"
+fi
+if nvim -l script/ui-latency.lua --full --socket-free >|"$ui_full" 2>&1; then
+  sed 's/^/  [full]  /' "$ui_full"
+else
+  echo "  [full]  ui-latency failed:"
+  sed 's/^/    /' "$ui_full"
+fi
+awk -F= '
+  FNR == NR && /^attach_to_first_flush_ms=/ { clean_attach = $2 }
+  FNR == NR && /^input_to_flush_ms_median=/ { clean_input = $2 }
+  FNR != NR && /^attach_to_first_flush_ms=/ { full_attach = $2 }
+  FNR != NR && /^input_to_flush_ms_median=/ { full_input = $2 }
+  END {
+    if (clean_attach != "" && full_attach != "")
+      printf "  delta (full - clean): attach %+.3f ms | input median %+.3f ms\n",
+        full_attach - clean_attach, full_input - clean_input
+  }
+' "$ui_clean" "$ui_full"

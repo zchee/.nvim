@@ -448,7 +448,13 @@ return {
     },
     {
       "folke/edgy.nvim",
-      event = "VeryLazy",
+      -- Its only configured consumers are the snacks_terminal panels below
+      -- (edgy's own defaults manage nothing), so the terminal filetype is
+      -- the earliest moment edgy can have any effect. Snacks terminals
+      -- default to position=float in lua/plugins/snacks.lua, which these
+      -- edge panels never match anyway; pty parity vs the VeryLazy trigger
+      -- was verified for an explicit position=bottom terminal.
+      ft = "snacks_terminal",
       ---@module 'edgy'
       ---@param opts Edgy.Config
       opts = function(_, opts)

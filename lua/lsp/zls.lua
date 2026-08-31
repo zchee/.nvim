@@ -4,6 +4,7 @@ local util = require("util")
 return {
   cmd = { vim.fs.joinpath(vim.env.ZVM_PATH, "bin", "zls") },
   filetypes = { "zig", "zon" },
+  root_markers = { "zls.json", "build.zig", ".git" },
   settings = {
     zls = {
       enable_build_on_save = true,

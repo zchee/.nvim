@@ -3,6 +3,7 @@ local util = require("util")
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.homebrew_binary("dockerfile-language-server", "docker-langserver"), "--stdio" },
+  filetypes = { "dockerfile" },
   -- root_dir = require("lspconfig").util.root_pattern("Dockerfile", "*.dockerfile", "Dockerfile*"),
   -- root_dir = function(bufnr, on_dir)
   --   local fname = vim.api.nvim_buf_get_name(bufnr)

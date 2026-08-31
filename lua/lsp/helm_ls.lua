@@ -3,15 +3,14 @@ return {
   autostart = false,
   cmd = { vim.fn.exepath("helm_ls"), "serve" },
   filetypes = { "helm" },
-  -- capabilities = function()
-  --   local capabilities = vim.lsp.protocol.make_client_capabilities()
-  --   capabilities.workspace = {
-  --     didChangeWatchedFiles = {
-  --       dynamicRegistration = true,
-  --     },
-  --   }
-  --   return capabilities
-  -- end,
+  root_markers = { "Chart.yaml" },
+  capabilities = {
+    workspace = {
+      didChangeWatchedFiles = {
+        dynamicRegistration = true,
+      },
+    },
+  },
   settings = {
     logLevel = "info",
     valuesFiles = {

@@ -1,6 +1,9 @@
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { "vtsls", "--stdio" },
+  init_options = {
+    hostInfo = "neovim",
+  },
   filetypes = {
     "javascript",
     "javascriptreact",

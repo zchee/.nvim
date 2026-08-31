@@ -88,13 +88,15 @@ local function prerequire(plugin_name, mods)
       before[name] = true
     end
     if not pcall(require, mod) then
-      -- A failed require (Lua 5.1 semantics) leaves a userdata sentinel in
+      -- A failed require (Lua 5.1 semantics) leaves a sentinel in
       -- package.loaded for every module that was mid-load, and any later
       -- require of those names dies with "loop or previous error" -- which
-      -- would break the plugin's REAL config. Clear the poison; completed
+      -- would break the plugin's REAL config. On this LuaJIT the sentinel
+      -- is a NaN-boxed lightuserdata whose type() reads "number", so clear
+      -- every new entry that is not a plausible module value; completed
       -- modules (tables/functions) stay cached.
       for name, value in pairs(package.loaded) do
-        if not before[name] and type(value) == "userdata" then
+        if not before[name] and type(value) ~= "table" and type(value) ~= "function" then
           package.loaded[name] = nil
         end
       end

@@ -8,10 +8,14 @@
 -- survive. It loads the plugin's own registry file first, then overlays.
 local util = require("util")
 
-local this = vim.fs.normalize(debug.getinfo(1, "S").source:sub(2))
+-- realpath, not normalize: when the repo sits on the runtimepath twice under
+-- different spellings (~/.config/nvim symlink + the checkout path), a string
+-- compare lets this file pick *itself* as the base registry and recurse until
+-- the stack overflows. Resolving symlinks identifies the file, not its path.
+local this = vim.uv.fs_realpath(vim.fs.normalize(debug.getinfo(1, "S").source:sub(2)))
 local base
 for _, f in ipairs(vim.api.nvim_get_runtime_file("lua/nvim-treesitter/parsers.lua", true)) do
-  if vim.fs.normalize(f) ~= this then
+  if vim.uv.fs_realpath(f) ~= this then
     base = f
     break
   end

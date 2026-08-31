@@ -1,3 +1,10 @@
+-- Byte-compile and cache Lua modules. Must run before any require so every
+-- module load hits the cache. The one loadfile-sensitive site,
+-- lua/nvim-treesitter/parsers.lua, reads source text directly instead of
+-- loadfile (vim.loader patches loadfile to serve bytecode, which trips
+-- "wrong mode" there) -- pinned by tests/parsers_overlay_loader_spec.lua.
+vim.loader.enable()
+
 if vim.g.vscode then
   require("code")
   return

@@ -352,7 +352,6 @@ local servers = {
   ["markdown_oxide"] = require("lsp.markdown_oxide"),
   ["neocmake"] = require("lsp.neocmake"),
   ["basedpyright"] = require("lsp.basedpyright"),
-  ["protols"] = require("lsp.protols"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
   ["sourcekit"] = require("lsp.sourcekit"),
   ["terraformls"] = require("lsp.terraformls"),

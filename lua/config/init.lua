@@ -4,6 +4,12 @@ vim.opt.clipboard = ""
 
 require("config.nvim")
 
+-- Hand-rolled statusline/tabline (round-3 W3.2): must run before the first
+-- UI draw so the default statusline never flashes (the replaced plugins were
+-- VeryLazy and did flash), and after config.nvim so the colorscheme's
+-- Pmenu/Normal/Diagnostic* values are readable. require+setup is ~0.5 ms.
+require("config.chrome").setup()
+
 require("config.keymap")
 require("config.autocmd")
 

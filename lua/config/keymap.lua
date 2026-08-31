@@ -128,7 +128,7 @@ vim.keymap.set({ "n" }, "b", "b", { nowait = true, silent = true })
 -- default gcc mapping (runtime/lua/vim/_defaults.lua); a plain "gcc" rhs
 -- cannot work here because an rhs starting with its own lhs is excluded
 -- from remapping. The x-mode gc operator stays the built-in default.
-vim.keymap.del({ "n" }, "gcc")
+pcall(vim.keymap.del, { "n" }, "gcc")
 vim.keymap.set({ "n" }, "gc", function()
   return require("vim._comment").operator() .. "_"
 end, { expr = true, silent = true, nowait = true, desc = "Comment current line" })
@@ -150,18 +150,14 @@ vim.keymap.set({ "n" }, "ZQ", "<Nop>", { noremap = true, silent = true })
 --- http://ku.ido.nu/post/90355094974/how-to-grep-a-word-under-the-cursor-on-vim
 vim.api.nvim_create_autocmd({ "FileType" }, {
   group = autocmd_user,
-  pattern = {
-    "*",
-  },
+  pattern = "help",
   callback = function()
-    if vim.bo.filetype == "help" then
-      vim.keymap.set(
-        { "n" },
-        "<C-]>",
-        ":<C-u>Help<Space><C-r><C-w><CR>",
-        { noremap = true, silent = true, buffer = true }
-      )
-    end
+    vim.keymap.set(
+      { "n" },
+      "<C-]>",
+      ":<C-u>Help<Space><C-r><C-w><CR>",
+      { noremap = true, silent = true, buffer = true }
+    )
   end,
 })
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {

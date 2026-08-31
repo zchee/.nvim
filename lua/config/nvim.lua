@@ -102,7 +102,7 @@ vim.opt.formatoptions:remove("o") -- Automatically insert the current comment le
 vim.opt.foldnestmax = 1 -- maximum fold depth
 vim.opt.grepformat = "%f:%l:%c:%m"
 if vim.fn.executable("rg") == 1 then
-  vim.o.grepprg = "rg --vimgrep --hidden --glob ‘!.git’"
+  vim.o.grepprg = "rg --vimgrep --hidden --glob '!.git'"
 end
 vim.opt.helplang = { "en" }
 vim.opt.hidden = true

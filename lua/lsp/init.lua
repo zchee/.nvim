@@ -1,8 +1,5 @@
 -- local util = require("util")
 
--- local lspconfig = require("lspconfig")
-local lspconfig_configs = require("lspconfig.configs")
-
 -- Work around a Neovim 0.13-dev regression in the semantic-tokens capability.
 --
 -- STHighlighter registers a buffer-wide `LspNotify` autocmd (keyed by buffer,
@@ -201,17 +198,10 @@ local on_attach = function(client, bufnr)
   end
 end
 
----@param name string
----@param default_config any
-local register_lsp = function(name, default_config)
-  if not lspconfig_configs[tostring(name)] then
-    lspconfig_configs[tostring(name)] = {
-      default_config = default_config,
-    }
-  end
-end
-
-register_lsp("tsgo", {
+-- Registered but not enabled (vtsls owns TypeScript buffers); start it
+-- explicitly with vim.lsp.enable("tsgo"). Previously registered through
+-- lspconfig.configs, now a plain native config.
+vim.lsp.config("tsgo", {
   cmd = { "tsgo", "--lsp", "-stdio" },
   filetypes = {
     "javascript",

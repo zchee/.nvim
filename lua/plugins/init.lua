@@ -69,25 +69,29 @@ return {
     },
     {
       {
-        "neovim/nvim-lspconfig",
+        -- The LSP entry point. nvim-lspconfig is gone -- every server config
+        -- is a self-sufficient native vim.lsp.config table -- so the stack
+        -- boots from lspkind, the one plugin lua/lsp/init.lua genuinely
+        -- require()s at load time.
+        "onsails/lspkind-nvim",
         event = {
           "BufReadPre",
           "BufNewFile",
         },
-        dependencies = {
-          "onsails/lspkind-nvim",
-          "williamboman/mason-lspconfig.nvim",
-          {
-            "b0o/schemastore.nvim",
-          },
-          {
-            dir = util.src_path("github.com/LuaLS/LLS-Addons"), -- "LuaLS/LLS-Addons",
-            ft = "lua",
-          },
-        },
         config = function()
           require("lsp")
         end,
+      },
+      {
+        -- lazy with no trigger: loaded by lazy.nvim's module loader when
+        -- lsp/jsonls.lua require()s it for the schema catalog, so the
+        -- catalog only materializes once a JSON buffer starts jsonls.
+        "b0o/schemastore.nvim",
+        lazy = true,
+      },
+      {
+        dir = util.src_path("github.com/LuaLS/LLS-Addons"), -- "LuaLS/LLS-Addons",
+        ft = "lua",
       },
       -- Standalone specs, not nvim-lspconfig dependencies: lazy.nvim loads
       -- dependencies together with their parent, which turned these four
@@ -132,9 +136,6 @@ return {
           },
           grace_period = 60 * 15,
           wakeup_delay = 500,
-        },
-        dependencies = {
-          "neovim/nvim-lspconfig",
         },
       },
       {

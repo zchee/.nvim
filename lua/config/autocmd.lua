@@ -1,5 +1,7 @@
 local util = require("util")
 
+local M = {}
+
 local autocmd_user = vim.api.nvim_create_augroup("AutocmdUser", { clear = false })
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -454,6 +456,28 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 --                        vim.lsp.buf.format() for *.go/*.toml -- the format
 --                        pass duplicated conform's go lsp_format = "first",
 --                        and its formatting_options (tabSize = 1,
+--
+-- vim.fn.executable() returns 0/1 and 0 is truthy in Lua, so the guard used
+-- to pass with imectl absent and spawned a failing process on every focus
+-- gain. Probe once (lazily, on the first FocusGained) and cache the verdict.
+-- The deps are injected so specs can drive the truth table without a real
+-- binary; production passes the live vim.fn functions.
+---@param executable fun(name: string): 0|1
+---@param jobstart fun(cmd: string, opts: table): integer
+---@return fun() callback FocusGained callback with a probe-once imectl cache
+function M.make_imectl_callback(executable, jobstart)
+  local has_imectl ---@type boolean?
+  local jobstart_opts = { detach = true }
+  return function()
+    if has_imectl == nil then
+      has_imectl = executable("imectl") == 1
+    end
+    if has_imectl then
+      jobstart("imectl set com.apple.keylayout.ABC", jobstart_opts)
+    end
+  end
+end
+
 --                        insertSpaces = false) contradicted the tombi indent
 --                        settings for TOML.
 --
@@ -463,16 +487,11 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 -- on demand for that.
 
 -- FocusGained
--- FocusGained
 -- github.com/zchee/imectl
 vim.api.nvim_create_autocmd({ "FocusGained" }, {
   group = autocmd_user,
   pattern = { "*" },
-  callback = function()
-    if vim.fn.executable("imectl") then
-      vim.fn.jobstart("imectl set com.apple.keylayout.ABC", { detach = true })
-    end
-  end,
+  callback = M.make_imectl_callback(vim.fn.executable, vim.fn.jobstart),
 })
 
 -- InsertLeave
@@ -564,16 +583,36 @@ vim.api.nvim_create_autocmd("User", {
 -- Only PHYSICALLY typed keys may toggle (`typed` is empty for keys produced
 -- by mapping expansion) -- reacting to mapped keys turned the highlight off
 -- mid-expansion of vim-asterisk's <Plug>(asterisk-gz*) and friends.
-vim.on_key(function(_, typed)
-  if typed == "" or vim.fn.mode() ~= "n" then
+-- The handler runs on EVERY physical keystroke: the key set is hoisted to a
+-- module-scope hash keyed by the raw typed bytes (vim.keycode precomputes the
+-- <CR> byte, replacing the per-key vim.fn.keytrans call), the mode check is
+-- nvim_get_mode (API, not the vim.fn VimL bridge) compared by first byte
+-- (0x6e == "n"; vim.fn.mode() without an arg also reported only the first
+-- letter, so "no"/"niI" keep counting as normal mode), and no table is
+-- allocated per call.
+local hlsearch_keys = {
+  [vim.keycode("<CR>")] = true,
+  ["n"] = true,
+  ["N"] = true,
+  ["*"] = true,
+  ["#"] = true,
+  ["/"] = true,
+  ["?"] = true,
+}
+
+---on_key callback for auto hlsearch; exposed for the allocation-free spec.
+---@param typed string the physically typed key ("" for mapping expansion)
+function M.auto_hlsearch_on_key(_, typed)
+  if typed == "" or vim.api.nvim_get_mode().mode:byte(1) ~= 0x6e then
     return
   end
-  local key = vim.fn.keytrans(typed)
-  local searching = vim.tbl_contains({ "<CR>", "n", "N", "*", "#", "/", "?" }, key)
+  local searching = hlsearch_keys[typed] or false
   if searching ~= vim.o.hlsearch then
     vim.o.hlsearch = searching
   end
-end, vim.api.nvim_create_namespace("auto_hlsearch"))
+end
+
+vim.on_key(M.auto_hlsearch_on_key, vim.api.nvim_create_namespace("auto_hlsearch"))
 
 -- Debug:
 -- vim.api.nvim_create_autocmd(
@@ -587,6 +626,8 @@ end, vim.api.nvim_create_namespace("auto_hlsearch"))
 --     pattern = { "*" },
 --     callback = function(args)
 --       local ev = vim.inspect("event: " .. args.event)
+
+return M
 --       vim.cmd.echomsg(ev)
 --     end,
 --   }

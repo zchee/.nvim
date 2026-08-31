@@ -355,7 +355,6 @@ local servers = {
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
   ["sourcekit"] = require("lsp.sourcekit"),
   ["terraformls"] = require("lsp.terraformls"),
-  ["tombi"] = require("lsp.tombi"),
   ["vtsls"] = require("lsp.vtsls"),
   ["yamlls"] = require("lsp.yamlls"),
   ["zls"] = require("lsp.zls"),

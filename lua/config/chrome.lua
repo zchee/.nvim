@@ -264,6 +264,58 @@ function M.statusline()
   local mchar = mode:sub(1, 1)
   local a_hl = mode_hl[mchar] or "ChromeANormal"
   local asuf = a_hl:sub(8) -- "ChromeA<suffix>" -> "<suffix>"
+  -- section b: lualine components joined by the thin chevron
+  -- (component_separators.left " "); an absent component drops its
+  -- separator with it, exactly as lualine renders
+  local comps = {}
+  local fn = { stl_filename(buf), "%<" }
+  if bo.modified then
+    fn[#fn + 1] = "[+]"
+  elseif bo.readonly or not bo.modifiable then
+    fn[#fn + 1] = "[-]"
+  elseif newfile[buf] then
+    fn[#fn + 1] = "[New]"
+  end
+  comps[#comps + 1] = table.concat(fn)
+  local b = vim.b[buf]
+  local head = b.gitsigns_head
+  if type(head) == "string" and head ~= "" then
+    comps[#comps + 1] = " " .. esc(head)
+  end
+  if bo.filetype ~= "" then
+    comps[#comps + 1] = ft_icon(bo.filetype, false) .. "%#ChromeBBold#" .. bo.filetype .. "%#ChromeB#"
+  end
+  local gs = b.gitsigns_status_dict
+  if type(gs) == "table" then
+    local d = {}
+    if (gs.added or 0) > 0 then
+      d[#d + 1] = "%#ChromeDiffAdd#+" .. gs.added .. "%#ChromeB#"
+    end
+    if (gs.changed or 0) > 0 then
+      d[#d + 1] = "%#ChromeDiffChange#~" .. gs.changed .. "%#ChromeB#"
+    end
+    if (gs.removed or 0) > 0 then
+      d[#d + 1] = "%#ChromeDiffDelete#-" .. gs.removed .. "%#ChromeB#"
+    end
+    if #d > 0 then
+      comps[#comps + 1] = table.concat(d, " ")
+    end
+  end
+  local dc = diag_counts[buf]
+  if dc then
+    local d = {}
+    for sev = 1, 4 do
+      local n = dc[sev]
+      if n and n > 0 then
+        d[#d + 1] = "%#" .. sev_stl[sev][1] .. "#" .. sev_stl[sev][2] .. n .. "%#ChromeB#"
+      end
+    end
+    if #d > 0 then
+      comps[#comps + 1] = table.concat(d, " ")
+    end
+  end
+  comps[#comps + 1] = "%3l:%-2c"
+  comps[#comps + 1] = bo.fileformat
   local s = {
     "%#",
     a_hl,
@@ -272,49 +324,11 @@ function M.statusline()
     " %#ChromeSepA",
     asuf,
     "#%#ChromeB# ",
-    stl_filename(buf),
-    "%<",
+    table.concat(comps, "  "),
   }
-  if bo.modified then
-    s[#s + 1] = "[+]"
-  elseif bo.readonly or not bo.modifiable then
-    s[#s + 1] = "[-]"
-  elseif newfile[buf] then
-    s[#s + 1] = "[New]"
-  end
-  local b = vim.b[buf]
-  local head = b.gitsigns_head
-  if type(head) == "string" and head ~= "" then
-    s[#s + 1] = "  " .. esc(head)
-  end
-  if bo.filetype ~= "" then
-    s[#s + 1] = " " .. ft_icon(bo.filetype, false) .. "%#ChromeBBold#" .. bo.filetype .. "%#ChromeB#"
-  end
-  local gs = b.gitsigns_status_dict
-  if type(gs) == "table" then
-    if (gs.added or 0) > 0 then
-      s[#s + 1] = " %#ChromeDiffAdd#+" .. gs.added .. "%#ChromeB#"
-    end
-    if (gs.changed or 0) > 0 then
-      s[#s + 1] = " %#ChromeDiffChange#~" .. gs.changed .. "%#ChromeB#"
-    end
-    if (gs.removed or 0) > 0 then
-      s[#s + 1] = " %#ChromeDiffDelete#-" .. gs.removed .. "%#ChromeB#"
-    end
-  end
-  local dc = diag_counts[buf]
-  if dc then
-    for sev = 1, 4 do
-      local n = dc[sev]
-      if n and n > 0 then
-        s[#s + 1] = " %#" .. sev_stl[sev][1] .. "#" .. sev_stl[sev][2] .. n .. "%#ChromeB#"
-      end
-    end
-  end
-  s[#s + 1] = " %3l:%-2c " .. bo.fileformat
   s[#s + 1] = " %#ChromeSepBC#%#ChromeC#%="
   if bo.filetype ~= "" then
-    s[#s + 1] = ft_icon(bo.filetype, true) .. "%#ChromeC#" .. bo.filetype .. " "
+    s[#s + 1] = ft_icon(bo.filetype, true) .. "%#ChromeC#" .. bo.filetype .. "  "
   end
   s[#s + 1] = bo.fileencoding ~= "" and bo.fileencoding or vim.o.encoding
   s[#s + 1] = " %#ChromeSepZ" .. asuf .. "#%#" .. a_hl .. "# %P "

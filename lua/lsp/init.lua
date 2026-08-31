@@ -345,7 +345,6 @@ vim.lsp.config("*", {
 local servers = {
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
-  ["markdown_oxide"] = require("lsp.markdown_oxide"),
 }
 for server, config in pairs(servers) do
   vim.lsp.config(server, config)

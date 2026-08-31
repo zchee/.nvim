@@ -22,6 +22,10 @@ vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
   vim.fn.getcwd() .. "/lua/?/init.lua",
+  -- The server config migrated to the native runtimepath form at the repo
+  -- root (lsp/markdown_oxide.lua), so require("lsp.markdown_oxide") resolves
+  -- through this entry rather than lua/.
+  vim.fn.getcwd() .. "/?.lua",
   package.path,
 }, ";")
 

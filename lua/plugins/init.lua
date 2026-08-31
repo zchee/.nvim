@@ -950,6 +950,7 @@ return {
       -- records every yank, so the first TextYankPost is the real trigger
       -- (lazy re-emits the event after loading, so that yank is captured).
       event = "TextYankPost",
+      opts = {},
       keys = {
         { "<Leader>p", false },
         {

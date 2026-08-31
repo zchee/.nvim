@@ -15,6 +15,10 @@ require("util").on_very_lazy(function()
   require("config.command")
 end)
 
+-- Cooperative insert-stack warmup (round-2 R2): arms only on UIEnter, so
+-- headless sessions are untouched; costs one autocmd registration here.
+require("config.warmup").setup()
+
 if lazy_clipboard ~= nil then
   vim.opt.clipboard = lazy_clipboard
 end

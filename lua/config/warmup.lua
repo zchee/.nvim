@@ -166,6 +166,19 @@ M.units = {
     end,
   },
   { name = "blink-copilot", plugin = "blink-copilot" },
+  {
+    name = "autopairs-modules",
+    prewarm = function()
+      -- plugins/autopairs.lua (the nvim-autopairs spec config, run by the
+      -- next tick) requires these; the plugin is not loaded yet, so pull
+      -- them via prerequire to keep the config tick to setup() work only.
+      prerequire("nvim-autopairs", {
+        "nvim-autopairs",
+        "nvim-autopairs.rule",
+        "nvim-autopairs.ts-conds",
+      })
+    end,
+  },
   { name = "nvim-autopairs", plugin = "nvim-autopairs" },
   {
     name = "insert-modules",
@@ -174,9 +187,6 @@ M.units = {
       -- their plugins are loaded by the ticks above, so these are plain rtp
       -- requires. The luasnip.* set is what from_lua.load() pulls in.
       require("luasnip")
-      require("nvim-autopairs")
-      require("nvim-autopairs.rule")
-      require("nvim-autopairs.ts-conds")
       require("luasnip.loaders.from_lua")
       require("luasnip.loaders.util")
       require("luasnip.nodes.snippet")

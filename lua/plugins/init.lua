@@ -215,6 +215,12 @@ return {
       {
         "windwp/nvim-autopairs",
         event = { "InsertEnter" },
+        -- Own config (round-3 W1.1): the warmup's nvim-autopairs tick and the
+        -- pure-lazy InsertEnter chain both run it, keeping the terminal
+        -- blink.cmp tick free of autopairs setup cost.
+        config = function()
+          require("plugins.autopairs")
+        end,
       },
       "echasnovski/mini.icons",
     },

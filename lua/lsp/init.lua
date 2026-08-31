@@ -349,7 +349,6 @@ local servers = {
   ["jsonls"] = require("lsp.jsonls"),
   ["lua_ls"] = require("lsp.lua_ls"),
   ["markdown_oxide"] = require("lsp.markdown_oxide"),
-  ["basedpyright"] = require("lsp.basedpyright"),
   ["yamlls"] = require("lsp.yamlls"),
 }
 for server, config in pairs(servers) do

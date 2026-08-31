@@ -149,7 +149,8 @@ return {
       },
       {
         "j-hui/fidget.nvim",
-        event = "VeryLazy",
+        -- LSP progress UI: nothing to render before a client attaches.
+        event = "LspAttach",
         config = function()
           require("plugins.fidget")
         end,
@@ -465,7 +466,8 @@ return {
     {
       -- dropbar.nvim: winbar breadcrumbs (replaces lspsaga's symbol_in_winbar)
       "Bekaboo/dropbar.nvim",
-      event = "VeryLazy",
+      -- winbar breadcrumbs need a file window; nothing to draw at idle.
+      event = "BufReadPost",
       dependencies = {
         "nvim-tree/nvim-web-devicons",
       },
@@ -576,7 +578,8 @@ return {
     },
     {
       "lewis6991/gitsigns.nvim",
-      event = "VeryLazy",
+      -- attaches per buffer anyway; BufReadPre keeps signs on the first file.
+      event = { "BufReadPre", "BufNewFile" },
       dependencies = {
         "nvim-lua/plenary.nvim",
       },
@@ -588,7 +591,8 @@ return {
       -- satellite.nvim: scrollbar with diagnostics/gitsigns/search marks
       -- (successor of the dormant petertriho/nvim-scrollbar)
       "lewis6991/satellite.nvim",
-      event = "VeryLazy",
+      -- scrollbar marks only make sense once a real buffer is displayed.
+      event = "BufReadPost",
       config = function()
         require("plugins.satellite")
       end,
@@ -933,7 +937,9 @@ return {
     },
     {
       "wakatime/vim-wakatime",
-      event = "VeryLazy",
+      -- heartbeats only matter once editing starts; the burst's heaviest
+      -- plugin (8-10 ms) has no business in a no-file idle session.
+      event = { "BufReadPost", "BufNewFile", "InsertEnter" },
       opts = {
         cli_path = util.homebrew_binary("wakatime-cli-head", "wakatime-cli"),
         python_binary = util.homebrew_binary("python@3.14", "python3"),

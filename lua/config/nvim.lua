@@ -10,8 +10,6 @@
 --                                                                                                                 --
 -- --------------------------------------------------------------------------------------------------------------- --
 
-local util = require("util")
-
 -- Environment Variables:
 
 vim.env.MANWIDTH = 999
@@ -349,7 +347,3 @@ vim.g.vista_executive_for = {
 vim.g.vista_sidebar_width = "150"
 vim.g.vista_update_on_text_changed = true
 vim.g.vista_executive_nvim_lsp_fetching = true
-
--- vim-wakatime
-vim.g.wakatime_CLIPath = util.homebrew_binary("wakatime-cli-head", "wakatime-cli")
-vim.g.wakatime_PythonBinary = util.homebrew_binary("python3.14", "python3")

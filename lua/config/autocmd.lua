@@ -131,7 +131,9 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
   end,
 })
 
--- BufWinEnter
+-- BufWinEnter: jump to the last cursor position (the `"` mark) when it still
+-- fits inside the buffer, like the old `g`\"zt` normal-mode dance but through
+-- the API (no jumplist entry, mark read directly).
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
   group = autocmd_user,
   pattern = "*",
@@ -141,10 +143,11 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
     if ft == "gitcommit" then
       return
     end
-    if vim.fn.line("'\"") > 1 and vim.fn.line("'\"") <= vim.fn.line("$") then --  and not vim.bo.filetype == "gitcommit" and not vim.bo.filetype == "gitrebase"
-      vim.cmd([[
-        execute "silent! keepjumps normal! g`\"zt\""
-      ]])
+    local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+    if mark[1] > 1 and mark[1] <= vim.api.nvim_buf_line_count(args.buf) then
+      if pcall(vim.api.nvim_win_set_cursor, 0, mark) then
+        vim.cmd("keepjumps normal! zt")
+      end
     end
   end,
 })
@@ -155,15 +158,16 @@ vim.api.nvim_create_autocmd({ "WinEnter" }, {
   pattern = { "*" },
   callback = function()
     -- http://stackoverflow.com/questions/7476126/how-to-automatically-close-the-quick-fix-window-when-leaving-a-file
-    local only_one_window = vim.fn.winnr("$") == 1
+    local only_one_window = #vim.api.nvim_tabpage_list_wins(0) == 1
     if only_one_window then
       local is_ft = function(ft)
         return vim.o.filetype == ft
       end
 
-      local is_nvimtree = vim.fn.bufname() == "NvimTree_" .. vim.fn.tabpagenr()
+      local tabnr = vim.api.nvim_tabpage_get_number(0)
+      local is_nvimtree = vim.fs.basename(vim.api.nvim_buf_get_name(0)) == "NvimTree_" .. tabnr
       if is_nvimtree or is_ft("qt") or is_ft("git") or is_ft("vista_kind") then
-        vim.fn.quit()
+        vim.cmd("quit")
       end
     end
   end,
@@ -207,61 +211,28 @@ vim.api.nvim_create_autocmd({ "WinEnter" }, {
 -- })
 
 ---@class PrioritySemanticTokens
----@field type string semantic tokens type
 ---@field hl_group string semantic tokens hl group name
----@field priority number highlight priority
+---@field opts { priority: integer } highlight_token opts (priority precomputed)
 
----@type PrioritySemanticTokens[]
+-- LspTokenUpdate fires once per semantic token: keyed by token type so
+-- non-matching tokens (the overwhelming majority) return after one hash
+-- lookup with zero iteration and zero allocation.
+---@type table<string, PrioritySemanticTokens>
 local priority_semantic_tokens = {
-  -- { type = "namespace" },
-  -- { type = "variable" },
-  -- { modifier = "global" },
-  -- { modifier = "format" },
-  { type = "class", hl_group = "@lsp.type.class.python", priority = 200 },
+  class = { hl_group = "@lsp.type.class.python", opts = { priority = 200 } },
 }
 
 vim.api.nvim_create_autocmd("LspTokenUpdate", {
+  group = autocmd_user,
   callback = function(args)
     --- @type SemanticToken
     local token = args.data.token
-    -- local captures = vim.treesitter.get_captures_at_pos(args.buf, token.line, token.start_col)
-
-    for _, t in pairs(priority_semantic_tokens) do
-      local priority = t.priority or 105
-      if t.type and token.type == t.type then
-        vim.lsp.semantic_tokens.highlight_token(
-          token,
-          args.buf,
-          args.data.client_id,
-          t.hl_group,
-          { priority = priority }
-        )
-      end
-
-      -- if t.modifier and token.modifiers[t.modifier] then
-      --   vim.lsp.semantic_tokens.highlight_token(
-      --     token,
-      --     args.buf,
-      --     args.data.client_id,
-      --     t.modifier,
-      --     { priority = priority }
-      --   )
-      -- end
-
-      -- if t.treesitter then
-      --   for _, capture in pairs(captures) do
-      --     if capture.capture == t.treesitter then
-      --       vim.lsp.semantic_tokens.highlight_token(
-      --         token,
-      --         args.buf,
-      --         args.data.client_id,
-      --         t.treesitter,
-      --         { priority = priority }
-      --       )
-      --     end
-      --   end
-      -- end
+    local t = priority_semantic_tokens[token.type]
+    if not t then
+      return
     end
+
+    vim.lsp.semantic_tokens.highlight_token(token, args.buf, args.data.client_id, t.hl_group, t.opts)
   end,
 })
 

@@ -417,6 +417,9 @@ return {
       return
     end
 
+    -- settings is lsp.LSPObject, so field access below would trip
+    -- undefined-field on the LSPAny union without a concrete local type
+    ---@type table<string, any>
     local gopls = config.settings.gopls
 
     if is_goos_linux(root) then

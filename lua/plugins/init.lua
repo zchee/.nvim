@@ -617,23 +617,43 @@ return {
 
   -- Operator
   {
+    -- The three kana/vim-operator-user operators load from stubs on their
+    -- <Plug> targets (the accelerated-jk pattern): the typed maps in
+    -- lua/config/keymap.lua keep their noremap lhs, and an rhs starting with
+    -- <Plug> is always remapped, so the stub fires on first press, loads the
+    -- plugin (vim-operator-user rides along as a dependency), and re-feeds.
+    -- Stubbing <Plug> lhs adds no typed-key prefixes, so operator-pending
+    -- timeout behavior is untouched.
     {
       "kana/vim-operator-replace",
-      event = "VeryLazy",
+      -- No live mapping references <Plug>(operator-replace) (the one in
+      -- lua/config/keymap.lua is commented out); the stub keeps the target
+      -- reachable for runtime-added maps at zero burst cost.
+      keys = {
+        { "<Plug>(operator-replace)", mode = { "n", "v" } },
+      },
       dependencies = {
         "kana/vim-operator-user",
       },
     },
     {
       "rhysd/vim-operator-surround",
-      event = "VeryLazy",
+      -- td/ti/tr visual maps in lua/config/keymap.lua feed these.
+      keys = {
+        { "<Plug>(operator-surround-delete)", mode = "v" },
+        { "<Plug>(operator-surround-append)", mode = "v" },
+        { "<Plug>(operator-surround-replace)", mode = "v" },
+      },
       dependencies = {
         "kana/vim-operator-user",
       },
     },
     {
       "mopp/vim-operator-convert-case",
-      event = "VeryLazy",
+      -- tu visual map in lua/config/keymap.lua feeds this.
+      keys = {
+        { "<Plug>(operator-convert-case-upper-camel)", mode = "v" },
+      },
       dependencies = {
         "kana/vim-operator-user",
       },

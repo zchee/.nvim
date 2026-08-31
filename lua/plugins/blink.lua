@@ -77,14 +77,46 @@ local function esc(keys)
   return vim.api.nvim_replace_termcodes(keys, true, false, true)
 end
 
+-- Per-buffer parser cache. vim.treesitter.get_parser re-resolves the
+-- language from the filetype on every call -- real work on every `"`/`'`
+-- keystroke -- while parse() on an up-to-date tree is nearly free, so only
+-- the lookup is hoisted. `false` marks a buffer with no parser so the failed
+-- lookup is not retried per keystroke. Entries drop when the parser detaches
+-- and on the FileType re-map below (a filetype change replaces the parser).
+---@type table<integer, vim.treesitter.LanguageTree|false>
+local parser_cache = {}
+
+---@param bufnr integer
+---@return vim.treesitter.LanguageTree?
+local function cached_parser(bufnr)
+  local cached = parser_cache[bufnr]
+  if cached ~= nil then
+    return cached or nil
+  end
+  local parser = vim.treesitter.get_parser(bufnr, nil, { error = false })
+  parser_cache[bufnr] = parser or false
+  if parser then
+    parser:register_cbs({
+      on_detach = function()
+        parser_cache[bufnr] = nil
+      end,
+    })
+  end
+  return parser
+end
+
 ---@return boolean
 local function in_go_string()
-  local parser = vim.treesitter.get_parser(0, nil, { error = false })
+  local bufnr = vim.api.nvim_get_current_buf()
+  local parser = cached_parser(bufnr)
   if not parser then
     return false
   end
   parser:parse()
-  local node = vim.treesitter.get_node()
+  -- vim.treesitter.get_node() equivalent (cursor position, named node,
+  -- injections ignored), minus its internal get_parser lookup.
+  local pos = vim.api.nvim_win_get_cursor(0)
+  local node = parser:named_node_for_range({ pos[1] - 1, pos[2], pos[1] - 1, pos[2] })
   return node ~= nil and go_string_nodes[node:type()] == true
 end
 
@@ -123,6 +155,9 @@ end
 vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "BufWinEnter" }, {
   group = vim.api.nvim_create_augroup("autopairs_go_quotes", { clear = true }),
   callback = function(args)
+    if args.event == "FileType" then
+      parser_cache[args.buf] = nil
+    end
     map_go_quotes(args.buf)
   end,
 })

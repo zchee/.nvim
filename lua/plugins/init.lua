@@ -421,11 +421,26 @@ return {
     },
     {
       "stevearc/oil.nvim",
-      lazy = false,
+      cmd = "Oil",
       dependencies = {
         "nvim-tree/nvim-web-devicons",
       },
-      opts = require("plugins.oil"),
+      -- netrw is disabled in lazy.nvim's rtp, so `nvim <dir>` has no
+      -- fallback explorer: when any startup argument is a directory, load
+      -- oil eagerly so its own hijack takes the buffer. The check is
+      -- argv+fs_stat only -- no requires on the clean-start path.
+      init = function()
+        for i = 0, vim.fn.argc() - 1 do
+          local stat = vim.uv.fs_stat(vim.fn.argv(i) --[[@as string]])
+          if stat and stat.type == "directory" then
+            require("lazy").load({ plugins = { "oil.nvim" } })
+            return
+          end
+        end
+      end,
+      opts = function()
+        return require("plugins.oil")
+      end,
       keys = {
         { "-", "<Cmd>Oil<CR>", desc = "Open parent directory" },
         { "<Leader>e", "<Cmd>Oil<CR>", desc = "File Explorer (Oil)" },

@@ -265,6 +265,13 @@ local ok, err = pcall(function()
       not has(report.spec_names, "nvim-lspconfig"),
       "nvim-lspconfig must not exist as a lazy spec (servers are native lsp/ configs)"
     )
+    -- round-3 W3.2: statusline/tabline are the hand-rolled config/chrome.lua
+    for _, name in ipairs({ "lualine.nvim", "bufferline.nvim" }) do
+      assert(
+        not has(report.spec_names, name),
+        name .. " must not exist as a lazy spec (replaced by lua/config/chrome.lua)"
+      )
+    end
     for _, name in ipairs(idle_absent) do
       assert(
         not plugin_loaded(report, name),

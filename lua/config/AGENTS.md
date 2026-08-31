@@ -15,7 +15,8 @@ modules in a fixed order.
 ## Key Files
 | File | Description |
 |------|--------------|
-| `init.lua` | Aggregator: toggles clipboard around setup, requires nvim/keymap/autocmd synchronously, command on VeryLazy |
+| `init.lua` | Aggregator: toggles clipboard around setup, requires nvim/chrome/keymap/autocmd synchronously, command on VeryLazy |
+| `chrome.lua` | Hand-rolled statusline + tabline (replaces lualine.nvim/bufferline.nvim, round-3 W3.2); equinusocio_material palette, gitsigns/diagnostic-fed, `%@` click handlers; parity contract in `.omc/plans/round3-chrome-parity.md`, spec `tests/chrome_spec.lua` |
 | `lazy.lua` | `lazy.nvim` bootstrap `LazyConfig` (paths, git, ui, performance, disabled rtp plugins) + `require("lazy").setup(require("plugins"), lazy_config)` |
 | `nvim.lua` | Large `vim.opt`/`vim.g` block: editor options, disabled built-in providers/plugins (mostly commented out) |
 | `keymap.lua` (372 lines) | `mapleader`/`maplocalleader` + global keymaps across n/i/v/x/c/t modes, plus a `live_grep_from_project_git_root` helper |

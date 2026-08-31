@@ -9,7 +9,7 @@ independent bootstrap paths — the normal Neovim path (`lua/init.lua`
 -> `lua/config` + `lua/plugins`, LSP wired through `lua/lsp`) and the
 VSCode-Neovim path (`lua/code`, activated when `vim.g.vscode` is set,
 entered from the repo root `init.lua` before anything else runs). Everything
-under `lua/util`, `lua/filetypes`, `lua/luasnippets`, `lua/lualine`, and
+under `lua/util`, `lua/filetypes`, `lua/luasnippets`, and
 
 
 ## Key Files
@@ -24,7 +24,6 @@ below). The entry point that requires into this tree is the repo root
 | `config/` | Core `vim.opt`/keymap/autocmd/command/highlight setup + `lazy.nvim` bootstrap config (see config/AGENTS.md) |
 | `filetypes/` | Stateful custom filetype detectors consumed by root `filetype.lua` (see filetypes/AGENTS.md) |
 | `lsp/` | Per-server `vim.lsp.Config` tables + central LSP orchestration (see lsp/AGENTS.md) |
-| `lualine/` | Custom lualine statusline theme (see lualine/AGENTS.md) |
 | `luasnippets/` | LuaSnip snippet definitions, one file per target filetype (see luasnippets/AGENTS.md) |
 | `nvim-treesitter/` | `parsers.lua` overlay shadowing the plugin registry by rtp order (custom/forked grammars survive install.lua's reload_parsers) — documented here, no separate AGENTS.md |
 | `plugins/` | `lazy.nvim` `LazySpec` plugin specs (see plugins/AGENTS.md) |
@@ -87,8 +86,8 @@ integration smoke test.
 - LuaCATS `---@param`/`---@return`/`---@class` annotations are used
   throughout `lua/util` and several `lua/lsp/*.lua` files; match this when
   adding new public functions.
-- Modules that wrap third-party APIs (`lua/lualine/themes/*`,
-  `lua/nvim-treesitter/parsers.lua`) mirror the upstream plugin's own
+- Modules that wrap third-party APIs (`lua/nvim-treesitter/parsers.lua`)
+  mirror the upstream plugin's own
   directory/module naming convention so
   `require("<plugin-namespace>.<category>.<name>")` resolves without extra
   glue code.
@@ -99,15 +98,13 @@ integration smoke test.
 `util/` is the shared leaf dependency for nearly every other subdirectory.
 `config/` depends on `plugins/` (via `lazy.lua`'s `lazy.setup(require("plugins"),
 ...)`). `filetypes/` is consumed by root `filetype.lua`. `luasnippets/` is
-consumed by `plugins/cmp.lua` and `plugins/blink.lua`. `lualine/` is
-consumed by `plugins/lualine.lua`.
+consumed by `plugins/cmp.lua` and `plugins/blink.lua`.
 
 ### External
 `folke/lazy.nvim` (plugin manager, bootstrapped by both `config/lazy.lua`
 and `code/config/lazy.lua`); Neovim's native `vim.lsp.config()` /
 `vim.lsp.enable()` LSP framework (not `lspconfig.setup()`); `stylua`
 (formatter); `stevearc/conform.nvim`; `mfussenegger/nvim-lint`;
-`nvim-lualine/lualine.nvim`;
 `L3MON4D3/LuaSnip`.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->

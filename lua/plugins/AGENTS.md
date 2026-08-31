@@ -22,7 +22,6 @@ below and in each row's description.
 | `aerial.lua` | stevearc/aerial.nvim: symbol outline; lsp/treesitter/markdown/asciidoc/man backends, `prefer_left` placement |
 | `blink.lua` | saghen/blink.cmp (v2, main branch + blink.lib): LuaSnip preset, blink-copilot source, rust fuzzy built from source |
 | `bqf.lua` | kevinhwang91/nvim-bqf: better quickfix; rounded auto-preview window, 60/30-line preview heights |
-| `bufferline.lua` | akinsho/bufferline.nvim; `numbers = "buffer_id"`, `nvim_lsp` diagnostics indicator |
 | `chatgpt.json` | Prompt-template data for `chatgpt.lua`; DEAD — no `ChatGPT.nvim` spec exists in `init.lua` |
 | `chatgpt.lua` | jackMort/ChatGPT.nvim config; API key via `op read op://...`; DEAD — no active spec references it |
 | `claudecode.lua` | coder/claudecode.nvim: Claude Code IDE bridge; `terminal_cmd` launches `omc --yolo` in a snacks float |
@@ -44,7 +43,6 @@ below and in each row's description.
 | `gitsigns.lua` | lewis6991/gitsigns.nvim; overrides default sign highlight groups with custom fg/bg hex colors |
 | `image.lua` | 3rd/image.nvim `opts` table (kitty backend); integration toggles nested under `integrations`, sizing keys top-level |
 | `lint.lua` | mfussenegger/nvim-lint setup; none-ls diagnostics successor (ruff, golangci-lint pinned past the mise shim), FileType-triggered |
-| `lualine.lua` | nvim-lualine/lualine.nvim; `equinusocio_material` theme, disables statusline/winbar for the snacks picker input filetype |
 | `mason.lua` | williamboman/mason.nvim; minimal setup — 8 concurrent installers, `github:mason-org/mason-registry` |
 | `matchup.lua` | andymass/vim-matchup; disables built-in matchparen (`matchparen.enabled = 0`) in favor of Tree-sitter matching |
 | `mcphub.lua` | ravitemer/mcphub.nvim: MCP server hub; DEAD in `init.lua`'s active path — plugin loads bare, `setup()` never called |

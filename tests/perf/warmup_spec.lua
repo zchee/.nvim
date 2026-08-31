@@ -80,7 +80,7 @@ end
 do
   assert_deep_equal(
     warmup.order,
-    { "mini.icons", "LuaSnip", "blink.lib", "copilot.lua", "blink-copilot", "nvim-autopairs", "blink.cmp" },
+    { "mini.icons", "blink.lib", "copilot.lua", "blink-copilot", "nvim-autopairs", "LuaSnip", "blink.cmp" },
     "warmup.order must be the insert stack, leaves first, blink.cmp last"
   )
   for _, unit in ipairs(warmup.units) do
@@ -241,7 +241,7 @@ do
   vim.notify = saved_notify
   assert_equal(state.aborted, true, "a failing load must abort the warmup")
   assert(state.error and state.error:find("boom", 1, true), "the abort must keep the load error")
-  assert_deep_equal(rec.loads, { "mini.icons", "LuaSnip" }, "nothing after the failing plugin may load")
+  assert_deep_equal(rec.loads, { "mini.icons" }, "nothing after the failing plugin may load")
 end
 
 -- R2.2 tag shape: appends whole-list re-assignments into vim.g.warmup_loaded

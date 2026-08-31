@@ -253,6 +253,157 @@ do
   vim.g.warmup_loaded = nil
 end
 
+-- W1.5 both-paths parity + per-tick budget (round-3 plan, acceptance
+-- criteria 1 and 4). Two full-config headless child sessions load the
+-- insert stack -- one by driving warmup.run with real deps, one via
+-- lazy.load exactly as the InsertEnter chain would -- and must end in the
+-- same state: identical Go quote-swap maps, autopairs BS/CR maps, snippet
+-- counts, and a loaded blink.cmp. The warmup child also reports M.tick_ms;
+-- every tick must fit the 8 ms budget. Wall-clock is machine-load
+-- dependent, so the budget takes the per-tick MINIMUM over up to three
+-- child runs (config execution cost is deterministic; load spikes are
+-- not) -- a tick whose minimum still exceeds the budget regressed
+-- structurally, which is exactly what this must catch (e.g. a blink.cmp
+-- update moving cost from module load into setup()).
+local parity_probe_source = [[
+local report = { ok = true }
+local run_ok, run_err = pcall(function()
+  pcall(vim.lsp.enable, "gopls", false)
+  if vim.g.parity_mode == "warmup" then
+    local warmup = require("config.warmup")
+    local lazy = require("lazy")
+    local plugins = require("lazy.core.config").plugins
+    local state = warmup.run({
+      load = function(name)
+        lazy.load({ plugins = { name } })
+      end,
+      is_loaded = function(name)
+        local plugin = plugins[name]
+        return plugin ~= nil and plugin._ ~= nil and plugin._.loaded ~= nil
+      end,
+      schedule = function(fn)
+        vim.defer_fn(fn, 1)
+      end,
+      defer = vim.defer_fn,
+      tag = warmup.tag,
+    }, { aborted = false, index = 1 })
+    vim.wait(30000, function()
+      return state.done == true
+    end, 10)
+    if not state.done then
+      error("warmup run did not complete: " .. vim.inspect(state))
+    end
+    report.tick_ms = warmup.tick_ms
+  else
+    require("lazy").load({ plugins = { "blink.cmp", "nvim-autopairs" } })
+  end
+  local buf = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_set_current_buf(buf)
+  vim.bo[buf].filetype = "go"
+  vim.api.nvim_exec_autocmds("FileType", { buffer = buf })
+  local ls = require("luasnip")
+  report.quote_desc = vim.fn.maparg('"', "i", false, true).desc
+  report.apos_desc = vim.fn.maparg("'", "i", false, true).desc
+  report.has_bs = vim.fn.maparg("<BS>", "i") ~= ""
+  report.has_cr = vim.fn.maparg("<CR>", "i") ~= ""
+  report.snips_go = #ls.get_snippets("go")
+  report.snips_all = #ls.get_snippets("all")
+  report.blink_loaded = package.loaded["blink.cmp"] ~= nil
+end)
+if not run_ok then
+  report.ok = false
+  report.err = tostring(run_err)
+end
+local f = assert(io.open(vim.g.parity_out, "w"))
+f:write(vim.json.encode(report))
+f:close()
+vim.cmd("qa!")
+]]
+
+local parity_probe_path = vim.fn.tempname() .. "_parity.lua"
+do
+  local f = assert(io.open(parity_probe_path, "w"))
+  f:write(parity_probe_source)
+  f:close()
+end
+
+--- Runs one full-config headless child in the given mode, returns its report.
+local function run_parity_child(mode)
+  local out = vim.fn.tempname() .. "_parity.json"
+  local job = vim.fn.jobstart({
+    "nvim",
+    "--headless",
+    "--cmd",
+    string.format("lua vim.g.parity_mode=%q vim.g.parity_out=%q", mode, out),
+    "-c",
+    "luafile " .. parity_probe_path,
+  })
+  assert(job > 0, "failed to start the " .. mode .. " parity child")
+  local exited = vim.fn.jobwait({ job }, 60000)[1]
+  if exited == -1 then
+    vim.fn.jobstop(job)
+    error(mode .. " parity child did not finish within 60s")
+  end
+  local f = assert(io.open(out, "r"), mode .. " parity child wrote no report")
+  local body = f:read("*a")
+  f:close()
+  os.remove(out)
+  local report = vim.json.decode(body)
+  assert(report.ok, mode .. " parity child failed: " .. tostring(report.err))
+  return report
+end
+
+do
+  local tick_budget_ms = 8
+  local warmup_report = run_parity_child("warmup")
+  local lazy_report = run_parity_child("lazy")
+
+  for _, field in ipairs({ "quote_desc", "apos_desc", "has_bs", "has_cr", "snips_go", "snips_all", "blink_loaded" }) do
+    assert_equal(
+      warmup_report[field],
+      lazy_report[field],
+      "both-paths parity: " .. field .. " must match between the warmup and lazy load paths"
+    )
+  end
+  assert_equal(warmup_report.quote_desc, "Pair '' inside Go strings", "the Go quote-swap map must exist")
+  assert_equal(warmup_report.blink_loaded, true, "blink.cmp must be loaded on both paths")
+  assert(warmup_report.snips_go > 0, "go snippets must be registered on both paths")
+  assert(warmup_report.snips_all > 0, "all-filetype snippets must be registered on both paths")
+
+  -- per-tick budget: min over up to 3 warmup children; extra children run
+  -- only when a tick misses on the earlier attempt (fast path: one child)
+  local best = {}
+  for name, ms in pairs(warmup_report.tick_ms) do
+    best[name] = ms
+  end
+  for _ = 1, 2 do
+    local over = false
+    for _, ms in pairs(best) do
+      if ms > tick_budget_ms then
+        over = true
+        break
+      end
+    end
+    if not over then
+      break
+    end
+    local retry = run_parity_child("warmup")
+    for name, ms in pairs(retry.tick_ms) do
+      if best[name] == nil or ms < best[name] then
+        best[name] = ms
+      end
+    end
+  end
+  for name, ms in pairs(best) do
+    assert(
+      ms <= tick_budget_ms,
+      string.format("warmup tick %s costs %.2f ms; the per-tick budget is %d ms (min of 3 runs)", name, ms, tick_budget_ms)
+    )
+  end
+end
+
+os.remove(parity_probe_path)
+
 -- setup arming: UIEnter starts the timer; an InsertEnter before it fires
 -- aborts without touching deps (headless sessions never even reach here,
 -- so the autocmds are exercised via exec_autocmds)

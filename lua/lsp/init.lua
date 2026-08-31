@@ -344,7 +344,6 @@ vim.lsp.config("*", {
 -- (one server moves per commit, for bisectability).
 local servers = {
   ["clangd"] = require("lsp.clangd"),
-  ["dockerls"] = require("lsp.dockerls"),
   ["gopls"] = require("lsp.gopls"),
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),

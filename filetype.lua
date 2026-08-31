@@ -136,6 +136,10 @@ vim.filetype.add({
     [".*/c%+%+/.*"] = "cpp",
     [".*/google%-cloud%-sdk/properties"] = "cfg",
     [".*/kitty/.*%.conf"] = "kitty",
+    -- ftdetect/kitty.lua port: its vim.b.filetype assignment was a no-op
+    -- (buffer variable, not vim.bo), so this rule is what makes the mapping
+    -- real for the first time
+    [".*/kitty/.*%.session"] = "kitty-session",
     [".*/makedefs/.*"] = "make",
     [".*/share/zsh/(site-)?functions/.*"] = "zsh",
     [".*/testdata/.*/.*%.go%.golden"] = "go",
@@ -185,7 +189,7 @@ vim.filetype.add({
       { priority = -math.huge },
     },
     [".*README.(%a+)"] = function(_, _, ext)
-      util.switch(ext)({
+      return util.switch(ext)({
         ["md"] = function()
           return "markdown"
         end,

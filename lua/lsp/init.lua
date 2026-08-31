@@ -45,9 +45,9 @@ vim.diagnostic.config({
   virtual_lines = false,
   signs = true,
   float = nil,
-  -- false: redrawing diagnostics on every insert keystroke costs a redraw per
-  -- key and the messages churn while typing anyway.
-  update_in_insert = false,
+  -- true: live diagnostics while typing are worth the per-keystroke redraw
+  -- here (user ruling 2026-09-01, reverting the optimization-pass flip).
+  update_in_insert = true,
   severity_sort = true,
   jump = nil,
 })

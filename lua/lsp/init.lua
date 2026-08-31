@@ -352,7 +352,6 @@ local servers = {
   ["basedpyright"] = require("lsp.basedpyright"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
   ["sourcekit"] = require("lsp.sourcekit"),
-  ["terraformls"] = require("lsp.terraformls"),
   ["vtsls"] = require("lsp.vtsls"),
   ["yamlls"] = require("lsp.yamlls"),
 }

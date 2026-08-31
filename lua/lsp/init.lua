@@ -343,7 +343,6 @@ vim.lsp.config("*", {
 -- moves off this eager path. Entries below still load at LSP init
 -- (one server moves per commit, for bisectability).
 local servers = {
-  ["clangd"] = require("lsp.clangd"),
   ["gopls"] = require("lsp.gopls"),
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),

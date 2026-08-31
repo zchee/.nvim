@@ -4,11 +4,15 @@
 -- Boots the FULL user config inside real pty sessions (jobstart with
 -- pty = true) and asserts the lazy-loading budget invariants:
 --
---   1. no file + 3 s idle: blink.cmp / copilot / schemastore absent from
---      package.loaded, and nvim-lspconfig is not even a lazy spec (the
---      plugin is uninstalled -- servers are native lsp/ configs).
---   2. opening a Go fixture: gopls attaches while blink.cmp stays unloaded
---      (its InsertEnter trigger must survive the LSP boot).
+--   1. no file + 3 s idle: schemastore absent from package.loaded;
+--      blink.cmp / copilot may be present ONLY via the tagged cooperative
+--      warmup (round-2 R2 loads the insert stack at UIEnter+800ms, one
+--      plugin per tick, tagging each in vim.g.warmup_loaded) -- an untagged
+--      load means the InsertEnter laziness broke; and nvim-lspconfig is not
+--      even a lazy spec (the plugin is uninstalled -- servers are native
+--      lsp/ configs).
+--   2. opening a Go fixture: gopls attaches while blink.cmp stays off the
+--      InsertEnter path (unloaded, or loaded only by the tagged warmup).
 --   3. opening a JSON fixture: schemastore loads (the catalog materializes
 --      only when jsonls resolves).
 --
@@ -83,6 +87,7 @@ local function collect_and_quit()
       schemastore = package.loaded["schemastore"] ~= nil,
     },
     lsp_clients = clients,
+    warmup_loaded = vim.g.warmup_loaded or {},
     messages = vim.fn.execute("messages"),
   }
   local f = assert(io.open(out, "w"))
@@ -180,6 +185,13 @@ local function plugin_loaded(report, name)
   return false
 end
 
+-- A plugin loaded by the cooperative warmup (lua/config/warmup.lua) is
+-- tagged in vim.g.warmup_loaded; a load that is neither absent nor tagged
+-- came through the InsertEnter path this spec must keep lazy.
+local function warmup_tagged(report, name)
+  return has(report.warmup_loaded or {}, name)
+end
+
 -- Round-2 R1 demotion set: none of these may load in a no-file idle session.
 -- Each entry names the real trigger it was moved to.
 local idle_absent = {
@@ -242,8 +254,14 @@ local ok, err = pcall(function()
   -- scenario 1: no file, 3 s idle
   do
     local report = run_pty("idle", nil, 30000)
-    assert(not report.package_loaded.blink, "blink.cmp must stay unloaded during a no-file idle session")
-    assert(not report.package_loaded.copilot, "copilot must stay unloaded during a no-file idle session")
+    assert(
+      not report.package_loaded.blink or warmup_tagged(report, "blink.cmp"),
+      "blink.cmp may load in a no-file idle session only through the tagged warmup path"
+    )
+    assert(
+      not report.package_loaded.copilot or warmup_tagged(report, "copilot.lua"),
+      "copilot may load in a no-file idle session only through the tagged warmup path"
+    )
     assert(not report.package_loaded.schemastore, "schemastore must stay unloaded during a no-file idle session")
     assert(
       not has(report.spec_names, "nvim-lspconfig"),
@@ -272,7 +290,10 @@ local ok, err = pcall(function()
       has(report.lsp_clients, "gopls"),
       "gopls must attach to the Go fixture (clients: " .. table.concat(report.lsp_clients, ",") .. ")"
     )
-    assert(not report.package_loaded.blink, "blink.cmp must stay unloaded until a real InsertEnter, even with LSP up")
+    assert(
+      not report.package_loaded.blink or warmup_tagged(report, "blink.cmp"),
+      "blink.cmp must stay off the InsertEnter path with LSP up (unloaded, or loaded only by the tagged warmup)"
+    )
     assert(
       not report.package_loaded.schemastore,
       "schemastore must stay unloaded in a Go session (jsonls never resolves)"

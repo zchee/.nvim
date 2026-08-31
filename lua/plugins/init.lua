@@ -634,7 +634,18 @@ return {
     {
       "mopp/vim-operator-convert-case",
       event = "VeryLazy",
-      config = function()
+      dependencies = {
+        "kana/vim-operator-user",
+      },
+    },
+    {
+      "AndrewRadev/switch.vim",
+      -- the only live entry is the manual `gs` -> `:Switch` map in
+      -- lua/config/keymap.lua; the command stub covers it. The globals moved
+      -- here from the (unrelated) convert-case spec: `init` runs at startup,
+      -- so g:switch_mapping is cleared before the plugin ever loads.
+      cmd = { "Switch", "SwitchReverse" },
+      init = function()
         vim.g.switch_mapping = ""
         vim.g.switch_custom_definitions = {
           { 1, 0 },
@@ -645,13 +656,6 @@ return {
           { "static", "dynamic" },
         }
       end,
-      dependencies = {
-        "kana/vim-operator-user",
-      },
-    },
-    {
-      "AndrewRadev/switch.vim",
-      event = "VeryLazy",
     },
     {
       "junegunn/vim-easy-align",
@@ -661,11 +665,21 @@ return {
     },
     {
       "tyru/open-browser.vim",
-      event = "VeryLazy",
+      -- gx (n/v) in lua/config/keymap.lua feeds this <Plug>; stubbing the
+      -- <Plug> itself (accelerated-jk pattern) survives that noremap map,
+      -- because an rhs starting with <Plug> is always remapped.
+      keys = {
+        { "<Plug>(openbrowser-smart-search)", mode = { "n", "v" } },
+      },
     },
     {
       "tkmpypy/chowcho.nvim",
-      event = "VeryLazy",
+      -- No live entry point: every win_keymap_set() call in
+      -- lua/plugins/chowcho.lua is commented out, so the VeryLazy load only
+      -- paid setup cost for an unreachable picker. Module-loader lazy keeps
+      -- require("chowcho")/require("plugins.chowcho") working if a map
+      -- returns; restore-or-remove is tracked with the round-2 lead.
+      lazy = true,
       config = function()
         require("plugins.chowcho")
       end,
@@ -802,7 +816,9 @@ return {
     },
     {
       "folke/trouble.nvim",
-      event = "VeryLazy",
+      -- every entry point is `:Trouble ...` (lua/lsp/init.lua keymaps run
+      -- `<Cmd>Trouble ...<CR>`); the command stub loads it on first use.
+      cmd = "Trouble",
       opts = {
         auto_close = true,
         auto_preview = true,
@@ -866,7 +882,11 @@ return {
     {
       -- hbac.nvim: Auto close unused buffers
       "axkirillov/hbac.nvim",
-      event = "VeryLazy",
+      -- autoclose=true is the whole point: hbac must count buffers as they
+      -- appear, so its true trigger is the first listed buffer (BufAdd never
+      -- fires for the initial startup buffer), not a key or command.
+      event = "BufAdd",
+      cmd = "Hbac",
       opts = {
         autoclose = true,
         threshold = 10,
@@ -875,7 +895,10 @@ return {
     },
     {
       "gbprod/yanky.nvim",
-      event = "VeryLazy",
+      -- no y/p remaps exist in this config; the ring only has value if it
+      -- records every yank, so the first TextYankPost is the real trigger
+      -- (lazy re-emits the event after loading, so that yank is captured).
+      event = "TextYankPost",
       keys = {
         { "<Leader>p", false },
         {

@@ -488,16 +488,6 @@ return {
       end,
     },
     {
-      "nvim-lualine/lualine.nvim",
-      event = "VeryLazy",
-      dependencies = {
-        "nvim-tree/nvim-web-devicons",
-      },
-      config = function()
-        require("plugins.lualine")
-      end,
-    },
-    {
       -- dropbar.nvim: winbar breadcrumbs (replaces lspsaga's symbol_in_winbar)
       "Bekaboo/dropbar.nvim",
       -- winbar breadcrumbs need a file window; nothing to draw at idle.
@@ -516,16 +506,6 @@ return {
       },
       config = function()
         require("plugins.dropbar")
-      end,
-    },
-    {
-      "akinsho/bufferline.nvim",
-      event = "VeryLazy",
-      dependencies = {
-        "nvim-tree/nvim-web-devicons",
-      },
-      config = function()
-        require("plugins.bufferline")
       end,
     },
     {

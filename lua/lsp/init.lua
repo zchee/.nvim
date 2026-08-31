@@ -357,7 +357,6 @@ local servers = {
   ["terraformls"] = require("lsp.terraformls"),
   ["vtsls"] = require("lsp.vtsls"),
   ["yamlls"] = require("lsp.yamlls"),
-  ["zls"] = require("lsp.zls"),
 }
 for server, config in pairs(servers) do
   vim.lsp.config(server, config)

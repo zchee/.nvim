@@ -228,39 +228,11 @@ return {
       --     fileMatch = ".*/%.?gemini/settings.json",
       --   },
       -- },
-      schemas = require("schemastore").json.schemas({
-        -- `ignore` and `select`: https://github.com/b0o/SchemaStore.nvim/blob/main/lua/schemastore/catalog.lua
-        -- ignore = {
-        --   "Codex Hooks",
-        -- },
-        -- select = {
-        --   ".eslintrc",
-        --   "package.json",
-        -- },
-        -- replace = {
-        --   ["Codex Hooks"] = {
-        --     name = "Codex Hooks",
-        --     description = "OpenAI Codex hooks configuration file",
-        --     url = "https://raw.githubusercontent.com/zchee/schema/refs/heads/main/codex.hooks.schema.json",
-        --     fileMatch = ".codex/hooks.json",
-        --   },
-        -- },
-        -- extra = {
-        --   {
-        --     name = "Codex Hooks",
-        --     description = "Codex hooks JSON Schema",
-        --     fileMatch = ".*/%.?codex/hooks.json",
-        --     url = "https://raw.githubusercontent.com/zchee/schema/refs/heads/main/codex.hooks.schema.json",
-        --   },
-        --   {
-        --     name = "Codex Plugin Manifest",
-        --     description = "OpenAI Codex plugin manifest file",
-        --     fileMatch = "**/%.codex-plugin/plugin.json",
-        --     url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/codex-plugin-manifest.json",
-        --   },
-        -- },
-      }),
-
+      -- schemas: filled in by before_init below, so the SchemaStore catalog
+      -- (~1000 entries) only materializes when a JSON buffer actually starts
+      -- the server. Config files under lsp/ are read on the first FileType
+      -- event of ANY filetype, so even a module-scope require here would
+      -- load the catalog for a Go-only session.
       validate = {
         enable = true,
       },
@@ -289,4 +261,41 @@ return {
       },
     },
   },
+  -- vim.lsp deepcopies the config per client start, so this mutation stays
+  -- scoped to the starting client (same seam lsp/gopls.lua uses).
+  ---@param config vim.lsp.ClientConfig
+  before_init = function(_, config)
+    config.settings.json.schemas = require("schemastore").json.schemas({
+      -- `ignore` and `select`: https://github.com/b0o/SchemaStore.nvim/blob/main/lua/schemastore/catalog.lua
+      -- ignore = {
+      --   "Codex Hooks",
+      -- },
+      -- select = {
+      --   ".eslintrc",
+      --   "package.json",
+      -- },
+      -- replace = {
+      --   ["Codex Hooks"] = {
+      --     name = "Codex Hooks",
+      --     description = "OpenAI Codex hooks configuration file",
+      --     url = "https://raw.githubusercontent.com/zchee/schema/refs/heads/main/codex.hooks.schema.json",
+      --     fileMatch = ".codex/hooks.json",
+      --   },
+      -- },
+      -- extra = {
+      --   {
+      --     name = "Codex Hooks",
+      --     description = "Codex hooks JSON Schema",
+      --     fileMatch = ".*/%.?codex/hooks.json",
+      --     url = "https://raw.githubusercontent.com/zchee/schema/refs/heads/main/codex.hooks.schema.json",
+      --   },
+      --   {
+      --     name = "Codex Plugin Manifest",
+      --     description = "OpenAI Codex plugin manifest file",
+      --     fileMatch = "**/%.codex-plugin/plugin.json",
+      --     url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/codex-plugin-manifest.json",
+      --   },
+      -- },
+    })
+  end,
 }

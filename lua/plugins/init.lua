@@ -78,22 +78,6 @@ return {
           "onsails/lspkind-nvim",
           "williamboman/mason-lspconfig.nvim",
           {
-            "chrisgrieser/nvim-lsp-endhints",
-            event = "LspAttach",
-          },
-          {
-            "aznhe21/actions-preview.nvim",
-            event = "LspAttach",
-          },
-          {
-            "rachartier/tiny-inline-diagnostic.nvim",
-            event = "LspAttach",
-          },
-          {
-            "lewis6991/hover.nvim",
-            event = "LspAttach",
-          },
-          {
             "b0o/schemastore.nvim",
           },
           {
@@ -103,6 +87,37 @@ return {
         },
         config = function()
           require("lsp")
+        end,
+      },
+      -- Standalone specs, not nvim-lspconfig dependencies: lazy.nvim loads
+      -- dependencies together with their parent, which turned these four
+      -- LspAttach triggers into BufReadPre loads.
+      {
+        "chrisgrieser/nvim-lsp-endhints",
+        event = "LspAttach",
+        config = function()
+          require("plugins.lsp_endhints")
+        end,
+      },
+      {
+        "aznhe21/actions-preview.nvim",
+        event = "LspAttach",
+        config = function()
+          require("plugins.actions_preview")
+        end,
+      },
+      {
+        "rachartier/tiny-inline-diagnostic.nvim",
+        event = "LspAttach",
+        config = function()
+          require("plugins.tiny_inline_diagnostic")
+        end,
+      },
+      {
+        "lewis6991/hover.nvim",
+        event = "LspAttach",
+        config = function()
+          require("plugins.hover")
         end,
       },
       {

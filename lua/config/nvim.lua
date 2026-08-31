@@ -242,6 +242,13 @@ vim.opt.swapfile = false
 vim.opt.visualbell = false
 vim.opt.wrapscan = false
 
+-- :help vim.highlight.priorities
+vim.hl.priorities.syntax = 50
+vim.hl.priorities.treesitter = 130
+vim.hl.priorities.semantic_tokens = 125
+vim.hl.priorities.diagnostics = 150
+vim.hl.priorities.user = 200
+
 vim.cmd.colorscheme("equinusocio_material")
 
 -- Color:

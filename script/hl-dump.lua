@@ -11,18 +11,15 @@
 --
 -- `nvim -l` script mode never loads the user config ('loadplugins' is off
 -- and init.lua is skipped), so the startup paint is replayed here
--- explicitly: apply the colorscheme, then the config.highlight overrides
--- if that module still exists (pre-R3.1 it repainted on VeryLazy; post-
--- R3.1 the overrides live inside the colorscheme and the require quietly
--- no-ops). Running headless with the full config instead would miss the
--- VeryLazy overrides and drown the dump in plugin-defined groups.
+-- explicitly by applying the colorscheme, which since R3.1 carries the
+-- former config.highlight overrides too. Running headless with the full
+-- config instead would drown the dump in plugin-defined groups.
 --
 -- --reapply re-issues :colorscheme after the startup paint, simulating a
 -- user re-applying it mid-session; the dump must not change (round-1's
 -- known gap was overrides lost on re-apply).
 
 vim.cmd.colorscheme("equinusocio_material")
-pcall(require, "config.highlight")
 
 local outfile
 for _, a in ipairs(_G.arg or {}) do

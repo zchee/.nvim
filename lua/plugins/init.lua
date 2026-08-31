@@ -1014,6 +1014,15 @@ return {
       -- heartbeats only matter once editing starts; the burst's heaviest
       -- plugin (8-10 ms) has no business in a no-file idle session.
       event = { "BufReadPost", "BufNewFile", "InsertEnter" },
+      init = function()
+        -- plugin/wakatime.vim self-initializes with require("wakatime").setup()
+        -- (no opts) the moment lazy sources it -- BEFORE lazy can call
+        -- setup(opts) -- and setup_cli() resolves the CLI once, on that first
+        -- call. Pre-setting the plugin's own load guard skips the vimscript
+        -- auto-init entirely, so lazy's setup(opts) is the first init and
+        -- cli_path/python_binary are actually honored.
+        vim.g.loaded_wakatime = 1
+      end,
       opts = {
         cli_path = util.homebrew_binary("wakatime-cli-head", "wakatime-cli"),
         python_binary = util.homebrew_binary("python@3.14", "python3"),

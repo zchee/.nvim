@@ -683,6 +683,9 @@ return {
     },
     {
       "saecki/crates.nvim",
+      -- upstream-recommended trigger; without one this spec (defaults.lazy =
+      -- true) never loaded at all.
+      event = { "BufRead Cargo.toml" },
       opts = require("plugins.crates"),
     },
 

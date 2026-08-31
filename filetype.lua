@@ -157,6 +157,33 @@ vim.filetype.add({
     -- the `.` of .cache included; the match is unanchored, so `/.*` is what
     -- carries the "everything under here" the `**` was reaching for.
     [vim.pesc(joinpath(cache_home, "go", "go-build")) .. "/.*"] = "go",
+    -- ftdetect/gotmpl.vim replacement: that autocmd ran an unanchored
+    -- whole-buffer VimL search() on EVERY BufNewFile/BufRead and clobbered
+    -- filetypes other rules had already set. Negative priority makes this a
+    -- fallback consulted only when no filename/extension/pattern rule (here
+    -- or in the runtime) decided anything, and the scan is bounded to the
+    -- first 20 lines. Matches Go template actions such as `{{.Name}}`,
+    -- `{{ .Name }}`, and `{{$var}}`.
+    --
+    -- Keyed ".*.*", not ".*": vim.filetype.add stores user patterns by their
+    -- implicitly anchored form ("^<pat>$"), so snacks.nvim's bigfile feature
+    -- registering ".*" at setup would silently replace a ".*" entry here --
+    -- and an explicit "^" cannot be used because anchoring would double it
+    -- into a never-matching "^^...". ".*.*" matches identically under its
+    -- own slot.
+    [".*.*"] = {
+      function(_, bufnr)
+        if bufnr == nil then
+          return
+        end
+        for _, line in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, 20, false)) do
+          if line:find("{{%s*[%.%$]") then
+            return "gotmpl"
+          end
+        end
+      end,
+      { priority = -math.huge },
+    },
     [".*README.(%a+)"] = function(_, _, ext)
       util.switch(ext)({
         ["md"] = function()

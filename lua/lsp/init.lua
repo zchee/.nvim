@@ -337,17 +337,9 @@ vim.lsp.config("*", {
 -- ["ts_ls"] = require("lsp.ts_ls"),
 -- ["tsgo"] = require("lsp.tsgo"),
 -- ["zizmor"] = require("lsp.zizmor"),
--- Pending migration to the native runtimepath form. A server whose file
--- lives in lsp/<name>.lua at the repo root needs no entry here: vim.lsp
--- resolves those lazily on the first FileType event, so its module cost
--- moves off this eager path. Entries below still load at LSP init
--- (one server moves per commit, for bisectability).
-local servers = {
-}
-for server, config in pairs(servers) do
-  vim.lsp.config(server, config)
-end
-
+-- Every enabled server lives in the native runtimepath form, lsp/<name>.lua
+-- at the repo root: vim.lsp resolves those lazily on the first FileType
+-- event, so no server module loads with this file.
 vim.lsp.enable({
   "asm_lsp",
   "basedpyright",

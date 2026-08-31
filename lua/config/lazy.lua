@@ -96,9 +96,11 @@ local lazy_config = {
     frequency = 3600,
     check_pinned = false,
   },
+  -- false: watching every spec file for edits costs libuv fs handles and a
+  -- re-scan on each change; config edits here are followed by a restart anyway.
   change_detection = {
-    enabled = true,
-    notify = true,
+    enabled = false,
+    notify = false,
   },
   performance = {
     cache = {
@@ -107,9 +109,9 @@ local lazy_config = {
     reset_packpath = true,
     rtp = {
       reset = true,
-      paths = {
-        vim.fs.joinpath(data_dir, "lazy", "plenary.nvim"),
-      },
+      -- no force-added paths: nothing requires plenary before lazy.nvim
+      -- loads it as a plugin dependency
+      paths = {},
       disabled_plugins = {
         "editorconfig",
         "getscript",

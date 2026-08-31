@@ -351,7 +351,6 @@ local servers = {
   ["markdown_oxide"] = require("lsp.markdown_oxide"),
   ["basedpyright"] = require("lsp.basedpyright"),
   ["ruby_lsp"] = require("lsp.ruby_lsp"),
-  ["vtsls"] = require("lsp.vtsls"),
   ["yamlls"] = require("lsp.yamlls"),
 }
 for server, config in pairs(servers) do

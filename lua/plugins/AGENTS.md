@@ -25,7 +25,6 @@ below and in each row's description.
 | `bufferline.lua` | akinsho/bufferline.nvim; `numbers = "buffer_id"`, `nvim_lsp` diagnostics indicator |
 | `chatgpt.json` | Prompt-template data for `chatgpt.lua`; DEAD — no `ChatGPT.nvim` spec exists in `init.lua` |
 | `chatgpt.lua` | jackMort/ChatGPT.nvim config; API key via `op read op://...`; DEAD — no active spec references it |
-| `chowcho.lua` | tkmpypy/chowcho.nvim: window picker; rounded border, custom `<C-w>` window-select keymaps |
 | `claudecode.lua` | coder/claudecode.nvim: Claude Code IDE bridge; `terminal_cmd` launches `omc --yolo` in a snacks float |
 | `codecompanion.lua` | olimorris/codecompanion.nvim: chat/inline AI; anthropic adapter, mcphub + codecompanion-history extensions |
 | `codecov.lua` | zchee/codecov.nvim (local plugin) setup: coverage sign colors, api.codecov.io endpoint, token via CODECOV_NVIM_API_TOKEN |

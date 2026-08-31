@@ -104,7 +104,7 @@ if vim.fn.executable("rg") == 1 then
 end
 vim.opt.helplang = { "en" }
 vim.o.hidden = true
-vim.o.history = 10000 -- default: 10000 (maximum)
+vim.o.history = 1000 -- default: 10000 (maximum); capped: ShaDa saves/merges cmdline history up to this ('shada' sets no ':' cap), and 10k entries made every ShaDa read/write pay for history nobody scrolls back through
 vim.o.iminsert = 0
 vim.o.imsearch = 0
 vim.o.inccommand = "nosplit"

@@ -18,9 +18,12 @@
 --     synchronously waiting on `node --version` (copilot.lsp.nodejs caches
 --     it in node_version). A prewarm unit runs that probe through async
 --     vim.system and seeds the cache; the copilot tick gates on the seed.
---   * blink.cmp (~19-21 ms): mostly require()s of blink.cmp/luasnip/
---     autopairs modules inside plugins/blink.lua. Prewarm units pull those
---     module graphs in earlier ticks, leaving the setup() calls.
+--   * blink.cmp (~19-21 ms): mostly require()s of blink.cmp modules inside
+--     plugins/blink.lua, plus -- before round-3 W1 split them into the
+--     LuaSnip/nvim-autopairs ticks via their specs' own configs -- the
+--     luasnip/autopairs setup code. Prewarm units pull each plugin's module
+--     graph in the tick before its config runs, leaving each plugin tick
+--     only its own setup() work.
 
 local M = {}
 
@@ -147,6 +150,23 @@ end
 ---@type WarmupUnit[]
 M.units = {
   { name = "mini.icons", plugin = "mini.icons" },
+  {
+    name = "luasnip-modules",
+    prewarm = function()
+      -- plugins/luasnip.lua (the LuaSnip spec config, run by the next tick)
+      -- requires these directly or through from_lua.load(); the plugin is
+      -- not loaded yet, so pull them via prerequire to keep the config tick
+      -- to setup() and snippet-registration work only.
+      prerequire("LuaSnip", {
+        "luasnip",
+        "luasnip.loaders.from_lua",
+        "luasnip.loaders.util",
+        "luasnip.nodes.snippet",
+        "luasnip.util.jsregexp",
+        "luasnip.extras.fmt",
+      })
+    end,
+  },
   { name = "LuaSnip", plugin = "LuaSnip" },
   { name = "blink.lib", plugin = "blink.lib" },
   { name = "copilot-node-seed", prewarm = seed_copilot_node },
@@ -180,20 +200,6 @@ M.units = {
     end,
   },
   { name = "nvim-autopairs", plugin = "nvim-autopairs" },
-  {
-    name = "insert-modules",
-    prewarm = function()
-      -- plugins/blink.lua (and the snippet loader it calls) require these;
-      -- their plugins are loaded by the ticks above, so these are plain rtp
-      -- requires. The luasnip.* set is what from_lua.load() pulls in.
-      require("luasnip")
-      require("luasnip.loaders.from_lua")
-      require("luasnip.loaders.util")
-      require("luasnip.nodes.snippet")
-      require("luasnip.util.jsregexp")
-      require("luasnip.extras.fmt")
-    end,
-  },
   {
     name = "blink-modules-1",
     prewarm = function()

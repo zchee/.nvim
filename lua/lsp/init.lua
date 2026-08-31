@@ -346,7 +346,6 @@ local servers = {
   ["gopls"] = require("lsp.gopls"),
   ["helm_ls"] = require("lsp.helm_ls"),
   ["jsonls"] = require("lsp.jsonls"),
-  ["lua_ls"] = require("lsp.lua_ls"),
   ["markdown_oxide"] = require("lsp.markdown_oxide"),
   ["yamlls"] = require("lsp.yamlls"),
 }

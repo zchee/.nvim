@@ -1,0 +1,258 @@
+-- Embed UI latency client (round-3.5 plan item 3).
+--
+-- Spawns `nvim --embed` as a child process, attaches a msgpack-RPC UI over
+-- the child's stdio pipes (vim.uv.spawn + vim.mpack), and measures:
+--   - attach -> first "redraw" batch ending in "flush" (first paint)
+--   - nvim_input keystroke -> next "flush" (median of 10, one per 50 ms)
+-- No pty sits between client and server, so the numbers are free of the
+-- ~100 ms DSR/termresponse artifact that inflates `script -q` pty runs.
+--
+-- Usage: nvim -l script/ui-latency.lua [--clean|--full] [--socket-free]
+--   --clean        child runs with -u NONE -i NONE (config floor)
+--   --full         child runs the real config (default)
+--   --socket-free  strip NVIM / NVIM_LISTEN_ADDRESS from the child env so a
+--                  parent nvim server never leaks into the measurement
+--
+-- Output (machine-parseable, one per line):
+--   mode=<clean|full>
+--   attach_to_first_flush_ms=<float>
+--   input_to_flush_ms_median=<float>
+--   input_to_flush_ms_samples=<comma-separated floats>
+-- Every phase is bounded by a deadline; the script never hangs (overall
+-- timeout 30 s) and exits non-zero on any failure or timeout.
+
+local uv = vim.uv
+
+local OVERALL_TIMEOUT_MS = 30000
+local SETTLE_MS = 300 -- drain stray startup flushes before feeding input
+local KEYSTROKES = 10
+local KEY_INTERVAL_MS = 50
+
+local mode = "full"
+local socket_free = false
+for _, a in ipairs(arg) do
+  if a == "--clean" then
+    mode = "clean"
+  elseif a == "--full" then
+    mode = "full"
+  elseif a == "--socket-free" then
+    socket_free = true
+  else
+    io.stderr:write(("ui-latency: unknown argument %q\n"):format(a))
+    os.exit(64)
+  end
+end
+
+local done = false
+local failure = nil
+local child_exited = false
+
+local stdin_pipe = assert(uv.new_pipe(false))
+local stdout_pipe = assert(uv.new_pipe(false))
+local stderr_pipe = assert(uv.new_pipe(false))
+local timers = {}
+local process
+
+local function fail(message)
+  if not failure then
+    failure = message
+  end
+  done = true
+end
+
+--- One-shot uv timer kept in `timers` so cleanup can cancel it.
+local function after(ms, fn)
+  local t = assert(uv.new_timer())
+  timers[#timers + 1] = t
+  t:start(ms, 0, function()
+    t:stop()
+    fn()
+  end)
+  return t
+end
+
+local spawn_args = { "--embed" }
+if mode == "clean" then
+  vim.list_extend(spawn_args, { "-u", "NONE", "-i", "NONE" })
+end
+
+local spawn_env = nil
+if socket_free then
+  spawn_env = {}
+  for name, value in pairs(uv.os_environ()) do
+    if name ~= "NVIM" and name ~= "NVIM_LISTEN_ADDRESS" then
+      spawn_env[#spawn_env + 1] = name .. "=" .. value
+    end
+  end
+end
+
+local t0 = uv.hrtime()
+local spawn_err
+process, spawn_err = uv.spawn(vim.v.progpath, {
+  args = spawn_args,
+  env = spawn_env,
+  stdio = { stdin_pipe, stdout_pipe, stderr_pipe },
+}, function()
+  child_exited = true
+  done = true
+end)
+if not process then
+  io.stderr:write(("ui-latency: spawn failed: %s\n"):format(tostring(spawn_err)))
+  os.exit(1)
+end
+
+-- Minimal msgpack-RPC framing: [0,msgid,method,args] request out,
+-- [1,msgid,err,result] response / [2,method,args] notification in.
+local msgid = 0
+local pending = {}
+local function request(method, params, cb)
+  msgid = msgid + 1
+  pending[msgid] = cb or false
+  stdin_pipe:write(vim.mpack.encode({ 0, msgid, method, params }))
+end
+
+-- Measurement state machine, driven entirely by "flush" redraw events.
+-- Phases: attach (first paint) -> settle -> insert ("i" fed) -> keys
+-- (KEYSTROKES x "x", latency = send -> next flush) -> quit.
+local phase = "attach"
+local attach_ms = nil
+local samples = {}
+local t_sent = nil
+
+local function send_key()
+  t_sent = uv.hrtime()
+  request("nvim_input", { "x" })
+end
+
+local function on_flush(now)
+  if phase == "attach" then
+    attach_ms = (now - t0) / 1e6
+    phase = "settle"
+    after(SETTLE_MS, function()
+      phase = "insert"
+      t_sent = uv.hrtime()
+      request("nvim_input", { "i" })
+    end)
+  elseif phase == "insert" and t_sent then
+    t_sent = nil
+    phase = "keys"
+    after(KEY_INTERVAL_MS, send_key)
+  elseif phase == "keys" and t_sent then
+    samples[#samples + 1] = (now - t_sent) / 1e6
+    t_sent = nil
+    if #samples >= KEYSTROKES then
+      phase = "quit"
+      request("nvim_command", { "qa!" })
+    else
+      after(KEY_INTERVAL_MS, send_key)
+    end
+  end
+end
+
+local function handle_message(msg)
+  if type(msg) ~= "table" then
+    return fail("unexpected non-array msgpack-RPC message")
+  end
+  if msg[1] == 1 then
+    local cb = pending[msg[2]]
+    pending[msg[2]] = nil
+    if msg[3] ~= nil and msg[3] ~= vim.NIL and phase ~= "quit" then
+      return fail(("RPC error: %s"):format(vim.inspect(msg[3])))
+    end
+    if cb then
+      cb(msg[4])
+    end
+  elseif msg[1] == 2 and msg[2] == "redraw" then
+    local now = uv.hrtime()
+    for _, event in ipairs(msg[3]) do
+      if event[1] == "flush" then
+        on_flush(now)
+        break
+      end
+    end
+  end
+end
+
+-- vim.mpack.Unpacker retains partial-message state across calls: feed each
+-- chunk once, pull complete messages out with the returned position, and a
+-- nil result means the chunk's tail is buffered inside the unpacker.
+local unpacker = vim.mpack.Unpacker()
+stdout_pipe:read_start(function(err, chunk)
+  if err then
+    return fail("stdout read error: " .. tostring(err))
+  end
+  if not chunk then
+    if phase ~= "quit" then
+      fail("child closed stdout before the measurement finished")
+    end
+    return
+  end
+  local pos = 1
+  while pos <= #chunk do
+    local ok, msg, next_pos = pcall(unpacker, chunk, pos)
+    if not ok then
+      return fail("msgpack decode error: " .. tostring(msg))
+    end
+    if msg == nil then
+      return
+    end
+    handle_message(msg)
+    if done then
+      return
+    end
+    pos = next_pos
+  end
+end)
+stderr_pipe:read_start(function(_, _) end) -- drain; full config may chatter
+
+request("nvim_ui_attach", { 120, 40, { ext_linegrid = true } })
+
+vim.wait(OVERALL_TIMEOUT_MS, function()
+  return done
+end, 10)
+
+if not done then
+  failure = ("timed out after %d ms in phase %q (%d/%d samples)"):format(
+    OVERALL_TIMEOUT_MS,
+    phase,
+    #samples,
+    KEYSTROKES
+  )
+end
+
+for _, t in ipairs(timers) do
+  if not t:is_closing() then
+    t:stop()
+    t:close()
+  end
+end
+for _, pipe in ipairs({ stdin_pipe, stdout_pipe, stderr_pipe }) do
+  if not pipe:is_closing() then
+    pipe:close()
+  end
+end
+if process and not child_exited then
+  process:kill("sigkill")
+end
+vim.wait(1000, function()
+  return child_exited
+end, 10)
+if process and not process:is_closing() then
+  process:close()
+end
+
+if failure then
+  io.stderr:write("ui-latency: " .. failure .. "\n")
+  os.exit(1)
+end
+
+table.sort(samples)
+local median = samples[math.ceil(#samples / 2)]
+local formatted = {}
+for _, s in ipairs(samples) do
+  formatted[#formatted + 1] = ("%.3f"):format(s)
+end
+io.stdout:write(("mode=%s\n"):format(mode))
+io.stdout:write(("attach_to_first_flush_ms=%.3f\n"):format(attach_ms))
+io.stdout:write(("input_to_flush_ms_median=%.3f\n"):format(median))
+io.stdout:write(("input_to_flush_ms_samples=%s\n"):format(table.concat(formatted, ",")))

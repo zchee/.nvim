@@ -158,7 +158,9 @@ return {
       {
         "stevearc/conform.nvim",
         event = "VeryLazy",
-        opts = require("plugins.conform"),
+        opts = function()
+          return require("plugins.conform")
+        end,
       },
       {
         "mfussenegger/nvim-lint",
@@ -632,7 +634,9 @@ return {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-web-devicons",
       },
-      opts = require("plugins.todo-comment"),
+      opts = function()
+        return require("plugins.todo-comment")
+      end,
     },
   },
 
@@ -745,7 +749,9 @@ return {
       -- upstream-recommended trigger; without one this spec (defaults.lazy =
       -- true) never loaded at all.
       event = { "BufRead Cargo.toml" },
-      opts = require("plugins.crates"),
+      opts = function()
+        return require("plugins.crates")
+      end,
     },
 
     -- marp.nvim: Markdown presentations
@@ -787,7 +793,9 @@ return {
           },
           {
             "3rd/image.nvim",
-            opts = require("plugins.image"),
+            opts = function()
+              return require("plugins.image")
+            end,
           },
         },
         config = function()
@@ -872,7 +880,9 @@ return {
       dependencies = {
         "echasnovski/mini.icons",
       },
-      opts = require("plugins.which-key"),
+      opts = function()
+        return require("plugins.which-key")
+      end,
       keys = {
         {
           "<Leader>?",

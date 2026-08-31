@@ -4,20 +4,30 @@ local M = {}
 
 local autocmd_user = vim.api.nvim_create_augroup("AutocmdUser", { clear = false })
 
+-- 'path' is a global option: FileType fires per buffer, so unguarded appends
+-- grow it with duplicate entries for the life of the session.
+local path_appended = {}
+local function append_path_once(dir)
+  if not path_appended[dir] then
+    path_appended[dir] = true
+    vim.opt.path:append(dir)
+  end
+end
+
 vim.api.nvim_create_autocmd("FileType", {
   group = autocmd_user,
   pattern = "go",
   callback = function()
-    vim.opt.path:append("/usr/local/go/pkg/include")
+    append_path_once("/usr/local/go/pkg/include")
   end,
 })
 
 vim.api.nvim_create_autocmd("FileType", {
   group = autocmd_user,
-  pattern = "c, cpp, objc, objcpp",
+  pattern = { "c", "cpp", "objc", "objcpp" },
   callback = function()
-    if vim.fn.isdirectory("/usr/local/Frameworks/Python.framework/Headers") then
-      vim.opt.path:append("/usr/local/Frameworks/Python.framework/Headers")
+    if vim.fn.isdirectory("/usr/local/Frameworks/Python.framework/Headers") == 1 then
+      append_path_once("/usr/local/Frameworks/Python.framework/Headers")
     end
   end,
 })
@@ -43,10 +53,16 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 --- macOS
-if vim.fn.has("mac") then
+if vim.fn.has("mac") == 1 then
   vim.opt.wildignore:append("DS_Store") -- macOS only
 
+  local macos_headers_added = false
   local path_add_macos_headers = function()
+    if macos_headers_added then
+      return
+    end
+    macos_headers_added = true
+
     local developer_dir = "/Applications/Xcode.app/Contents/Developer" -- vim.fn.system("xcode-select -p")
     local sdk_dir = vim.fs.joinpath(developer_dir, "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk")
     local toolchain_dir = vim.fs.joinpath(developer_dir, "/Toolchains/XcodeDefault.xctoolchain")
@@ -61,30 +77,33 @@ if vim.fn.has("mac") then
 
     -- macOS frameworks
     local frameworks_dir = vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "/path/Frameworks")
-    if vim.fn.isdirectory(frameworks_dir) then
+    if vim.fn.isdirectory(frameworks_dir) == 1 then
       vim.opt.path:append(frameworks_dir)
     end
   end
 
   vim.api.nvim_create_autocmd("FileType", {
+    group = autocmd_user,
     pattern = { "c", "cpp", "objc", "objcpp", "go" },
     callback = path_add_macos_headers,
   })
 end
 -- C familly
 vim.api.nvim_create_autocmd("FileType", {
+  group = autocmd_user,
   pattern = { "c", "cpp", "objc", "objcpp", "go" },
   callback = function()
-    if vim.fn.isdirectory(vim.fs.joinpath(util.homebrew_prefix(), "Frameworks/Python.framework/Headers")) then
-      vim.opt.path:append(vim.fs.joinpath(util.homebrew_prefix(), "Frameworks/Python.framework/Headers"))
+    if vim.fn.isdirectory(vim.fs.joinpath(util.homebrew_prefix(), "Frameworks/Python.framework/Headers")) == 1 then
+      append_path_once(vim.fs.joinpath(util.homebrew_prefix(), "Frameworks/Python.framework/Headers"))
     end
   end,
 })
 --- Go
 vim.api.nvim_create_autocmd("FileType", {
+  group = autocmd_user,
   pattern = { "go" },
   callback = function()
-    vim.opt.path:append(vim.fs.joinpath(util.prefix(), "go/pkg/include"))
+    append_path_once(vim.fs.joinpath(util.prefix(), "go/pkg/include"))
   end,
 })
 
@@ -427,6 +446,16 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 --                        vim.lsp.buf.format() for *.go/*.toml -- the format
 --                        pass duplicated conform's go lsp_format = "first",
 --                        and its formatting_options (tabSize = 1,
+--                        insertSpaces = false) contradicted the tombi indent
+--                        settings for TOML.
+--
+-- Trade-off accepted with the removal: goimports-rereviser does not add
+-- imports for unresolved identifiers (verified), so saving no longer pulls in
+-- a missing import the way gopls organizeImports did. Use the LSP code action
+-- on demand for that.
+
+-- FocusGained
+-- github.com/zchee/imectl
 --
 -- vim.fn.executable() returns 0/1 and 0 is truthy in Lua, so the guard used
 -- to pass with imectl absent and spawned a failing process on every focus
@@ -449,16 +478,6 @@ function M.make_imectl_callback(executable, jobstart)
   end
 end
 
---                        insertSpaces = false) contradicted the tombi indent
---                        settings for TOML.
---
--- Trade-off accepted with the removal: goimports-rereviser does not add
--- imports for unresolved identifiers (verified), so saving no longer pulls in
--- a missing import the way gopls organizeImports did. Use the LSP code action
--- on demand for that.
-
--- FocusGained
--- github.com/zchee/imectl
 vim.api.nvim_create_autocmd({ "FocusGained" }, {
   group = autocmd_user,
   pattern = { "*" },
@@ -485,9 +504,15 @@ vim.api.nvim_create_autocmd({ "TermOpen" }, {
 
 ---Lanuage
 -- Go
-vim.api.nvim_create_autocmd("BufEnter", {
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+  group = autocmd_user,
   pattern = "go.mod",
   callback = function(e)
+    if vim.b[e.buf].gomod_user_commands then
+      return
+    end
+    vim.b[e.buf].gomod_user_commands = true
+
     vim.api.nvim_buf_create_user_command(e.buf, "GomodPinReplace", function()
       vim.cmd("'<,'>s/^\\t\\(.*\\)\\s\\(.*\\)/\\t\\1 => \\1 \\2/g | nohlsearch")
     end, {
@@ -597,9 +622,9 @@ vim.on_key(M.auto_hlsearch_on_key, vim.api.nvim_create_namespace("auto_hlsearch"
 --     pattern = { "*" },
 --     callback = function(args)
 --       local ev = vim.inspect("event: " .. args.event)
-
-return M
 --       vim.cmd.echomsg(ev)
 --     end,
 --   }
 -- )
+
+return M

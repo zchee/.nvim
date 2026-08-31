@@ -14,6 +14,9 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 ## Key Files
 | File | Description |
 |------|-------------|
+| `auto_hlsearch_on_key_spec.lua` | `lua/config/autocmd.lua` — the auto-hlsearch `vim.on_key` handler: replaces `vim.fn` with a proxy that errors on any access (the handler runs per physical keystroke and must never cross the VimL bridge), then drives the search-key truth table, the `typed == ""` mapping-expansion early return, the no-redundant-option-write path, and the insert-mode gate via `nvim_feedkeys("i", "nx!")` |
+| `imectl_focus_guard_spec.lua` | `lua/config/autocmd.lua` — `make_imectl_callback` (the FocusGained imectl guard): with injected `executable`/`jobstart` deps, asserts `executable() == 0` never reaches jobstart (the pre-fix truthy-`0` bug spawned a failing process per focus gain), `== 1` jobstarts on every event, and the probe-once cache calls `executable()` at most once across repeated events |
+| `lint_debounce_spec.lua` | `lua/plugins/lint.lua` — the nvim-lint trigger wiring with a counting `try_lint` stub preloaded as `lint`: unconfigured filetypes never lint, FileType/BufWritePost lint immediately, an InsertLeave burst collapses to exactly one run per 500 ms quiet window (trailing-edge uv timer per buffer), the timer re-arms, and deleting a buffer cancels its pending run |
 | `conform_organize_imports_spec.lua` | `lua/plugins/conform.lua` — the `lsp_organize_imports` formatter with a stubbed `vim.lsp.buf_request_sync` (gopls does not attach in headless Neovim): asserts the Go chain order, WorkspaceEdit extraction, that edits land in the returned lines and never in the buffer, the stale-lines guard, and the empty/nil-response no-ops |
 | `conform_oxfmt_json5_spec.lua` | `lua/plugins/conform.lua` — the json5 formatter wiring: `formatters_by_ft.json5` is oxfmt alone with `lsp_format = "never"`, the oxfmt `args` always pass a `--config` (project `.oxfmtrc.*` found upward, else the personal one under `XDG_CONFIG_HOME`) and a `--stdin-filepath` oxfmt can infer a dialect from (`.json`/`.json5`/`.jsonc` pass through case-insensitively, an extensionless `.renovaterc` gains `.json5`), and `format_on_save` returns `never` for json5 while everything else keeps `fallback`. Needs `conform.nvim` installed |
 | `conform_taplo_spec.lua` | `lua/plugins/conform.lua` — the taplo formatter wiring: toml maps to taplo, tombi is no longer a formatter, `--config` lands after the `format` subcommand with the stdin args last, and a project's own `.taplo.toml` found by walking upward suppresses `--config` |
@@ -77,7 +80,7 @@ assertion throws, which propagates as a non-zero exit from `nvim`.
 Run any spec with:
 `nvim --headless -u NONE -l tests/<name>_spec.lua`
 Exit code 0 and no output means pass; a thrown `error()` prints a traceback
-and exits non-zero. Run the full suite by looping over all fifteen files (no
+and exits non-zero. Run the full suite by looping over all the spec files (no
 runner script exists — invoke each individually, e.g.
 `for f in tests/*_spec.lua; do nvim --headless -u NONE -l "$f" || echo "FAIL: $f"; done`).
 When adding a spec for a new compat shim or filetype detector, follow the

@@ -153,15 +153,30 @@ end
 --- absolute. It may still name a path that is not there -- callers handing it
 --- to a tool that hard-errors on an unreadable path must stat it first.
 ---
+---
+--- Memoized per varname: fs_realpath is a stat per call and
+--- xdg_cache_home() runs while filetype.lua is sourced at startup. The cache
+--- lives in a module-local, so a module reload (as the filetype specs do)
+--- starts fresh.
+---
+---@type table<string, string>
+local xdg_home_cache = {}
+
 ---@param varname string
 ---@param default string relative to $HOME, per the XDG base directory spec
 ---@return string
 local function xdg_home(varname, default)
+  local cached = xdg_home_cache[varname]
+  if cached then
+    return cached
+  end
   local dir = os.getenv(varname)
   if dir == nil or dir == "" then
     dir = vim.fs.joinpath(vim.uv.os_homedir(), default)
   end
-  return vim.uv.fs_realpath(dir) or dir
+  dir = vim.uv.fs_realpath(dir) or dir
+  xdg_home_cache[varname] = dir
+  return dir
 end
 
 --- Return XDG_CACHE_HOME env path with symbolic links resolved.
@@ -204,31 +219,41 @@ function M.src_path(...)
   return vim.fs.joinpath(vim.uv.os_homedir(), "src", ...)
 end
 
+-- The machine never changes within a session and os_uname() allocates a full
+-- uname table per call; resolve it once for the prefix helpers below.
+local machine = vim.uv.os_uname()["machine"]
+
+local unix_prefix
+if machine == "x86_64" then
+  unix_prefix = "/usr/local"
+elseif machine == "arm64" then
+  unix_prefix = "/opt/local"
+end
+unix_prefix = tostring(unix_prefix)
+
 --- Returns the UNIX prefix directory according to the macOS cpu architecture.
 ---
 ---@param ... string
 ---@return string
 function M.prefix(...)
-  local machine = vim.uv.os_uname()["machine"]
-  local prefix
-  if machine == "x86_64" then
-    prefix = "/usr/local"
-  elseif machine == "arm64" then
-    prefix = "/opt/local"
-  end
-
-  return vim.fs.joinpath(tostring(prefix), ...)
+  return vim.fs.joinpath(unix_prefix, ...)
 end
+
+---@type string?
+local homebrew_prefix_cache
 
 --- Returns the Homebrew prefix directory according to the macOS cpu architecture.
 ---
 ---@return string
 function M.homebrew_prefix()
+  if homebrew_prefix_cache then
+    return homebrew_prefix_cache
+  end
+
   local prefix = os.getenv("HOMEBREW_PREFIX")
 
   -- fallback
   if not prefix then
-    local machine = vim.uv.os_uname()["machine"]
     if machine == "x86_64" then
       prefix = "/usr/local"
     elseif machine == "arm64" then
@@ -236,7 +261,8 @@ function M.homebrew_prefix()
     end
   end
 
-  return tostring(prefix)
+  homebrew_prefix_cache = tostring(prefix)
+  return homebrew_prefix_cache
 end
 
 ---@param binary string binary name

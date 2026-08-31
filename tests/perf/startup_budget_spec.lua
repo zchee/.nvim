@@ -226,6 +226,7 @@ local ok, err = pcall(function()
       "gopls must attach to the Go fixture (clients: " .. table.concat(report.lsp_clients, ",") .. ")"
     )
     assert(not report.package_loaded.blink, "blink.cmp must stay unloaded until a real InsertEnter, even with LSP up")
+    assert(not report.package_loaded.schemastore, "schemastore must stay unloaded in a Go session (jsonls never resolves)")
   end
 
   -- scenario 3: JSON fixture -> schemastore materializes

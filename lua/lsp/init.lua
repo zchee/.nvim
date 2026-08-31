@@ -337,8 +337,12 @@ vim.lsp.config("*", {
 -- ["ts_ls"] = require("lsp.ts_ls"),
 -- ["tsgo"] = require("lsp.tsgo"),
 -- ["zizmor"] = require("lsp.zizmor"),
+-- Pending migration to the native runtimepath form. A server whose file
+-- lives in lsp/<name>.lua at the repo root needs no entry here: vim.lsp
+-- resolves those lazily on the first FileType event, so its module cost
+-- moves off this eager path. Entries below still load at LSP init
+-- (one server moves per commit, for bisectability).
 local servers = {
-  ["asm_lsp"] = require("lsp.asm_lsp"),
   ["bashls"] = require("lsp.bashls"),
   ["clangd"] = require("lsp.clangd"),
   ["dockerls"] = require("lsp.dockerls"),
@@ -360,8 +364,29 @@ local servers = {
 }
 for server, config in pairs(servers) do
   vim.lsp.config(server, config)
-  vim.lsp.enable(server, true)
 end
+
+vim.lsp.enable({
+  "asm_lsp",
+  "basedpyright",
+  "bashls",
+  "clangd",
+  "dockerls",
+  "gopls",
+  "helm_ls",
+  "jsonls",
+  "lua_ls",
+  "markdown_oxide",
+  "neocmake",
+  "protols",
+  "ruby_lsp",
+  "sourcekit",
+  "terraformls",
+  "tombi",
+  "vtsls",
+  "yamlls",
+  "zls",
+})
 
 vim.keymap.set({ "n" }, "K", function()
   require("hover").open()

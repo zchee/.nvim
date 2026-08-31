@@ -7,12 +7,12 @@ require("config.nvim")
 require("config.keymap")
 require("config.autocmd")
 
--- User commands and highlight overrides are not consulted before the UI is
--- up, so they can wait until VeryLazy. nvim/keymap/autocmd above stay
--- synchronous: they are ordering-sensitive against the first buffer.
+-- User commands are not consulted before the UI is up, so they can wait
+-- until VeryLazy. nvim/keymap/autocmd above stay synchronous: they are
+-- ordering-sensitive against the first buffer. The former highlight
+-- override module is folded into colors/equinusocio_material.lua.
 require("util").on_very_lazy(function()
   require("config.command")
-  require("config.highlight")
 end)
 
 if lazy_clipboard ~= nil then

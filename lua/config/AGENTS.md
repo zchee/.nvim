@@ -5,8 +5,9 @@
 
 ## Purpose
 Core, plugin-independent editor configuration: `vim.opt` settings, global
-keymaps, autocommands, user commands, highlight-group overrides, and the
-`lazy.nvim` bootstrap config itself. Loaded by `lua/init.lua` (bootstraps
+keymaps, autocommands, user commands, and the `lazy.nvim` bootstrap config
+itself. Highlight-group overrides live inside
+`colors/equinusocio_material.lua` since the R3.1 colorscheme port. Loaded by `lua/init.lua` (bootstraps
 `lazy.nvim`, then `require("config.lazy")` and `require("config")`).
 `init.lua` in this directory is the aggregator that `require`s the other
 modules in a fixed order.
@@ -14,20 +15,19 @@ modules in a fixed order.
 ## Key Files
 | File | Description |
 |------|--------------|
-| `init.lua` | Aggregator: toggles clipboard around setup, requires nvim/keymap/autocmd/command/highlight in order |
+| `init.lua` | Aggregator: toggles clipboard around setup, requires nvim/keymap/autocmd synchronously, command on VeryLazy |
 | `lazy.lua` | `lazy.nvim` bootstrap `LazyConfig` (paths, git, ui, performance, disabled rtp plugins) + `require("lazy").setup(require("plugins"), lazy_config)` |
 | `nvim.lua` | Large `vim.opt`/`vim.g` block: editor options, disabled built-in providers/plugins (mostly commented out) |
 | `keymap.lua` (372 lines) | `mapleader`/`maplocalleader` + global keymaps across n/i/v/x/c/t modes, plus a `live_grep_from_project_git_root` helper |
 | `autocmd.lua` (607 lines) | `FileType`/`BufNewFile`/`BufEnter`/`BufWinEnter`/`LspTokenUpdate`/`User` autocmds, incl. macOS SDK/header path wiring; auto-:nohlsearch vim.on_key hook (hlsearch.nvim successor). Holds no `BufWritePre` formatting: the `LspFormat`/`LspCodeActionFormat` groups were removed so conform.nvim owns write-time formatting alone |
 | `command.lua` (249 lines) | User commands: `Help`, `TrimSpace`, `LuaVimInspect`, `LuaSnipEdit`, `ManV`, `TerminalV`, `LspServerInfo`, `TSInspectTree`, `DiagramToggle` |
-| `highlight.lua` (172 lines) | `vim.hl.priorities` tuning + `hi(name, val)` wrapper defining `@treesitter`/`@lsp` highlight overrides per language |
 
 ## For AI Agents
 
 ### Working In This Directory
 - Load order matters: `config/init.lua` requires `config.nvim` first (so
   `vim.opt` state, e.g. clipboard, is established), then `keymap`,
-  `autocmd`, `command`, `highlight`, in that fixed sequence. Do not
+  `autocmd` synchronously and `command` on VeryLazy. Do not
   reorder without checking for implicit dependencies (e.g. `autocmd.lua`
   and `keymap.lua` both reference `vim.g.mapleader`/`maplocalleader`, which
   the repo-root `init.lua` sets before lazy.nvim bootstraps).
@@ -50,19 +50,20 @@ modules in a fixed order.
   `util.homebrew_prefix()`/`util.prefix()` for header search paths — follow
   that pattern (never hardcode `/opt/homebrew` or `/usr/local` directly)
   when adding new platform-specific path wiring.
-- `highlight.lua`'s `hi()` wrapper always force-merges `{ force = true }`
-  into the passed highlight spec — new highlight overrides should call
-  `hi("@group.lang", { fg = ..., bg = ... })` rather than
-  `vim.api.nvim_set_hl` directly, to stay consistent and to get
-  the priority ordering documented at the top of the file
-  (`vim.hl.priorities.syntax/treesitter/semantic_tokens/diagnostics/user`).
+- Highlight overrides belong in the overrides section of
+  `colors/equinusocio_material.lua` (its `ovr()` wrapper force-replaces the
+  group like the former `config.highlight` module did); `vim.hl.priorities`
+  tuning lives in `nvim.lua` next to the `:colorscheme` call. Any colors
+  change must keep `tests/perf/hl_dump_spec.lua` green (regenerate the
+  fixture with `nvim --headless -l script/hl-dump.lua
+  tests/perf/fixtures/hl_baseline.txt` when the change is intentional).
 
 ### Testing Requirements
 No spec files target this directory directly. Sanity-check syntax and load
 order with:
 `nvim --headless -c 'qa'` (fails loudly on any `require("config...")` error
 during startup since `lua/init.lua` requires this module eagerly).
-For isolated checks of a single file: `nvim --headless -u NONE -c "set rtp+=." -c 'lua require("config.highlight")' -c 'qa'`.
+For isolated checks of a single file: `nvim --headless -u NONE -c "set rtp+=." -c 'lua require("config.command")' -c 'qa'`.
 
 ### Common Patterns
 - Autocommands are grouped under `autocmd_user =

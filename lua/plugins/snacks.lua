@@ -1,7 +1,18 @@
 local compat = require("plugins.snacks_compat")
 local snacks = require("snacks")
 
-compat.patch_quickfile_module(require("snacks.quickfile"))
+-- Inject lazy wrappers for the patch's filetype/treesitter deps: letting the
+-- patcher resolve its defaults eagerly loads the deferred vim.filetype and
+-- vim.treesitter modules (~1.6 ms) during the startup burst, but they are not
+-- needed until the first quickfile render on BufReadPost.
+compat.patch_quickfile_module(require("snacks.quickfile"), {
+  match_filetype = function(args)
+    return vim.filetype.match(args)
+  end,
+  get_lang = function(ft)
+    return vim.treesitter.language.get_lang(ft)
+  end,
+})
 
 ---@class snacks.Config: snacks.plugins.Config
 snacks.setup({

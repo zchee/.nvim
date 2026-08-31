@@ -67,6 +67,57 @@ local newfile = {} -- bufnr -> true for BufNewFile until first write
 local modstate = {} -- bufnr -> last seen 'modified' (redraw on transition)
 local home = vim.env.HOME
 
+-- filetype devicons (lualine icons_enabled parity). Provider is mini.icons,
+-- looked up through package.loaded ONLY: a require here would trip lazy's
+-- module autoloader and drag the plugin into the first statusline draw.
+-- Before it loads, entries render without an icon; the next natural
+-- statusline redraw after the burst picks them up. Cache holds the full
+-- "%#group#icon " prefix per (filetype, section-bg).
+local icon_cache = {}
+
+-- Resolves the MiniIcons global, requiring + setup()-ing the module the
+-- first time AFTER lazy has loaded the plugin (it is a bare dependency
+-- spec, so nothing else calls setup). Checking lazy's plugin state -- not
+-- package.loaded -- avoids triggering the module autoloader early.
+local function icon_provider()
+  if _G.MiniIcons then
+    return _G.MiniIcons
+  end
+  local lz = package.loaded["lazy.core.config"]
+  local plugin = lz and lz.plugins["mini.icons"]
+  if not (plugin and plugin._ and plugin._.loaded) then
+    return nil
+  end
+  local ok, mi = pcall(require, "mini.icons")
+  if ok and not _G.MiniIcons then
+    pcall(mi.setup, {})
+  end
+  return _G.MiniIcons
+end
+
+local function ft_icon(ft, on_dark)
+  local mi = icon_provider()
+  if not mi then
+    return ""
+  end
+  local key = ft .. (on_dark and "\1" or "\2")
+  local hit = icon_cache[key]
+  if hit ~= nil then
+    return hit
+  end
+  local ok, icon, hl = pcall(mi.get, "filetype", ft)
+  if not ok or not icon then
+    icon_cache[key] = ""
+    return ""
+  end
+  local group = "ChromeIcon" .. (on_dark and "X" or "B") .. hl
+  local fg = api.nvim_get_hl(0, { name = hl, link = false }).fg
+  api.nvim_set_hl(0, group, { fg = fg, bg = on_dark and palette.darkgray or palette.gray })
+  local pre = "%#" .. group .. "#" .. icon .. " "
+  icon_cache[key] = pre
+  return pre
+end
+
 local function esc(s)
   return (s:gsub("%%", "%%%%"))
 end
@@ -92,6 +143,18 @@ local function define_highlights()
   set(0, "ChromeDiagWarn", { fg = fg_of("DiagnosticWarn", palette.yellow), bg = palette.gray })
   set(0, "ChromeDiagInfo", { fg = fg_of("DiagnosticInfo", palette.cyan), bg = palette.gray })
   set(0, "ChromeDiagHint", { fg = fg_of("DiagnosticHint", palette.white), bg = palette.gray })
+  -- powerline section separators (lualine section_separators \u{e0b0}/\u{e0b2}):
+  -- fg = the departing segment's bg, drawn on the entered segment's bg
+  for suffix, color in pairs({
+    Normal = palette.green,
+    Insert = palette.cyan,
+    Visual = palette.yellow,
+    Replace = palette.red,
+  }) do
+    set(0, "ChromeSepA" .. suffix, { fg = color, bg = palette.gray })
+    set(0, "ChromeSepZ" .. suffix, { fg = color, bg = palette.darkgray })
+  end
+  set(0, "ChromeSepBC", { fg = palette.gray, bg = palette.darkgray })
   -- tabline: fill/separators blend into Pmenu bg (bufferline live overrides)
   local pmenu = api.nvim_get_hl(0, { name = "Pmenu", link = false }).bg or palette.darkgray
   local normal = api.nvim_get_hl(0, { name = "Normal", link = false })
@@ -200,8 +263,18 @@ function M.statusline()
   local mode = api.nvim_get_mode().mode
   local mchar = mode:sub(1, 1)
   local a_hl = mode_hl[mchar] or "ChromeANormal"
-  local s =
-    { "%#", a_hl, "# ", mode_word[mode] or mode_word[mchar] or mchar:upper(), " %#ChromeB# ", stl_filename(buf), "%<" }
+  local asuf = a_hl:sub(8) -- "ChromeA<suffix>" -> "<suffix>"
+  local s = {
+    "%#",
+    a_hl,
+    "# ",
+    mode_word[mode] or mode_word[mchar] or mchar:upper(),
+    " %#ChromeSepA",
+    asuf,
+    "#%#ChromeB# ",
+    stl_filename(buf),
+    "%<",
+  }
   if bo.modified then
     s[#s + 1] = "[+]"
   elseif bo.readonly or not bo.modifiable then
@@ -215,7 +288,7 @@ function M.statusline()
     s[#s + 1] = "  " .. esc(head)
   end
   if bo.filetype ~= "" then
-    s[#s + 1] = " %#ChromeBBold#" .. bo.filetype .. "%#ChromeB#"
+    s[#s + 1] = " " .. ft_icon(bo.filetype, false) .. "%#ChromeBBold#" .. bo.filetype .. "%#ChromeB#"
   end
   local gs = b.gitsigns_status_dict
   if type(gs) == "table" then
@@ -239,12 +312,12 @@ function M.statusline()
     end
   end
   s[#s + 1] = " %3l:%-2c " .. bo.fileformat
-  s[#s + 1] = " %#ChromeC#%="
+  s[#s + 1] = " %#ChromeSepBC#%#ChromeC#%="
   if bo.filetype ~= "" then
-    s[#s + 1] = bo.filetype .. " "
+    s[#s + 1] = ft_icon(bo.filetype, true) .. "%#ChromeC#" .. bo.filetype .. " "
   end
   s[#s + 1] = bo.fileencoding ~= "" and bo.fileencoding or vim.o.encoding
-  s[#s + 1] = " %#" .. a_hl .. "# %P "
+  s[#s + 1] = " %#ChromeSepZ" .. asuf .. "#%#" .. a_hl .. "# %P "
   return table.concat(s)
 end
 
@@ -344,7 +417,7 @@ function M.tabline()
       string.rep(" ", math.max(0, TAB_SIZE - w)),
       "%X%#",
       sel and "ChromeTabSepSel" or "ChromeTabSep",
-      "#",
+      "#",
     }
     entries[idx] = table.concat(e)
   end

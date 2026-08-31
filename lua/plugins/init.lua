@@ -36,10 +36,13 @@ return {
   },
   {
     dir = util.src_path("github.com/zchee/codecov.nvim"),
-    event = "VeryLazy",
-    dependencies = {
-      "neovim/nvim-lspconfig",
-      "nvim-lua/plenary.nvim",
+    -- coverage.autostart is false, so the user commands are the only entry
+    -- points; loading at VeryLazy only paid the setup cost up front.
+    cmd = {
+      "CodecovRefresh",
+      "CodecovToggle",
+      "CodecovResetApiKey",
+      "CodecovValidate",
     },
     config = function()
       require("plugins.codecov")
@@ -189,17 +192,7 @@ return {
         "L3MON4D3/LuaSnip",
         build = "make install_jsregexp",
       },
-      {
-        "fang2hou/blink-copilot",
-        dependencies = {
-          {
-            "zbirenbaum/copilot.lua",
-            config = function()
-              require("plugins.copilot")
-            end,
-          },
-        },
-      },
+      "fang2hou/blink-copilot",
       {
         "windwp/nvim-autopairs",
         event = { "InsertEnter" },
@@ -208,6 +201,17 @@ return {
     },
     config = function()
       require("plugins.blink")
+    end,
+  },
+  {
+    -- Not a blink-copilot dependency: lazy.nvim loads dependencies together
+    -- with their parent, which would configure copilot.lua during blink's
+    -- InsertEnter load. As a standalone lazy spec it loads through lazy.nvim's
+    -- module loader the moment blink-copilot first require()s it.
+    "zbirenbaum/copilot.lua",
+    lazy = true,
+    config = function()
+      require("plugins.copilot")
     end,
   },
   {

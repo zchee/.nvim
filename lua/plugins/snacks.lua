@@ -272,7 +272,11 @@ snacks.setup({
     history = true,
   },
   picker = {
-    enabled = true,
+    -- Deferred: upstream's UIEnter setup only installs the vim.ui.select
+    -- override, but requiring the picker tree for it costs ~3.4 ms on the UI
+    -- thread right as the UI opens. The override is replicated lazily below;
+    -- everything else about the picker already loads on demand.
+    enabled = false,
     formatters = {
       text = {
         ft = nil, ---@type string? filetype for highlighting
@@ -417,6 +421,12 @@ snacks.setup({
   },
   zen = { enabled = false },
 })
+
+-- parity with the picker's skipped UIEnter setup (ui_select defaults to
+-- true): install the vim.ui.select override without loading the picker tree
+vim.ui.select = function(...)
+  return require("snacks.picker").select(...)
+end
 
 -- reference navigation, parity with vim-illuminate's default <a-n>/<a-p>
 vim.keymap.set("n", "<M-n>", function()

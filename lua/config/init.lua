@@ -6,8 +6,14 @@ require("config.nvim")
 
 require("config.keymap")
 require("config.autocmd")
-require("config.command")
-require("config.highlight")
+
+-- User commands and highlight overrides are not consulted before the UI is
+-- up, so they can wait until VeryLazy. nvim/keymap/autocmd above stay
+-- synchronous: they are ordering-sensitive against the first buffer.
+require("util").on_very_lazy(function()
+  require("config.command")
+  require("config.highlight")
+end)
 
 if lazy_clipboard ~= nil then
   vim.opt.clipboard = lazy_clipboard

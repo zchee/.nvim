@@ -5,8 +5,10 @@
 #   - same-session floor: median-of-3 `nvim --clean` --startuptime totals,
 #     headless AND pty, plus floor-relative deltas (full - clean) per path
 #   - median TUI lazy.stats().startuptime over 3 quiet pty runs
-#   - jitter probe: max main-thread gap seen by an 8 ms uv timer between
-#     UIEnter+100 ms and +5.1 s (acceptance criterion 2, threshold 16 ms)
+#   - stall probe: between UIEnter+100 ms and +5.1 s, the loop busy fraction
+#     from uv metrics (loop_configure("metrics_idle_time")) and the max
+#     single loop-turn stall from a prepare/check handle pair -- no timer
+#     grid, so there is no 8 ms detection floor and no probe-timer noise
 #   - first-insert probe: wall time of the InsertEnter dispatch fed at
 #     UIEnter+3 s and whether blink.cmp was already loaded before it
 #   - burst vs warmup split: plugins tagged in vim.g.warmup_loaded (by a
@@ -46,30 +48,62 @@ run_pty() {
 
 probe="$tmp/probe.lua"
 cat >"$probe" <<'EOF'
--- Full-config pty probe: jitter watch from UIEnter+100 ms (8 ms uv timer
--- for 5 s recording hrtime gaps -- a delayed tick means the main thread
--- stalled), then at 6.5 s idle snapshot lazy startuptime, per-plugin load
--- times, warmup tags, and the jitter maximum; write JSON and quit.
-local jitter = { max_ms = -1, ran = false }
+-- Full-config pty probe: stall watch from UIEnter+100 ms for 5 s, passive
+-- (no probe timer ticks), then at 6.5 s idle snapshot lazy startuptime,
+-- per-plugin load times, warmup tags, and the stall numbers; write JSON
+-- and quit.
+--
+-- Busy fraction: loop_configure("metrics_idle_time") makes libuv account
+-- time blocked in the kernel poll; busy = (wall - idle delta) / wall over
+-- the window (metrics_idle_time is nanoseconds on this build).
+--
+-- Max loop-turn stall: libuv fires check handles right after the poll
+-- returns and prepare handles right before the next poll blocks, so the
+-- gap from a check timestamp to the next prepare fire is one loop turn's
+-- active (non-poll) stretch -- a main-thread busy stall, measured with no
+-- timer grid under it (the old 8 ms uv timer put an 8 ms floor on
+-- detection and was itself loop load).
+local stall = { ran = false, max_ms = -1, busy_fraction = -1, loop_count = -1, events = -1 }
 vim.api.nvim_create_autocmd("UIEnter", {
   once = true,
   callback = function()
     vim.defer_fn(function()
-      jitter.ran = true
-      local timer = assert(vim.uv.new_timer())
-      local last = vim.uv.hrtime()
-      local deadline = last + 5e9
-      timer:start(8, 8, function()
-        local now = vim.uv.hrtime()
-        local gap = (now - last) / 1e6
-        if gap > jitter.max_ms then
-          jitter.max_ms = gap
+      stall.ran = true
+      local metrics_ok = vim.uv.loop_configure("metrics_idle_time") == 0
+      local wall0 = vim.uv.hrtime()
+      local idle0 = metrics_ok and vim.uv.metrics_idle_time() or 0
+      local info0 = vim.uv.metrics_info()
+      local prep = assert(vim.uv.new_prepare())
+      local check = assert(vim.uv.new_check())
+      local t_active -- hrtime when the current loop turn's active phase began
+      prep:start(function()
+        if t_active then
+          local gap = (vim.uv.hrtime() - t_active) / 1e6
+          if gap > stall.max_ms then
+            stall.max_ms = gap
+          end
+          t_active = nil
         end
-        last = now
-        if now >= deadline then
-          timer:stop()
-          timer:close()
+      end)
+      check:start(function()
+        t_active = vim.uv.hrtime()
+      end)
+      local stop_timer = assert(vim.uv.new_timer())
+      stop_timer:start(5000, 0, function()
+        prep:stop()
+        prep:close()
+        check:stop()
+        check:close()
+        stop_timer:stop()
+        stop_timer:close()
+        local wall = vim.uv.hrtime() - wall0
+        if metrics_ok and wall > 0 then
+          local idle = vim.uv.metrics_idle_time() - idle0
+          stall.busy_fraction = math.max(wall - idle, 0) / wall
         end
+        local info = vim.uv.metrics_info()
+        stall.loop_count = info.loop_count - info0.loop_count
+        stall.events = info.events - info0.events
       end)
     end, 100)
   end,
@@ -91,8 +125,11 @@ vim.defer_fn(function()
     startuptime = require("lazy").stats().startuptime,
     plugins = plugins,
     warmup_loaded = vim.g.warmup_loaded or vim.empty_dict(),
-    jitter_max_ms = jitter.max_ms,
-    jitter_ran = jitter.ran,
+    stall_ran = stall.ran,
+    stall_max_ms = stall.max_ms,
+    busy_fraction = stall.busy_fraction,
+    loop_count = stall.loop_count,
+    events = stall.events,
   }))
   f:close()
   vim.cmd("qa!")
@@ -283,23 +320,57 @@ print(
 )
 
 print("")
-print("== jitter probe: UIEnter+100ms..+5.1s, 8ms uv timer (threshold 16ms) ==")
-local jitter_vals = {}
+print("== stall probe: UIEnter+100ms..+5.1s, uv metrics + prepare/check (no timer grid) ==")
+local stall_vals, busy_vals = {}, {}
+local turn_counts, event_counts = {}, {}
 for _, run in ipairs(probe_runs) do
-  if run.jitter_ran and run.jitter_max_ms and run.jitter_max_ms >= 0 then
-    jitter_vals[#jitter_vals + 1] = run.jitter_max_ms
+  if run.stall_ran then
+    if run.stall_max_ms and run.stall_max_ms >= 0 then
+      stall_vals[#stall_vals + 1] = run.stall_max_ms
+    end
+    if run.busy_fraction and run.busy_fraction >= 0 then
+      busy_vals[#busy_vals + 1] = run.busy_fraction * 100
+    end
+    if run.loop_count and run.loop_count >= 0 then
+      turn_counts[#turn_counts + 1] = run.loop_count
+      event_counts[#event_counts + 1] = run.events
+    end
   end
 end
-table.sort(jitter_vals)
-if #jitter_vals == 0 then
-  print("  max main-thread gap: n/a (probe did not run)")
+table.sort(stall_vals)
+table.sort(busy_vals)
+table.sort(turn_counts)
+table.sort(event_counts)
+if #busy_vals == 0 then
+  print("  loop busy fraction: n/a (probe did not run)")
 else
   print(
     string.format(
-      "  max main-thread gap: median %.1f ms over %d runs (%s)",
-      median(jitter_vals),
-      #jitter_vals,
-      fmt_runs(jitter_vals)
+      "  loop busy fraction:  median %.1f%% over %d runs (%s)",
+      median(busy_vals),
+      #busy_vals,
+      fmt_runs(busy_vals)
+    )
+  )
+end
+if #stall_vals == 0 then
+  print("  max loop-turn stall: n/a (probe did not run)")
+else
+  print(
+    string.format(
+      "  max loop-turn stall: median %.1f ms over %d runs (%s)",
+      median(stall_vals),
+      #stall_vals,
+      fmt_runs(stall_vals)
+    )
+  )
+end
+if #turn_counts > 0 then
+  print(
+    string.format(
+      "  loop turns / uv events over the window: median %d / %d",
+      median(turn_counts),
+      median(event_counts)
     )
   )
 end

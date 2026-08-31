@@ -7,27 +7,11 @@
 -- exactly the gopls deep/unimported candidates. Hence
 -- "prefer_rust_with_warning": if the source build ever breaks again, it must
 -- be loud, not a quiet completion downgrade.
+-- The autopairs and LuaSnip configs that used to live here run from their own
+-- specs' configs (plugins/autopairs.lua, plugins/luasnip.lua, round-3 W1) so
+-- each warmup tick — and each lazy dependency load — pays only for its own
+-- plugin. This file owns nothing but blink.setup().
 local blink = require("blink.cmp")
-
-local ls = require("luasnip")
-local ls_loader_lua = require("luasnip.loaders.from_lua")
-
--- LuaSnip
-ls.setup({
-  region_check_events = "InsertEnter",
-  history = true,
-  enable_autosnippets = true,
-  store_selection_keys = "<Tab>",
-})
---- @type LuaSnip.Loaders.LoadOpts
-ls_loader_lua.load({
-  lazy_paths = {
-    vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "lua", "luasnippets"),
-  },
-  fs_event_providers = {
-    libuv = true,
-  },
-})
 
 -- vim.api.nvim_create_autocmd('User', {
 --   pattern = 'BlinkCmpMenuOpen',

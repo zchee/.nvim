@@ -210,6 +210,12 @@ return {
       {
         "L3MON4D3/LuaSnip",
         build = "make install_jsregexp",
+        -- Own config (round-3 W1.2): the warmup's LuaSnip tick and the
+        -- pure-lazy InsertEnter chain both run it, keeping the terminal
+        -- blink.cmp tick free of snippet setup/registration cost.
+        config = function()
+          require("plugins.luasnip")
+        end,
       },
       "fang2hou/blink-copilot",
       {

@@ -157,7 +157,13 @@ return {
       },
       {
         "stevearc/conform.nvim",
-        event = "VeryLazy",
+        -- Real entry points only (round-3 W2.3): write-time formatting via
+        -- its own format_on_save BufWritePre autocmd (lazy re-fires the
+        -- event after loading, so the first :w still formats), the
+        -- <LocalLeader>f keymap in lua/lsp/init.lua (requires conform on
+        -- demand through lazy's module loader), and :ConformInfo.
+        event = "BufWritePre",
+        cmd = "ConformInfo",
         opts = function()
           return require("plugins.conform")
         end,
@@ -171,7 +177,12 @@ return {
       },
       {
         "stevearc/aerial.nvim",
-        event = "VeryLazy",
+        -- Symbols only exist for real file buffers, and aerial's own
+        -- on_attach remaps {/} per attached buffer, so first-file load
+        -- (round-3 W2.3) keeps that behavior identical while an idle
+        -- no-file session never pays for it. VeryLazy loaded it in every
+        -- session's startup burst.
+        event = { "BufReadPost", "BufNewFile" },
         dependencies = {
           "folke/snacks.nvim",
           "nvim-treesitter/nvim-treesitter",
@@ -627,6 +638,44 @@ return {
       },
       opts = function()
         return require("plugins.todo-comment")
+      end,
+      config = function(_, opts)
+        -- todo-comments' setup probes `pcall(require, "snacks.picker")` to
+        -- register its picker source, re-loading the ~3.4 ms picker tree
+        -- that round-3 W2.1 removed from startup. An erroring preload stub
+        -- makes that probe fail fast while it is armed; a picker some other
+        -- caller already loaded short-circuits through package.loaded, so
+        -- only todo-as-loader is blocked and the registration still happens
+        -- whenever the picker is genuinely in. setup() defers its real work
+        -- past VimEnter, so the disarm mirrors that scheduling to run after.
+        local function arm()
+          package.preload["snacks.picker"] = function()
+            error("snacks.picker load deferred during todo-comments setup (lua/plugins/init.lua)")
+          end
+        end
+        local function disarm()
+          package.preload["snacks.picker"] = nil
+          -- a failed require leaves a sentinel in package.loaded that turns
+          -- every later require into "loop or previous error"; on this
+          -- LuaJIT it is a NaN-boxed lightuserdata whose type() reads
+          -- "number", so match anything that is not the module's real table
+          local sentinel = package.loaded["snacks.picker"]
+          if sentinel ~= nil and type(sentinel) ~= "table" then
+            package.loaded["snacks.picker"] = nil
+          end
+        end
+        arm()
+        local ok, err = pcall(function()
+          require("todo-comments").setup(opts)
+        end)
+        if vim.api.nvim_get_vvar("vim_did_enter") == 0 then
+          vim.defer_fn(disarm, 0)
+        else
+          disarm()
+        end
+        if not ok then
+          error(err)
+        end
       end,
     },
   },

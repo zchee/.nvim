@@ -171,6 +171,47 @@ local function has(list, want)
   return false
 end
 
+local function plugin_loaded(report, name)
+  for _, plugin in ipairs(report.loaded_plugins) do
+    if plugin.name == name then
+      return true
+    end
+  end
+  return false
+end
+
+-- Round-2 R1 demotion set: none of these may load in a no-file idle session.
+-- Each entry names the real trigger it was moved to.
+local idle_absent = {
+  "vim-wakatime", -- BufReadPost/BufNewFile/InsertEnter
+  "trouble.nvim", -- cmd Trouble
+  "dropbar.nvim", -- BufReadPost
+  "fidget.nvim", -- LspAttach
+  "gitsigns.nvim", -- BufReadPre/BufNewFile
+  "satellite.nvim", -- BufReadPost
+  "yanky.nvim", -- TextYankPost
+  "hbac.nvim", -- BufAdd
+  "chowcho.nvim", -- module-loader only (no live entry point)
+  "open-browser.vim", -- <Plug>(openbrowser-smart-search) stub
+  "switch.vim", -- cmd Switch
+  "vim-operator-replace", -- <Plug> stub
+  "vim-operator-surround", -- <Plug> stubs
+  "vim-operator-convert-case", -- <Plug> stub
+  "vim-operator-user", -- dependency of the operator that loads first
+  "oil.nvim", -- cmd/keys + dir-argv init
+  "edgy.nvim", -- ft snacks_terminal
+}
+
+-- Opening a real file must bring the file-shaped demotions back in
+-- (fidget needs the LspAttach that the gopls scenario provides).
+local first_file_present = {
+  "gitsigns.nvim",
+  "dropbar.nvim",
+  "satellite.nvim",
+  "vim-wakatime",
+  "fidget.nvim",
+}
+
 -- gopls daemon: forwarder-mode gopls needs a live socket; start a daemon only
 -- when none is serving, and stop only what this spec started.
 local daemon_job
@@ -208,6 +249,12 @@ local ok, err = pcall(function()
       not has(report.spec_names, "nvim-lspconfig"),
       "nvim-lspconfig must not exist as a lazy spec (servers are native lsp/ configs)"
     )
+    for _, name in ipairs(idle_absent) do
+      assert(
+        not plugin_loaded(report, name),
+        name .. " must stay unloaded during a no-file idle session (round-2 demotion)"
+      )
+    end
     print(
       string.format(
         "idle: startuptime=%.1fms plugins_loaded=%d load_sum=%.1fms",
@@ -226,7 +273,13 @@ local ok, err = pcall(function()
       "gopls must attach to the Go fixture (clients: " .. table.concat(report.lsp_clients, ",") .. ")"
     )
     assert(not report.package_loaded.blink, "blink.cmp must stay unloaded until a real InsertEnter, even with LSP up")
-    assert(not report.package_loaded.schemastore, "schemastore must stay unloaded in a Go session (jsonls never resolves)")
+    assert(
+      not report.package_loaded.schemastore,
+      "schemastore must stay unloaded in a Go session (jsonls never resolves)"
+    )
+    for _, name in ipairs(first_file_present) do
+      assert(plugin_loaded(report, name), name .. " must load once a real file is open with an LSP client attached")
+    end
   end
 
   -- scenario 3: JSON fixture -> schemastore materializes

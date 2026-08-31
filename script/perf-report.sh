@@ -9,6 +9,8 @@
 #     from uv metrics (loop_configure("metrics_idle_time")) and the max
 #     single loop-turn stall from a prepare/check handle pair -- no timer
 #     grid, so there is no 8 ms detection floor and no probe-timer noise
+#   - embed UI latency: attach->first-flush and input->flush from a direct
+#     msgpack-RPC UI client (script/ui-latency.lua), clean vs full config
 #   - first-insert probe: wall time of the InsertEnter dispatch fed at
 #     UIEnter+3 s and whether blink.cmp was already loaded before it
 #   - burst vs warmup split: plugins tagged in vim.g.warmup_loaded (by a

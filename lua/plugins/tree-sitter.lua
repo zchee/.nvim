@@ -62,28 +62,46 @@ local indent_skip = {
   yaml = true,
 }
 
+local function start_treesitter(buf, ft)
+  local lang = vim.treesitter.language.get_lang(ft) or ft
+  if highlight_skip[lang] then
+    return
+  end
+  -- *.dockerfile files kept tree-sitter highlighting off under master
+  -- (TSBufDisable autocmd); preserve that behavior.
+  if lang == "dockerfile" and vim.api.nvim_buf_get_name(buf):match("%.dockerfile$") then
+    return
+  end
+  -- no parser (or no queries) for this language: silently keep legacy
+  -- syntax highlighting
+  if not pcall(vim.treesitter.start, buf, lang) then
+    return
+  end
+  if not indent_skip[lang] then
+    vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  end
+end
+
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
   callback = function(ev)
-    local lang = vim.treesitter.language.get_lang(ev.match) or ev.match
-    if highlight_skip[lang] then
-      return
-    end
-    -- *.dockerfile files kept tree-sitter highlighting off under master
-    -- (TSBufDisable autocmd); preserve that behavior.
-    if lang == "dockerfile" and vim.api.nvim_buf_get_name(ev.buf):match("%.dockerfile$") then
-      return
-    end
-    -- no parser (or no queries) for this language: silently keep legacy
-    -- syntax highlighting
-    if not pcall(vim.treesitter.start, ev.buf, lang) then
-      return
-    end
-    if not indent_skip[lang] then
-      vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    end
+    start_treesitter(ev.buf, ev.match)
   end,
 })
+
+-- The spec defers this module to the first FileType event (round-4 V1), and
+-- autocmds created while an event is running do not fire for that occurrence
+-- -- without a replay the triggering buffer would silently keep legacy
+-- syntax. vim.treesitter.start is idempotent, so replaying a buffer the
+-- autocmd will also see (cmd/require-triggered loads) is harmless.
+for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+  if vim.api.nvim_buf_is_loaded(buf) then
+    local ft = vim.bo[buf].filetype
+    if ft ~= "" then
+      start_treesitter(buf, ft)
+    end
+  end
+end
 
 require("plugins.treesitter_selection").setup({
   init_selection = "gnn",

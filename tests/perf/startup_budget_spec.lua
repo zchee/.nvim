@@ -210,6 +210,11 @@ local idle_absent = {
   "vim-operator-user", -- dependency of the operator that loads first
   "oil.nvim", -- cmd/keys + dir-argv init
   "edgy.nvim", -- ft snacks_terminal
+  -- round-4 V1 demotion set: the treesitter stack loads on the first
+  -- FileType event, so a no-file idle session never pays for it.
+  "nvim-treesitter", -- event FileType + TS* cmds
+  "nvim-ts-context-commentstring", -- dependency of nvim-treesitter
+  "tree-sitter-goasm", -- dependency of nvim-treesitter
 }
 
 -- Opening a real file must bring the file-shaped demotions back in
@@ -220,6 +225,10 @@ local first_file_present = {
   "satellite.nvim",
   "vim-wakatime",
   "fidget.nvim",
+  -- round-4 V1: the FileType event that fires for the Go fixture must bring
+  -- the treesitter stack in (highlight replay covers the triggering buffer).
+  "nvim-treesitter",
+  "nvim-ts-context-commentstring",
 }
 
 -- gopls daemon: forwarder-mode gopls needs a live socket; start a daemon only

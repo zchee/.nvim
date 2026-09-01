@@ -9,7 +9,8 @@
 --
 -- Usage: nvim -l script/ui-latency.lua [--clean|--full] [--socket-free]
 --        [--json <path>] [--edit <file>] [--settle-ms <n>] [--keys <n>]
---        [--pre-keys-lua <code>] [--post-keys-lua <code>]
+--        [--pre-keys-lua <code>] [--post-keys-lua <code>] [--key <seq>]
+--        [--pre-wait <lua expr>]
 --   --clean        child runs with -u NONE -i NONE (config floor)
 --   --full         child runs the real config (default)
 --   --socket-free  strip NVIM / NVIM_LISTEN_ADDRESS from the child env so a
@@ -46,6 +47,10 @@ local KEY_INTERVAL_MS = 50
 local mode = "full"
 local socket_free = false
 local json_path, edit_file, pre_keys_lua, post_keys_lua
+local key_seq = "x" -- per-sample key (nvim_input notation; --key overrides)
+local pre_wait_expr -- --pre-wait: Lua expr polled in the child (200ms grid,
+-- 15s cap) after the "i" flush and before the key phase, so an arrangement
+-- driven by input queues (completion menu + docs window) can finish opening
 local settle_ms = 300 -- drain stray startup flushes before feeding input
 local keystrokes = 10
 do
@@ -66,6 +71,12 @@ do
       i = i + 1
     elseif a == "--settle-ms" and tonumber(arg[i + 1]) then
       settle_ms = assert(tonumber(arg[i + 1]))
+      i = i + 1
+    elseif a == "--pre-wait" and arg[i + 1] then
+      pre_wait_expr = arg[i + 1]
+      i = i + 1
+    elseif a == "--key" and arg[i + 1] then
+      key_seq = arg[i + 1]
       i = i + 1
     elseif a == "--keys" and tonumber(arg[i + 1]) then
       keystrokes = assert(tonumber(arg[i + 1]))
@@ -180,7 +191,7 @@ end
 
 local function send_key()
   t_sent = uv.hrtime()
-  request("nvim_input", { "x" })
+  request("nvim_input", { key_seq })
 end
 
 local function on_flush(now)
@@ -203,8 +214,26 @@ local function on_flush(now)
   elseif phase == "insert" and t_sent then
     record("insert (i)", t_sent, now)
     t_sent = nil
-    phase = "keys"
-    after(KEY_INTERVAL_MS, send_key)
+    if pre_wait_expr then
+      phase = "prewait"
+      local deadline = uv.hrtime() + 15e9
+      local function poll()
+        request("nvim_exec_lua", { "return (" .. pre_wait_expr .. ") == true", {} }, function(ready)
+          if ready == true then
+            phase = "keys"
+            after(KEY_INTERVAL_MS, send_key)
+          elseif uv.hrtime() > deadline then
+            fail("--pre-wait expression never became true: " .. pre_wait_expr)
+          else
+            after(200, poll)
+          end
+        end)
+      end
+      poll()
+    else
+      phase = "keys"
+      after(KEY_INTERVAL_MS, send_key)
+    end
   elseif phase == "keys" and t_sent then
     samples[#samples + 1] = (now - t_sent) / 1e6
     record(("key %d (x)"):format(#samples), t_sent, now)

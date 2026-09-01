@@ -1,27 +1,6 @@
 local gitsigns = require("gitsigns")
 local gitsigns_config = require("gitsigns.config").config
 
--- vim.cmd([[
--- " highlight  GitGutterAddIntraLine                 gui=reverse
--- " highlight  GitGutterAddInvisible                 guifg=bg guibg=#010101
--- highlight  GitSignsChange                        guifg=#bbbb00 guibg=#010101
--- " highlight  GitGutterChangeInvisible              guifg=bg guibg=#010101
--- highlight  GitSignsDelete                        guifg=#ff2222 guibg=#010101
--- " highlight  GitGutterDeleteIntraLine              gui=reverse
--- " highlight  GitGutterDeleteInvisible              guifg=bg guibg=#010101
--- highlight  GitSignsAdd                           guifg=#009900 guibg=#010101
--- highlight  link  GitSignsAddLn                   DiffAdd
--- highlight  link  GitSignsAddNr                   CursorLineNr
--- " highlight  link  GitGutterChangeDelete           GitGutterChange
--- " highlight  link  GitGutterChangeDeleteInvisible  GitGutterChangeInvisible
--- " highlight  link  GitGutterChangeDeleteLine       GitGutterChangeLine
--- " highlight  link  GitGutterChangeDeleteLineNr     CursorLineNr
--- highlight  link  GitSignsChangeLn                DiffChange
--- highlight  link  GitSignsChangeNr                CursorLineNr
--- highlight  link  GitSignsDeleteLn                DiffDelete
--- highlight  link  GitSignsDeleteNr                CursorLineNr
--- ]])
-
 vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#bbbb00", bg = "#010101" })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#ff2222", bg = "#010101" })
 vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = "#009900", bg = "#010101" })
@@ -31,21 +10,6 @@ vim.api.nvim_set_hl(0, "GitSignsChangeLn", { link = "DiffChange" })
 vim.api.nvim_set_hl(0, "GitSignsChangeNr", { link = "CursorLineNr" })
 vim.api.nvim_set_hl(0, "GitSignsDeleteLn", { link = "DiffDelete" })
 vim.api.nvim_set_hl(0, "GitSignsDeleteNr", { link = "CursorLineNr" })
--- 'signs.add.hl' is now deprecated, please define highlight 'GitSignsAdd'
--- 'signs.add.linehl' is now deprecated, please define highlight 'GitSignsAddLn'
--- 'signs.add.numhl' is now deprecated, please define highlight 'GitSignsAddNr'
--- 'signs.change.hl' is now deprecated, please define highlight 'GitSignsChange'
--- 'signs.change.linehl' is now deprecated, please define highlight 'GitSignsChangeLn'
--- 'signs.change.numhl' is now deprecated, please define highlight 'GitSignsChangeNr'
--- 'signs.changedelete.hl' is now deprecated, please define highlight 'GitSignsChangedelete'
--- 'signs.changedelete.linehl' is now deprecated, please define highlight 'GitSignsChangedeleteLn'
--- 'signs.changedelete.numhl' is now deprecated, please define highlight 'GitSignsChangedeleteNr'
--- 'signs.delete.hl' is now deprecated, please define highlight 'GitSignsDelete'
--- 'signs.delete.linehl' is now deprecated, please define highlight 'GitSignsDeleteLn'
--- 'signs.delete.numhl' is now deprecated, please define highlight 'GitSignsDeleteNr'
--- 'signs.topdelete.hl' is now deprecated, please define highlight 'GitSignsTopdelete'
--- 'signs.topdelete.linehl' is now deprecated, please define highlight 'GitSignsTopdeleteLn'
--- 'signs.topdelete.numhl' is now deprecated, please define highlight 'GitSignsTopdeleteNr'
 
 gitsigns.setup({
   signs = {

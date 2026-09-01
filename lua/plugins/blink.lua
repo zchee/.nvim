@@ -21,22 +21,6 @@ local blink = require("blink.cmp")
 -- the loader is idempotent, so exactly one scan happens on every path.
 require("plugins.luasnip").load_snippets()
 
--- vim.api.nvim_create_autocmd('User', {
---   pattern = 'BlinkCmpMenuOpen',
---   callback = function()
---     require("copilot.suggestion").dismiss()
---     vim.b.copilot_suggestion_hidden = true
---     vim.b.copilot_suggestion_auto_trigger = false
---   end,
--- })
---
--- vim.api.nvim_create_autocmd('User', {
---   pattern = 'BlinkCmpMenuClose',
---   callback = function()
---     vim.b.copilot_suggestion_hidden = false
---   end,
--- })
-
 ---@type blink.cmp.Config
 blink.setup({
   sources = {
@@ -136,20 +120,11 @@ blink.setup({
         inherit_defaults = false,
       },
     },
-    ---@param ctx blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
+    ----@param ctx blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
     ---@return number
-    min_keyword_length = function(ctx)
+    min_keyword_length = function()
       return 1
     end,
-    -- transform_items = function(_, items)
-    --   -- return items
-    --   return vim.tbl_filter(
-    --     function(item)
-    --       return item.kind ~= require("blink.cmp.types").CompletionItemKind.Snippet
-    --     end,
-    --     items
-    --   )
-    -- end,
   },
   keymap = {
     preset = "none",

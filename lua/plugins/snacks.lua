@@ -114,7 +114,6 @@ snacks.setup({
       ---@param lang string tree-sitter language
       ---@param type snacks.image.Type image type
       conceal = function(lang, type)
-        _ = lang
         return type == "math"
       end,
     },

@@ -22,8 +22,6 @@ below and in each row's description.
 | `aerial.lua` | stevearc/aerial.nvim: symbol outline; lsp/treesitter/markdown/asciidoc/man backends, `prefer_left` placement |
 | `blink.lua` | saghen/blink.cmp (v2, main branch + blink.lib): LuaSnip preset, blink-copilot source, rust fuzzy built from source |
 | `bqf.lua` | kevinhwang91/nvim-bqf: better quickfix; rounded auto-preview window, 60/30-line preview heights |
-| `chatgpt.json` | Prompt-template data for `chatgpt.lua`; DEAD — no `ChatGPT.nvim` spec exists in `init.lua` |
-| `chatgpt.lua` | jackMort/ChatGPT.nvim config; API key via `op read op://...`; DEAD — no active spec references it |
 | `claudecode.lua` | coder/claudecode.nvim: Claude Code IDE bridge; `terminal_cmd` launches `omc --yolo` in a snacks float |
 | `codecompanion.lua` | olimorris/codecompanion.nvim: chat/inline AI; anthropic adapter, mcphub + codecompanion-history extensions |
 | `codecov.lua` | zchee/codecov.nvim (local plugin) setup: coverage sign colors, api.codecov.io endpoint, token via CODECOV_NVIM_API_TOKEN |
@@ -59,10 +57,8 @@ below and in each row's description.
 | `snacks_compat.lua` | Internal shim working around a snacks.quickfile Tree-sitter "Decoration provider" race on fast buffer loads |
 | `telescope.lua` | nvim-telescope/telescope.nvim; custom `fd`-based `find_files` excluding `.git`/`_tmp`, `live_grep` scoped to LSP workspace roots |
 | `todo-comment.lua` | Options table for folke/todo-comments.nvim; consumed as `opts = require("plugins.todo-comment")`, not via `config` |
-| `todo.lua` | Legacy TODO-highlighter (`require("todo")`, distinct from todo-comments.nvim); DEAD — superseded by `todo-comment.lua` |
 | `toggleterm.lua` | akinsho/toggleterm.nvim; custom `<LocalLeader>t` `open_mapping`; DEAD — no plugin spec exists in `init.lua` at all |
 | `tree-sitter.lua` | nvim-treesitter (main branch): FileType-driven `vim.treesitter.start()`/indentexpr, install_dir `tree-sitter-main`, :TSEnsureInstalled |
-| `tree.lua` | nvim-tree/nvim-tree.lua config; DEAD — superseded by the inline `stevearc/oil.nvim` spec in `init.lua` |
 | `treesitter_parsers.lua` | Parser list for :TSEnsureInstalled (ported master ensure_installed) |
 | `treesitter_selection.lua` | Hand-rolled incremental selection (gnn/grn/grm/grc); replaces the removed master module; tested by `tests/treesitter_selection_spec.lua` |
 | `ts_context_commentstring.lua` | JoosepAlviste/nvim-ts-context-commentstring; sets `vim.g.skip_ts_context_commentstring_module` |
@@ -72,7 +68,6 @@ below and in each row's description.
 ## Subdirectories
 | Directory | Purpose |
 |-----------|---------|
-| `avante/` | `init.lua` (yetone/avante.nvim opts: agentic mode, claude provider, claude+gemini dual_boost) and `keys.lua` (dynamic lazy `keys` pulled from the spec's `opts.mappings`) — documented here, no separate AGENTS.md. Both files are DEAD: the only `yetone/avante.nvim` lazy specs in `init.lua` referencing `plugins.avante`/`plugins.avante.keys` are commented out (twice) |
 
 ## For AI Agents
 
@@ -92,13 +87,10 @@ below and in each row's description.
   hook (invoked on `VeryLazy`/first-use, after ftplugin dispatch) is too late
   for. `require("plugins.rustaceanvim")` sets `vim.g.rustaceanvim` and a
   Rust-only `LspAttach` keymap group.
-- Several config modules are orphaned — present on disk but not reachable
-  from any active (uncommented) spec in `init.lua`: `blink.lua`, `chatgpt.lua`
-  / `chatgpt.json`, `dressing.lua`, `focus.lua`, `gemini.lua`,
-  `mcphub.lua`, `obsidian.lua`, `smart-splits.lua`, `todo.lua`, `toggleterm.lua`,
-  `tree.lua`, and `avante/init.lua` / `avante/keys.lua`. Do not assume a file's
-  presence means it is wired up — grep `init.lua` for
-  `require("plugins.<name>")` outside a `--` comment before relying on one.
+- Every config module here should be reachable from a spec in `init.lua`
+  (or a compat shim consumed by `tests/`); orphaned modules were deleted in
+  the optimize-branch cleanup rounds. Before relying on a file, grep
+  `init.lua` for `require("plugins.<name>")` outside a `--` comment.
 
 ### Testing Requirements
 - `nvim --headless "+Lazy! sync" +qa` bootstraps or updates all plugins named

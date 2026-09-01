@@ -974,7 +974,16 @@ return {
       -- records every yank, so the first TextYankPost is the real trigger
       -- (lazy re-emits the event after loading, so that yank is captured).
       event = "TextYankPost",
-      opts = {},
+      -- Ring only: yanky's defaults also paint YankyYanked/YankyPut (linked
+      -- to Search, 500ms) over the region on every yank and put. This config
+      -- never had a yank flash -- setup() simply never ran until the ring fix
+      -- -- so the paint is off and the visible behavior stays as it was.
+      opts = {
+        highlight = {
+          on_put = false,
+          on_yank = false,
+        },
+      },
       keys = {
         { "<Leader>p", false },
         {

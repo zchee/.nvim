@@ -386,6 +386,20 @@ return {
     {
       "nvim-neo-tree/neo-tree.nvim",
       cmd = "Neotree",
+      -- netrw is disabled in lazy.nvim's rtp, so `nvim <dir>` has no
+      -- fallback explorer: when any startup argument is a directory, load
+      -- neo-tree eagerly so its hijack_netrw_behavior = "open_default"
+      -- takes the buffer. The check is argv+fs_stat only -- no requires on
+      -- the clean-start path. (Inherited from the retired oil spec.)
+      init = function()
+        for i = 0, vim.fn.argc() - 1 do
+          local stat = vim.uv.fs_stat(vim.fn.argv(i) --[[@as string]])
+          if stat and stat.type == "directory" then
+            require("lazy").load({ plugins = { "neo-tree.nvim" } })
+            return
+          end
+        end
+      end,
       dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-web-devicons",
@@ -462,32 +476,6 @@ return {
           end,
           desc = "Open in Original",
         },
-      },
-    },
-    {
-      "stevearc/oil.nvim",
-      cmd = "Oil",
-      dependencies = {
-        "nvim-tree/nvim-web-devicons",
-      },
-      -- netrw is disabled in lazy.nvim's rtp, so `nvim <dir>` has no
-      -- fallback explorer: when any startup argument is a directory, load
-      -- oil eagerly so its own hijack takes the buffer. The check is
-      -- argv+fs_stat only -- no requires on the clean-start path.
-      init = function()
-        for i = 0, vim.fn.argc() - 1 do
-          local stat = vim.uv.fs_stat(vim.fn.argv(i) --[[@as string]])
-          if stat and stat.type == "directory" then
-            require("lazy").load({ plugins = { "oil.nvim" } })
-            return
-          end
-        end
-      end,
-      opts = function()
-        return require("plugins.oil")
-      end,
-      keys = {
-        { "-", "<Cmd>Oil<CR>", desc = "Open parent directory" },
       },
     },
     {

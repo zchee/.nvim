@@ -8,10 +8,15 @@
 -- ~100 ms DSR/termresponse artifact that inflates `script -q` pty runs.
 --
 -- Usage: nvim -l script/ui-latency.lua [--clean|--full] [--socket-free]
+--        [--json <path>]
 --   --clean        child runs with -u NONE -i NONE (config floor)
 --   --full         child runs the real config (default)
 --   --socket-free  strip NVIM / NVIM_LISTEN_ADDRESS from the child env so a
 --                  parent nvim server never leaks into the measurement
+--   --json <path>  also write the measurements as JSON, with each event's
+--                  REAL offset from spawn (sent_ms, relative to t0), so
+--                  script/perf-trace.lua --ui-latency can place keystroke
+--                  slices at true positions on its own trace track
 --
 -- Output (machine-parseable, one per line):
 --   mode=<clean|full>
@@ -30,16 +35,25 @@ local KEY_INTERVAL_MS = 50
 
 local mode = "full"
 local socket_free = false
-for _, a in ipairs(arg) do
-  if a == "--clean" then
-    mode = "clean"
-  elseif a == "--full" then
-    mode = "full"
-  elseif a == "--socket-free" then
-    socket_free = true
-  else
-    io.stderr:write(("ui-latency: unknown argument %q\n"):format(a))
-    os.exit(64)
+local json_path
+do
+  local i = 1
+  while i <= #arg do
+    local a = arg[i]
+    if a == "--clean" then
+      mode = "clean"
+    elseif a == "--full" then
+      mode = "full"
+    elseif a == "--socket-free" then
+      socket_free = true
+    elseif a == "--json" and arg[i + 1] then
+      json_path = arg[i + 1]
+      i = i + 1
+    else
+      io.stderr:write(("ui-latency: unknown argument %q\n"):format(a))
+      os.exit(64)
+    end
+    i = i + 1
   end
 end
 
@@ -118,6 +132,17 @@ local phase = "attach"
 local attach_ms = nil
 local samples = {}
 local t_sent = nil
+-- Timeline events for --json: name + real send offset from t0 + latency,
+-- so a trace consumer can place slices at true positions.
+local timeline = {}
+
+local function record(name, sent_hr, now)
+  timeline[#timeline + 1] = {
+    name = name,
+    sent_ms = (sent_hr - t0) / 1e6,
+    latency_ms = (now - sent_hr) / 1e6,
+  }
+end
 
 local function send_key()
   t_sent = uv.hrtime()
@@ -127,6 +152,7 @@ end
 local function on_flush(now)
   if phase == "attach" then
     attach_ms = (now - t0) / 1e6
+    record("attach->first-flush", t0, now)
     phase = "settle"
     after(SETTLE_MS, function()
       phase = "insert"
@@ -134,11 +160,13 @@ local function on_flush(now)
       request("nvim_input", { "i" })
     end)
   elseif phase == "insert" and t_sent then
+    record("insert (i)", t_sent, now)
     t_sent = nil
     phase = "keys"
     after(KEY_INTERVAL_MS, send_key)
   elseif phase == "keys" and t_sent then
     samples[#samples + 1] = (now - t_sent) / 1e6
+    record(("key %d (x)"):format(#samples), t_sent, now)
     t_sent = nil
     if #samples >= KEYSTROKES then
       phase = "quit"
@@ -256,3 +284,14 @@ io.stdout:write(("mode=%s\n"):format(mode))
 io.stdout:write(("attach_to_first_flush_ms=%.3f\n"):format(attach_ms))
 io.stdout:write(("input_to_flush_ms_median=%.3f\n"):format(median))
 io.stdout:write(("input_to_flush_ms_samples=%s\n"):format(table.concat(formatted, ",")))
+
+if json_path then
+  local f = assert(io.open(json_path, "w"), "ui-latency: cannot write " .. json_path)
+  f:write(vim.json.encode({
+    mode = mode,
+    attach_to_first_flush_ms = attach_ms,
+    input_to_flush_ms_median = median,
+    events = timeline,
+  }))
+  f:close()
+end

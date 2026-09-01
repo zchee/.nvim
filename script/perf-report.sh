@@ -456,7 +456,7 @@ else
   echo "  [clean] ui-latency failed:"
   sed 's/^/    /' "$ui_clean"
 fi
-if nvim -l script/ui-latency.lua --full --socket-free >|"$ui_full" 2>&1; then
+if nvim -l script/ui-latency.lua --full --socket-free --json "$tmp/ui_full.json" >|"$ui_full" 2>&1; then
   sed 's/^/  [full]  /' "$ui_full"
 else
   echo "  [full]  ui-latency failed:"
@@ -481,8 +481,11 @@ awk -F= '
 echo ""
 echo "== perfetto trace export: script/perf-trace.lua =="
 trace_out="${TMPDIR:-/tmp}/nvim-perf-trace.json"
-if nvim -l script/perf-trace.lua --out "$trace_out" \
-  --startuptime "$tmp/full_headless2.log" >/dev/null 2>&1; then
+trace_args=(--out "$trace_out" --startuptime "$tmp/full_headless2.log")
+# The full-config ui-latency samples ride along as their own trace track
+# when that measurement succeeded (round-4 V0.3).
+[ -s "$tmp/ui_full.json" ] && trace_args+=(--ui-latency "$tmp/ui_full.json")
+if nvim -l script/perf-trace.lua "${trace_args[@]}" >/dev/null 2>&1; then
   echo "  trace written: $trace_out (open in ui.perfetto.dev)"
 else
   echo "  trace export failed (non-fatal)"

@@ -1,6 +1,7 @@
 -- Perfetto/Chrome trace-event exporter (round-3.5 plan item 2).
 --
 --   nvim -l script/perf-trace.lua [--out <trace.json>] [--startuptime <log>]
+--                                 [--ui-latency <json>]
 --
 -- Merges one full-config startup into a single Chrome trace-event JSON
 -- timeline: view it by opening https://ui.perfetto.dev and dragging the
@@ -38,6 +39,11 @@
 --     end-to-end ph="X" slices on tid 5 starting at UIEnter + M.delay_ms.
 --     tick_ms holds durations only, so placement is approximate; the
 --     thread_name metadata says so.
+--   * --ui-latency <json> (script/ui-latency.lua --json output): each
+--     event (attach flush, insert, keystrokes) becomes a ph="X" slice on
+--     tid 6 at its REAL sent_ms offset with dur = latency_ms. The embed
+--     client is a separate session, so tid 6 is its own timeline (t0 =
+--     embed spawn, not this startup's origin); the track name says so.
 --   * ph="M" process_name/thread_name metadata label every track.
 --
 -- Nesting repair (round-4 V0.2): reconstructed starts can partially
@@ -63,6 +69,7 @@ local TID = {
   burst = 3,
   warmup_plugins = 4,
   warmup_ticks = 5,
+  ui_latency = 6,
 }
 
 --------------------------------------------------------------------------
@@ -139,6 +146,7 @@ end
 --------------------------------------------------------------------------
 local out_path = "perf-trace.json"
 local user_log
+local ui_latency_path
 do
   local args = _G.arg or {}
   local i = 1
@@ -148,6 +156,9 @@ do
       i = i + 2
     elseif args[i] == "--startuptime" and args[i + 1] then
       user_log = args[i + 1]
+      i = i + 2
+    elseif args[i] == "--ui-latency" and args[i + 1] then
+      ui_latency_path = args[i + 1]
       i = i + 2
     else
       io.stderr:write(("perf-trace: unknown argument %q\n"):format(tostring(args[i])))
@@ -189,7 +200,7 @@ os.remove(dump_path)
 -- Build trace events.
 --------------------------------------------------------------------------
 local events = {}
-local counts = { startuptime = 0, lazy = 0, warmup = 0 }
+local counts = { startuptime = 0, lazy = 0, warmup = 0, ui_latency = 0 }
 
 local function us(ms)
   return math.floor(ms * 1000 + 0.5)
@@ -309,7 +320,25 @@ for _, tick in ipairs(dump.ticks or {}) do
   tick_ts = tick_ts + dur
 end
 
--- 4. Track labels. The "~" prefix marks tracks whose slice positions are
+-- 4. ui-latency events (script/ui-latency.lua --json): real positions on
+-- the embed client's own timeline (t0 = embed spawn).
+if ui_latency_path then
+  local ui_file = assert(io.open(ui_latency_path, "r"), "perf-trace: cannot open ui-latency json " .. ui_latency_path)
+  local ui = vim.json.decode(ui_file:read("*a"))
+  ui_file:close()
+  for _, event in ipairs(ui.events or {}) do
+    emit("ui_latency", {
+      name = event.name,
+      ph = "X",
+      tid = TID.ui_latency,
+      ts = us(event.sent_ms),
+      dur = us(event.latency_ms),
+      args = { latency_ms = event.latency_ms, mode = ui.mode },
+    })
+  end
+end
+
+-- 5. Track labels. The "~" prefix marks tracks whose slice positions are
 -- reconstructed from durations, not measured timestamps.
 local track_names = {
   [TID.sourcing] = "startup: sourcing",
@@ -317,7 +346,11 @@ local track_names = {
   [TID.burst] = "lazy plugins: burst (~positions)",
   [TID.warmup_plugins] = "lazy plugins: warmup-tagged (~positions)",
   [TID.warmup_ticks] = "warmup ticks (~positions)",
+  [TID.ui_latency] = "ui-latency: embed client (separate timeline)",
 }
+if not ui_latency_path then
+  track_names[TID.ui_latency] = nil
+end
 events[#events + 1] = { name = "process_name", ph = "M", pid = 1, tid = 0, ts = 0, args = { name = "nvim startup" } }
 for tid, name in pairs(track_names) do
   events[#events + 1] = { name = "thread_name", ph = "M", pid = 1, tid = tid, ts = 0, args = { name = name } }
@@ -385,11 +418,12 @@ out:write(body)
 out:close()
 
 print(
-  ("perf-trace: wrote %s (%d events: %d startuptime, %d lazy, %d warmup)"):format(
+  ("perf-trace: wrote %s (%d events: %d startuptime, %d lazy, %d warmup, %d ui-latency)"):format(
     out_path,
     #events,
     counts.startuptime,
     counts.lazy,
-    counts.warmup
+    counts.warmup,
+    counts.ui_latency
   )
 )

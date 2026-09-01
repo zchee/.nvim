@@ -586,8 +586,11 @@ vim.api.nvim_create_autocmd("User", {
 -- (0x6e == "n"; vim.fn.mode() without an arg also reported only the first
 -- letter, so "no"/"niI" keep counting as normal mode), and no table is
 -- allocated per call.
+-- NOTE: <CR> must NOT be in this set. A cmdline search confirm arrives in
+-- mode "c" (the guard below returns early), so a <CR> entry only ever
+-- matched NORMAL-mode <CR> -- the "open file" key in neo-tree/quickfix/help
+-- -- turning stale shada highlights on with every buffer opened that way.
 local hlsearch_keys = {
-  [vim.keycode("<CR>")] = true,
   ["n"] = true,
   ["N"] = true,
   ["*"] = true,

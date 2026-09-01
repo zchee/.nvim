@@ -34,11 +34,20 @@ vim.fn = setmetatable({}, {
 
 local ok, err = pcall(function()
   do -- search keys turn hlsearch on
-    for _, key in ipairs({ "/", "?", "n", "N", "*", "#", cr }) do
+    for _, key in ipairs({ "/", "?", "n", "N", "*", "#" }) do
       vim.o.hlsearch = false
       on_key(nil, key)
       assert_equal(vim.o.hlsearch, true, ("search key %s must enable hlsearch"):format(vim.inspect(key)))
     end
+  end
+
+  do -- normal-mode <CR> is the "open file" key in neo-tree/quickfix/help:
+    -- it must CLEAR, not enable (a cmdline search confirm arrives in mode
+    -- "c" and never reaches the handler, so a <CR> enable entry could only
+    -- ever paint stale shada matches onto freshly opened buffers)
+    vim.o.hlsearch = true
+    on_key(nil, cr)
+    assert_equal(vim.o.hlsearch, false, "normal-mode <CR> must clear hlsearch")
   end
 
   do -- any other typed key turns hlsearch off

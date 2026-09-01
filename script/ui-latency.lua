@@ -8,7 +8,8 @@
 -- ~100 ms DSR/termresponse artifact that inflates `script -q` pty runs.
 --
 -- Usage: nvim -l script/ui-latency.lua [--clean|--full] [--socket-free]
---        [--json <path>]
+--        [--json <path>] [--edit <file>] [--settle-ms <n>] [--keys <n>]
+--        [--pre-keys-lua <code>] [--post-keys-lua <code>]
 --   --clean        child runs with -u NONE -i NONE (config floor)
 --   --full         child runs the real config (default)
 --   --socket-free  strip NVIM / NVIM_LISTEN_ADDRESS from the child env so a
@@ -17,6 +18,18 @@
 --                  REAL offset from spawn (sent_ms, relative to t0), so
 --                  script/perf-trace.lua --ui-latency can place keystroke
 --                  slices at true positions on its own trace track
+--   --edit <file>  open a real file in the child (typing then exercises
+--                  treesitter/LSP/chrome instead of an empty [No Name])
+--   --settle-ms    idle gap between first flush and typing (default 300;
+--                  raise it so warmup/LSP attach finish first)
+--   --keys <n>     keystroke sample count (default 10)
+--   --pre-keys-lua / --post-keys-lua
+--                  Lua run in the CHILD via nvim_exec_lua right before /
+--                  after the key phase: the round-4 V4 attribution hooks
+--                  (jit.p start/stop, runtime A/B toggles, an in-child
+--                  stall probe). The post code's return value lands in
+--                  the output as post_keys_result (JSON-encoded line and
+--                  --json field); errors in either fail the run.
 --
 -- Output (machine-parseable, one per line):
 --   mode=<clean|full>
@@ -28,14 +41,13 @@
 
 local uv = vim.uv
 
-local OVERALL_TIMEOUT_MS = 30000
-local SETTLE_MS = 300 -- drain stray startup flushes before feeding input
-local KEYSTROKES = 10
 local KEY_INTERVAL_MS = 50
 
 local mode = "full"
 local socket_free = false
-local json_path
+local json_path, edit_file, pre_keys_lua, post_keys_lua
+local settle_ms = 300 -- drain stray startup flushes before feeding input
+local keystrokes = 10
 do
   local i = 1
   while i <= #arg do
@@ -49,6 +61,21 @@ do
     elseif a == "--json" and arg[i + 1] then
       json_path = arg[i + 1]
       i = i + 1
+    elseif a == "--edit" and arg[i + 1] then
+      edit_file = arg[i + 1]
+      i = i + 1
+    elseif a == "--settle-ms" and tonumber(arg[i + 1]) then
+      settle_ms = assert(tonumber(arg[i + 1]))
+      i = i + 1
+    elseif a == "--keys" and tonumber(arg[i + 1]) then
+      keystrokes = assert(tonumber(arg[i + 1]))
+      i = i + 1
+    elseif a == "--pre-keys-lua" and arg[i + 1] then
+      pre_keys_lua = arg[i + 1]
+      i = i + 1
+    elseif a == "--post-keys-lua" and arg[i + 1] then
+      post_keys_lua = arg[i + 1]
+      i = i + 1
     else
       io.stderr:write(("ui-latency: unknown argument %q\n"):format(a))
       os.exit(64)
@@ -56,6 +83,8 @@ do
     i = i + 1
   end
 end
+
+local OVERALL_TIMEOUT_MS = math.max(30000, settle_ms + keystrokes * KEY_INTERVAL_MS * 3 + 20000)
 
 local done = false
 local failure = nil
@@ -88,6 +117,9 @@ end
 local spawn_args = { "--embed" }
 if mode == "clean" then
   vim.list_extend(spawn_args, { "-u", "NONE", "-i", "NONE" })
+end
+if edit_file then
+  spawn_args[#spawn_args + 1] = edit_file
 end
 
 local spawn_env = nil
@@ -126,12 +158,14 @@ local function request(method, params, cb)
 end
 
 -- Measurement state machine, driven entirely by "flush" redraw events.
--- Phases: attach (first paint) -> settle -> insert ("i" fed) -> keys
--- (KEYSTROKES x "x", latency = send -> next flush) -> quit.
+-- Phases: attach (first paint) -> settle [-> pre-keys-lua] -> insert
+-- ("i" fed) -> keys (keystrokes x "x", latency = send -> next flush)
+-- [-> post-keys-lua] -> quit.
 local phase = "attach"
 local attach_ms = nil
 local samples = {}
 local t_sent = nil
+local post_keys_result = vim.NIL
 -- Timeline events for --json: name + real send offset from t0 + latency,
 -- so a trace consumer can place slices at true positions.
 local timeline = {}
@@ -154,10 +188,17 @@ local function on_flush(now)
     attach_ms = (now - t0) / 1e6
     record("attach->first-flush", t0, now)
     phase = "settle"
-    after(SETTLE_MS, function()
-      phase = "insert"
-      t_sent = uv.hrtime()
-      request("nvim_input", { "i" })
+    after(settle_ms, function()
+      local function start_insert()
+        phase = "insert"
+        t_sent = uv.hrtime()
+        request("nvim_input", { "i" })
+      end
+      if pre_keys_lua then
+        request("nvim_exec_lua", { pre_keys_lua, {} }, start_insert)
+      else
+        start_insert()
+      end
     end)
   elseif phase == "insert" and t_sent then
     record("insert (i)", t_sent, now)
@@ -168,9 +209,20 @@ local function on_flush(now)
     samples[#samples + 1] = (now - t_sent) / 1e6
     record(("key %d (x)"):format(#samples), t_sent, now)
     t_sent = nil
-    if #samples >= KEYSTROKES then
-      phase = "quit"
-      request("nvim_command", { "qa!" })
+    if #samples >= keystrokes then
+      local function quit()
+        phase = "quit"
+        request("nvim_command", { "qa!" })
+      end
+      if post_keys_lua then
+        phase = "post" -- exec_lua errors here must still fail the run
+        request("nvim_exec_lua", { post_keys_lua, {} }, function(result)
+          post_keys_result = result
+          quit()
+        end)
+      else
+        quit()
+      end
     else
       after(KEY_INTERVAL_MS, send_key)
     end
@@ -244,7 +296,7 @@ if not done then
     OVERALL_TIMEOUT_MS,
     phase,
     #samples,
-    KEYSTROKES
+    keystrokes
   )
 end
 
@@ -284,6 +336,9 @@ io.stdout:write(("mode=%s\n"):format(mode))
 io.stdout:write(("attach_to_first_flush_ms=%.3f\n"):format(attach_ms))
 io.stdout:write(("input_to_flush_ms_median=%.3f\n"):format(median))
 io.stdout:write(("input_to_flush_ms_samples=%s\n"):format(table.concat(formatted, ",")))
+if post_keys_lua then
+  io.stdout:write(("post_keys_result=%s\n"):format(vim.json.encode(post_keys_result)))
+end
 
 if json_path then
   local f = assert(io.open(json_path, "w"), "ui-latency: cannot write " .. json_path)
@@ -292,6 +347,7 @@ if json_path then
     attach_to_first_flush_ms = attach_ms,
     input_to_flush_ms_median = median,
     events = timeline,
+    post_keys_result = post_keys_result,
   }))
   f:close()
 end

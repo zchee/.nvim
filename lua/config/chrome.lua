@@ -165,7 +165,7 @@ local function define_highlights()
   set(0, "ChromeTabMod", { fg = palette.green, bg = pmenu })
   set(0, "ChromeTabModSel", { fg = palette.green, bg = selbg })
   set(0, "ChromeTabSep", { fg = pmenu, bg = pmenu })
-  set(0, "ChromeTabSepSel", { fg = selbg, bg = pmenu })
+  set(0, "ChromeTabSepSel", { fg = pmenu, bg = selbg })
   set(0, "ChromeTabIndicator", { fg = palette.cyan, bg = selbg })
   set(0, "ChromeTabBadge", { fg = palette.black, bg = palette.cyan, bold = true })
 end
@@ -419,25 +419,28 @@ function M.tabline()
       w = 1 + api.nvim_strwidth(text) + (mod and 2 or 0)
     end
     local ehl = sel and "ChromeTabSel" or "ChromeTab"
+    local shl = sel and "ChromeTabSepSel" or "ChromeTabSep"
     local e = {
       "%",
       buf,
       "@v:lua.Chrome_click@%#",
+      shl,
+      "#%#",
       ehl,
       "#",
       sel and "%#ChromeTabIndicator#▎%#" .. ehl .. "#" or " ",
       esc(text),
       mod and ("%#" .. (sel and "ChromeTabModSel" or "ChromeTabMod") .. "# ●%#" .. ehl .. "#") or "",
       string.rep(" ", math.max(0, TAB_SIZE - w)),
-      "%X%#",
-      sel and "ChromeTabSepSel" or "ChromeTabSep",
-      "#",
+      "%#",
+      shl,
+      "#%X",
     }
     entries[idx] = table.concat(e)
   end
 
   -- overflow: window around the current entry with truncation markers
-  local per = TAB_SIZE + 1
+  local per = TAB_SIZE + 2
   local maxn = math.max(1, math.floor((vim.o.columns - 4) / per))
   local lo, hi = 1, #entries
   if #entries > maxn then

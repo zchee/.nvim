@@ -309,6 +309,17 @@ local run_ok, run_err = pcall(function()
   report.snips_go = #ls.get_snippets("go")
   report.snips_all = #ls.get_snippets("all")
   report.blink_loaded = package.loaded["blink.cmp"] ~= nil
+  -- V3.1 non-warmed filetype: yaml snippets must be absent until a yaml
+  -- buffer's first InsertEnter, then identical on both load paths. The
+  -- autocmd group is executed directly so unrelated InsertEnter handlers
+  -- (copilot, lazy events) stay out of this headless child; a missing
+  -- group fails the exec, which is itself the wiring assertion.
+  report.snips_yaml_pre = #ls.get_snippets("yaml")
+  local ybuf = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_set_current_buf(ybuf)
+  vim.bo[ybuf].filetype = "yaml"
+  vim.api.nvim_exec_autocmds("InsertEnter", { group = "luasnip_ft_snippets" })
+  report.snips_yaml = #ls.get_snippets("yaml")
 end)
 if not run_ok then
   report.ok = false
@@ -358,7 +369,18 @@ do
   local warmup_report = run_parity_child("warmup")
   local lazy_report = run_parity_child("lazy")
 
-  for _, field in ipairs({ "quote_desc", "apos_desc", "has_bs", "has_cr", "snips_go", "snips_all", "blink_loaded" }) do
+  local parity_fields = {
+    "quote_desc",
+    "apos_desc",
+    "has_bs",
+    "has_cr",
+    "snips_go",
+    "snips_all",
+    "snips_yaml_pre",
+    "snips_yaml",
+    "blink_loaded",
+  }
+  for _, field in ipairs(parity_fields) do
     assert_equal(
       warmup_report[field],
       lazy_report[field],
@@ -369,6 +391,10 @@ do
   assert_equal(warmup_report.blink_loaded, true, "blink.cmp must be loaded on both paths")
   assert(warmup_report.snips_go > 0, "go snippets must be registered on both paths")
   assert(warmup_report.snips_all > 0, "all-filetype snippets must be registered on both paths")
+  -- V3.1: the non-driver set must NOT ride along with the warmup (or the
+  -- lazy driver scan) -- it appears only after its own ft's InsertEnter
+  assert_equal(warmup_report.snips_yaml_pre, 0, "yaml snippets must not be loaded before a yaml InsertEnter")
+  assert(warmup_report.snips_yaml > 0, "yaml snippets must be registered by the yaml buffer's first InsertEnter")
 
   -- per-tick budget: min over up to 3 warmup children; extra children run
   -- only when a tick misses on the earlier attempt (fast path: one child)

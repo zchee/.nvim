@@ -267,26 +267,28 @@ M.units = {
   },
   { name = "LuaSnip", plugin = "LuaSnip" },
   {
-    name = "luasnip-snippets-1",
+    name = "luasnip-snippets-go",
     prewarm = function()
-      -- One half of the snippet-dir scan plugins/luasnip.lua deferred to
-      -- these ticks because the warmup was mid-flight during its config.
-      -- The halves are split by filetype: go.lua alone costs as much as
-      -- every other snippet file combined. An abort before either tick is
+      -- The driver snippet sets plugins/luasnip.lua deferred to these
+      -- ticks because the warmup was mid-flight during its config; go.lua
+      -- alone costs as much as every other snippet file combined, so it is
+      -- its own tick. Non-driver filetypes are not warmed at all (round-4
+      -- V3.1): they register on their first InsertEnter via the autocmd
+      -- plugins/luasnip.lua installs. An abort before either tick is
       -- covered by plugins/blink.lua calling the same idempotent loader
       -- from either chain's end.
       local luasnip_config = package.loaded["plugins.luasnip"]
       if luasnip_config then
-        luasnip_config.load_snippets_half(1)
+        luasnip_config.load_snippets_ft("go")
       end
     end,
   },
   {
-    name = "luasnip-snippets-2",
+    name = "luasnip-snippets-all",
     prewarm = function()
       local luasnip_config = package.loaded["plugins.luasnip"]
       if luasnip_config then
-        luasnip_config.load_snippets_half(2)
+        luasnip_config.load_snippets_ft("all")
       end
     end,
   },

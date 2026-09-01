@@ -17,7 +17,10 @@ return {
   },
   {
     dir = util.src_path("github.com/zchee/tree-sitter-goasm"),
-    lazy = false,
+    -- dependency of nvim-treesitter: its plugin/ file must ensure the goasm
+    -- query symlinks BEFORE plugins.tree-sitter starts any highlight, and
+    -- dependency order is the only load order lazy.nvim guarantees.
+    lazy = true,
   },
   {
     dir = util.src_path("github.com/zchee/metafrastis.nvim"),
@@ -323,11 +326,28 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
-    lazy = false, -- the main branch does not support lazy-loading (upstream README)
+    -- Upstream's "does not support lazy-loading" is a support policy, not a
+    -- mechanism (round-4 V1.1): everything the plugin needs at load time --
+    -- filetype registrations, query predicates, the setup() rtp prepend for
+    -- parsers/queries -- is consumed no earlier than the first treesitter
+    -- use in a file buffer, and this config starts highlighting exclusively
+    -- from its own FileType autocmd in plugins.tree-sitter (which replays
+    -- the triggering buffer, since autocmds registered during an event do
+    -- not fire for it).
+    event = "FileType",
+    cmd = {
+      "TSInstall",
+      "TSInstallFromGrammar",
+      "TSUpdate",
+      "TSUninstall",
+      "TSLog",
+      "TSEnsureInstalled",
+    },
     build = ":TSUpdate",
     dependencies = {
       "JoosepAlviste/nvim-ts-context-commentstring",
       "yamatsum/nvim-nonicons",
+      "tree-sitter-goasm",
     },
     config = function()
       require("plugins.tree-sitter")

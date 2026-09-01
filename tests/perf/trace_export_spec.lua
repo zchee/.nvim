@@ -107,4 +107,27 @@ do
   )
 end
 
+-- Import health (round-4 V0.2): when native Perfetto tooling is installed,
+-- the trace must import with zero spilled (partially overlapping) complete
+-- events -- the exporter's nesting repair guarantees it. Guarded on the
+-- binary so the spec stays portable; the skip prints so it is visible.
+do
+  local shell = "/opt/local/perfetto/trace_processor_shell"
+  if vim.uv.fs_stat(shell) then
+    local sql_path = vim.fn.tempname() .. "-stats.sql"
+    local sql = assert(io.open(sql_path, "w"))
+    sql:write("SELECT value FROM stats WHERE name='slice_spill_overlapping_complete_event';\n")
+    sql:close()
+    local tp = vim.system({ shell, "-q", sql_path, out_path }, { text = true }):wait(60000)
+    os.remove(sql_path)
+    assert_equal(tp.code, 0, "trace_processor_shell exit code (stderr: " .. tostring(tp.stderr) .. ")")
+    local value = tostring(tp.stdout):match("(%d+)%s*$")
+    assert_truthy(value, "stats query output unparsable: " .. tostring(tp.stdout))
+    assert_equal(tonumber(value), 0, "slice_spill_overlapping_complete_event")
+    print("trace_export_spec: import health OK (0 overlapping complete events)")
+  else
+    print("trace_export_spec: NOTE " .. shell .. " not installed; import-health assertion skipped")
+  end
+end
+
 os.remove(out_path)

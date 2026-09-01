@@ -40,6 +40,16 @@
 --     thread_name metadata says so.
 --   * ph="M" process_name/thread_name metadata label every track.
 --
+-- Nesting repair (round-4 V0.2): reconstructed starts can partially
+-- overlap on a tid -- the log's phase windows overlap by 1 µs at ms
+-- precision, and end-to-end chains can overshoot their container slice --
+-- which trace_processor reports as slice_spill_overlapping_complete_event
+-- and renders on ambiguous overflow tracks. Before the final sort, a
+-- per-tid sweep shifts any slice that pokes out of a still-open slice
+-- forward to that slice's end (duration preserved, shift recorded in
+-- args.ts_shift_us), so every pair of slices is nested or disjoint and
+-- the import stat stays 0.
+--
 -- Every event carries args.source ("startuptime" | "lazy" | "warmup") so
 -- consumers can filter by origin; tests/perf/trace_export_spec.lua pins
 -- the whole contract.
@@ -312,6 +322,53 @@ events[#events + 1] = { name = "process_name", ph = "M", pid = 1, tid = 0, ts = 
 for tid, name in pairs(track_names) do
   events[#events + 1] = { name = "thread_name", ph = "M", pid = 1, tid = tid, ts = 0, args = { name = name } }
 end
+
+-- Nesting repair: on each tid, sweep X slices in (ts, -dur) order with a
+-- stack of open slice ends; a slice that pokes out of a still-open slice
+-- shifts forward to that slice's end (re-checked against the whole stack,
+-- so cascaded shifts stay proper). Durations are never touched.
+local function enforce_nesting(evts)
+  local by_tid = {}
+  for _, event in ipairs(evts) do
+    if event.ph == "X" then
+      local list = by_tid[event.tid]
+      if not list then
+        list = {}
+        by_tid[event.tid] = list
+      end
+      list[#list + 1] = event
+    end
+  end
+  for _, list in pairs(by_tid) do
+    table.sort(list, function(a, b)
+      if a.ts ~= b.ts then
+        return a.ts < b.ts
+      end
+      return (a.dur or 0) > (b.dur or 0)
+    end)
+    local open_ends = {}
+    for _, event in ipairs(list) do
+      local ts, dur = event.ts, event.dur or 0
+      while true do
+        while #open_ends > 0 and open_ends[#open_ends] <= ts do
+          open_ends[#open_ends] = nil
+        end
+        if #open_ends > 0 and ts + dur > open_ends[#open_ends] then
+          ts = open_ends[#open_ends]
+        else
+          break
+        end
+      end
+      if ts ~= event.ts then
+        event.args = event.args or {}
+        event.args.ts_shift_us = ts - event.ts
+        event.ts = ts
+      end
+      open_ends[#open_ends + 1] = ts + dur
+    end
+  end
+end
+enforce_nesting(events)
 
 -- Global ts order makes every per-tid subsequence non-decreasing; equal-ts
 -- slices sort wider-first so parents precede their children.

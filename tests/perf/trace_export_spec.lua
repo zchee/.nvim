@@ -5,8 +5,11 @@
 -- through vim.json.decode, carries the trace-event top level, every event
 -- has the required fields, ts values are sane microseconds, ts is
 -- non-decreasing per tid, and every source (startuptime log, lazy.nvim,
--- warmup ticks) contributed at least one event. Durations are never
--- asserted -- wall-clock numbers belong to script/perf-report.sh.
+-- warmup ticks, and the --ui-latency ingestion fed by a real
+-- script/ui-latency.lua --json run) contributed at least one event.
+-- Durations are never asserted -- wall-clock numbers belong to
+-- script/perf-report.sh. When /opt/local/perfetto/trace_processor_shell
+-- exists the trace must also import with zero spilled complete events.
 --
 -- Run from the repo root: nvim --headless -u NONE -l tests/perf/trace_export_spec.lua
 
@@ -30,13 +33,35 @@ local function assert_equal(actual, expected, message)
 end
 
 local out_path = vim.fn.tempname() .. "-trace.json"
+local ui_json_path = vim.fn.tempname() .. "-ui-latency.json"
+
+-- Real ui-latency measurement first (round-4 V0.3): the embed client's
+-- --json output feeds the exporter's --ui-latency track below.
+do
+  local cmd =
+    { vim.v.progpath, "-l", "script/ui-latency.lua", "--clean", "--socket-free", "--json", ui_json_path }
+  local ui = vim.system(cmd, { text = true }):wait(60000)
+  assert_equal(
+    ui.code,
+    0,
+    "ui-latency exit code (stdout: " .. tostring(ui.stdout) .. ", stderr: " .. tostring(ui.stderr) .. ")"
+  )
+end
 
 -- End-to-end exporter run. The exporter's own full-config child accounts
 -- for most of the wall time (warmup delay + ticks + settle, ~2 s); the
 -- 60 s bound only guards against a hung child.
 local result
 do
-  local cmd = { vim.v.progpath, "-l", "script/perf-trace.lua", "--out", out_path }
+  local cmd = {
+    vim.v.progpath,
+    "-l",
+    "script/perf-trace.lua",
+    "--out",
+    out_path,
+    "--ui-latency",
+    ui_json_path,
+  }
   result = vim.system(cmd, { text = true }):wait(60000)
   assert_equal(
     result.code,
@@ -67,7 +92,8 @@ end
 -- Required fields on every event, µs sanity, per-tid ordering, sources.
 do
   local last_ts_per_tid = {}
-  local sources = { startuptime = 0, lazy = 0, warmup = 0 }
+  local sources = { startuptime = 0, lazy = 0, warmup = 0, ui_latency = 0 }
+  local ui_latency_tids = {}
   for i, event in ipairs(decoded.traceEvents) do
     local where = "event #" .. i .. " (" .. tostring(event.name) .. ")"
     assert_equal(type(event.name), "string", where .. " name")
@@ -92,17 +118,26 @@ do
     if source ~= nil and sources[source] ~= nil then
       sources[source] = sources[source] + 1
     end
+    if source == "ui_latency" then
+      ui_latency_tids[event.tid] = true
+      assert_equal(event.ph, "X", where .. " ui_latency events must be complete slices")
+    end
   end
   for source, count in pairs(sources) do
     assert_truthy(count > 0, "no event from source " .. source)
   end
+  -- ui-latency contract: attach + insert + 10 keystrokes, all on one
+  -- dedicated track (the embed client's own timeline).
+  assert_truthy(sources.ui_latency >= 12, "expected >=12 ui_latency events, got " .. sources.ui_latency)
+  assert_equal(vim.tbl_count(ui_latency_tids), 1, "ui_latency events must share one tid")
   print(
-    ("trace_export_spec: OK %s (%d events: %d startuptime, %d lazy, %d warmup)"):format(
+    ("trace_export_spec: OK %s (%d events: %d startuptime, %d lazy, %d warmup, %d ui-latency)"):format(
       out_path,
       #decoded.traceEvents,
       sources.startuptime,
       sources.lazy,
-      sources.warmup
+      sources.warmup,
+      sources.ui_latency
     )
   )
 end
@@ -131,3 +166,4 @@ do
 end
 
 os.remove(out_path)
+os.remove(ui_json_path)

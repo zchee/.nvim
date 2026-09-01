@@ -17,7 +17,12 @@ satellite.setup({
       enable = false,
     },
     search = {
-      enable = true,
+      -- OFF, restoring old-scrollbar parity: satellite rescans the whole
+      -- buffer for matches on EVERY WinScrolled (blink docs-float scrolling
+      -- included) -- measured 2026-09-01: p90 29ms / max 63ms per scroll
+      -- step on a 1.6k-line file with hlsearch "function"; 0.96/2.3ms with
+      -- this handler off (diag+gitsigns are cheap and stay).
+      enable = false,
     },
     diagnostic = {
       enable = true,

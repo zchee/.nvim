@@ -67,37 +67,29 @@ local newfile = {} -- bufnr -> true for BufNewFile until first write
 local modstate = {} -- bufnr -> last seen 'modified' (redraw on transition)
 local home = vim.env.HOME
 
--- filetype devicons (lualine icons_enabled parity). Provider is mini.icons,
--- looked up through package.loaded ONLY: a require here would trip lazy's
--- module autoloader and drag the plugin into the first statusline draw.
--- Before it loads, entries render without an icon; the next natural
--- statusline redraw after the burst picks them up. Cache holds the full
--- "%#group#icon " prefix per (filetype, section-bg).
+-- filetype devicons (lualine icons_enabled parity). The provider is
+-- nvim-web-devicons -- the same one lualine used, so the glyph family
+-- matches (mini.icons draws a different md-style set). Resolution checks
+-- lazy's plugin state, never package.loaded via require: a bare require
+-- would trip lazy's module autoloader inside the first statusline draw.
+-- Before the plugin loads (setup() schedules it shortly after UIEnter),
+-- entries render without an icon and the next redraw picks them up.
+-- Cache holds the full "%#group#icon " prefix per (filetype, section-bg).
 local icon_cache = {}
 
--- Resolves the MiniIcons global, requiring + setup()-ing the module the
--- first time AFTER lazy has loaded the plugin (it is a bare dependency
--- spec, so nothing else calls setup). Checking lazy's plugin state -- not
--- package.loaded -- avoids triggering the module autoloader early.
 local function icon_provider()
-  if _G.MiniIcons then
-    return _G.MiniIcons
-  end
   local lz = package.loaded["lazy.core.config"]
-  local plugin = lz and lz.plugins["mini.icons"]
+  local plugin = lz and lz.plugins["nvim-web-devicons"]
   if not (plugin and plugin._ and plugin._.loaded) then
     return nil
   end
-  local ok, mi = pcall(require, "mini.icons")
-  if ok and not _G.MiniIcons then
-    pcall(mi.setup, {})
-  end
-  return _G.MiniIcons
+  local ok, devicons = pcall(require, "nvim-web-devicons")
+  return ok and devicons or nil
 end
 
 local function ft_icon(ft, on_dark)
-  local mi = icon_provider()
-  if not mi then
+  local devicons = icon_provider()
+  if not devicons then
     return ""
   end
   local key = ft .. (on_dark and "\1" or "\2")
@@ -105,14 +97,13 @@ local function ft_icon(ft, on_dark)
   if hit ~= nil then
     return hit
   end
-  local ok, icon, hl = pcall(mi.get, "filetype", ft)
+  local ok, icon, color = pcall(devicons.get_icon_color_by_filetype, ft, { default = true })
   if not ok or not icon then
     icon_cache[key] = ""
     return ""
   end
-  local group = "ChromeIcon" .. (on_dark and "X" or "B") .. hl
-  local fg = api.nvim_get_hl(0, { name = hl, link = false }).fg
-  api.nvim_set_hl(0, group, { fg = fg, bg = on_dark and palette.darkgray or palette.gray })
+  local group = "ChromeIcon" .. (on_dark and "X" or "B") .. ft:gsub("%W", "_")
+  api.nvim_set_hl(0, group, { fg = color, bg = on_dark and palette.darkgray or palette.gray })
   local pre = "%#" .. group .. "#" .. icon .. " "
   icon_cache[key] = pre
   return pre
@@ -331,7 +322,11 @@ function M.statusline()
     s[#s + 1] = ft_icon(bo.filetype, true) .. "%#ChromeC#" .. bo.filetype .. "  "
   end
   s[#s + 1] = bo.fileencoding ~= "" and bo.fileencoding or vim.o.encoding
-  s[#s + 1] = " %#ChromeSepZ" .. asuf .. "#%#" .. a_hl .. "# %P "
+  local cur = api.nvim_win_get_cursor(0)[1]
+  local total = api.nvim_buf_line_count(buf)
+  local progress = cur == 1 and "Top"
+    or (cur == total and "Bot" or string.format("%2d%%%%", math.floor(cur / total * 100)))
+  s[#s + 1] = " %#ChromeSepZ" .. asuf .. "#%#" .. a_hl .. "# " .. progress .. " "
   return table.concat(s)
 end
 
@@ -475,6 +470,22 @@ function M.setup()
   end
   vim.o.statusline = "%!v:lua.require'config.chrome'.statusline()"
   vim.o.tabline = "%!v:lua.require'config.chrome'.tabline()"
+
+  -- icon provider load, off the startup path: devicons costs ~0.35ms and
+  -- lualine parity needs its glyphs, so pull it in shortly after UIEnter
+  -- and repaint once it lands (no-op if something else loaded it first)
+  api.nvim_create_autocmd("UIEnter", {
+    once = true,
+    callback = function()
+      vim.defer_fn(function()
+        pcall(function()
+          require("lazy").load({ plugins = { "nvim-web-devicons" } })
+        end)
+        vim.cmd.redrawstatus()
+        vim.cmd.redrawtabline()
+      end, 200)
+    end,
+  })
 
   local g = api.nvim_create_augroup("config_chrome", { clear = true })
   local au = api.nvim_create_autocmd

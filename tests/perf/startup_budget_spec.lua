@@ -208,7 +208,6 @@ local idle_absent = {
   "vim-operator-surround", -- <Plug> stubs
   "vim-operator-convert-case", -- <Plug> stub
   "vim-operator-user", -- dependency of the operator that loads first
-  "oil.nvim", -- cmd/keys + dir-argv init
   "edgy.nvim", -- ft snacks_terminal
   -- round-4 V1 demotion set: the treesitter stack loads on the first
   -- FileType event, so a no-file idle session never pays for it.

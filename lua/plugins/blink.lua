@@ -164,6 +164,24 @@ blink.setup({
     ["<C-n>"] = { "select_next", "fallback_to_mappings" },
     ["<C-b>"] = { "scroll_documentation_up", "fallback" },
     ["<C-f>"] = { "scroll_documentation_down", "fallback" },
+    -- wheel events land on the window under the POINTER, which after typing
+    -- is the menu/main buffer, not the docs float -- so trackpad scrolling
+    -- "did nothing" unless the pointer happened to hover the docs. While the
+    -- docs window is open, route wheel events to it (1-line steps: kitty
+    -- fans a trackpad gesture into many events); fallback restores normal
+    -- wheel behavior the moment docs close.
+    ["<ScrollWheelUp>"] = {
+      function(cmp)
+        return cmp.scroll_documentation_up(1) -- false when docs closed -> fallback
+      end,
+      "fallback",
+    },
+    ["<ScrollWheelDown>"] = {
+      function(cmp)
+        return cmp.scroll_documentation_down(1)
+      end,
+      "fallback",
+    },
     ["<C-k>"] = { "snippet_forward", "show_signature", "hide_signature", "fallback" },
   },
   snippets = {

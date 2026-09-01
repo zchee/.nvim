@@ -129,6 +129,7 @@ assert_contains(stl, " 1", "error count with lualine error icon")
 assert_contains(stl, " 2", "warn count with lualine warn icon")
 
 -- 7. tabline: buffer ids, click regions, modified marker, diagnostics string
+vim.o.columns = 200 -- four 20-cell entries must fit the overflow window
 vim.bo[buf_b].modified = true
 local tal = chrome.tabline()
 for _, buf in ipairs({ buf_a, buf_b, buf_c, buf_d }) do
@@ -139,7 +140,8 @@ assert_contains(tal, "●", "modified marker on modified buffer")
 assert_contains(tal, "alpha.txt", "buffer name rendered")
 assert_contains(tal, "  1", "bufferline diagnostics string: error icon + count")
 assert_contains(tal, " 2", "bufferline diagnostics string: bare warn count")
-assert_contains(tal, "", "slant separator glyph present")
+assert_contains(tal, "", "bufferline slant left edge (U+E0BC) present")
+assert_contains(tal, "", "bufferline slant right edge (U+E0BE) present")
 assert_contains(tal, "ChromeTabSel", "selected-entry highlight present")
 assert_contains(tal, "ChromeTabFill", "Pmenu-blended fill highlight present")
 

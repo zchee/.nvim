@@ -127,6 +127,10 @@ vim.o.matchtime = 0 -- disable nvim matchparen
 vim.o.maxmempattern = 1000 -- default: 1000, max: 2000000
 vim.o.modelines = 1
 vim.o.mouse = "a"
+-- 1-line wheel steps: kitty fans a trackpad gesture out into many wheel
+-- events, so ver:3 renders as 3-line jumps; ver:1 tracks the gesture
+-- smoothly (mouse-wheel notches scroll less per click as the tradeoff)
+vim.o.mousescroll = "ver:1,hor:6"
 vim.o.number = true
 vim.opt.path:append("$PWD/**")
 vim.opt.path:append("**")

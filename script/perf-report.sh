@@ -36,6 +36,22 @@ run_timeout_s=90
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
+# Measurement sessions must never write the user's real ShaDa. A round runs
+# dozens of full-config sessions, often several at once, and they all race for
+# the same main.shada.tmp.a-z namespace: any run killed mid-write (this
+# script's own pty timeout does exactly that) strands a temp file, and once
+# all 26 letters are taken EVERY later write -- the user's interactive nvim
+# included -- fails with E138. Seeding a throwaway copy keeps the ShaDa read
+# cost representative (round-2 R3.4 measured and tuned it) while the writes
+# land in $tmp. Only full-config runs need it; --clean already implies -i NONE.
+shada_real="${XDG_STATE_HOME:-$HOME/.local/state}/nvim/shada/main.shada"
+shada_probe="$tmp/perf.shada"
+if [ -r "$shada_real" ]; then
+  cp "$shada_real" "$shada_probe"
+else
+  shada_probe=NONE
+fi
+
 # Runs one nvim inside a pty (script(1)) with a kill-after timeout.
 run_pty() {
   script -q /dev/null nvim "$@" </dev/null >/dev/null 2>&1 &
@@ -191,7 +207,7 @@ quit_soon='lua vim.defer_fn(function() vim.cmd("qa!") end, 500)'
 for i in $(seq 1 "$runs"); do
   nvim --clean --headless --startuptime "$tmp/clean_headless$i.log" +qa \
     >/dev/null 2>&1 || true
-  nvim --headless --startuptime "$tmp/full_headless$i.log" +qa \
+  nvim --headless -i "$shada_probe" --startuptime "$tmp/full_headless$i.log" +qa \
     >/dev/null 2>&1 || true
 done
 
@@ -201,12 +217,12 @@ done
 
 for i in $(seq 1 "$runs"); do
   out="$tmp/run$i.json"
-  run_pty --startuptime "$tmp/full_pty$i.log" \
+  run_pty -i "$shada_probe" --startuptime "$tmp/full_pty$i.log" \
     --cmd "lua vim.g.perf_report_out='$out'" -c "luafile $probe"
   [ -s "$out" ] || echo "warning: pty run $i wrote no report" >&2
 done
 
-run_pty --cmd "lua vim.g.perf_insert_out='$tmp/insert.json'" \
+run_pty -i "$shada_probe" --cmd "lua vim.g.perf_insert_out='$tmp/insert.json'" \
   -c "luafile $insert_probe"
 [ -s "$tmp/insert.json" ] || echo "warning: insert probe wrote no report" >&2
 

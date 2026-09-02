@@ -132,11 +132,26 @@ end
 --- Runs one full-config Neovim inside a pty and returns the probe's report.
 --- @param mode string "idle" | "gopls" | "schemastore"
 --- @param file string|nil file argument for the session
+local function throwaway_shada()
+  local real = vim.fs.joinpath(tostring(vim.fn.stdpath("state")), "shada", "main.shada")
+  if not vim.uv.fs_stat(real) then
+    return "NONE"
+  end
+  local copy = vim.fn.tempname() .. ".shada"
+  local ok = vim.uv.fs_copyfile(real, copy)
+  return ok and copy or "NONE"
+end
+
 --- @param budget_ms integer host-side wall-clock budget for the whole session
 local function run_pty(mode, file, budget_ms)
   local out = vim.fn.tempname() .. "_report.json"
   local cmd = {
     "nvim",
+    -- throwaway ShaDa: these pty children write it on exit, and a suite run
+    -- plus a perf round together strand enough main.shada.tmp.* files to
+    -- exhaust the a-z namespace and break the user's own nvim with E138
+    "-i",
+    throwaway_shada(),
     "--cmd",
     string.format("lua vim.g.perf_probe_out=%q vim.g.perf_probe_mode=%q", out, mode),
     "-c",

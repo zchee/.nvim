@@ -272,7 +272,7 @@ vim.keymap.set({ "v" }, "V", "^", { noremap = true, nowait = true })
 vim.keymap.set(
   { "x" },
   "<C-t>",
-  ":MetafrastisTranslate<CR>",
+  ":MetaphrastTranslate<CR>",
   { noremap = true, silent = true, desc = "Translate the selected given range" }
 )
 -- vim.keymap.set(

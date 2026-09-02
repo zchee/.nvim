@@ -190,6 +190,35 @@ assert_contains(tal, "two/same.txt", "dedup prefix for second collision")
 vim.cmd("bdelete! " .. buf_s1)
 vim.cmd("bdelete! " .. api.nvim_get_current_buf())
 
+-- 9b. name truncation follows bufferline: the budget is the NAME's alone
+-- (tab_size minus the modified icon and both padding cells -- the buffer id
+-- and diagnostics are separate components), an over-budget name loses its
+-- extension when the stem fits, otherwise it is cut by cell, and either way
+-- the result carries an ellipsis instead of a silent hard cut.
+do
+  local saved_columns = vim.o.columns
+  vim.o.columns = 320
+  local trunc_bufs = {}
+  for _, name in ipairs({
+    "metafrastis.lua", -- exactly 15 cells: must survive intact
+    "startup_budget_spec.lua", -- stem 19 cells: over budget too -> cell cut
+    "aaaaaaaaaaaaaaaaaaaaaaaa", -- no extension: cell cut
+    "chrome_specs.luaaaa", -- stem 12 cells: extension drop wins
+  }) do
+    vim.cmd.edit(scratch .. "/" .. name)
+    trunc_bufs[#trunc_bufs + 1] = api.nvim_get_current_buf()
+  end
+  tal = chrome.tabline()
+  assert_contains(tal, "metafrastis.lua", "a name inside the budget is never truncated")
+  assert_contains(tal, "startup_budget…", "over-budget stem falls through to the cell cut")
+  assert_contains(tal, "aaaaaaaaaaaaaa…", "extension-less name is cut by cell")
+  assert_contains(tal, "chrome_specs…", "extension is dropped when the stem fits")
+  for _, b in ipairs(trunc_bufs) do
+    vim.cmd("bdelete! " .. b)
+  end
+  vim.o.columns = saved_columns
+end
+
 -- 10. click handler: left switches, right force-deletes, middle no-ops
 api.nvim_set_current_buf(buf_a)
 chrome.click(buf_b, 1, "l", "")

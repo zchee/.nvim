@@ -23,6 +23,11 @@ local palette = {
 
 local TAB_SIZE = 18 -- bufferline tab_size + enforce_regular_tabs
 local MAX_PREFIX = 15 -- bufferline max_prefix_length (dedup)
+-- bufferline computes the NAME budget as tab_size minus the modified icon,
+-- the file icon (this tabline draws none) and both padding cells -- the
+-- buffer-id number and the diagnostics string are separate components and
+-- never eat into it (ui.lua get_max_length under enforce_regular_tabs).
+local NAME_MAX = TAB_SIZE - 1 - 2
 
 local mode_word = {
   n = "NORMAL",
@@ -339,6 +344,27 @@ local function chop_char(s)
   return s:sub(1, n - 1)
 end
 
+--- bufferline's utils.truncate_name: try dropping the extension first, else
+--- cut by cell -- either way the result is marked with an ellipsis, never a
+--- silent hard cut.
+---@param name string
+---@param limit integer
+---@return string
+local function truncate_name(name, limit)
+  if api.nvim_strwidth(name) <= limit then
+    return name
+  end
+  local stem, ext = name:match("^(.*)%.(%w+)$")
+  if stem and api.nvim_strwidth(stem) < limit then
+    return stem .. "…"
+  end
+  local out = name
+  while api.nvim_strwidth(out) > limit - 1 and #out > 1 do
+    out = chop_char(out)
+  end
+  return out .. "…"
+end
+
 local function tab_diag(buf)
   local dc = diag_counts[buf]
   if not dc then
@@ -390,7 +416,7 @@ function M.tabline()
     seen[tail] = (seen[tail] or 0) + 1
   end
 
-  local entries, cur_idx = {}, 1
+  local entries, widths, cur_idx = {}, {}, 1
   for idx, buf in ipairs(order) do
     local t = tails[buf]
     local label = t.tail
@@ -406,13 +432,9 @@ function M.tabline()
     end
     local mod = vim.bo[buf].modified
     local diag = tab_diag(buf)
+    label = truncate_name(label, NAME_MAX)
     local text = " " .. buf .. " " .. label .. diag
     local w = 1 + api.nvim_strwidth(text) + (mod and 2 or 0)
-    while w > TAB_SIZE and #label > 1 do
-      label = chop_char(label)
-      text = " " .. buf .. " " .. label .. diag
-      w = 1 + api.nvim_strwidth(text) + (mod and 2 or 0)
-    end
     local ehl = sel and "ChromeTabSel" or "ChromeTab"
     local shl = sel and "ChromeTabSepSel" or "ChromeTabSep"
     local e = {
@@ -432,10 +454,16 @@ function M.tabline()
       "#%X",
     }
     entries[idx] = table.concat(e)
+    widths[idx] = math.max(w, TAB_SIZE) + 2 -- padded body + both slant cells
   end
 
   -- overflow: window around the current entry with truncation markers
+  -- entries hold the buffer id and diagnostics on top of the padded name
+  -- budget, so the window step is the widest real entry, not TAB_SIZE
   local per = TAB_SIZE + 2
+  for _, entry_w in ipairs(widths) do
+    per = math.max(per, entry_w)
+  end
   local maxn = math.max(1, math.floor((vim.o.columns - 4) / per))
   local lo, hi = 1, #entries
   if #entries > maxn then

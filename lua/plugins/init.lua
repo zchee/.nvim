@@ -23,18 +23,18 @@ return {
     lazy = true,
   },
   {
-    dir = util.src_path("github.com/zchee/metafrastis.nvim"),
+    dir = util.src_path("github.com/zchee/metaphrast.nvim"),
     lazy = true,
     cmd = {
-      "MetafrastisTranslate",
-      "MetafrastisCacheClear",
+      "MetaphrastTranslate",
+      "MetaphrastCacheClear",
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "folke/snacks.nvim",
     },
     config = function()
-      require("plugins.metafrastis")
+      require("plugins.metaphrast")
     end,
   },
   {

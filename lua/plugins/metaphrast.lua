@@ -1,7 +1,7 @@
-local metafrastis = require("metafrastis")
+local metaphrast = require("metaphrast")
 
----@type MetafrastisConfig
-metafrastis.setup({
+---@type MetaphrastConfig
+metaphrast.setup({
   provider = "deepl",
   source_lang = "en",
   target_lang = "ja",
@@ -69,7 +69,7 @@ metafrastis.setup({
       base_url = "https://openrouter.ai/api/v1/chat/completions",
       input_per_million = 0.15,
       output_per_million = 0.60,
-      referer = "https://github.com/zchee/metafrastis.nvim",
+      referer = "https://github.com/zchee/metaphrast.nvim",
     },
   },
 })

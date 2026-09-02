@@ -44,7 +44,7 @@ below and in each row's description.
 | `mason.lua` | williamboman/mason.nvim; minimal setup — 8 concurrent installers, `github:mason-org/mason-registry` |
 | `matchup.lua` | andymass/vim-matchup; disables built-in matchparen (`matchparen.enabled = 0`) in favor of Tree-sitter matching |
 | `mcphub.lua` | ravitemer/mcphub.nvim: MCP server hub; DEAD in `init.lua`'s active path — plugin loads bare, `setup()` never called |
-| `metafrastis.lua` | zchee/metafrastis.nvim (local plugin): translation popup; DeepL provider, disk+memory cache with USD cost guard |
+| `metaphrast.lua` | zchee/metaphrast.nvim (local plugin): translation popup; DeepL provider, disk+memory cache with USD cost guard |
 | `neo-tree.lua` | nvim-neo-tree/neo-tree.nvim; patches cursor-hijack via `neo_tree_compat`; filesystem/buffers/git_status/document_symbols sources |
 | `neo_tree_compat.lua` | Internal shim guarding neo-tree's cursor-hijack handler against `Invalid 'win'` errors |
 | `obsidian.lua` | obsidian-nvim/obsidian.nvim: "knowledge" vault, snacks.pick picker; DEAD — spec fully commented out in `init.lua` |

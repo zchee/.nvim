@@ -423,7 +423,12 @@ do
   for name, ms in pairs(best) do
     assert(
       ms <= tick_budget_ms,
-      string.format("warmup tick %s costs %.2f ms; the per-tick budget is %d ms (min of 3 runs)", name, ms, tick_budget_ms)
+      string.format(
+        "warmup tick %s costs %.2f ms; the per-tick budget is %d ms (min of 3 runs)",
+        name,
+        ms,
+        tick_budget_ms
+      )
     )
   end
 end

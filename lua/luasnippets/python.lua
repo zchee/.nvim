@@ -6,7 +6,7 @@ local fmta = ls_ext_fmt.fmta
 return {
   ls.s(
     {
-      trig = "shebang",
+      trig = "uv_shebang",
       dscr = "uv inline-script header (PEP 723)",
     },
     fmta(

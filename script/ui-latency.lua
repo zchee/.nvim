@@ -136,9 +136,27 @@ local function after(ms, fn)
   return t
 end
 
+-- Full-config child sessions write ShaDa on exit, and a round runs dozens of
+-- them: they race for the main.shada.tmp.a-z namespace and any child killed
+-- mid-write strands a temp file, until all 26 are taken and every later write
+-- fails with E138 (the user's interactive nvim included). Point the child at a
+-- throwaway copy instead -- seeded from the real file so its read cost stays
+-- representative, empty (-i NONE) when there is nothing to copy.
+local function throwaway_shada()
+  local real = vim.fs.joinpath(tostring(vim.fn.stdpath("state")), "shada", "main.shada")
+  if not vim.uv.fs_stat(real) then
+    return "NONE"
+  end
+  local copy = vim.fn.tempname() .. ".shada"
+  local ok = vim.uv.fs_copyfile(real, copy)
+  return ok and copy or "NONE"
+end
+
 local spawn_args = { "--embed" }
 if mode == "clean" then
   vim.list_extend(spawn_args, { "-u", "NONE", "-i", "NONE" })
+else
+  vim.list_extend(spawn_args, { "-i", throwaway_shada() })
 end
 vim.list_extend(spawn_args, child_args)
 if edit_file then

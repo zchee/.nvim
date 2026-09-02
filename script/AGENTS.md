@@ -40,6 +40,21 @@ lists baked into `syntax/kitty.vim`.
   faster way to preview the action/option list than running the full
   regeneration when just checking what Kitty currently exposes.
 
+- **Never let a measurement session write the user's real ShaDa.** Every
+  full-config nvim run that behaves like an EDITOR session (`--headless ...
+  +qa`, a pty session, an `--embed` child) writes ShaDa on exit; `-l` script
+  runs and `-u NONE` spec runs do not. Those writes go through
+  `main.shada.tmp.a`..`.z`, so a round's dozens of concurrent sessions race
+  for that namespace and every session killed mid-write (this harness's own
+  pty timeout does exactly that) strands one — once all 26 letters are taken,
+  every later write fails with `E138`, the user's own nvim included. The
+  scripts here therefore hand each full-config child a throwaway ShaDa copy
+  via `-i`: a COPY of the real file, not `-i NONE`, so the ShaDa read cost
+  (measured and tuned in round 2) stays representative while the write lands
+  in a temp path. Recovery if it ever happens again: remove
+  `${XDG_STATE_HOME:-~/.local/state}/nvim/shada/main.shada.tmp.*` — they are
+  stranded temporaries, and `main.shada` itself is untouched.
+
 ### Testing Requirements
 After running the script, diff `syntax/kitty.vim` (`git diff syntax/kitty.vim`)
 to confirm only the generated tail changed, then smoke-test with

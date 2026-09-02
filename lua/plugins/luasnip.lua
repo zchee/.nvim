@@ -94,10 +94,7 @@ vim.api.nvim_create_autocmd("InsertEnter", {
 -- by plugins/blink.lua calling load_snippets as an idempotent safety net
 -- at the end of either chain.
 local warmup = package.loaded["config.warmup"]
-local warmup_owns_scan = warmup ~= nil
-  and warmup.state ~= nil
-  and not warmup.state.done
-  and not warmup.state.aborted
+local warmup_owns_scan = warmup ~= nil and warmup.state ~= nil and not warmup.state.done and not warmup.state.aborted
 if not warmup_owns_scan then
   M.load_snippets()
 end

@@ -10,7 +10,7 @@
 -- Usage: nvim -l script/ui-latency.lua [--clean|--full] [--socket-free]
 --        [--json <path>] [--edit <file>] [--settle-ms <n>] [--keys <n>]
 --        [--pre-keys-lua <code>] [--post-keys-lua <code>] [--key <seq>]
---        [--pre-wait <lua expr>]
+--        [--pre-wait <lua expr>] [--child-arg <arg> ...]
 --   --clean        child runs with -u NONE -i NONE (config floor)
 --   --full         child runs the real config (default)
 --   --socket-free  strip NVIM / NVIM_LISTEN_ADDRESS from the child env so a
@@ -24,6 +24,13 @@
 --   --settle-ms    idle gap between first flush and typing (default 300;
 --                  raise it so warmup/LSP attach finish first)
 --   --keys <n>     keystroke sample count (default 10)
+--   --child-arg    extra argument passed to the child nvim command line,
+--                  repeatable and kept in order, inserted before the --edit
+--                  file. The only way to vary the child's STARTUP state (an
+--                  axis that must exist before init.lua runs, e.g.
+--                  `--child-arg --cmd --child-arg "lua vim.lsp.enable =
+--                  function() end"` for a never-attached-LSP control);
+--                  --pre-keys-lua can only change state after startup.
 --   --pre-keys-lua / --post-keys-lua
 --                  Lua run in the CHILD via nvim_exec_lua right before /
 --                  after the key phase: the round-4 V4 attribution hooks
@@ -51,6 +58,7 @@ local key_seq = "x" -- per-sample key (nvim_input notation; --key overrides)
 local pre_wait_expr -- --pre-wait: Lua expr polled in the child (200ms grid,
 -- 15s cap) after the "i" flush and before the key phase, so an arrangement
 -- driven by input queues (completion menu + docs window) can finish opening
+local child_args = {} -- --child-arg: extra child nvim command-line arguments
 local settle_ms = 300 -- drain stray startup flushes before feeding input
 local keystrokes = 10
 do
@@ -74,6 +82,9 @@ do
       i = i + 1
     elseif a == "--pre-wait" and arg[i + 1] then
       pre_wait_expr = arg[i + 1]
+      i = i + 1
+    elseif a == "--child-arg" and arg[i + 1] then
+      child_args[#child_args + 1] = arg[i + 1]
       i = i + 1
     elseif a == "--key" and arg[i + 1] then
       key_seq = arg[i + 1]
@@ -129,6 +140,7 @@ local spawn_args = { "--embed" }
 if mode == "clean" then
   vim.list_extend(spawn_args, { "-u", "NONE", "-i", "NONE" })
 end
+vim.list_extend(spawn_args, child_args)
 if edit_file then
   spawn_args[#spawn_args + 1] = edit_file
 end

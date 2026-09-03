@@ -169,6 +169,26 @@ end, {
   desc = "Toggle diagram.nvim.",
 })
 
+-- Swap the statusline/tabline renderer without restarting; no argument
+-- toggles. The choice is written to stdpath("state")/ui-mode and picked up
+-- by every later session.
+vim.api.nvim_create_user_command("UiMode", function(opts)
+  local ui_mode = require("config.ui_mode")
+  local want = opts.args ~= "" and opts.args or (ui_mode.uses_plugins() and "chrome" or "plugins")
+  local ok, err = ui_mode.set(want)
+  if not ok then
+    vim.notify("UiMode: " .. tostring(err), vim.log.levels.ERROR)
+    return
+  end
+  vim.notify("UiMode: " .. want, vim.log.levels.INFO)
+end, {
+  nargs = "?",
+  complete = function()
+    return { "chrome", "plugins" }
+  end,
+  desc = "Switch the statusline/tabline between config.chrome and lualine+bufferline.",
+})
+
 -- Transrator
 -- vim.api.nvim_create_user_command("Trans", function()
 --   local vstart = vim.fn.getpos("'<")

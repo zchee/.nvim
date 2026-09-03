@@ -15,13 +15,14 @@ modules in a fixed order.
 ## Key Files
 | File | Description |
 |------|--------------|
-| `init.lua` | Aggregator: toggles clipboard around setup, requires nvim/chrome/keymap/autocmd synchronously, command on VeryLazy |
-| `chrome.lua` | Hand-rolled statusline + tabline (replaces lualine.nvim/bufferline.nvim, round-3 W3.2); equinusocio_material palette, gitsigns/diagnostic-fed, `%@` click handlers; parity contract in `.omc/plans/round3-chrome-parity.md`, spec `tests/chrome_spec.lua` |
+| `init.lua` | Aggregator: toggles clipboard around setup, requires nvim/ui_mode/keymap/autocmd synchronously, command on VeryLazy |
+| `ui_mode.lua` | Picks the statusline/tabline renderer: `chrome` (default) or `plugins` (lualine+bufferline). Resolves `$NVIM_UI_MODE` -> `vim.g.ui_mode` -> `stdpath("state")/ui-mode` -> `chrome`; `set()` switches live and persists, `:UiMode` drives it. Consulted by `plugins/init.lua` while lazy evaluates specs, so it requires nothing from `config.*` at load time. Spec `tests/ui_mode_spec.lua` |
+| `chrome.lua` | Hand-rolled statusline + tabline (replaces lualine.nvim/bufferline.nvim, round-3 W3.2); equinusocio_material palette, gitsigns/diagnostic-fed, `%@` click handlers; `setup()` is re-enterable and `teardown()` hands the options back for `ui_mode`; parity contract in `.omc/plans/round3-chrome-parity.md`, spec `tests/chrome_spec.lua` |
 | `lazy.lua` | `lazy.nvim` bootstrap `LazyConfig` (paths, git, ui, performance, disabled rtp plugins) + `require("lazy").setup(require("plugins"), lazy_config)` |
 | `nvim.lua` | Large `vim.opt`/`vim.g` block: editor options, disabled built-in providers/plugins (mostly commented out) |
 | `keymap.lua` (372 lines) | `mapleader`/`maplocalleader` + global keymaps across n/i/v/x/c/t modes, plus a `live_grep_from_project_git_root` helper |
 | `autocmd.lua` (607 lines) | `FileType`/`BufNewFile`/`BufEnter`/`BufWinEnter`/`LspTokenUpdate`/`User` autocmds, incl. macOS SDK/header path wiring; auto-:nohlsearch vim.on_key hook (hlsearch.nvim successor). Holds no `BufWritePre` formatting: the `LspFormat`/`LspCodeActionFormat` groups were removed so conform.nvim owns write-time formatting alone |
-| `command.lua` (249 lines) | User commands: `Help`, `TrimSpace`, `LuaVimInspect`, `LuaSnipEdit`, `ManV`, `TerminalV`, `LspServerInfo`, `TSInspectTree`, `DiagramToggle` |
+| `command.lua` (249 lines) | User commands: `Help`, `TrimSpace`, `LuaVimInspect`, `LuaSnipEdit`, `ManV`, `TerminalV`, `LspServerInfo`, `TSInspectTree`, `DiagramToggle`, `UiMode` |
 
 ## For AI Agents
 

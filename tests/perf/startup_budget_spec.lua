@@ -288,11 +288,15 @@ local ok, err = pcall(function()
       not has(report.spec_names, "nvim-lspconfig"),
       "nvim-lspconfig must not exist as a lazy spec (servers are native lsp/ configs)"
     )
-    -- round-3 W3.2: statusline/tabline are the hand-rolled config/chrome.lua
+    -- round-3 W3.2: statusline/tabline are the hand-rolled config/chrome.lua.
+    -- The two plugins it replaced keep a trigger-less spec so :UiMode can
+    -- load them on demand (lua/config/ui_mode.lua) -- what must hold is that
+    -- the default chrome mode never pulls them in.
     for _, name in ipairs({ "lualine.nvim", "bufferline.nvim" }) do
+      assert(has(report.spec_names, name), name .. " must stay in the spec graph so :UiMode plugins can load it")
       assert(
-        not has(report.spec_names, name),
-        name .. " must not exist as a lazy spec (replaced by lua/config/chrome.lua)"
+        not plugin_loaded(report, name),
+        name .. " must stay unloaded in the default ui mode (lua/config/chrome.lua draws)"
       )
     end
     for _, name in ipairs(idle_absent) do

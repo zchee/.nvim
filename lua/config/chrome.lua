@@ -488,8 +488,27 @@ function M.tabline()
   return table.concat(out)
 end
 
+-- What the options held before the first setup(). Nightly ships a non-empty
+-- default 'statusline', so teardown() has to restore rather than blank.
+local saved
+
+--- Hand the statusline and tabline back and stop every cache this module
+--- keeps warm, so config.ui_mode can put lualine+bufferline in its place
+--- without leaving dead autocmds redrawing behind them.
+function M.teardown()
+  pcall(api.nvim_del_augroup_by_name, "config_chrome")
+  order, diag_counts, diag_dirty, newfile, modstate = {}, {}, {}, {}, {}
+  if saved then
+    vim.o.statusline, vim.o.tabline = saved.statusline, saved.tabline
+  end
+end
+
+--- Idempotent: config.ui_mode re-runs it when switching back from
+--- lualine+bufferline, and the caches above must not accumulate.
 function M.setup()
   define_highlights()
+  order, diag_counts, diag_dirty, newfile, modstate = {}, {}, {}, {}, {}
+  saved = saved or { statusline = vim.o.statusline, tabline = vim.o.tabline }
   for _, buf in ipairs(api.nvim_list_bufs()) do
     if vim.bo[buf].buflisted then
       order[#order + 1] = buf
@@ -499,10 +518,15 @@ function M.setup()
   vim.o.statusline = "%!v:lua.require'config.chrome'.statusline()"
   vim.o.tabline = "%!v:lua.require'config.chrome'.tabline()"
 
+  local g = api.nvim_create_augroup("config_chrome", { clear = true })
+  local au = api.nvim_create_autocmd
+
   -- icon provider load, off the startup path: devicons costs ~0.35ms and
   -- lualine parity needs its glyphs, so pull it in shortly after UIEnter
-  -- and repaint once it lands (no-op if something else loaded it first)
-  api.nvim_create_autocmd("UIEnter", {
+  -- and repaint once it lands (no-op if something else loaded it first).
+  -- In the group so a re-setup does not stack a second deferred load.
+  au("UIEnter", {
+    group = g,
     once = true,
     callback = function()
       vim.defer_fn(function()
@@ -515,8 +539,6 @@ function M.setup()
     end,
   })
 
-  local g = api.nvim_create_augroup("config_chrome", { clear = true })
-  local au = api.nvim_create_autocmd
   au("BufAdd", {
     group = g,
     callback = function(a)

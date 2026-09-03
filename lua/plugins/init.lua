@@ -1,5 +1,11 @@
 local util = require("util")
 
+-- Statusline/tabline renderer, resolved before lazy walks this table. In the
+-- default "chrome" mode the lualine and bufferline specs below carry no
+-- trigger at all, so lazy keeps them cloned and never loads them; :UiMode
+-- pulls them in on demand. See lua/config/ui_mode.lua.
+local chrome_plugins = require("config.ui_mode").uses_plugins()
+
 ---@type LazySpec
 return {
   -- Local
@@ -504,6 +510,28 @@ return {
             end,
           })
         end
+      end,
+    },
+    {
+      -- Retired as the default by lua/config/chrome.lua (round-3 W3.2) and
+      -- kept switchable: no trigger in chrome mode, VeryLazy in plugins mode.
+      "nvim-lualine/lualine.nvim",
+      event = chrome_plugins and "VeryLazy" or nil,
+      dependencies = {
+        "nvim-tree/nvim-web-devicons",
+      },
+      config = function()
+        require("plugins.lualine")
+      end,
+    },
+    {
+      "akinsho/bufferline.nvim",
+      event = chrome_plugins and "VeryLazy" or nil,
+      dependencies = {
+        "nvim-tree/nvim-web-devicons",
+      },
+      config = function()
+        require("plugins.bufferline")
       end,
     },
     {

@@ -1035,11 +1035,31 @@ return {
         -- Colorizer auto-attaches by filetype, which cannot name these files:
         -- a colorscheme is plain lua or vim, kitty/color.conf is conf, and the
         -- ganja themes are json -- filetypes shared with files that must stay
-        -- unhighlighted. So `filetypes` stays empty below and attachment is
-        -- driven from here, by path. Requiring the module is what pulls the
-        -- plugin in, so no separate lazy trigger is needed.
+        -- unhighlighted. So `filetypes` names a filetype nothing has (see
+        -- below) and attachment is driven from here, by path. Requiring the
+        -- module is what pulls the plugin in, so no separate lazy trigger is
+        -- needed.
+        --
+        -- The load has to wait for 'termguicolors' though: nvim turns it on
+        -- only once the terminal answers its capability query, which lands at
+        -- VimEnter, while a file named on the command line reaches BufReadPost
+        -- well before that. colorizer.setup() refuses to run without the
+        -- option and returns early, so an eager require would leave the plugin
+        -- on its defaults with none of the options below and put an error on
+        -- screen. Setting the option ourselves is the other way out, but then
+        -- the frames before :colorscheme paint nvim's default #14161b Normal
+        -- over the terminal background this colorscheme leaves showing.
+        local group = vim.api.nvim_create_augroup("colorizer_paths", { clear = true })
+        local waiting = {}
+
+        local function attach(buf)
+          if vim.api.nvim_buf_is_valid(buf) then
+            require("colorizer").attach_to_buffer(buf)
+          end
+        end
+
         vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-          group = vim.api.nvim_create_augroup("colorizer_paths", { clear = true }),
+          group = group,
           pattern = {
             "*/colors/*",
             "*/highlight.lua",
@@ -1047,7 +1067,26 @@ return {
             vim.fs.normalize("~/.config/ganja/themes/*.json"),
           },
           callback = function(args)
-            require("colorizer").attach_to_buffer(args.buf)
+            if vim.o.termguicolors then
+              attach(args.buf)
+            else
+              waiting[args.buf] = true
+            end
+          end,
+        })
+
+        vim.api.nvim_create_autocmd("OptionSet", {
+          group = group,
+          pattern = "termguicolors",
+          callback = function()
+            if not vim.o.termguicolors then
+              return
+            end
+            local bufs = vim.tbl_keys(waiting)
+            waiting = {}
+            for _, buf in ipairs(bufs) do
+              attach(buf)
+            end
           end,
         })
       end,

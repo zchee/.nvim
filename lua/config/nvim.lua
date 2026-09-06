@@ -228,12 +228,12 @@ vim.o.winborder = "rounded"
 vim.o.winminwidth = 5
 vim.o.wrap = true
 vim.o.writebackup = true
--- nvim auto-enables this once the terminal answers its capability query,
--- which lands at VimEnter -- about 10 ms after the BufReadPost that pulls
--- nvim-colorizer in for a file named on the command line, so its
--- setup() hit the "&termguicolors must be set" guard and silently dropped
--- every option it was given. Setting it here is what the guard wants.
-vim.o.termguicolors = true
+-- 'termguicolors' is deliberately NOT set here. nvim turns it on by itself
+-- once the terminal answers its capability query; setting it earlier means
+-- the frames before :colorscheme below are painted with nvim's default
+-- Normal (#14161b) instead of the terminal background this colorscheme
+-- leaves showing through, which reads as a grey flash on every startup.
+-- lua/plugins/init.lua holds nvim-colorizer back until the option lands.
 
 vim.o.autochdir = false
 vim.o.cursorcolumn = false

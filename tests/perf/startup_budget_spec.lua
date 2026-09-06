@@ -164,7 +164,10 @@ local function run_pty(mode, file, budget_ms)
     pty = true,
     width = 120,
     height = 40,
-    env = { TERM = "xterm-256color" },
+    -- NVIM_UI_MODE pins the statusline renderer: the load-graph assertions
+    -- below describe the default chrome config, and without this the child
+    -- inherits whatever the developer last persisted with :UiMode.
+    env = { TERM = "xterm-256color", NVIM_UI_MODE = "chrome" },
   })
   if job <= 0 then
     fail("failed to start pty nvim for scenario " .. mode)

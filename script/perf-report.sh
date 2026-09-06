@@ -36,6 +36,13 @@ run_timeout_s=90
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
+# Every number here is only comparable across rounds if the config under
+# measurement is the same one each time, so pin the statusline renderer to
+# chrome rather than inheriting whatever :UiMode last persisted -- the
+# plugins mode loads lualine and bufferline at VeryLazy and moves the totals.
+# Exported, so the nested `nvim -l` harnesses below hand it to their children.
+export NVIM_UI_MODE=chrome
+
 # Measurement sessions must never write the user's real ShaDa. A round runs
 # dozens of full-config sessions, often several at once, and they all race for
 # the same main.shada.tmp.a-z namespace: any run killed mid-write (this

@@ -1052,14 +1052,19 @@ return {
         })
       end,
       opts = {
-        filetypes = {},
+        -- an empty list is rejected (the plugin builds its filetype autocmd
+        -- from it, and nvim_create_autocmd refuses an empty pattern list) and
+        -- omitting the key defaults to "*", so name a filetype nothing has
+        filetypes = { "colorizer_off" },
         options = {
           parsers = {
             -- colorschemes and theme files carry 8-digit hex and the odd
-            -- rgb()/hsl(); names and 3/6-digit hex are on by default
+            -- rgb()/hsl(); names and 3/6-digit hex are on by default.
+            -- rgb/hsl take a table, not a boolean: config.lua reads
+            -- p.rgb.enable unconditionally and a boolean throws there.
             hex = { rrggbbaa = true },
-            rgb = true,
-            hsl = true,
+            rgb = { enable = true },
+            hsl = { enable = true },
           },
         },
       },

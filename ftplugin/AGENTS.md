@@ -17,6 +17,7 @@ own ftplugin.
 |------|-------------|
 | `devicetree.lua` | `.keymap`/devicetree files: noexpandtab, `sw=4 sts=4 ts=8` |
 | `gohtmltmpl.lua` | Go HTML templates: `did_ftplugin` guard, then `runtime ftplugin/html.lua` |
+| `goasm.lua` | Plan 9 assembly as Go's assembler takes it: `commentstring = "// %s"`, which nothing else set (`gcc` was a silent no-op on these buffers). Its other job is existing at all -- `lua/filetypes/goasm.lua` detects the filetype with a function, and a function in the registry is invisible to `vim.filetype._get_known_filetypes()`, so without a runtime file naming `goasm` both `lsp/asm_lsp.lua` and `lsp/gopls.lua` drew an "Unknown filetype" warning from `:checkhealth vim.lsp` |
 | `gomod.lua` | `go.mod`: `sw=ts=sts=4`, noexpandtab, Go-style `comments`/`commentstring`, drops `t` from `formatoptions` |
 | `gotmpl.lua` | Go templates: `runtime! syntax/go.vim`, same indent/comment settings as `gomod.lua` |
 | `gowork.lua` | `go.work`: same indent/comment settings as `gomod.lua`, set via `vim.opt_local` instead of `vim.bo`/`vim.opt` |
@@ -38,8 +39,8 @@ own ftplugin.
 - Guard against double-sourcing with `if vim.b.did_ftplugin then return end`
   / `vim.b.did_ftplugin = true` (Lua) or `if exists('b.did_ftplugin') |
   finish | endif` (Vimscript) — most files here follow this, but not all
-  (`devicetree.lua`, `jsonschema.lua`, `kitty.lua`, `proto.lua`,
-  `quickfix.lua`, `tiltfile.lua` skip the guard since they only set
+  (`devicetree.lua`, `goasm.lua`, `jsonschema.lua`, `kitty.lua`,
+  `proto.lua`, `quickfix.lua`, `tiltfile.lua` skip the guard since they only set
   idempotent `opt_local` values with no side effects worth guarding).
 - `java.lua` and `modulemap.lua` are inert stubs (100% commented out). Either
   implement them for real (`jdtls` for Java, a `FileType` autocmd + syntax

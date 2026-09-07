@@ -1,0 +1,12 @@
+-- Plan 9 assembly as Go's assembler accepts it. The filetype is detected by
+-- lua/filetypes/goasm.lua's function (`.s` is shared with plain asm), and a
+-- function in the filetype registry is invisible to
+-- vim.filetype._get_known_filetypes -- so without a runtime file naming it,
+-- `:checkhealth vim.lsp` reports goasm in lsp/asm_lsp.lua's filetypes as an
+-- unknown filetype. This file is what makes it known, and it has real work to
+-- do: nothing else sets 'commentstring' for goasm, so `gcc` was a silent
+-- no-op on these buffers.
+--
+-- Go's assembler takes Go's comment syntax: // to end of line, /* */ nesting
+-- not supported. The inherited 'comments' value already covers both.
+vim.opt_local.commentstring = "// %s"

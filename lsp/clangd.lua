@@ -75,7 +75,17 @@ return {
     "--input-style=standard",
     "--offset-encoding=utf-16",
   },
-  filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "metal" },
+  -- No "metal", even though filetype.lua detects it now. This clangd is
+  -- upstream LLVM, which has no Metal language mode, so it compiles a shader
+  -- as C: 21 errors on a real one, starting at `'metal_stdlib' file not
+  -- found` and cascading through every `using namespace metal` after it.
+  -- Pointing it at the headers would not help either -- they live inside a
+  -- versioned cryptex mount that xcrun resolves at runtime
+  -- (.../MobileAsset.MetalToolchain-v27.1.5252.6.../usr/metal/32023/...) and
+  -- the Metal-only qualifiers would still not parse. Keeping metal its own
+  -- filetype rather than aliasing it to cpp is what holds clangd off these
+  -- buffers; Tree-sitter's cpp parser covers the highlighting.
+  filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
   root_markers = {
     ".clangd",
     ".clang-tidy",

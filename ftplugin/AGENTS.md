@@ -26,6 +26,7 @@ own ftplugin.
 | `java.lua` | Entirely commented out — dormant `jdtls.start_or_attach()` scaffold, not active |
 | `jsonschema.lua` | `expandtab`, `sw=sts=ts=2`, `conceallevel=0` |
 | `kitty.lua` | `commentstring = "# %s"` |
+| `metal.lua` | Metal Shading Language: `commentstring = "// %s"`. Like `goasm.lua` it also exists so `metal` is a filetype nvim knows -- `filetype.lua` maps the extension, `lua/plugins/tree-sitter.lua` registers the `cpp` parser for it, and `lsp/clangd.lua` deliberately does NOT list it (upstream clangd has no Metal mode and compiles a shader as C) |
 | `modulemap.lua` | Entirely commented out — dormant scaffold referencing a `FileType` autocmd that was never implemented |
 | `proto.lua` | Protobuf: `autoindent`/`cindent`, `colorcolumn=100`, `commentstring=//\ %%s`, `copyindent`, `expandtab`, `formatoptions+=croq`, `sw=4 sts=4 ts=8`, `smartindent=false`, `smarttab=true`, `foldmethod=expr` (Tree-sitter `foldexpr` line is commented out) |
 | `quickfix.lua` | Quickfix window: `list=false`, `number=false` |
@@ -40,7 +41,8 @@ own ftplugin.
   / `vim.b.did_ftplugin = true` (Lua) or `if exists('b.did_ftplugin') |
   finish | endif` (Vimscript) — most files here follow this, but not all
   (`devicetree.lua`, `goasm.lua`, `jsonschema.lua`, `kitty.lua`,
-  `proto.lua`, `quickfix.lua`, `tiltfile.lua` skip the guard since they only set
+  `metal.lua`, `proto.lua`, `quickfix.lua`, `tiltfile.lua` skip the guard
+  since they only set
   idempotent `opt_local` values with no side effects worth guarding).
 - `java.lua` and `modulemap.lua` are inert stubs (100% commented out). Either
   implement them for real (`jdtls` for Java, a `FileType` autocmd + syntax

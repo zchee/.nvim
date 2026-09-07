@@ -346,6 +346,7 @@ vim.lsp.enable({
   "lua_ls",
   "markdown_oxide",
   "neocmake",
+  "pkl_lsp",
   "protols",
   "ruby_lsp",
   "sourcekit",

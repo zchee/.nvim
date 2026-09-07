@@ -201,6 +201,11 @@ hl("LspHintHighlight", { underline = true })
 hl("DiagnosticError", { fg = red })
 hl("DiagnosticWarn", { fg = yellow })
 hl("DiagnosticInfo", { fg = orange })
+-- Same value nvim ships as its own default for this group, pinned instead of
+-- inherited: todo-comments resolves TodoFg/Bg/SignNOTE from it (colors.hint in
+-- lua/plugins/todo-comment.lua), so a nightly that moves the default palette
+-- would silently repaint every NOTE keyword in every buffer.
+hl("DiagnosticHint", { fg = "#a6dbff" })
 
 -- ------------------------------------------------------------------------------
 -- Overrides (former lua/config/highlight.lua, applied last so they replace

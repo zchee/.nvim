@@ -175,7 +175,7 @@ DiagnosticFloatingHint {link="DiagnosticHint"}
 DiagnosticFloatingInfo {link="DiagnosticInfo"}
 DiagnosticFloatingOk {link="DiagnosticOk"}
 DiagnosticFloatingWarn {link="DiagnosticWarn"}
-DiagnosticHint {ctermfg=12,fg=10935295}
+DiagnosticHint {blend=0,fg=10935295}
 DiagnosticInfo {blend=0,fg=16223340}
 DiagnosticOk {ctermfg=10,fg=11794112}
 DiagnosticSignError {link="DiagnosticError"}
@@ -246,6 +246,8 @@ LspReferenceWrite {link="LspReferenceText"}
 LspSignatureActiveParameter {bg=3422529,blend=10}
 LspWarningHighlight {blend=0,underline=true}
 LspWarningText {blend=0,fg=16763755}
+MCursor {link="Cursor"}
+MCursorVisual {link="Visual"}
 Macro {blend=0,fg=7723007}
 MatchParen {bg=3422529}
 MatchWord {bg=3422529}
@@ -474,7 +476,7 @@ doxygenSpecialMultilineDesc {fg=8495806}
 doxygenSpecialOnelineDesc {fg=8495806}
 goImportedPkg {blend=10,cterm={italic=true},fg=7772903,italic=true}
 illuminatedWord {cterm={underline=true},underline=true}
-lCursor {bg=15922163}
+lCursor {bg=15922163,cterm={reverse=true}}
 manBold {blend=0,bold=true,fg=15779444}
 manItalic {blend=0,italic=true}
 manUnderline {blend=0,fg=8495806,underline=true}

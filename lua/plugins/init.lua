@@ -712,6 +712,33 @@ return {
         if not ok then
           error(err)
         end
+        -- highlight.start() registers the current window in its own `wins`
+        -- table, and attach() only repaints when the window is new to it --
+        -- so a file opened into a window that is already known never gets a
+        -- repaint and keeps whatever the legacy syntax painted (Todo,
+        -- #ffcc00, where TodoFg<KW> belongs). Drive the repaint from the
+        -- events that expose a new range instead, and call _update directly
+        -- rather than update(): the latter hops through a uv timer and
+        -- vim.schedule, so the paint lands a frame or more after the event
+        -- that revealed the text. A cold full viewport costs 0.33 ms and a
+        -- warm one 0.001 ms, both off any keystroke path. VimEnter is
+        -- deliberately not in this list -- it runs before the buffer's syntax
+        -- is applied, and comments_only would reject every keyword and mark
+        -- the lines clean.
+        vim.api.nvim_create_autocmd({ "BufWinEnter", "WinResized" }, {
+          group = vim.api.nvim_create_augroup("todo_comments_repaint", { clear = true }),
+          callback = function()
+            local loaded, hl = pcall(require, "todo-comments.highlight")
+            if not (loaded and hl.enabled) then
+              return
+            end
+            if type(hl._update) == "function" then
+              hl._update()
+            else
+              hl.update()
+            end
+          end,
+        })
       end,
     },
   },

@@ -26,6 +26,13 @@ return {
   -- * keyword: highlights of the keyword
   -- * after: highlights after the keyword (todo text)
   highlight = {
+    -- The legacy Vim syntax under this plugin already paints the bare keyword
+    -- as Todo (#ffcc00) -- tmuxTodo, shTodo and friends -- so the default
+    -- 200 ms coalescing window is 200 ms of the WRONG colour on every newly
+    -- exposed range before TodoFg<KW> lands on top. The work it coalesces is
+    -- 0.001 ms with nothing dirty, 0.002 ms for one new line and 0.33 ms for
+    -- a whole cold 20-line viewport, so there is nothing worth batching.
+    throttle = 0,
     multiline = true, -- enable multine todo comments
     multiline_pattern = "^.", -- lua pattern to match the next multiline from the start of the matched keyword
     multiline_context = 10, -- extra lines that will be re-evaluated when changing a line

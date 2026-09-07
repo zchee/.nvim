@@ -12,6 +12,11 @@ vim.treesitter.language.register("json", "jsonl")
 vim.treesitter.language.register("gotmpl", "helm")
 vim.treesitter.language.register("docker-bake", "hcl")
 vim.treesitter.language.register("bash", "zsh")
+-- Metal Shading Language is C++14 with added address-space and attribute
+-- syntax, and there is no metal grammar; cpp parses the bulk of a shader and
+-- leaves ERROR nodes on the Metal-only qualifiers, which still beats the
+-- "conf" guess these files used to land on.
+vim.treesitter.language.register("cpp", "metal")
 
 local nts = require("nvim-treesitter")
 
@@ -54,8 +59,8 @@ vim.api.nvim_create_user_command("TSEnsureInstalled", function()
   nts.install(require("plugins.treesitter_parsers"))
 end, { desc = "Install all configured tree-sitter parsers" })
 
+-- Keyed on the resolved parser language, not the filetype.
 local highlight_skip = {
-  metal = true,
   tmux = true,
 }
 local indent_skip = {

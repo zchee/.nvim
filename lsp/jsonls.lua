@@ -196,7 +196,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.bun_prefix("vscode-json-language-server"), "--stdio" },
+  -- Spelled out interpreter first: the bin is a `#!/usr/bin/env node` script,
+  -- so through the nodenv shim its node version comes from the cwd it happens
+  -- to be spawned in -- see util.nodenv_prefix.
+  cmd = { util.nodenv_prefix("node"), util.bun_prefix("vscode-json-language-server"), "--stdio" },
   filetypes = { "json", "jsonc", "json5", "jsonschema" },
   init_options = {
     -- The server registers its formatter only when asked to at initialize

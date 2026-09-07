@@ -4,7 +4,10 @@ local util = require("util")
 --- https://github.com/redhat-developer/yaml-language-server/blob/main/src/languageserver/handlers/settingsHandlers.ts
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.bun_prefix("yaml-language-server"), "--stdio" },
+  -- Interpreter spelled out for the same reason as lsp/jsonls.lua: the bin is
+  -- a `#!/usr/bin/env node` script, and through the nodenv shim its node
+  -- version follows the cwd it is spawned in -- see util.nodenv_prefix.
+  cmd = { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" },
   filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values" },
   root_markers = { ".git" },
   -- yaml-language-server reports no documentFormattingProvider until settings

@@ -289,6 +289,34 @@ function M.bun_prefix(binary)
   return tostring(vim.fs.joinpath(os.getenv("BUN_INSTALL"), "bin", binary))
 end
 
+--- Returns the binary path inside nodenv's globally selected node version.
+---
+--- Deliberately not the shim. A shim resolves its version from the process
+--- cwd, and a language server is spawned in its root_dir, so any project
+--- pinning a version this machine has not installed kills the server outright
+--- -- with the nodenv-nvmrc hook in play, an .nvmrc at a monorepo root even
+--- wins over a nearer .node-version. The node a language server runs on is
+--- not a project concern, so resolve it once from $NODENV_ROOT/version.
+---
+--- Falls back to the shim when that file is unreadable, which keeps the
+--- cwd-dependent behavior rather than handing the caller a path that does not
+--- exist.
+---
+---@param binary string binary name
+---@return string
+function M.nodenv_prefix(binary)
+  local root = os.getenv("NODENV_ROOT")
+  local fd = root and io.open(vim.fs.joinpath(root, "version"), "r")
+  local version = fd and fd:read("l")
+  if fd then
+    fd:close()
+  end
+  if not version or version == "" then
+    return tostring(vim.fs.joinpath(root, "shims", binary))
+  end
+  return tostring(vim.fs.joinpath(root, "versions", version, "bin", binary))
+end
+
 --- Returns the pnpm binary path for the given binary name.
 ---
 ---@param binary string binary name

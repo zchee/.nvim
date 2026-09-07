@@ -339,6 +339,7 @@ vim.lsp.enable({
   "basedpyright",
   "bashls",
   "clangd",
+  "cue",
   "dockerls",
   "gopls",
   "helm_ls",

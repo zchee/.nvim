@@ -31,6 +31,13 @@ scaffolding, and a couple of general-purpose Lua utilities (`switch`,
   `homebrew_prefix()/opt/<formula>/bin/<binary>`; `M.bun_prefix`,
   `M.pnpm_prefix`, `M.rbenv_prefix` follow the equivalent
   `$ENV_VAR/.../binary` pattern for their respective toolchains.
+- `M.nodenv_prefix(binary)` is the odd one out: it resolves
+  `$NODENV_ROOT/versions/<global>/bin/<binary>` by reading
+  `$NODENV_ROOT/version`, deliberately skipping the shim. A shim picks its
+  node version from the process cwd, so a `#!/usr/bin/env node` language
+  server spawned in a project root dies whenever that project pins a version
+  the machine has not installed. Falls back to the shim only when the global
+  version file is unreadable.
 - `M.fast_switch` compiles a generated Lua chunk via `loadstring`; treat it as
   hot-path-only tooling, not a place to add branching business logic.
 - New helpers should be added to `init.lua`'s `M` table with a LuaCATS

@@ -95,7 +95,10 @@ configs on the first FileType event of any filetype, and silently drop a
   `before_init`/`on_attach`.
 - Binary resolution order in practice: `util.homebrew_binary(formula,
   binary)` is the norm; `util.go_path()` for Go-toolchain binaries,
-  `util.bun_prefix()` for JS/TS-ecosystem servers,
+  `util.bun_prefix()` for JS/TS-ecosystem servers -- the two node servers
+  (`lsp/jsonls.lua`, `lsp/yamlls.lua`) additionally name their interpreter
+  with `util.nodenv_prefix("node")` so the project's node version file
+  cannot decide what runs the server,
   `util.src_path()` for auxiliary include/library paths. A handful of
   files deviate with a bare command name (`sourcekit.lua`, `vtsls.lua`,
   `helm_ls.lua` via `vim.fn.exepath`) or a hardcoded absolute path
@@ -111,7 +114,7 @@ configs on the first FileType event of any filetype, and silently drop a
 
 ### Internal
 - `lua/util/init.lua` — `homebrew_binary()`, `prefix()`, `homebrew_prefix()`,
-  `bun_prefix()`, `pnpm_prefix()`, `go_path()`, `src_path()`,
+  `bun_prefix()`, `nodenv_prefix()`, `pnpm_prefix()`, `go_path()`, `src_path()`,
   `xdg_config_home()`, `is_exists()`; used throughout for binary/path
   resolution.
 - `lua/lsp/protocol/init.lua` — LSP spec constants consumed by `init.lua`'s

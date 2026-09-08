@@ -425,5 +425,8 @@ vim.keymap.set({ "n" }, "<LocalLeader>gt", function()
   require("snacks").picker.lsp_type_definitions()
 end, { silent = true })
 vim.keymap.set({ "n" }, "<Leader>e", function()
-  vim.lsp.buf.rename()
+  -- setup() is optional and only overrides defaults, so it is skipped: the
+  -- defaults already preview other occurrences (Search/CurSearch) and record
+  -- the edit as a macro, which is what makes `.` repeat the rename.
+  require("live-rename").rename()
 end, { silent = true, desc = "LSP rename" })

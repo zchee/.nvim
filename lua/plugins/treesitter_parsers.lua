@@ -97,6 +97,7 @@ return {
   "php_only",
   "phpdoc",
   "pioasm",
+  "pkl",
   "printf",
   "promql",
   "properties",

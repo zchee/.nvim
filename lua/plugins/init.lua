@@ -206,6 +206,14 @@ return {
         end,
       },
     },
+    {
+      -- Replaces the bare vim.lsp.buf.rename() cmdline prompt with an
+      -- in-buffer float whose extmarks preview every occurrence as the new
+      -- name is typed. Deliberately trigger-less: defaults.lazy = true means
+      -- the require in lua/lsp/init.lua's <Leader>e mapping loads it, which
+      -- keeps every LSP keymap in that one file (see lua/AGENTS.md).
+      "saecki/live-rename.nvim",
+    },
   },
 
   -- Completion

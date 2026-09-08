@@ -325,6 +325,21 @@ return {
         }
       end,
     },
+    shfmt = {
+      command = util.homebrew_binary("shfmt", "shfmt"),
+      args = {
+        "--filename",
+        "$FILENAME",
+        "--language-dialect",
+        "bash",
+        "--indent",
+        "2",
+        "--binary-next-line",
+        "--case-indent",
+        "--space-redirects",
+        "--keep-padding",
+      },
+    },
     stylua = {
       command = util.homebrew_binary("stylua", "stylua"),
     },

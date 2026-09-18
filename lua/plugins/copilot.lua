@@ -20,6 +20,7 @@ copilot.setup({
     ["*"] = false,
     go = true,
     lua = true,
+    python = true,
     sh = true,
     toml = true,
   },

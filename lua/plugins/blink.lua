@@ -114,6 +114,13 @@ blink.setup({
         "buffer",
         inherit_defaults = false,
       },
+      python = {
+        "lsp",
+        "snippets",
+        "copilot",
+        "path",
+        "buffer",
+      },
       snacks_picker_input = {
         "path",
         "buffer",

@@ -41,7 +41,12 @@ return {
   root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
   settings = {
     typescript = {
-      updateImportsOnFileMove = "always",
+      -- Takes effect only once something notifies workspace/didRenameFiles:
+      -- neo-tree does not, so its file_renamed/file_moved handlers in
+      -- lua/plugins/neo-tree.lua have to call snacks' on_rename_file.
+      updateImportsOnFileMove = {
+        enabled = "always",
+      },
       referencesCodeLens = {
         enabled = true,
         showOnAllFunctions = true,
@@ -53,7 +58,9 @@ return {
       },
     },
     javascript = {
-      updateImportsOnFileMove = "always",
+      updateImportsOnFileMove = {
+        enabled = "always",
+      },
       referencesCodeLens = {
         enabled = true,
         showOnAllFunctions = true,

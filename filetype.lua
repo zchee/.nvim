@@ -128,7 +128,7 @@ vim.filetype.add({
     [".*/.?kube/config"] = "yaml",
     [".*/.config/%.ssh/config.d/.*"] = "sshconfig",
     [".*/.config/cabal"] = "cabalconfig",
-    [".*/.config/direnv/direnvrc"] = "sh",
+    [".*/.config/direnv/direnvrc"] = "bash",
     [".*/.config/gcloud/configurations/.*"] = "cfg",
     [".*/.config/git/config.d/.*"] = "gitconfig",
     [".*/.config/go/env/.*"] = "sh",

@@ -66,9 +66,14 @@ configs on the first FileType event of any filetype, and silently drop a
   `lua/plugins/conform.lua`. `json5` pins it because `jsonls` has no JSON5
   mode and rewrites such a buffer as strict JSON.
 - Cross-cutting `on_attach` quirks (bashls/lua_ls early return, dockerls
-  capability stripping, tsserver diagnostic filtering, yamlls stopping
-  itself inside Helm template directories) live in `init.lua`'s shared
-  `on_attach`, not in the individual server files.
+  capability stripping, yamlls stopping itself inside Helm template
+  directories) live in `init.lua`'s shared `on_attach`, not in the
+  individual server files.
+- Per-server diagnostic filters live in that server's `lsp/<name>.lua` as a
+  client-local `handlers` entry, never by assigning `vim.lsp.handlers`, which
+  every server would inherit: `vtsls.lua` drops TypeScript 80001 from
+  pushed `textDocument/publishDiagnostics`, `jsonls.lua` drops JSON syntax
+  errors on JSON5 buffers from pulled `textDocument/diagnostic`.
 - A repo-local skill, `.claude/skills/add-lsp`, documents this exact
   workflow — invoke it when adding a new server.
 

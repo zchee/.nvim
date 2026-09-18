@@ -2,7 +2,7 @@ local metaphrast = require("metaphrast")
 
 ---@type MetaphrastConfig
 metaphrast.setup({
-  provider = "deepl",
+  provider = "google_llm",
   source_lang = "en",
   target_lang = "ja",
   max_chars = 8000,
@@ -34,13 +34,16 @@ metaphrast.setup({
     backend = "plenary",
   },
   providers = {
-    echo = {
-      suffix = "[echo]",
-    },
     deepl = {
-      api_key = vim.env.DEEPL_API_KEY,
-      base_url = "https://api-free.deepl.com/v2/translate", -- "https://api.deepl.com/v2/translate",
+      api_key = vim.env.ZCHEE_DEEPL_API_KEY,
+      -- base_url = "https://api-free.deepl.com/v2/translate",
+      base_url = "https://api.deepl.com/v2/translate",
       price_per_million_chars = 25.0,
+    },
+    google_llm = {
+      api_key = vim.env.GOOGLE_API_KEY or vim.env.GOOGLE_TRANSLATE_KEY,
+      gcp_project_id = "gaudiy-ai",
+      location = "global",
     },
     google = {
       api_key = vim.env.GOOGLE_API_KEY or vim.env.GOOGLE_TRANSLATE_KEY,
@@ -51,14 +54,14 @@ metaphrast.setup({
     },
     openai = {
       api_key = vim.env.OPENAI_API_KEY,
-      model = "gpt-5-nano",
+      model = "gpt-5.6-luna",
       base_url = "https://api.openai.com/v1/responses",
       input_per_million = 0.15,
       output_per_million = 0.60,
     },
     gemini = {
       api_key = vim.env.GOOGLE_API_KEY,
-      model = "gemini-3.1-flash-lite-preview",
+      model = "gemini-3.8-flash",
       base_url = "https://generativelanguage.googleapis.com/v1beta/models",
       input_per_million = 0.30,
       output_per_million = 2.50,

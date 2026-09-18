@@ -9,7 +9,7 @@ local lint = require("lint")
 lint.linters.golangcilint.cmd = util.go_path("bin", "golangci-lint")
 
 lint.linters_by_ft = {
-  go = { "golangcilint" },
+  -- go = { "golangcilint" },
   python = { "ruff" },
 }
 

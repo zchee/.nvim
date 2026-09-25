@@ -194,6 +194,68 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
+-- Schemas that own the files their `fileMatch` names outright.
+--
+-- A plain SchemaStore association cannot express that.
+-- vscode-json-languageservice (getAssociatedSchemas) collects every
+-- association that matches a file and merges them under one allOf, with no
+-- notion of a more specific pattern winning; only an in-file `$schema` is
+-- exclusive. So every other catalog entry that claims the same file name gets
+-- the pattern appended as a `!` negation -- after its own patterns, because
+-- FilePatternAssociation lets the last matching one decide. The server
+-- prefixes each pattern with `**/`. The pattern's final segment must be a
+-- literal file name, since that is what the competitors are found by.
+--
+-- `name` is the catalog entry to take over, and is added when the catalog no
+-- longer carries it.
+local EXCLUSIVE_SCHEMAS = {
+  -- The catalog gives chrome-manifest.json no fileMatch at all, and hands every
+  -- bare manifest.json to Foxx Manifest, WebExtensions and Web App Manifest at
+  -- once; the Firefox-shaped WebExtensions schema then flags MV3's object
+  -- content_security_policy. Chrome extensions are recognized by the
+  -- chrome-extension* naming of their repositories instead.
+  {
+    name = "Chrome Extension",
+    description = "Google Chrome extension manifest file",
+    url = "https://json.schemastore.org/chrome-manifest.json",
+    fileMatch = "chrome-extension*/**/manifest.json",
+  },
+}
+
+---Gives each EXCLUSIVE_SCHEMAS entry sole ownership of the files it matches.
+---
+---Mutates `schemas` in place, so it must be the copy json.schemas() makes when
+---given opts, never the catalog module's own table.
+---@param schemas table[] SchemaStore entries: name, description, fileMatch, url.
+---@return table[]
+local function apply_exclusive_schemas(schemas)
+  for _, exclusive in ipairs(EXCLUSIVE_SCHEMAS) do
+    local file_name = exclusive.fileMatch:match("[^/]+$")
+    local owner
+    for _, schema in ipairs(schemas) do
+      if schema.name == exclusive.name then
+        owner = schema
+      else
+        local file_match = type(schema.fileMatch) == "string" and { schema.fileMatch } or schema.fileMatch or {}
+        for _, pattern in ipairs(file_match) do
+          if pattern == file_name or vim.endswith(pattern, "/" .. file_name) then
+            file_match[#file_match + 1] = "!" .. exclusive.fileMatch
+            schema.fileMatch = file_match
+            break
+          end
+        end
+      end
+    end
+    if owner == nil then
+      owner = { name = exclusive.name, description = exclusive.description }
+      schemas[#schemas + 1] = owner
+    end
+    owner.url = exclusive.url
+    owner.fileMatch = { exclusive.fileMatch }
+  end
+  return schemas
+end
+
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   -- Spelled out interpreter first: the bin is a `#!/usr/bin/env node` script,
@@ -268,7 +330,7 @@ return {
   -- scoped to the starting client (same seam lsp/gopls.lua uses).
   ---@param config vim.lsp.ClientConfig
   before_init = function(_, config)
-    config.settings.json.schemas = require("schemastore").json.schemas({
+    local schemas = require("schemastore").json.schemas({
       -- `ignore` and `select`: https://github.com/b0o/SchemaStore.nvim/blob/main/lua/schemastore/catalog.lua
       -- ignore = {
       --   "Codex Hooks",
@@ -300,5 +362,6 @@ return {
       --   },
       -- },
     })
+    config.settings.json.schemas = apply_exclusive_schemas(schemas)
   end,
 }

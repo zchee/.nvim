@@ -74,6 +74,11 @@ configs on the first FileType event of any filetype, and silently drop a
   every server would inherit: `vtsls.lua` drops TypeScript 80001 from
   pushed `textDocument/publishDiagnostics`, `jsonls.lua` drops JSON syntax
   errors on JSON5 buffers from pulled `textDocument/diagnostic`.
+- A JSON schema that must own a file outright goes in `EXCLUSIVE_SCHEMAS` in
+  `lsp/jsonls.lua`, not in a bare `fileMatch`: the server merges every
+  matching association under `allOf`, so each competing catalog entry needs a
+  trailing `!` negation, which `before_init` appends. Chrome extension
+  manifests (`chrome-extension*/**/manifest.json`) are routed this way.
 - A repo-local skill, `.claude/skills/add-lsp`, documents this exact
   workflow — invoke it when adding a new server.
 
@@ -83,8 +88,8 @@ configs on the first FileType event of any filetype, and silently drop a
 - `nvim --headless -u NONE -l tests/<name>_spec.lua` runs a headless
   regression spec. Specs that target this stack:
   `lsp_capabilities_snapshot_spec.lua` (snapshot == blink's live output),
-  `jsonls_json5_diagnostics_spec.lua` / `jsonls_ref_definition_spec.lua`
-  (`lsp/jsonls.lua`), `markdown_oxide_spec.lua`, and
+  `jsonls_json5_diagnostics_spec.lua` / `jsonls_ref_definition_spec.lua` /
+  `jsonls_chrome_manifest_spec.lua` (`lsp/jsonls.lua`), `markdown_oxide_spec.lua`, and
   `tests/perf/startup_budget_spec.lua` (gopls attaches from a pty session
   while blink stays unloaded; needs the gopls daemon).
 - gopls runs in forwarder mode (`-remote=unix;/tmp/gopls.sock`) and exits

@@ -323,7 +323,6 @@ vim.lsp.enable({
   "helm_ls",
   "jsonls",
   "lua_ls",
-  "markdown_oxide",
   "neocmake",
   "pkl_lsp",
   "protols",

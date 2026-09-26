@@ -46,6 +46,8 @@ do
   )
   assert_equal(2, vim.bo[buf].shiftwidth, "the jsonc indent options should reach hujson (shiftwidth)")
   assert_equal(2, vim.bo[buf].tabstop, "the jsonc indent options should reach hujson (tabstop)")
+  -- after jsonc's expandtab, so hand-typed indents match hujsonfmt's tabs
+  assert_equal(false, vim.bo[buf].expandtab, "hujson should indent with tabs like hujsonfmt")
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "{", '  "a": 1,', "}" })
   vim.api.nvim_win_set_cursor(0, { 2, 0 })

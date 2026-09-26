@@ -36,7 +36,7 @@ vim.filetype.add({
     go2 = "go",
     gunk = "gunk.go",
     hla = "hla",
-    hujson = "jsonc",
+    hujson = "hujson",
     i = "swig",
     icls = "xml",
     inc = "masm",

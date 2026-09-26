@@ -45,16 +45,16 @@ parsers.cel = {
   },
   tier = 3,
 }
-parsers.modulemap = {
+parsers.hujson = {
   install_info = {
-    url = "https://github.com/panicinc/tree-sitter-modulemap",
+    url = "https://github.com/ggfevans/tree-sitter-hujson",
     branch = "main",
   },
   tier = 3,
 }
-parsers.x86asm = {
+parsers.modulemap = {
   install_info = {
-    url = "https://github.com/bearcove/tree-sitter-x86asm",
+    url = "https://github.com/panicinc/tree-sitter-modulemap",
     branch = "main",
   },
   tier = 3,
@@ -63,6 +63,13 @@ parsers.mustache = {
   install_info = {
     url = "https://github.com/zchee/tree-sitter-mustache",
     branch = "dev",
+  },
+  tier = 3,
+}
+parsers.x86asm = {
+  install_info = {
+    url = "https://github.com/bearcove/tree-sitter-x86asm",
+    branch = "main",
   },
   tier = 3,
 }

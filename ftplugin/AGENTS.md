@@ -23,6 +23,7 @@ own ftplugin.
 | `gowork.lua` | `go.work`: same indent/comment settings as `gomod.lua`, set via `vim.opt_local` instead of `vim.bo`/`vim.opt` |
 | `headlines.vim` | Vimscript, `did_ftplugin` guard; maps buffer-local `q` to `:q<CR>` |
 | `help.vim` | Vimscript; adjusts mouse-click and cursor-movement column position around concealed characters in `:help` buffers |
+| `hujson.lua` | HuJSON (JWCC): `runtime! ftplugin/jsonc[.]{vim,lua}`, so it takes jsonc's settings wholesale -- `$VIMRUNTIME/ftplugin/jsonc.vim` (`commentstring = "// %s"`, `//` and `/* */` `comments`, and json's own ftplugin underneath) and `after/ftplugin/jsonc.lua` (indent), since the rtp carries the after/ dirs. Nvim ships no hujson ftplugin, so without it `gcc` failed with "Option 'commentstring' is empty". No guard of its own: the sourced json ftplugin sets `b:did_ftplugin`. Pinned by `tests/hujson_ftplugin_spec.lua` |
 | `java.lua` | Entirely commented out — dormant `jdtls.start_or_attach()` scaffold, not active |
 | `jsonschema.lua` | `expandtab`, `sw=sts=ts=2`, `conceallevel=0` |
 | `kitty.lua` | `commentstring = "# %s"` |

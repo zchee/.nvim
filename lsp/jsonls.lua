@@ -30,6 +30,15 @@ local util = require("util")
 local SYNTAX_CODE_FIRST = 0x100
 local SYNTAX_CODE_LAST = 0x300 -- exclusive
 
+-- HuJSON (JWCC) is the opposite case: its grammar is exactly JSONC plus
+-- trailing commas, so "jsonc" is the right languageId for it (get_language_id
+-- below). Measured against this server, a hujson buffer sent as "hujson" gets
+-- an Error on every comment (521) and every trailing comma (519); sent as
+-- "jsonc" the comments are accepted and only the trailing commas remain, as
+-- Warnings. Those are legal HuJSON, so ErrorCode.TrailingComma alone is dropped
+-- -- a missing comma (514) and every other grammar error still report.
+local TRAILING_COMMA_CODE = 0x207
+
 ---Whether `diagnostic` is the JSON grammar talking rather than a schema.
 ---@param diagnostic lsp.Diagnostic
 ---@return boolean
@@ -37,6 +46,16 @@ local function is_json_syntax_diagnostic(diagnostic)
   local code = diagnostic.code
   return type(code) == "number" and code >= SYNTAX_CODE_FIRST and code < SYNTAX_CODE_LAST
 end
+
+---Per filetype, the diagnostics its dialect makes false. Filetypes absent here
+---are real JSON or JSONC and keep everything.
+---@type table<string, fun(diagnostic: lsp.Diagnostic): boolean>
+local FALSE_DIAGNOSTICS = {
+  json5 = is_json_syntax_diagnostic,
+  hujson = function(diagnostic)
+    return diagnostic.code == TRAILING_COMMA_CODE
+  end,
+}
 
 -- Pull, not push: the server hands diagnostics to whichever transport the
 -- client asked for (`registerDiagnosticsPushSupport` only when the client
@@ -52,18 +71,12 @@ end
 ---@param err lsp.ResponseError?
 ---@param result lsp.DocumentDiagnosticReport
 ---@param ctx lsp.HandlerContext
-local function filter_json5_syntax_diagnostics(err, result, ctx)
+local function filter_dialect_diagnostics(err, result, ctx)
   local bufnr = ctx.bufnr
-  if
-    err == nil
-    and type(result) == "table"
-    and result.kind == "full"
-    and bufnr ~= nil
-    and vim.api.nvim_buf_is_valid(bufnr)
-    and vim.bo[bufnr].filetype == "json5"
-  then
+  local is_false = bufnr ~= nil and vim.api.nvim_buf_is_valid(bufnr) and FALSE_DIAGNOSTICS[vim.bo[bufnr].filetype]
+  if err == nil and type(result) == "table" and result.kind == "full" and is_false then
     result.items = vim.tbl_filter(function(diagnostic)
-      return not is_json_syntax_diagnostic(diagnostic)
+      return not is_false(diagnostic)
     end, result.items or {})
   end
   -- Looked up at call time, not captured, so the real handler stays swappable.
@@ -262,14 +275,19 @@ return {
   -- so through the nodenv shim its node version comes from the cwd it happens
   -- to be spawned in -- see util.nodenv_prefix.
   cmd = { util.nodenv_prefix("node"), util.bun_prefix("vscode-json-language-server"), "--stdio" },
-  filetypes = { "json", "jsonc", "json5", "jsonschema" },
+  filetypes = { "json", "jsonc", "json5", "jsonschema", "hujson" },
+  -- The server relaxes validation for the literal "jsonc" alone; see
+  -- TRAILING_COMMA_CODE for why hujson is sent as that and json5 is not.
+  get_language_id = function(_, filetype)
+    return filetype == "hujson" and "jsonc" or filetype
+  end,
   init_options = {
     -- The server registers its formatter only when asked to at initialize
     -- time; without this every textDocument/formatting request returns null.
     provideFormatter = true,
   },
   handlers = {
-    ["textDocument/diagnostic"] = filter_json5_syntax_diagnostics,
+    ["textDocument/diagnostic"] = filter_dialect_diagnostics,
   },
   -- https://github.com/microsoft/vscode/blob/main/extensions/json-language-features/package.json
   settings = {

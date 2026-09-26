@@ -134,6 +134,19 @@ local function taplo_invocation(dirname)
   return nil, { "--config", vim.fs.joinpath(config_home, "taplo", "taplo.toml") }
 end
 
+---Whether `bufnr` holds nothing but whitespace. Reads line by line and stops
+---at the first non-blank one, so a real document costs a single line read.
+---@param bufnr integer
+---@return boolean
+local function is_blank(bufnr)
+  for row = 0, vim.api.nvim_buf_line_count(bufnr) - 1 do
+    if vim.api.nvim_buf_get_lines(bufnr, row, row + 1, true)[1]:find("%S") then
+      return false
+    end
+  end
+  return true
+end
+
 -- oxfmt owns filetype json5 because vscode-json-language-server cannot: it has
 -- no JSON5 mode, and the LSP fallback below used to hand it these buffers and
 -- get a mangled file back -- measured on ganja-code's .github/renovate.json5,
@@ -192,6 +205,11 @@ return {
     -- LSP when no formatter here is available". Drop this and an oxfmt that
     -- fails to resolve silently restores the mangling it was added to stop.
     json5 = { "oxfmt", lsp_format = "never" },
+    -- jsonls would format hujson without damage, but to a different layout
+    -- (no value alignment, one element per line, spaces unless noexpandtab),
+    -- so an unavailable hujsonfmt falling through to it would rewrite the whole
+    -- file on the next save. Formatting nothing is the smaller surprise.
+    hujson = { "hujsonfmt", lsp_format = "never" },
     lua = { "stylua", lsp_format = "never" },
     python = function(bufnr)
       if require("conform").get_formatter_info("ruff_format", bufnr).available then
@@ -235,7 +253,8 @@ return {
     -- Only "never" is honoured, because it can only ever stop the server from
     -- formatting: json5 needs exactly that (jsonls has no JSON5 mode and
     -- rewrites the file as strict JSON, injecting a space inside
-    -- 'https://...'), and every other filetype keeps the fallback it has now.
+    -- 'https://...'), hujson too (see its formatters_by_ft entry), and every
+    -- other filetype keeps the fallback it has now.
     local ft_opts = require("conform").formatters_by_ft[vim.bo[bufnr].filetype]
     local pinned = type(ft_opts) == "table" and ft_opts.lsp_format or nil
     return {
@@ -309,6 +328,22 @@ return {
         return args
       end,
       stdin = false,
+    },
+    hujsonfmt = {
+      meta = {
+        url = "https://github.com/tailscale/hujson",
+        description = "Formatter for HuJSON (JWCC), JSON with commas and comments.",
+      },
+      -- Given no path it reads stdin and writes stdout, and exits 1 with the
+      -- buffer untouched on a parse error. It exits 1 as well on input holding
+      -- no value at all ("unexpected EOF"), so the first :w of a new, empty
+      -- file raised "Formatter failed"; a blank buffer goes through cat
+      -- unchanged instead. A `condition` would not do: conform then reports
+      -- "Formatters unavailable for hujson file", which reads as a missing
+      -- binary.
+      command = function(_, ctx)
+        return is_blank(ctx.buf) and "cat" or util.go_path("bin", "hujsonfmt")
+      end,
     },
     oxfmt = {
       command = util.bun_prefix("oxfmt"),

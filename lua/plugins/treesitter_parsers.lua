@@ -53,6 +53,7 @@ return {
   "html",
   "htmldjango",
   "http",
+  "hujson",
   "ini",
   "ispc",
   "java",

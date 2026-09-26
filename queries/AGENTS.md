@@ -7,7 +7,7 @@
 Tree-sitter query files for languages/grammars that need highlighting or
 injection queries this config supplies itself, rather than relying on
 queries bundled with `nvim-treesitter` or a grammar's own `queries/`
-directory. Currently covers exactly one language: Go templates (`gotmpl`).
+directory. Currently covers Go templates (`gotmpl`) and HuJSON (`hujson`).
 
 ## Key Files
 | File | Description |
@@ -17,6 +17,7 @@ directory. Currently covers exactly one language: Go templates (`gotmpl`).
 ## Subdirectories
 | Directory | Purpose |
 |-----------|---------|
+| `hujson/` | `highlights`, `injections`, `indents`, `folds` and `locals`, each a single `; inherits: json` line. tree-sitter-hujson is a custom registry entry, so nvim-treesitter ships no queries for it, and the grammar repo's own `queries/` targets Zed (booleans as `@constant.builtin`, `@indent`/`@end` indents nvim-treesitter ignores). The grammar keeps tree-sitter-json's node types, so nvim-treesitter's json queries apply as they are. Without these files the parser still attaches, `vim.treesitter.start` clears `syntax`, and the buffer has no highlighting at all. Pinned by `tests/hujson_queries_spec.lua` |
 | `gotmpl/` | Tree-sitter queries for the `gotmpl` language/parser: `highlights.scm` (identifiers, function/method calls, operators, the builtin-function allowlist `and\|call\|html\|index\|slice\|js\|len\|not\|or\|print\|printf\|println\|urlquery\|eq\|ne\|lt\|ge\|gt`, delimiters, `{{`/`}}`/`{{-`/`-}}` brackets, `if`/`else`/`else if`/`with` conditionals, `range`/`end`/`template`/`define`/`block` keywords, string/number/bool/nil literals, comments, `(ERROR)`) and `injections.scm` (injects `html` and `javascript` into `(text)` nodes as combined injections; a commented-out `(text) @yaml` injection is left disabled). No separate AGENTS.md — documented here. |
 
 ## For AI Agents

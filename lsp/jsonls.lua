@@ -321,7 +321,15 @@ return {
       },
       format = {
         enable = true,
-        keepLines = true,
+      },
+      -- Keeps a single-line array or object on one line instead of breaking
+      -- every element onto its own. The server reads only this shape: VS Code's
+      -- `json.format.keepLines` setting is renamed to it by the VS Code client,
+      -- so `format.keepLines` here is silently ignored. The formatter pads a
+      -- single-line bracket pair with spaces (`[ "a", "b" ]`, `[ ]`), and that
+      -- is not configurable.
+      keepLines = {
+        enable = true,
       },
       colorDecorators = {
         enable = true,

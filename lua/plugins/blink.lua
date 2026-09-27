@@ -21,6 +21,23 @@ local blink = require("blink.cmp")
 -- the loader is idempotent, so exactly one scan happens on every path.
 require("plugins.luasnip").load_snippets()
 
+---Returns the sources.per_filetype map; filetypes not listed get
+---sources.default. The order of provider ids does not rank items: blink
+---regroups them by provider id before fuzzy sorting, so score_offset is
+---the only priority.
+---@return table<string, blink.cmp.SourceListPerFiletype>
+local function per_filetype_sources()
+  -- codecompanion registers its own blink source/filetype mapping at
+  -- runtime (providers/completion/blink/setup.lua) -- do not list it here.
+  return {
+    go = { "copilot", inherit_defaults = true },
+    lua = { "lazydev", inherit_defaults = true },
+    python = { "copilot", inherit_defaults = true },
+    sh = { inherit_defaults = true },
+    snacks_picker_input = { "path", "buffer" },
+  }
+end
+
 ---@type blink.cmp.Config
 blink.setup({
   sources = {
@@ -89,44 +106,7 @@ blink.setup({
         async = true,
       },
     },
-    per_filetype = {
-      -- codecompanion registers its own blink source/filetype mapping at
-      -- runtime (providers/completion/blink/setup.lua) -- do not list it here.
-      go = {
-        "lsp",
-        "snippets",
-        "copilot",
-        "path",
-        "buffer",
-      },
-      lua = {
-        "lsp",
-        "lazydev",
-        "snippets",
-        "path",
-        "buffer",
-        inherit_defaults = false,
-      },
-      sh = {
-        "lsp",
-        "snippets",
-        "path",
-        "buffer",
-        inherit_defaults = false,
-      },
-      python = {
-        "lsp",
-        "snippets",
-        "copilot",
-        "path",
-        "buffer",
-      },
-      snacks_picker_input = {
-        "path",
-        "buffer",
-        inherit_defaults = false,
-      },
-    },
+    per_filetype = per_filetype_sources(),
     ----@param ctx blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
     ---@return number
     min_keyword_length = function()

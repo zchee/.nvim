@@ -5,7 +5,9 @@
 --
 -- Merges one full-config startup into a single Chrome trace-event JSON
 -- timeline: view it by opening https://ui.perfetto.dev and dragging the
--- output file onto the page (chrome://tracing also reads it).
+-- output file onto the page (chrome://tracing also reads it). --out
+-- defaults to $TMPDIR/nvim-perf-trace.json (the path perf-report.sh uses),
+-- never the working directory, where it would land in the repo.
 --
 -- `nvim -l` script mode never loads the user config, so this script is
 -- two-phase: the driver (this mode) spawns one full-config child
@@ -15,8 +17,11 @@
 -- config.warmup, waits for the warmup to finish (bounded), then dumps
 -- lazy.nvim and warmup data as JSON and quits. The driver merges that dump
 -- with the --startuptime log into trace events. --startuptime <log>
--- substitutes an existing log for the child's own (the child still runs,
--- because lazy/warmup data only exist in-process).
+-- substitutes an existing log for the child's own events (the child still
+-- runs and still logs, because lazy/warmup data and the wall-clock anchor
+-- below only exist in-process). The child pins NVIM_UI_MODE=chrome unless
+-- the caller set one: :UiMode persists its choice, and a measurement must
+-- not follow the developer's last toggle.
 --
 -- Event mapping (times in the log are msec floats; trace ts/dur are µs):
 --   * sourcing lines "clock self+sourced self: <label>" become ph="X"
@@ -26,8 +31,16 @@
 --     with ts = clock - elapsed and dur = elapsed (each measures the time
 --     since the previous startup event, i.e. a contiguous phase, so a
 --     slice is truer than an instant).
---   * lazy.nvim: one "lazy startup" slice (LazyStart..LazyDone) plus one
---     ph="i" UIEnter instant; per-plugin load times come from
+--   * lazy.nvim: one "lazy startup" slice (setup..LazyDone) plus one
+--     ph="i" UIEnter instant. lazy.stats().times reads the process CPU-time
+--     clock (CLOCK_PROCESS_CPUTIME_ID), which is not the log's wall-clock
+--     axis, so the child takes its own vim.uv.hrtime() stamps instead: t0
+--     as the last statement of its --cmd chunk (the log's "--cmd commands"
+--     line closes right after it, so that line's clock IS t0), lazy's
+--     setup-entry stamp (require("lazy")._start), User LazyDone, and the
+--     moment it fires UIEnter. Without those anchors the CPU-time values
+--     are used and the slices say so (args.clock = "process_cputime",
+--     "[CPU-time axis]" in the track names). Per-plugin load times come from
 --     plugin._.loaded.time, which is a duration in NANOSECONDS (verified
 --     on lazy.nvim 11.x here: {plugin|event=<trigger>, time=<ns>}; see
 --     also script/perf-report.sh dividing it by 1e6). lazy records no
@@ -50,11 +63,11 @@
 -- overlap on a tid -- the log's phase windows overlap by 1 µs at ms
 -- precision, and end-to-end chains can overshoot their container slice --
 -- which trace_processor reports as slice_spill_overlapping_complete_event
--- and renders on ambiguous overflow tracks. Before the final sort, a
--- per-tid sweep shifts any slice that pokes out of a still-open slice
--- forward to that slice's end (duration preserved, shift recorded in
--- args.ts_shift_us), so every pair of slices is nested or disjoint and
--- the import stat stays 0.
+-- and renders on ambiguous overflow tracks. Before the final sort,
+-- script/lib/trace_nesting.lua shifts any slice that pokes out of a
+-- still-open slice forward to that slice's end (duration preserved, shift
+-- recorded in args.ts_shift_us), so every pair of slices is nested or
+-- disjoint and the import stat stays 0.
 --
 -- Every event carries args.source ("startuptime" | "lazy" | "warmup") so
 -- consumers can filter by origin; tests/perf/trace_export_spec.lua pins
@@ -99,6 +112,20 @@ if vim.g.perf_trace_dump then
         end
       end
     end
+    -- Wall-clock stamps as ms offsets from t0 (see the header).
+    local wall = _G.perf_trace_wall
+    if wall and wall.t0 then
+      local lazy_mod = package.loaded["lazy"]
+      if lazy_mod and lazy_mod._start and lazy_mod._start ~= 0 then
+        wall.lazy_start = lazy_mod._start
+      end
+      payload.wall_ms = {}
+      for key, hr in pairs(wall) do
+        if key ~= "t0" then
+          payload.wall_ms[key] = (hr - wall.t0) / 1e6
+        end
+      end
+    end
     local warmup = package.loaded["config.warmup"]
     if warmup then
       payload.warmup_delay_ms = warmup.delay_ms
@@ -120,6 +147,9 @@ if vim.g.perf_trace_dump then
   -- Headless sessions never fire UIEnter, so config.warmup never arms;
   -- fire it manually to run the real warmup path in this child.
   vim.schedule(function()
+    if _G.perf_trace_wall then
+      _G.perf_trace_wall.uienter = vim.uv.hrtime()
+    end
     vim.api.nvim_exec_autocmds("UIEnter", {})
   end)
 
@@ -144,7 +174,7 @@ end
 --------------------------------------------------------------------------
 -- Driver mode: `nvim -l script/perf-trace.lua ...`
 --------------------------------------------------------------------------
-local out_path = "perf-trace.json"
+local out_path = vim.fs.joinpath(vim.uv.os_tmpdir(), "nvim-perf-trace.json")
 local user_log
 local ui_latency_path
 do
@@ -179,17 +209,29 @@ local dump_path = vim.fn.tempname() .. "-perf-trace-dump.json"
 -- The full-config child gets a throwaway ShaDa copy (see the helper for why).
 local throwaway_shada = dofile(vim.fs.joinpath(vim.fs.dirname(self_path), "lib", "throwaway_shada.lua"))
 
-local cmd = { vim.v.progpath, "--headless", "-i", throwaway_shada() }
-if not user_log then
-  vim.list_extend(cmd, { "--startuptime", child_log })
-end
-vim.list_extend(cmd, {
+-- t0 must stay the chunk's LAST statement: the log's "--cmd commands" line
+-- is written right after the chunk returns, which is what anchors t0.
+local early_lua = table.concat({
+  ("vim.g.perf_trace_dump = %q"):format(dump_path),
+  "_G.perf_trace_wall = {}",
+  "vim.api.nvim_create_autocmd('User', { pattern = 'LazyDone', once = true, callback = function()"
+    .. " _G.perf_trace_wall.lazy_done = vim.uv.hrtime() end })",
+  "_G.perf_trace_wall.t0 = vim.uv.hrtime()",
+}, "; ")
+local cmd = {
+  vim.v.progpath,
+  "--headless",
+  "-i",
+  throwaway_shada(),
+  "--startuptime",
+  child_log,
   "--cmd",
-  string.format("lua vim.g.perf_trace_dump=%q", dump_path),
+  "lua " .. early_lua,
   "-c",
   "luafile " .. vim.fn.fnameescape(self_path),
-})
-local result = vim.system(cmd, { text = true }):wait(CHILD_DEADLINE_MS + 20000)
+}
+local child_env = { NVIM_UI_MODE = vim.uv.os_getenv("NVIM_UI_MODE") or "chrome" }
+local result = vim.system(cmd, { text = true, env = child_env }):wait(CHILD_DEADLINE_MS + 20000)
 if result.code ~= 0 then
   fail(("full-config child exited %d: %s"):format(result.code, result.stderr or ""))
 end
@@ -217,6 +259,22 @@ local function emit(source, event)
   event.args.source = source
   counts[source] = counts[source] + 1
   events[#events + 1] = event
+end
+
+-- 0. Wall-clock anchor: the clock of the child's "--cmd commands" line.
+local anchor_ms
+do
+  local child = io.open(child_log, "r")
+  if child then
+    for line in child:lines() do
+      local clock = line:match("^(%d+%.%d+)%s+%d+%.%d+: %-%-cmd commands$")
+      if clock then
+        anchor_ms = tonumber(clock)
+        break
+      end
+    end
+    child:close()
+  end
 end
 
 -- 1. --startuptime log.
@@ -251,22 +309,32 @@ for line in log:lines() do
   end
 end
 log:close()
-if not user_log then
-  os.remove(child_log)
-end
+os.remove(child_log)
 
 -- 2. lazy.nvim: startup slice, UIEnter instant, per-plugin load slices.
 local stats = dump.stats or {}
 local times = stats.times or {}
-local uienter_ms = times.UIEnter or stats.startuptime or 0
-if times.LazyStart and times.LazyDone then
+local wall_ms = dump.wall_ms or {}
+local clock = "wall"
+local lazy_start_ms, lazy_done_ms, uienter_ms
+if anchor_ms and wall_ms.lazy_start and wall_ms.lazy_done and wall_ms.uienter then
+  lazy_start_ms = anchor_ms + wall_ms.lazy_start
+  lazy_done_ms = anchor_ms + wall_ms.lazy_done
+  uienter_ms = anchor_ms + wall_ms.uienter
+else
+  clock = "process_cputime"
+  lazy_start_ms, lazy_done_ms = times.LazyStart, times.LazyDone
+  uienter_ms = times.UIEnter or stats.startuptime or 0
+end
+if lazy_start_ms and lazy_done_ms then
   emit("lazy", {
-    name = "lazy.nvim startup (LazyStart..LazyDone)",
+    name = clock == "wall" and "lazy.nvim startup (setup..LazyDone)"
+      or "lazy.nvim startup (LazyStart..LazyDone, CPU time)",
     ph = "X",
     tid = TID.burst,
-    ts = us(times.LazyStart),
-    dur = us(times.LazyDone - times.LazyStart),
-    args = { startuptime_ms = stats.startuptime, loaded = stats.loaded, count = stats.count },
+    ts = us(lazy_start_ms),
+    dur = us(lazy_done_ms - lazy_start_ms),
+    args = { clock = clock, cpu_startuptime_ms = stats.startuptime, loaded = stats.loaded, count = stats.count },
   })
 end
 emit("lazy", {
@@ -275,6 +343,7 @@ emit("lazy", {
   s = "p",
   tid = TID.burst,
   ts = us(uienter_ms),
+  args = { clock = clock },
 })
 
 local warmup_tagged = {}
@@ -292,7 +361,7 @@ table.sort(plugins, function(a, b)
 end)
 -- lazy records durations only (no start timestamps), so slices are laid
 -- end-to-end per track: real widths, approximate positions.
-local cursor = { [TID.burst] = us(times.LazyStart or 0), [TID.warmup_plugins] = us(warmup_start_ms) }
+local cursor = { [TID.burst] = us(lazy_start_ms or 0), [TID.warmup_plugins] = us(warmup_start_ms) }
 for _, plugin in ipairs(plugins) do
   local tid = warmup_tagged[plugin.name] and TID.warmup_plugins or TID.burst
   local dur = math.floor(plugin.time_ns / 1000 + 0.5)
@@ -354,56 +423,19 @@ local track_names = {
 if not ui_latency_path then
   track_names[TID.ui_latency] = nil
 end
+if clock ~= "wall" then
+  for _, tid in ipairs({ TID.burst, TID.warmup_plugins, TID.warmup_ticks }) do
+    track_names[tid] = track_names[tid] .. " [CPU-time axis]"
+  end
+end
 events[#events + 1] = { name = "process_name", ph = "M", pid = 1, tid = 0, ts = 0, args = { name = "nvim startup" } }
 for tid, name in pairs(track_names) do
   events[#events + 1] = { name = "thread_name", ph = "M", pid = 1, tid = tid, ts = 0, args = { name = name } }
 end
 
--- Nesting repair: on each tid, sweep X slices in (ts, -dur) order with a
--- stack of open slice ends; a slice that pokes out of a still-open slice
--- shifts forward to that slice's end (re-checked against the whole stack,
--- so cascaded shifts stay proper). Durations are never touched.
-local function enforce_nesting(evts)
-  local by_tid = {}
-  for _, event in ipairs(evts) do
-    if event.ph == "X" then
-      local list = by_tid[event.tid]
-      if not list then
-        list = {}
-        by_tid[event.tid] = list
-      end
-      list[#list + 1] = event
-    end
-  end
-  for _, list in pairs(by_tid) do
-    table.sort(list, function(a, b)
-      if a.ts ~= b.ts then
-        return a.ts < b.ts
-      end
-      return (a.dur or 0) > (b.dur or 0)
-    end)
-    local open_ends = {}
-    for _, event in ipairs(list) do
-      local ts, dur = event.ts, event.dur or 0
-      while true do
-        while #open_ends > 0 and open_ends[#open_ends] <= ts do
-          open_ends[#open_ends] = nil
-        end
-        if #open_ends > 0 and ts + dur > open_ends[#open_ends] then
-          ts = open_ends[#open_ends]
-        else
-          break
-        end
-      end
-      if ts ~= event.ts then
-        event.args = event.args or {}
-        event.args.ts_shift_us = ts - event.ts
-        event.ts = ts
-      end
-      open_ends[#open_ends + 1] = ts + dur
-    end
-  end
-end
+-- Nesting repair (see the header): every pair of X slices on a tid ends up
+-- nested or disjoint.
+local enforce_nesting = dofile(vim.fs.joinpath(vim.fs.dirname(self_path), "lib", "trace_nesting.lua"))
 enforce_nesting(events)
 
 -- Global ts order makes every per-tid subsequence non-decreasing; equal-ts

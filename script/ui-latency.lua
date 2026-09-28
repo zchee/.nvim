@@ -15,6 +15,9 @@
 --   --full         child runs the real config (default)
 --   --socket-free  strip NVIM / NVIM_LISTEN_ADDRESS from the child env so a
 --                  parent nvim server never leaks into the measurement
+--                  (the child always gets NVIM_UI_MODE=chrome unless the
+--                  caller set one: :UiMode persists its choice, and a
+--                  measurement must not follow the last toggle)
 --   --json <path>  also write the measurements as JSON, with each event's
 --                  REAL offset from spawn (sent_ms, relative to t0), so
 --                  script/perf-trace.lua --ui-latency can place keystroke
@@ -42,7 +45,7 @@
 -- Output (machine-parseable, one per line):
 --   mode=<clean|full>
 --   attach_to_first_flush_ms=<float>
---   input_to_flush_ms_median=<float>
+--   input_to_flush_ms_median=<float>   (mean of the middle two for even N)
 --   input_to_flush_ms_samples=<comma-separated floats>
 -- Every phase is bounded by a deadline; the script never hangs (overall
 -- timeout 30 s) and exits non-zero on any failure or timeout.
@@ -151,14 +154,14 @@ if edit_file then
   spawn_args[#spawn_args + 1] = edit_file
 end
 
-local spawn_env = nil
-if socket_free then
-  spawn_env = {}
-  for name, value in pairs(uv.os_environ()) do
-    if name ~= "NVIM" and name ~= "NVIM_LISTEN_ADDRESS" then
-      spawn_env[#spawn_env + 1] = name .. "=" .. value
-    end
+local spawn_env = {}
+for name, value in pairs(uv.os_environ()) do
+  if not (socket_free and (name == "NVIM" or name == "NVIM_LISTEN_ADDRESS")) then
+    spawn_env[#spawn_env + 1] = name .. "=" .. value
   end
+end
+if not uv.os_getenv("NVIM_UI_MODE") then
+  spawn_env[#spawn_env + 1] = "NVIM_UI_MODE=chrome"
 end
 
 local t0 = uv.hrtime()
@@ -188,7 +191,7 @@ end
 
 -- Measurement state machine, driven entirely by "flush" redraw events.
 -- Phases: attach (first paint) -> settle [-> pre-keys-lua] -> insert
--- ("i" fed) -> keys (keystrokes x "x", latency = send -> next flush)
+-- ("i" fed) -> keys (keystrokes x --key, latency = send -> next flush)
 -- [-> post-keys-lua] -> quit.
 local phase = "attach"
 local attach_ms = nil
@@ -254,7 +257,7 @@ local function on_flush(now)
     end
   elseif phase == "keys" and t_sent then
     samples[#samples + 1] = (now - t_sent) / 1e6
-    record(("key %d (x)"):format(#samples), t_sent, now)
+    record(("key %d (%s)"):format(#samples, key_seq), t_sent, now)
     t_sent = nil
     if #samples >= keystrokes then
       local function quit()
@@ -374,7 +377,8 @@ if failure then
 end
 
 table.sort(samples)
-local median = samples[math.ceil(#samples / 2)]
+local n = #samples
+local median = n % 2 == 1 and samples[(n + 1) / 2] or (samples[n / 2] + samples[n / 2 + 1]) / 2
 local formatted = {}
 for _, s in ipairs(samples) do
   formatted[#formatted + 1] = ("%.3f"):format(s)

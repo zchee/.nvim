@@ -1,8 +1,12 @@
 -- lua/config/autocmd.lua -- the pager-window autocmds: u/d page in quickfix
--- and read-only help, but stay undo/delete in a help file opened for editing.
+-- and read-only help, but stay undo/delete in a help file opened for editing;
+-- closing the last file window quits a tab left holding only quickfix, but
+-- <C-w>T on quickfix keeps its new tab, and a refused :quit is one message.
 --
 -- Run: nvim --headless -u NONE -i NONE -l tests/qf_help_autocmd_spec.lua
--- Exits 0 only after printing "ALL PASS".
+-- Exits 0 only after printing "ALL PASS": the last case ends Nvim through
+-- the auto-quit itself, and a VimLeavePre guard turns any other exit into
+-- exit 1.
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
@@ -23,6 +27,30 @@ end
 local function buf_map(lhs)
   local map = vim.fn.maparg(lhs, "n", false, true)
   return map.buffer == 1 and map.rhs or ""
+end
+
+local finished = false
+local expect_autoquit = false
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    if finished then
+      return
+    end
+    local wins = vim.api.nvim_tabpage_list_wins(0)
+    if expect_autoquit and #wins == 1 and vim.bo.filetype == "qf" then
+      print("ALL PASS: qf_help_autocmd_spec")
+      return
+    end
+    io.stderr:write("FAIL: qf_help_autocmd_spec exited before its last assertion\n")
+    os.exit(1)
+  end,
+})
+
+---Let scheduled callbacks (the auto-quit) run.
+local function drain()
+  vim.wait(50, function()
+    return false
+  end)
 end
 
 local ok, err = pcall(function()
@@ -55,12 +83,52 @@ local ok, err = pcall(function()
     assert_equal(buf_map("d"), "<C-d>", "read-only help d pages down")
     vim.cmd("helpclose")
   end
+
+  do -- a refused auto-quit (a hidden buffer is modified) is one E37 line,
+    -- not a Lua traceback from the scheduled callback
+    vim.o.hidden = true
+    vim.cmd("enew")
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, { "dirty" })
+    vim.cmd("copen")
+    vim.cmd("wincmd p")
+    vim.v.errmsg = ""
+    vim.cmd("quit")
+    drain()
+    assert_equal(vim.v.errmsg:find("stack traceback", 1, true), nil, "no Lua traceback in v:errmsg")
+    local messages = vim.api.nvim_exec2("messages", { output = true }).output
+    assert_equal(messages:find("E37: No write since last change", 1, true) ~= nil, true, "the refusal is reported")
+    assert_equal(messages:find("stack traceback", 1, true), nil, "no Lua traceback in :messages")
+    vim.cmd("silent! %bwipeout!")
+    assert_equal(#vim.api.nvim_list_wins(), 1, "cleanup leaves one window")
+  end
+
+  do -- <C-w>T moves quickfix into a new tab holding one qf window; that tab
+    -- stays (the old window closed is quickfix itself, not a file window)
+    vim.cmd("copen")
+    vim.cmd("wincmd T")
+    drain()
+    assert_equal(#vim.api.nvim_list_tabpages(), 2, "<C-w>T keeps the new tab")
+    assert_equal(vim.bo.filetype, "qf", "the new tab shows quickfix")
+    vim.cmd("tabclose")
+    drain()
+    assert_equal(#vim.api.nvim_list_tabpages(), 1, "cleanup leaves one tab")
+    assert_equal(#vim.api.nvim_list_wins(), 1, "cleanup leaves one window")
+  end
 end)
 
 if not ok then
   io.stderr:write("FAIL: " .. tostring(err) .. "\n")
+  finished = true -- reported here; the VimLeavePre guard need not repeat it
   os.exit(1)
 end
 
-print("ALL PASS: qf_help_autocmd_spec")
-os.exit(0)
+-- Last: closing the only file window leaves quickfix alone, so the auto-quit
+-- ends Nvim; the VimLeavePre guard prints ALL PASS and the exit status is 0.
+vim.cmd("copen")
+vim.cmd("wincmd p")
+expect_autoquit = true
+vim.cmd("quit")
+drain()
+io.stderr:write("FAIL: :q from the last file window did not quit the qf-only tab\n")
+finished = true
+os.exit(1)

@@ -172,24 +172,43 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
   end,
 })
 
--- WinEnter
-vim.api.nvim_create_autocmd({ "WinEnter" }, {
+-- Quit a tab (or Nvim) whose last file window was just closed and left only
+-- a qf/git window behind.
+-- http://stackoverflow.com/questions/7476126/how-to-automatically-close-the-quick-fix-window-when-leaving-a-file
+-- WinClosed, not WinEnter: <C-w>T on a qf window also enters a tab holding
+-- one qf window, and must keep it. Only the current window being closed
+-- counts (not :only run from the qf window, not a plugin closing another
+-- window), and not a qf/git window itself (<C-w>T closes the old qf window).
+local function is_pager_ft(ft)
+  return ft == "qf" or ft == "git"
+end
+vim.api.nvim_create_autocmd({ "WinClosed" }, {
   group = autocmd_user,
-  pattern = { "*" },
-  callback = function()
-    -- http://stackoverflow.com/questions/7476126/how-to-automatically-close-the-quick-fix-window-when-leaving-a-file
-    if #vim.api.nvim_tabpage_list_wins(0) ~= 1 then
+  callback = function(args)
+    if tonumber(args.match) ~= vim.api.nvim_get_current_win() or is_pager_ft(vim.bo[args.buf].filetype) then
       return
     end
-    local ft = vim.bo.filetype
-    if ft == "qf" or ft == "git" then
-      -- Scheduled: autocmds do not nest, so a :quit run inside WinEnter
-      -- ended Nvim without QuitPre/ExitPre/VimLeavePre (ShaDa, plugin
-      -- teardown) ever firing.
-      vim.schedule(function()
-        vim.cmd("quit")
-      end)
-    end
+    local tab = vim.api.nvim_get_current_tabpage()
+    -- Scheduled: the window is not gone yet, and autocmds do not nest, so a
+    -- :quit run from here would end Nvim without QuitPre/ExitPre/VimLeavePre
+    -- (ShaDa, plugin teardown) ever firing. By the time it runs anything may
+    -- have changed, so the layout is checked again.
+    vim.schedule(function()
+      if not vim.api.nvim_tabpage_is_valid(tab) or vim.api.nvim_get_current_tabpage() ~= tab then
+        return
+      end
+      local wins = vim.api.nvim_tabpage_list_wins(tab)
+      if #wins ~= 1 or not is_pager_ft(vim.bo[vim.api.nvim_win_get_buf(wins[1])].filetype) then
+        return
+      end
+      -- :quit refuses when a hidden buffer is modified (E37/E162); say so
+      -- in one line instead of a Lua traceback.
+      local ok, err = pcall(vim.cmd, "quit")
+      if not ok then
+        local msg = tostring(err):match("E%d+:.*") or tostring(err)
+        vim.api.nvim_echo({ { msg, "ErrorMsg" } }, true, {})
+      end
+    end)
   end,
 })
 

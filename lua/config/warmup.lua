@@ -309,11 +309,13 @@ M.units = {
   {
     name = "blink-modules-2",
     prewarm = function()
-      -- the completion/signature subsystems setup() wires up
+      -- the completion/signature subsystems setup() wires up. Never add
+      -- blink.cmp.completion.windows.menu: it builds its window from the
+      -- config when the module loads, so loading it before setup() freezes
+      -- blink's defaults (max_height 10, min_width 15) into the menu.
       prerequire("blink.cmp", {
         "blink.cmp.completion",
         "blink.cmp.signature",
-        "blink.cmp.completion.windows.menu",
         "blink.cmp.fuzzy",
       })
     end,

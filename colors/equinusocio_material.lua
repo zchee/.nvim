@@ -236,6 +236,16 @@ ovr("BlinkCmpLabelDescription", { link = hi_none })
 ovr("BlinkCmpLabelDeprecated", { link = hi_none })
 ovr("BlinkCmpKind", { link = hi_none })
 ovr("@comment.note.comment", { link = "comment" })
+-- gitsigns (moved from lua/plugins/gitsigns.lua)
+ovr("GitSignsChange", { fg = "#bbbb00", bg = "#010101" })
+ovr("GitSignsDelete", { fg = "#ff2222", bg = "#010101" })
+ovr("GitSignsAdd", { fg = "#009900", bg = "#010101" })
+ovr("GitSignsAddLn", { link = "DiffAdd" })
+ovr("GitSignsAddNr", { link = "CursorLineNr" })
+ovr("GitSignsChangeLn", { link = "DiffChange" })
+ovr("GitSignsChangeNr", { link = "CursorLineNr" })
+ovr("GitSignsDeleteLn", { link = "DiffDelete" })
+ovr("GitSignsDeleteNr", { link = "CursorLineNr" })
 
 -- Go
 --- Literals

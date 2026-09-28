@@ -259,10 +259,6 @@ snacks.setup({
         return false
       end
 
-      if string.find(notif.msg, "vim%-illuminate: An internal error") then
-        return false
-      end
-
       return true
     end,
     refresh = 100,

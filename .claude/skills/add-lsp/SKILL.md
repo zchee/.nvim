@@ -46,12 +46,14 @@ return {
   - `util.go_path("bin", "<binary>")` for `go install`ed servers.
   - `util.prefix("bin", "<binary>")` for the `/opt/local` (arm64) toolchain.
   - A node server (a `#!/usr/bin/env node` bin) takes the interpreter as its
-    own argument, so a project's `.node-version` cannot choose node:
-    `cmd = { util.nodenv_prefix("node"), util.bun_prefix("<bin>"), "--stdio" }`.
-  - A binary `$PATH` should choose: resolve it with `vim.fn.exepath()` inside a
-    function `cmd` (see `lsp/helm_ls.lua`), passing
-    `{ cwd = config.cmd_cwd or config.root_dir, env = config.cmd_env, detached = config.detached }`
-    to `vim.lsp.rpc.start` as a table `cmd` would get.
+    own argument, so a project's `.node-version` cannot choose node, and both
+    lookups run at server start (`tests/lsp_capabilities_snapshot_spec.lua`
+    fails on a load-time lookup):
+    `cmd = require("lsp.cmd").lazy(function() return { util.nodenv_prefix("node"), util.bun_prefix("<bin>"), "--stdio" } end)`.
+  - A binary `$PATH` should choose: resolve it with `vim.fn.exepath()` inside
+    the same `lsp.cmd.lazy` builder (see `lsp/sourcekit.lua`). `lsp.cmd.lazy`
+    spawns with the `cwd`/`env`/`detached` options vim.lsp passes for a table
+    `cmd`; a hand-written function `cmd` has to pass them itself.
 - `filetypes` must be names Neovim or `filetype.lua` actually produces;
   `:checkhealth vim.lsp` warns about any other.
 - `root_markers` are tried in list order, not nearest-first, and are literal

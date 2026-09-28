@@ -1,3 +1,4 @@
+local lsp_cmd = require("lsp.cmd")
 local util = require("util")
 
 -- vscode-json-language-server validates a `json5` buffer as strict JSON.
@@ -152,17 +153,12 @@ end
 return {
   -- Spelled out interpreter first: the bin is a `#!/usr/bin/env node` script,
   -- so through the nodenv shim its node version comes from the cwd it happens
-  -- to be spawned in -- see util.nodenv_prefix. A function, as in
-  -- lsp/sourcekit.lua, so both lookups run when a JSON buffer starts the
-  -- server, not whenever configs resolve; the rpc options are the ones vim.lsp
-  -- passes for a table cmd.
-  cmd = function(dispatchers, config)
-    return vim.lsp.rpc.start(
-      { util.nodenv_prefix("node"), util.bun_prefix("vscode-json-language-server"), "--stdio" },
-      dispatchers,
-      { cwd = config.cmd_cwd or config.root_dir, env = config.cmd_env, detached = config.detached }
-    )
-  end,
+  -- to be spawned in -- see util.nodenv_prefix. Built through lsp.cmd.lazy,
+  -- so both lookups run when a JSON buffer starts the server, not whenever
+  -- configs resolve.
+  cmd = lsp_cmd.lazy(function()
+    return { util.nodenv_prefix("node"), util.bun_prefix("vscode-json-language-server"), "--stdio" }
+  end),
   filetypes = { "json", "jsonc", "json5", "jsonschema", "hujson" },
   -- The server relaxes validation for the literal "jsonc" alone; see
   -- TRAILING_COMMA_CODE for why hujson is sent as that and json5 is not.

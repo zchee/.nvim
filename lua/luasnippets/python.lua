@@ -1,6 +1,5 @@
 local ls = require("luasnip")
 local ls_ext_fmt = require("luasnip.extras.fmt")
-local fmt = ls_ext_fmt.fmt
 local fmta = ls_ext_fmt.fmta
 
 return {

@@ -9,6 +9,16 @@ local np = require("nvim-autopairs")
 local np_rule = require("nvim-autopairs.rule")
 local np_ts_conds = require("nvim-autopairs.ts-conds")
 
+-- tree-sitter-go's string node types; the cursor inside a literal reports its
+-- *_content child. The grammar has no plain "string" node.
+local go_string_node_types = {
+  "interpreted_string_literal",
+  "interpreted_string_literal_content",
+  "raw_string_literal",
+  "raw_string_literal_content",
+  "rune_literal",
+}
+
 np.setup({
   disable_filetype = {
     "TelescopePrompt",
@@ -32,7 +42,7 @@ np.setup({
   map_cr = true,
   check_ts = true,
   ts_config = {
-    go = { "string" },
+    go = go_string_node_types,
   },
   disable_in_macro = false,
   ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
@@ -42,7 +52,7 @@ np.setup({
 })
 -- Go
 np.add_rules({
-  np_rule("[", "]", "go"):with_pair(np_ts_conds.is_ts_node({ "string", "comment" })),
+  np_rule("[", "]", "go"):with_pair(np_ts_conds.is_ts_node(vim.list_extend({ "comment" }, go_string_node_types))),
 })
 
 -- Inside a Go interpreted string the quote keys swap: `"` inserts a `''` pair
@@ -56,7 +66,7 @@ np.add_rules({
 --
 -- The node names come from the grammar as it stands: a cursor inside `"ab"`
 -- reports interpreted_string_literal_content, and inside `""` the literal
--- itself. Neither is the plain "string" that ts_config above still names.
+-- itself.
 local go_string_nodes = {
   interpreted_string_literal = true,
   interpreted_string_literal_content = true,

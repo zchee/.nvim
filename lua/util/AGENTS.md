@@ -6,14 +6,13 @@
 ## Purpose
 Shared helper module (`require("util")`) used throughout the config to resolve
 binary/prefix paths for macOS package managers (Homebrew, arm64 `/opt/local`),
-XDG directories with symlink resolution, a VeryLazy hook
-(`on_very_lazy`), and a couple of general-purpose Lua utilities (`switch`,
-`fast_switch`, `is_exists`, the global `dump`).
+XDG directories with symlink resolution, and a couple of general-purpose Lua
+utilities (`switch`, `fast_switch`, `is_exists`, the global `dump`).
 
 ## Key Files
 | File | Description |
 |------|--------------|
-| `init.lua` | Main `M` module: path/prefix resolvers, `on_very_lazy`, `switch` helpers |
+| `init.lua` | Main `M` module: path/prefix resolvers, `switch` helpers |
 | `types.lua` | LuaCATS-only file declaring the `go_dir_custom_args` class annotation |
 
 ## For AI Agents

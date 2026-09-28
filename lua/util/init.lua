@@ -343,20 +343,4 @@ function M.nodenv_prefix(binary)
   return executable_or_exepath("nodenv_prefix", vim.fs.joinpath(root, "shims", binary), binary, problem)
 end
 
---- Registers a callback function to be executed when the "VeryLazy" event is triggered.
----
---- No augroup: the one this used to create (and clear) wiped every earlier
---- registration, so only the last caller's callback ever ran.
----
----@param fn fun()
-M.on_very_lazy = function(fn)
-  vim.api.nvim_create_autocmd("User", {
-    pattern = "VeryLazy",
-    once = true,
-    callback = function()
-      fn()
-    end,
-  })
-end
-
 return M

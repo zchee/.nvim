@@ -174,5 +174,9 @@ return {
       },
     },
   },
-  offsetEncodings = { "utf-16" },
+  capabilities = {
+    general = {
+      positionEncodings = { "utf-16" },
+    },
+  },
 }

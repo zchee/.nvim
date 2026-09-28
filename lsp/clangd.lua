@@ -102,18 +102,18 @@ return {
     return t[ftype] or ftype
   end,
   capabilities = {
+    -- The standard negotiation, which vim.lsp reads back from the server's
+    -- positionEncoding; it has to agree with --offset-encoding=utf-16 above,
+    -- which makes clangd ignore whatever the client offers.
+    general = {
+      positionEncodings = { "utf-16" },
+    },
     textDocument = {
       completion = {
         editsNearCursor = true,
       },
     },
-    offsetEncoding = { "utf-8", "utf-16" },
   },
-  on_init = function(client, init_result)
-    if init_result.offsetEncoding then
-      client.offset_encoding = init_result.offsetEncoding
-    end
-  end,
   on_attach = function(client, bufnr)
     vim.api.nvim_buf_create_user_command(bufnr, "LspClangdSwitchSourceHeader", function()
       switch_source_header(bufnr, client)
@@ -123,7 +123,6 @@ return {
       symbol_info(bufnr, client)
     end, { desc = "Show symbol info" })
   end,
-  offsetEncoding = { "utf-16" },
 
   -- on_new_config = function(new_config, _)
   --   local cwd = vim.fn.getcwd()

@@ -303,6 +303,12 @@ ovr("@variable.err.go", { fg = "#ff005f", bg = "None", bold = true, force = true
 ovr("@variable.go", { blend = 10 })
 ovr("goImportedPkg", { fg = "#769ae7", bg = "None", italic = true, blend = 10 })
 
+--- syntax/go.vim groups (moved from lua/config/nvim.lua, which set them once
+--- after the scheme, so any later :colorscheme left them empty)
+ovr("goImportString", { link = "Comment" })
+ovr("goPredefinedIdentifiers", { link = "Keyword" })
+ovr("goReceiverType", { link = "Keyword" })
+
 --- fmt verb
 ovr("@format_verb.go", { link = "PreProc" })
 

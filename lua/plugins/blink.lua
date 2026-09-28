@@ -98,10 +98,9 @@ blink.setup({
 
       snacks_picker_input = { "path", "buffer" },
     },
-    ---@param ctx blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
+    ---@param _ blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
     ---@return number
-    min_keyword_length = function(ctx)
-      _ = ctx
+    min_keyword_length = function(_)
       return 1
     end,
   },
@@ -122,17 +121,27 @@ blink.setup({
     -- is the menu/main buffer, not the docs float -- so trackpad scrolling
     -- "did nothing" unless the pointer happened to hover the docs. While the
     -- docs window is open, route wheel events to it (1-line steps: kitty
-    -- fans a trackpad gesture into many events); fallback restores normal
-    -- wheel behavior the moment docs close.
+    -- fans a trackpad gesture into many events) and consume them even when
+    -- the docs are already at that edge -- scroll_documentation_* returns
+    -- false there, and falling through scrolled the main buffer under the
+    -- open menu. fallback restores normal wheel behavior once docs close.
     ["<ScrollWheelUp>"] = {
       function(cmp)
-        return cmp.scroll_documentation_up(1) -- false when docs closed -> fallback
+        if not cmp.is_documentation_visible() then
+          return false
+        end
+        cmp.scroll_documentation_up(1)
+        return true
       end,
       "fallback",
     },
     ["<ScrollWheelDown>"] = {
       function(cmp)
-        return cmp.scroll_documentation_down(1)
+        if not cmp.is_documentation_visible() then
+          return false
+        end
+        cmp.scroll_documentation_down(1)
+        return true
       end,
       "fallback",
     },

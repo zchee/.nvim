@@ -12,6 +12,29 @@ local is_goos_linux = function(cwd)
     or string.find(cwd, "buildkit")
 end
 
+---Whether `root` is a Go source tree's own module: GOROOT/src declares
+---`module std` and GOROOT/src/cmd `module cmd`, whichever checkout or SDK
+---they live in (/opt/local/go/src, ~/sdk/go1.27.1/src). Read from go.mod, not
+---guessed from the path: a "go/src" substring also matches every module
+---under GOPATH/src (~/go/src/github.com/...), which are ordinary modules.
+---@param root string
+---@return boolean
+local function is_go_source_tree(root)
+  local fd = io.open(vim.fs.joinpath(root, "go.mod"), "r")
+  if not fd then
+    return false
+  end
+  local module
+  for line in fd:lines() do
+    module = line:match("^module%s+(%S+)")
+    if module then
+      break
+    end
+  end
+  fd:close()
+  return module == "std" or module == "cmd"
+end
+
 local mod_cache = nil
 local std_lib = nil
 
@@ -441,7 +464,9 @@ return {
       gopls.env.GOOS = "linux"
     end
 
-    if string.find(root, "go/src") then
+    -- The experiments gate standard-library packages (simd/archsimd,
+    -- runtime/secret), so only the Go source tree itself needs them.
+    if is_go_source_tree(root) then
       gopls.env.GOEXPERIMENT = "simd,runtimesecret"
       -- buildFlags reaches `go list` verbatim, so the tags have to arrive as
       -- one -tags= flag. Listing them bare made go list read each name as a

@@ -8,9 +8,13 @@
 -- resolveSupport properties, ...) with no visible failure. This spec pins the
 -- snapshot to the live output of get_lsp_capabilities({}, false) in both
 -- directions, so any drift fails loudly. On failure, regenerate the snapshot
--- (the header of lua/lsp/capabilities.lua carries the one-liner).
+-- (the header of lua/lsp/capabilities.lua carries the one-liner). It also
+-- checks that init.lua's own completion overrides never switch on a feature
+-- blink reports as unimplemented.
 --
 -- Run: nvim --headless -u NONE -l tests/lsp_capabilities_snapshot_spec.lua
+-- (under -u NONE the ~/.config/nvim symlink puts this repo on the rtp; run
+-- with --clean from a copy of the tree to test that copy's lua/lsp/init.lua)
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
@@ -30,8 +34,8 @@ for _, plugin in ipairs({ "blink.cmp", "blink.lib" }) do
   vim.opt.runtimepath:append(dir)
 end
 
-local snapshot = require("lsp.capabilities")
 local live = require("blink.cmp").get_lsp_capabilities({}, false)
+local snapshot = require("lsp.capabilities")
 
 ---Reports the first differing path between two nested tables, so a failure
 ---names the capability rather than dumping both tables.
@@ -77,3 +81,37 @@ end
 do
   assert(vim.deep_equal(snapshot, live), "snapshot and live capabilities must be deep-equal")
 end
+
+-- lua/lsp/init.lua layers its own overrides on top of the snapshot. Those may
+-- narrow what blink offers (documentationFormat is cut to markdown), but must
+-- never switch on a completion feature blink reports as unimplemented: a
+-- server would then send commit characters or preselect flags that nothing
+-- acts on. Load the module the way the config does, with lspkind stubbed and
+-- vim.lsp.enable recorded instead of run, so no server config resolves here.
+do
+  package.loaded["lspkind"] = { init = function() end }
+  local enable = vim.lsp.enable
+  local enabled = {}
+  ---@diagnostic disable-next-line: duplicate-set-field
+  vim.lsp.enable = function(names)
+    vim.list_extend(enabled, type(names) == "table" and names or { names })
+  end
+  require("lsp")
+  vim.lsp.enable = enable
+  assert(#enabled > 0, "lua/lsp/init.lua must still enable its servers")
+
+  local merged = vim.lsp.config["*"].capabilities.textDocument.completion.completionItem
+  for key, value in pairs(live.textDocument.completion.completionItem) do
+    if value == false then
+      assert(
+        merged[key] == false,
+        ("lua/lsp/init.lua advertises completionItem.%s = %s, which blink.cmp does not implement"):format(
+          key,
+          vim.inspect(merged[key])
+        )
+      )
+    end
+  end
+end
+
+print("OK: capabilities snapshot matches blink.cmp and the merged completionItem claims nothing blink lacks")

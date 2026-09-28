@@ -86,14 +86,16 @@ return {
   -- filetype rather than aliasing it to cpp is what holds clangd off these
   -- buffers; Tree-sitter's cpp parser covers the highlighting.
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
+  -- .clang-format and .clang-tidy apply per directory, so a subdirectory
+  -- carrying its own used to become the root and split the tree into
+  -- separate clangd instances. The compilation database and .clangd name the
+  -- project; the repository comes next; the style files only root loose
+  -- trees outside git.
   root_markers = {
-    ".clangd",
-    ".clang-tidy",
-    ".clang-format",
-    "compile_commands.json",
-    "compile_flags.txt",
+    { "compile_commands.json", "compile_flags.txt", ".clangd" },
     "configure.ac", -- AutoTools
     ".git",
+    { ".clang-tidy", ".clang-format" },
   },
   get_language_id = function(_, ftype)
     local t = { objc = "objective-c", objcpp = "objective-cpp", cuda = "cuda-cpp" }

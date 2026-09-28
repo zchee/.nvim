@@ -4,8 +4,14 @@ local util = require("util")
 return {
   cmd = { util.homebrew_binary("neocmakelsp", "neocmakelsp"), "stdio" },
   filetypes = { "cmake" },
-  root_markers = { "CMakeLists.txt", "CMakePresets.json", "CTestConfig.cmake", ".git", "build", "cmake" },
-  settings = {
+  -- Every add_subdirectory() carries its own CMakeLists.txt, so nearest-first
+  -- on that name rooted a subproject apart from the tree that configures it.
+  -- Top-level-only markers first, then the repository, then the nearest
+  -- CMakeLists.txt for loose trees outside git.
+  root_markers = { { "CMakePresets.json", "CTestConfig.cmake" }, ".git", "CMakeLists.txt", "build", "cmake" },
+  -- neocmakelsp reads its Config from initializationOptions only (serde struct
+  -- in src/languageserver/config.rs) and never requests workspace/configuration.
+  init_options = {
     format = {
       enable = false,
     },

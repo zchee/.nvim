@@ -78,10 +78,11 @@ every session, whether or not that server ever starts.
   keys the caller leaves nil, so a literal would discard whatever a filetype
   pins. It hands any pinned value back instead (`"fallback"` when there is
   none), mirroring `format_on_save` in `lua/plugins/conform.lua`. `json5`
-  and `hujson` pin `"never"` because `jsonls` has no JSON5 mode and rewrites
-  such a buffer as strict JSON, so an unavailable CLI formatter must format
-  nothing; `go` and `goasm` pin `"first"`, so the LSP formats before their
-  CLI chain (for go, gopls with `gofumpt = true` ahead of
+  and `hujson` pin `"never"`, so an unavailable CLI formatter (`oxfmt` for
+  json5, `hujsonfmt` for hujson) formats nothing: `jsonls` has no JSON5 mode
+  and rewrites a json5 buffer as strict JSON, and it would reflow a hujson
+  file into its own layout. `go` and `goasm` pin `"first"`, so the LSP
+  formats before their CLI chain (for go, gopls with `gofumpt = true` ahead of
   `goimports-rereviser`).
 - Per-server diagnostic filters live in that server's `lsp/<name>.lua` as a
   client-local `handlers` entry, never by assigning `vim.lsp.handlers`, which

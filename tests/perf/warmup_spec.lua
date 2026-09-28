@@ -4,9 +4,10 @@
 -- order, one-load-per-scheduled-tick discipline, the InsertEnter abort flag,
 -- the already-loaded skip/stop paths (idempotency), gate deferral and
 -- timeout, non-fatal prewarm units, tagging into vim.g.warmup_loaded, and
--- the UIEnter arming. All deps (lazy.load, is_loaded, the scheduler, the
--- tagger) are injected recorders, so this is headless-safe and loads no
--- real plugin.
+-- the UIEnter arming. Those blocks inject recorder deps (lazy.load,
+-- is_loaded, the scheduler, the tagger) and load no real plugin; the W1.5
+-- parity block below boots full-config child sessions, each on a throwaway
+-- ShaDa copy, so the real plugins load there.
 --
 -- Run from the repo root: nvim --headless -u NONE -l tests/perf/warmup_spec.lua
 
@@ -341,12 +342,17 @@ do
   f:close()
 end
 
+local throwaway_shada = dofile(vim.fs.joinpath(vim.fn.getcwd(), "script", "lib", "throwaway_shada.lua"))
+
 --- Runs one full-config headless child in the given mode, returns its report.
 local function run_parity_child(mode)
   local out = vim.fn.tempname() .. "_parity.json"
   local job = vim.fn.jobstart({
-    "nvim",
+    vim.v.progpath,
     "--headless",
+    -- full-config children write ShaDa on exit; keep them off the real one
+    "-i",
+    throwaway_shada(),
     "--cmd",
     string.format("lua vim.g.parity_mode=%q vim.g.parity_out=%q", mode, out),
     "-c",

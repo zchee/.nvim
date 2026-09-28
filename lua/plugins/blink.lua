@@ -27,13 +27,10 @@ require("plugins.luasnip").load_snippets()
 ---the only priority.
 ---@return table<string, blink.cmp.SourceListPerFiletype>
 local function per_filetype_sources()
-  -- codecompanion registers its own blink source/filetype mapping at
-  -- runtime (providers/completion/blink/setup.lua) -- do not list it here.
   return {
     go = { "copilot", inherit_defaults = true },
     lua = { "lazydev", inherit_defaults = true },
     python = { "copilot", inherit_defaults = true },
-    sh = { inherit_defaults = true },
     snacks_picker_input = { "path", "buffer" },
   }
 end

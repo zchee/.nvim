@@ -138,6 +138,20 @@ local ok, err = pcall(function()
     assert_equal(vim.o.hlsearch, true, "n after a mapped q must enable hlsearch")
   end
 
+  do -- the q that stops a recording takes no register: after qa...q the
+    -- first n is a search. Real typed keys, so vim.on_key calls the handler
+    -- and RecordingEnter/RecordingLeave fire as they do interactively.
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, { "x y x y x" })
+    vim.cmd("let @/ = 'x'")
+    vim.o.hlsearch = false
+    vim.api.nvim_feedkeys("qajq", "xt", false)
+    assert_equal(vim.o.hlsearch, false, "qajq leaves hlsearch off")
+    vim.api.nvim_feedkeys("n", "xt", false)
+    assert_equal(vim.o.hlsearch, true, "the first n after qajq must enable hlsearch")
+    vim.api.nvim_feedkeys("j", "xt", false)
+    assert_equal(vim.o.hlsearch, false, "j after it clears hlsearch again")
+  end
+
   do -- no redundant option writes: value already matching stays untouched
     vim.o.hlsearch = true
     on_key(nil, "/")

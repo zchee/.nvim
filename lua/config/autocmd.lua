@@ -629,6 +629,24 @@ local argument_prefixes = {
 }
 local awaiting_argument = false
 
+-- The q that stops a recording takes no register. on_key sees that q while
+-- a register is still recording (RecordingLeave fires after it runs), so an
+-- upvalue kept by these autocmds tells the two q's apart without calling
+-- vim.fn.reg_recording() on every keystroke.
+local recording = false
+vim.api.nvim_create_autocmd("RecordingEnter", {
+  group = autocmd_user,
+  callback = function()
+    recording = true
+  end,
+})
+vim.api.nvim_create_autocmd("RecordingLeave", {
+  group = autocmd_user,
+  callback = function()
+    recording = false
+  end,
+})
+
 ---on_key callback for auto hlsearch; exposed for the allocation-free spec.
 ---@param key string the key after mapping
 ---@param typed string the physically typed key ("" for mapping expansion)
@@ -640,7 +658,7 @@ function M.auto_hlsearch_on_key(key, typed)
   if awaiting_argument then
     awaiting_argument = false
   else
-    awaiting_argument = key == typed and argument_prefixes[typed] or false
+    awaiting_argument = key == typed and argument_prefixes[typed] and not (recording and typed == "q") or false
     searching = hlsearch_keys[typed] or false
   end
   if searching ~= vim.o.hlsearch then

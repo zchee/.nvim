@@ -3,7 +3,6 @@ local util = require("util")
 -- https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  autostart = true,
   cmd = { util.homebrew_binary("bash-language-server-head", "bash-language-server"), "start" },
   filetypes = { "sh", "bash" },
   settings = {

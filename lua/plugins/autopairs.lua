@@ -11,7 +11,6 @@ local np_ts_conds = require("nvim-autopairs.ts-conds")
 
 np.setup({
   disable_filetype = {
-    "AvanteInput",
     "TelescopePrompt",
   },
   fast_wrap = {

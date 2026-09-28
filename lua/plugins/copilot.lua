@@ -17,12 +17,7 @@ copilot.setup({
     },
   },
   filetypes = {
-    ["*"] = false,
-    go = true,
-    lua = true,
-    python = true,
-    sh = true,
-    toml = true,
+    ["*"] = true,
   },
   copilot_node_command = util.homebrew_binary("node", "node"),
   server = {

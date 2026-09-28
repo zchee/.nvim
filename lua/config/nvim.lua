@@ -264,7 +264,6 @@ vim.cmd.colorscheme("equinusocio_material")
 -- Color:
 
 -- Go:
-vim.g["go#generate#test#template_dir"] = os.getenv("XDG_CONFIG_HOME") .. "/go/template/gotests"
 vim.g.go_highlight_array_whitespace_error = 0 -- default : 1
 vim.g.go_highlight_chan_whitespace_error = 0 -- default : 1
 vim.g.go_highlight_extra_types = 1 -- default : 1

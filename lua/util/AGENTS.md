@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-08-26 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
 
 # lua/util
 
@@ -49,7 +49,7 @@ XDG directories with symlink resolution, a VeryLazy hook
 ### Testing Requirements
 No dedicated spec file exists under `tests/` for this directory's modules.
 Verify changes by loading the module headlessly, e.g.:
-`nvim --headless -u NONE -c 'set rtp+=.' -c 'lua vim.print(require("util").prefix())' -c 'qa'`
+`nvim --headless -u NONE -i NONE -c 'set rtp+=.' -c 'lua vim.print(require("util").prefix())' -c 'qa'`
 
 ### Common Patterns
 - Every public function is documented with LuaCATS `---@param`/`---@return`

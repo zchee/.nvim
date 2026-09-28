@@ -6,14 +6,19 @@ local util = require("util")
 -- inlay_hints, excluded_folders, ...) live in `~/.config/moxide/settings.toml`
 -- or a per-vault `.moxide.toml`; `markdown-oxide config` opens the former.
 --
--- The root markers ({ ".git", ".obsidian", ".moxide.toml" }, nearest ancestor
--- wins) and the daily-note on_attach used to come from nvim-lspconfig's own
--- `lsp/markdown_oxide.lua`; they are inlined here since nvim-lspconfig was
--- removed. The wide .git root is deliberate: measured on the agent notes tree
--- -- 1604 markdown files under a single .git -- the server finishes indexing
--- in 1.8s and answers textDocument/definition 90ms later, so narrowing the
--- root buys nothing. Dropping a `.moxide.toml` beside a vault still wins, a
--- nearer marker taking precedence over the repository .git.
+-- Not in lua/lsp/init.lua's vim.lsp.enable list: 467cac4 stopped starting it
+-- on markdown buffers. vim.lsp.enable("markdown_oxide") turns it back on.
+--
+-- The root markers and the daily-note on_attach used to come from
+-- nvim-lspconfig's own `lsp/markdown_oxide.lua`; they are inlined here since
+-- nvim-lspconfig was removed. vim.lsp tries root_markers in list order, not
+-- nearest-first, so a vault's own `.moxide.toml` or `.obsidian` (equal
+-- priority, nearest wins between them) is listed ahead of `.git`; in a flat
+-- list the repository .git would win over a nearer vault marker. Without
+-- one, the wide .git root is deliberate: measured on the agent notes tree --
+-- 1604 markdown files under a single .git -- the server finishes indexing in
+-- 1.8s and answers textDocument/definition 90ms later, so narrowing the root
+-- buys nothing.
 --
 -- Unlike marksman, this server indexes files that git ignores, which is what
 -- makes it work on the agent memory trees (`claude/.gitignore` excludes
@@ -37,7 +42,7 @@ end
 return {
   cmd = { util.homebrew_binary("markdown-oxide", "markdown-oxide") },
   filetypes = { "markdown" },
-  root_markers = { ".git", ".obsidian", ".moxide.toml" },
+  root_markers = { { ".moxide.toml", ".obsidian" }, ".git" },
   on_attach = function(client, bufnr)
     for _, cmd in ipairs({ "today", "tomorrow", "yesterday" }) do
       vim.api.nvim_buf_create_user_command(bufnr, "Lsp" .. cmd:gsub("^%l", string.upper), function()

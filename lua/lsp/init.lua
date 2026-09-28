@@ -122,10 +122,11 @@ local default_capabilities_config = function()
 
   -- Neovim already advertises workspace.didChangeWatchedFiles with both
   -- dynamicRegistration and relativePatternSupport, and the blink.cmp merge
-  -- above leaves them alone -- read back from the resolved markdown_oxide
-  -- client, the one server here whose upstream docs demand dynamic
-  -- registration (it watches the vault, and its create-unresolved-file code
-  -- action depends on the watcher). Nothing left to force.
+  -- above leaves them alone -- read back from a markdown_oxide client, the one
+  -- configured server whose upstream docs demand dynamic registration (it
+  -- watches the vault, and its create-unresolved-file code action depends on
+  -- the watcher). markdown_oxide is configured but not enabled (see the
+  -- absent servers below). Nothing left to force.
 
   -- commitCharactersSupport and preselectSupport stay at blink's false: blink
   -- implements neither (both are TODOs in its get_lsp_capabilities), so
@@ -290,9 +291,12 @@ vim.lsp.config("*", {
 --   marksman: it skips git-ignored files, so the agent memory trees under
 --   the git-ignored claude/projects/ are invisible to it, and rooted at that
 --   repository .git it spends 50s indexing before answering nothing.
---   markdown_oxide below covers the same links. Its edge -- broken link
+--   markdown_oxide covers the same links. Its edge -- broken link
 --   diagnostics plus a "Create `file.md`" code action -- only pays off on
 --   tracked documentation trees.
+--   markdown_oxide: lsp/markdown_oxide.lua stays configured, but 467cac4
+--   stopped starting it on markdown buffers, so no markdown server runs;
+--   vim.lsp.enable("markdown_oxide") turns it back on.
 --   rust_analyzer: rustaceanvim owns the rust-analyzer client (see
 --   lua/plugins/init.lua); enabling it here as well would attach a second
 --   rust-analyzer to every Rust buffer.

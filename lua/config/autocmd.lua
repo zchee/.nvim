@@ -14,24 +14,6 @@ local function append_path_once(dir)
   end
 end
 
-vim.api.nvim_create_autocmd("FileType", {
-  group = autocmd_user,
-  pattern = "go",
-  callback = function()
-    append_path_once("/usr/local/go/pkg/include")
-  end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-  group = autocmd_user,
-  pattern = { "c", "cpp", "objc", "objcpp" },
-  callback = function()
-    if vim.fn.isdirectory("/usr/local/Frameworks/Python.framework/Headers") == 1 then
-      append_path_once("/usr/local/Frameworks/Python.framework/Headers")
-    end
-  end,
-})
-
 -- FileType
 vim.api.nvim_create_autocmd("FileType", {
   group = autocmd_user,
@@ -43,12 +25,16 @@ vim.api.nvim_create_autocmd("FileType", {
     "ref",
     "startuptime",
   },
-  callback = function()
+  callback = function(args)
     vim.opt_local.colorcolumn = ""
 
-    vim.keymap.set("n", "u", "<C-u>", { buffer = true, silent = true })
-    vim.keymap.set("n", "d", "<C-d>", { buffer = true, silent = true })
-    vim.keymap.set("n", "q", "<Cmd>q<CR>", { buffer = true, silent = true })
+    -- Paging on u/d only where nothing can be edited: a help file opened to
+    -- write docs is modifiable, and there u has to stay undo and d delete.
+    if not vim.bo[args.buf].modifiable then
+      vim.keymap.set("n", "u", "<C-u>", { buffer = args.buf, silent = true })
+      vim.keymap.set("n", "d", "<C-d>", { buffer = args.buf, silent = true })
+    end
+    vim.keymap.set("n", "q", "<Cmd>q<CR>", { buffer = args.buf, silent = true })
   end,
 })
 
@@ -63,17 +49,30 @@ if vim.fn.has("mac") == 1 then
     end
     macos_headers_added = true
 
-    local developer_dir = "/Applications/Xcode.app/Contents/Developer" -- vim.fn.system("xcode-select -p")
-    local sdk_dir = vim.fs.joinpath(developer_dir, "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk")
-    local toolchain_dir = vim.fs.joinpath(developer_dir, "/Toolchains/XcodeDefault.xctoolchain")
-
     vim.opt.path:append(vim.fs.joinpath(util.homebrew_prefix(), "include"))
     vim.opt.path:append("/usr/local/include")
-    vim.opt.path:append(vim.fs.joinpath(sdk_dir, "/usr/include"))
-    vim.opt.path:append(vim.fs.joinpath(toolchain_dir .. "/usr/include/c++/v1"))
-    vim.opt.path:append(vim.fs.joinpath(toolchain_dir .. "/usr/include/swift"))
     vim.opt.path:append("/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include")
-    vim.opt.path:append(vim.fs.joinpath(toolchain_dir .. "/usr/lib/clang/**/include"))
+
+    -- The active developer dir is whatever xcode-select points at (an
+    -- Xcode-beta.app as often as Xcode.app), so ask it rather than assume.
+    -- Asynchronously: the spawn costs ~5 ms, and 'path' is read only later,
+    -- by gf and :find.
+    local function append_xcode_paths(developer_dir)
+      local sdk_dir = vim.fs.joinpath(developer_dir, "Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk")
+      local toolchain_dir = vim.fs.joinpath(developer_dir, "Toolchains/XcodeDefault.xctoolchain")
+      vim.opt.path:append(vim.fs.joinpath(sdk_dir, "usr/include"))
+      vim.opt.path:append(vim.fs.joinpath(toolchain_dir, "usr/include/c++/v1"))
+      vim.opt.path:append(vim.fs.joinpath(toolchain_dir, "usr/include/swift"))
+      vim.opt.path:append(vim.fs.joinpath(toolchain_dir, "usr/lib/clang/**/include"))
+    end
+    pcall(vim.system, { "xcode-select", "-p" }, { text = true }, function(result)
+      local developer_dir = result.code == 0 and vim.trim(result.stdout or "") or ""
+      if developer_dir ~= "" then
+        vim.schedule(function()
+          append_xcode_paths(developer_dir)
+        end)
+      end
+    end)
 
     -- macOS frameworks
     local frameworks_dir = vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "/path/Frameworks")
@@ -128,7 +127,7 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
   group = autocmd_user,
   pattern = {
     "/System/Library/*",
-    "/Applications/Xcode%.*",
+    "/Applications/Xcode*",
     "/usr/include/*",
     "/usr/lib/*",
   },
@@ -177,17 +176,17 @@ vim.api.nvim_create_autocmd({ "WinEnter" }, {
   pattern = { "*" },
   callback = function()
     -- http://stackoverflow.com/questions/7476126/how-to-automatically-close-the-quick-fix-window-when-leaving-a-file
-    local only_one_window = #vim.api.nvim_tabpage_list_wins(0) == 1
-    if only_one_window then
-      local is_ft = function(ft)
-        return vim.o.filetype == ft
-      end
-
-      local tabnr = vim.api.nvim_tabpage_get_number(0)
-      local is_nvimtree = vim.fs.basename(vim.api.nvim_buf_get_name(0)) == "NvimTree_" .. tabnr
-      if is_nvimtree or is_ft("qt") or is_ft("git") or is_ft("vista_kind") then
+    if #vim.api.nvim_tabpage_list_wins(0) ~= 1 then
+      return
+    end
+    local ft = vim.bo.filetype
+    if ft == "qf" or ft == "git" then
+      -- Scheduled: autocmds do not nest, so a :quit run inside WinEnter
+      -- ended Nvim without QuitPre/ExitPre/VimLeavePre (ShaDa, plugin
+      -- teardown) ever firing.
+      vim.schedule(function()
         vim.cmd("quit")
-      end
+      end)
     end
   end,
 })
@@ -460,20 +459,24 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 -- vim.fn.executable() returns 0/1 and 0 is truthy in Lua, so the guard used
 -- to pass with imectl absent and spawned a failing process on every focus
 -- gain. Probe once (lazily, on the first FocusGained) and cache the verdict.
+-- The binary is resolved through util.prefix and run as an argv list, so no
+-- shell parses the command and no $PATH lookup happens per focus gain.
 -- The deps are injected so specs can drive the truth table without a real
 -- binary; production passes the live vim.fn functions.
 ---@param executable fun(name: string): 0|1
----@param jobstart fun(cmd: string, opts: table): integer
+---@param jobstart fun(cmd: string[], opts: table): integer
 ---@return fun() callback FocusGained callback with a probe-once imectl cache
 function M.make_imectl_callback(executable, jobstart)
+  local imectl = util.prefix("bin", "imectl")
   local has_imectl ---@type boolean?
+  local argv = { imectl, "set", "com.apple.keylayout.ABC" }
   local jobstart_opts = { detach = true }
   return function()
     if has_imectl == nil then
-      has_imectl = executable("imectl") == 1
+      has_imectl = executable(imectl) == 1
     end
     if has_imectl then
-      jobstart("imectl set com.apple.keylayout.ABC", jobstart_opts)
+      jobstart(argv, jobstart_opts)
     end
   end
 end
@@ -559,20 +562,6 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
 --   end,
 -- })
 
-local prev = { new_name = "", old_name = "" } -- Prevents duplicate events
-vim.api.nvim_create_autocmd("User", {
-  pattern = "NvimTreeSetup",
-  callback = function()
-    local events = require("nvim-tree.api").events
-    events.subscribe(events.Event.NodeRenamed, function(data)
-      if prev.new_name ~= data.new_name or prev.old_name ~= data.old_name then
-        data = data
-        require("snacks").rename.on_rename_file(data.old_name, data.new_name)
-      end
-    end)
-  end,
-})
-
 -- Auto :nohlsearch, replacing the abandoned nvimdev/hlsearch.nvim: search
 -- highlighting turns on only for search-related keys and clears as soon as
 -- any other normal-mode key is pressed. <C-q> (keymap.lua) still force-clears.
@@ -599,13 +588,40 @@ local hlsearch_keys = {
   ["?"] = true,
 }
 
+-- Keys whose next key is an argument, not a command: a register ("*p, @/),
+-- a target character (f* t/ F# T? r*), a macro or mark name (q/ m/ '* `*).
+-- That argument is never a search, even when it is one of the keys above.
+-- Only an unmapped prefix counts: help/man/qf map q to :q, and on_key then
+-- reports the mapping's first key, not "q", as `key`.
+local argument_prefixes = {
+  ['"'] = true,
+  ["f"] = true,
+  ["t"] = true,
+  ["F"] = true,
+  ["T"] = true,
+  ["r"] = true,
+  ["q"] = true,
+  ["m"] = true,
+  ["'"] = true,
+  ["`"] = true,
+  ["@"] = true,
+}
+local awaiting_argument = false
+
 ---on_key callback for auto hlsearch; exposed for the allocation-free spec.
+---@param key string the key after mapping
 ---@param typed string the physically typed key ("" for mapping expansion)
-function M.auto_hlsearch_on_key(_, typed)
+function M.auto_hlsearch_on_key(key, typed)
   if typed == "" or vim.api.nvim_get_mode().mode:byte(1) ~= 0x6e then
     return
   end
-  local searching = hlsearch_keys[typed] or false
+  local searching = false
+  if awaiting_argument then
+    awaiting_argument = false
+  else
+    awaiting_argument = key == typed and argument_prefixes[typed] or false
+    searching = hlsearch_keys[typed] or false
+  end
   if searching ~= vim.o.hlsearch then
     vim.o.hlsearch = searching
   end

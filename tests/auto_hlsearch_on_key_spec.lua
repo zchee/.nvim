@@ -1,8 +1,9 @@
 -- lua/config/autocmd.lua -- the auto-hlsearch vim.on_key handler. It runs on
 -- every physical keystroke, so it must never cross the vim.fn VimL bridge:
 -- this spec replaces vim.fn with a proxy that errors on any access, then
--- drives the handler through the search-key truth table and the typed==""
--- (mapping expansion) and non-normal-mode early returns.
+-- drives the handler through the search-key truth table, argument keys
+-- ("*p, f*, ...), and the typed=="" (mapping expansion) and non-normal-mode
+-- early returns.
 --
 -- Run: nvim --headless -u NONE -i NONE -l tests/auto_hlsearch_on_key_spec.lua
 -- Exits 0 only after printing "ALL PASS": a VimLeavePre guard turns any
@@ -99,6 +100,42 @@ local ok, err = pcall(function()
     vim.o.hlsearch = true
     on_key("n", "")
     assert_equal(vim.o.hlsearch, true, "mapped-key expansion (typed=='') must not toggle hlsearch")
+  end
+
+  do -- the key after an argument-taking prefix is that argument, not a
+    -- search: "*p pastes register *, f* jumps to a '*', m/ sets mark /
+    for _, seq in ipairs({ { '"', "*", "p" }, { "f", "*" }, { "t", "/" }, { "F", "#" }, { "T", "?" } }) do
+      vim.o.hlsearch = false
+      for _, key in ipairs(seq) do
+        on_key(key, key)
+      end
+      assert_equal(vim.o.hlsearch, false, ("%s must leave hlsearch off"):format(table.concat(seq)))
+    end
+    for _, seq in ipairs({ { "r", "*" }, { "q", "/" }, { "m", "n" }, { "'", "N" }, { "`", "*" }, { "@", "/" } }) do
+      vim.o.hlsearch = false
+      for _, key in ipairs(seq) do
+        on_key(key, key)
+      end
+      assert_equal(vim.o.hlsearch, false, ("%s must leave hlsearch off"):format(table.concat(seq)))
+    end
+    -- the argument is consumed: a search key after it counts again
+    vim.o.hlsearch = false
+    for _, key in ipairs({ "f", "x", "n" }) do
+      on_key(key, key)
+    end
+    assert_equal(vim.o.hlsearch, true, "fx then n must enable hlsearch")
+    -- a prefix that is itself an argument does not arm another: ff then *
+    vim.o.hlsearch = false
+    for _, key in ipairs({ "f", "f", "*" }) do
+      on_key(key, key)
+    end
+    assert_equal(vim.o.hlsearch, true, "ff then * must enable hlsearch")
+    -- a mapped prefix is a command (help's q is :q): the next key is not its
+    -- argument, so on_key's key differs from typed and nothing is armed
+    vim.o.hlsearch = false
+    on_key("\128\253h", "q")
+    on_key("n", "n")
+    assert_equal(vim.o.hlsearch, true, "n after a mapped q must enable hlsearch")
   end
 
   do -- no redundant option writes: value already matching stays untouched

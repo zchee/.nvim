@@ -4,6 +4,8 @@
 -- factory takes executable/jobstart as injected deps: this spec drives the
 -- truth table (0 -> never jobstart, 1 -> jobstart every time) and pins the
 -- probe-once cache (executable() called at most once across repeated events).
+-- The binary is util.prefix("bin", "imectl"), started as an argv list: no
+-- shell, no $PATH lookup.
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
@@ -12,6 +14,7 @@ package.path = table.concat({
 }, ";")
 
 local autocmd = require("config.autocmd")
+local imectl = require("util").prefix("bin", "imectl")
 
 local function assert_equal(got, want, msg)
   if got ~= want then
@@ -23,7 +26,7 @@ do -- executable() == 0: no jobstart, ever, and only one probe
   local probe_count, job_count = 0, 0
   local cb = autocmd.make_imectl_callback(function(name)
     probe_count = probe_count + 1
-    assert_equal(name, "imectl", "probe must ask for the imectl binary")
+    assert_equal(name, imectl, "probe must ask for the util.prefix imectl binary")
     return 0
   end, function()
     job_count = job_count + 1
@@ -56,7 +59,11 @@ do -- executable() == 1: jobstart on every focus gain, still one probe
 
   assert_equal(job_count, 3, "executable()==1 must jobstart on every FocusGained")
   assert_equal(probe_count, 1, "cached verdict must not re-probe executable()")
-  assert_equal(seen_cmd, "imectl set com.apple.keylayout.ABC", "jobstart command changed")
+  assert_equal(
+    vim.deep_equal(seen_cmd, { imectl, "set", "com.apple.keylayout.ABC" }),
+    true,
+    "jobstart must get an argv list: " .. vim.inspect(seen_cmd)
+  )
   assert_equal(seen_opts.detach, true, "imectl job must stay detached")
 end
 

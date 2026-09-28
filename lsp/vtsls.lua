@@ -58,8 +58,15 @@ local inlay_hints = {
 return {
   -- Interpreter spelled out for the same reason as lsp/jsonls.lua: the bin is
   -- a `#!/usr/bin/env node` script, and through the nodenv shim its node
-  -- version follows the root it is spawned in -- see util.nodenv_prefix.
-  cmd = { util.nodenv_prefix("node"), util.bun_prefix("vtsls"), "--stdio" },
+  -- version follows the root it is spawned in -- see util.nodenv_prefix. A
+  -- function for the same reason as there: the lookups run at server start.
+  cmd = function(dispatchers, config)
+    return vim.lsp.rpc.start(
+      { util.nodenv_prefix("node"), util.bun_prefix("vtsls"), "--stdio" },
+      dispatchers,
+      { cwd = config.cmd_cwd or config.root_dir, env = config.cmd_env, detached = config.detached }
+    )
+  end,
   handlers = {
     ["textDocument/publishDiagnostics"] = filter_ignored_diagnostics,
   },

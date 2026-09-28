@@ -156,8 +156,15 @@ end
 -- lspconfig.configs, now a plain native config.
 vim.lsp.config("tsgo", {
   -- node spelled out as for vtsls: bin/tsgo is a `#!/usr/bin/env node`
-  -- launcher, so the nodenv shim would pick node from the project root.
-  cmd = { util.nodenv_prefix("node"), util.bun_prefix("tsgo"), "--lsp", "-stdio" },
+  -- launcher, so the nodenv shim would pick node from the project root. A
+  -- function as in lsp/jsonls.lua: a missing tsgo warns only when it starts.
+  cmd = function(dispatchers, config)
+    return vim.lsp.rpc.start(
+      { util.nodenv_prefix("node"), util.bun_prefix("tsgo"), "--lsp", "-stdio" },
+      dispatchers,
+      { cwd = config.cmd_cwd or config.root_dir, env = config.cmd_env, detached = config.detached }
+    )
+  end,
   filetypes = {
     "javascript",
     "javascriptreact",

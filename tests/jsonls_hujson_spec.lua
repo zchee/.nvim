@@ -92,10 +92,9 @@ do
 end
 
 -- The live half.
-assert(
-  vim.uv.fs_stat(config.cmd[2]) ~= nil,
-  ("vscode-json-language-server is not installed at %s"):format(config.cmd[2])
-)
+-- cmd is a function (the lookups run at server start), so ask util here.
+local server_bin = require("util").bun_prefix("vscode-json-language-server")
+assert(vim.uv.fs_stat(server_bin) ~= nil, ("vscode-json-language-server is not installed at %s"):format(server_bin))
 
 local root = assert(vim.uv.fs_realpath(vim.fn.tempname():match("^(.*)/[^/]*$")))
 local path = vim.fs.joinpath(root, "policy.hujson")

@@ -89,6 +89,9 @@ do
       (unit.plugin ~= nil) ~= (unit.prewarm ~= nil),
       "a unit must be exactly one of plugin or prewarm: " .. unit.name
     )
+    -- copilot runs its native server binary: nothing to probe or wait on
+    assert(not unit.name:find("node", 1, true), "no unit may probe node for copilot: " .. unit.name)
+    assert(unit.gate == nil, "no real unit waits on a gate: " .. unit.name)
   end
 end
 

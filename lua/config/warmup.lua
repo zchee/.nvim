@@ -12,18 +12,16 @@
 -- in --headless sessions, so specs and scripts see no behavior change
 -- unless they run a UI (pty) session on purpose.
 --
--- Two plugin loads are too heavy for one frame on their own, so they are
--- sub-chunked (measured on the r0 machine):
---   * copilot.lua (~30-68 ms): almost all of it is copilot.setup()
---     synchronously waiting on `node --version` (copilot.lsp.nodejs caches
---     it in node_version). A prewarm unit runs that probe through async
---     vim.system and seeds the cache; the copilot tick gates on the seed.
---   * blink.cmp (~19-21 ms): mostly require()s of blink.cmp modules inside
---     plugins/blink.lua, plus -- before round-3 W1 split them into the
---     LuaSnip/nvim-autopairs ticks via their specs' own configs -- the
---     luasnip/autopairs setup code. Prewarm units pull each plugin's module
---     graph in the tick before its config runs, leaving each plugin tick
---     only its own setup() work.
+-- blink.cmp (~19-21 ms, measured on the r0 machine) is too heavy for one
+-- frame on its own, so it is sub-chunked: its cost is mostly require()s of
+-- blink.cmp modules inside plugins/blink.lua, plus -- before round-3 W1
+-- split them into the LuaSnip/nvim-autopairs ticks via their specs' own
+-- configs -- the luasnip/autopairs setup code. Prewarm units pull each
+-- plugin's module graph in the tick before its config runs, leaving each
+-- plugin tick only its own setup() work. copilot.lua was sub-chunked too
+-- while its nodejs server type made copilot.setup() wait on a synchronous
+-- `node --version` (~30-68 ms); plugins/copilot.lua now runs the native
+-- server binary, whose setup spawns nothing, so that probe unit is gone.
 
 local M = {}
 
@@ -108,53 +106,6 @@ local function prerequire(plugin_name, mods)
   package.path = saved_path
 end
 
--- copilot.setup() blocks on `node --version` (copilot.lsp.nodejs caches the
--- result in node_version). The seed runs the same probe through async
--- vim.system and fills that cache off the main thread; the copilot unit's
--- gate waits for done (bounded by its gate_timeout_ms, after which the tick
--- proceeds and eats the synchronous probe -- slower, never wrong). The probe
--- spawn and the copilot.lsp.nodejs module pull are separate ticks: the spawn
--- is sub-ms and goes first so the probe overlaps the ticks between, while
--- the module pull pays require cost and runs just before the copilot tick.
-local seed = { done = false, version = nil }
-
-local function spawn_copilot_node_probe()
-  local lazy_config = package.loaded["lazy.core.config"]
-  local plugin = lazy_config and lazy_config.plugins["copilot.lua"]
-  if not plugin or (plugin._ and plugin._.loaded) then
-    -- nothing to seed: no lazy-managed copilot here (spec envs), or it is
-    -- already configured -- don't leave the gate waiting on a probe
-    seed.done = true
-    return
-  end
-  local node = require("util").homebrew_binary("node", "node")
-  local ok = pcall(vim.system, { node, "--version" }, { text = true }, function(result)
-    -- may run in a fast event context: plain Lua field writes only
-    local version = result.stdout and result.stdout:match("^v(%S+)")
-    local major = version and tonumber(version:match("^(%d+)%."))
-    if result.code == 0 and major and major >= 22 then
-      -- the shape copilot's own get_node_version() would cache; a too-old
-      -- or unparsable node stays unseeded so copilot's synchronous path
-      -- re-probes and reports its usual error
-      seed.version = version
-    end
-    seed.done = true
-  end)
-  if not ok then
-    seed.done = true
-  end
-end
-
---- Copies a completed probe result into copilot.lsp.nodejs's cache. Runs in
---- the module-pull tick and again from the copilot gate, so a probe that
---- finishes between the two still lands before copilot.setup().
-local function seed_copilot_node_cache()
-  local nodejs = package.loaded["copilot.lsp.nodejs"]
-  if nodejs and not nodejs.node_version and seed.version then
-    nodejs.node_version = seed.version
-  end
-end
-
 ---@class WarmupUnit
 ---@field name string tick label for tick_ms
 ---@field plugin string? lazy plugin to load (and tag) in this tick
@@ -168,33 +119,14 @@ end
 M.units = {
   { name = "mini.icons", plugin = "mini.icons" },
   { name = "blink.lib", plugin = "blink.lib" },
-  { name = "copilot-node-probe", prewarm = spawn_copilot_node_probe },
   {
     name = "vim.lsp",
     prewarm = function()
-      -- copilot.client pulls the whole vim.lsp stack; also useful overlap
-      -- while the node probe runs
+      -- copilot.client pulls the whole vim.lsp stack
       require("vim.lsp")
     end,
   },
-  {
-    name = "copilot-nodejs",
-    prewarm = function()
-      prerequire("copilot.lua", { "copilot.lsp.nodejs" })
-      seed_copilot_node_cache()
-    end,
-  },
-  {
-    name = "copilot.lua",
-    plugin = "copilot.lua",
-    gate = function()
-      if not seed.done then
-        return false
-      end
-      seed_copilot_node_cache()
-      return true
-    end,
-  },
+  { name = "copilot.lua", plugin = "copilot.lua" },
   { name = "blink-copilot", plugin = "blink-copilot" },
   {
     name = "autopairs-modules",

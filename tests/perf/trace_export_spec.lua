@@ -8,8 +8,12 @@
 -- warmup ticks, and the --ui-latency ingestion fed by a real
 -- script/ui-latency.lua --json run) contributed at least one event.
 -- Durations are never asserted -- wall-clock numbers belong to
--- script/perf-report.sh. When /opt/local/perfetto/trace_processor_shell
--- exists the trace must also import with zero spilled complete events.
+-- script/perf-report.sh. Every pair of complete slices on a tid must be
+-- nested or disjoint (checked here, and on a synthetic case that defeated
+-- the first nesting sweep); when util.prefix("perfetto",
+-- "trace_processor_shell") exists the trace must also import with zero
+-- spilled complete events. The lazy.nvim anchors must be on the log's
+-- wall-clock axis (args.clock = "wall"), not lazy.stats()'s CPU time.
 --
 -- Run from the repo root: nvim --headless -u NONE -l tests/perf/trace_export_spec.lua
 
@@ -32,14 +36,76 @@ local function assert_equal(actual, expected, message)
   end
 end
 
+--- Asserts every pair of X slices sharing a tid is nested or disjoint.
+local function assert_nested_or_disjoint(events, label)
+  local by_tid = {}
+  for _, event in ipairs(events) do
+    if event.ph == "X" then
+      by_tid[event.tid] = by_tid[event.tid] or {}
+      table.insert(by_tid[event.tid], event)
+    end
+  end
+  for tid, list in pairs(by_tid) do
+    for i = 1, #list do
+      local a = list[i]
+      for j = i + 1, #list do
+        local b = list[j]
+        local a_end, b_end = a.ts + a.dur, b.ts + b.dur
+        local disjoint = a_end <= b.ts or b_end <= a.ts
+        local nested = (a.ts <= b.ts and b_end <= a_end) or (b.ts <= a.ts and a_end <= b_end)
+        assert_truthy(
+          disjoint or nested,
+          ("%s: tid %d slices partially overlap: %s [%d,%d] and %s [%d,%d]"):format(
+            label,
+            tid,
+            a.name,
+            a.ts,
+            a_end,
+            b.name,
+            b.ts,
+            b_end
+          )
+        )
+      end
+    end
+  end
+end
+
+-- Synthetic nesting case: B pokes out of A and is shifted to A's end, past
+-- C's start. The first sweep pushed B's end on the stack before visiting C,
+-- so C [60,150] passed as nested in B [100,250] while it starts inside A
+-- [0,100] and ends inside B -- partial overlaps with both. Durations must
+-- survive the repair.
+do
+  local enforce_nesting = dofile(vim.fs.joinpath(vim.fn.getcwd(), "script", "lib", "trace_nesting.lua"))
+  local events = {
+    { name = "A", ph = "X", tid = 1, ts = 0, dur = 100 },
+    { name = "B", ph = "X", tid = 1, ts = 50, dur = 150 },
+    { name = "C", ph = "X", tid = 1, ts = 60, dur = 90 },
+    { name = "D", ph = "X", tid = 2, ts = 10, dur = 5 },
+    { name = "i", ph = "i", tid = 1, ts = 70 },
+  }
+  enforce_nesting(events)
+  assert_nested_or_disjoint(events, "synthetic")
+  local by_name = {}
+  for _, event in ipairs(events) do
+    by_name[event.name] = event
+  end
+  assert_equal(by_name.B.dur, 150, "synthetic B keeps its duration")
+  assert_equal(by_name.C.dur, 90, "synthetic C keeps its duration")
+  assert_equal(by_name.B.ts, 100, "synthetic B moves to A's end")
+  assert_equal(by_name.B.args.ts_shift_us, 50, "synthetic B records its shift")
+  assert_equal(by_name.D.ts, 10, "a slice alone on its tid is untouched")
+  assert_equal(by_name.i.ts, 70, "instant events are untouched")
+end
+
 local out_path = vim.fn.tempname() .. "-trace.json"
 local ui_json_path = vim.fn.tempname() .. "-ui-latency.json"
 
 -- Real ui-latency measurement first (round-4 V0.3): the embed client's
 -- --json output feeds the exporter's --ui-latency track below.
 do
-  local cmd =
-    { vim.v.progpath, "-l", "script/ui-latency.lua", "--clean", "--socket-free", "--json", ui_json_path }
+  local cmd = { vim.v.progpath, "-l", "script/ui-latency.lua", "--clean", "--socket-free", "--json", ui_json_path }
   local ui = vim.system(cmd, { text = true }):wait(60000)
   assert_equal(
     ui.code,
@@ -130,6 +196,7 @@ do
   -- dedicated track (the embed client's own timeline).
   assert_truthy(sources.ui_latency >= 12, "expected >=12 ui_latency events, got " .. sources.ui_latency)
   assert_equal(vim.tbl_count(ui_latency_tids), 1, "ui_latency events must share one tid")
+  assert_nested_or_disjoint(decoded.traceEvents, "exported trace")
   print(
     ("trace_export_spec: OK %s (%d events: %d startuptime, %d lazy, %d warmup, %d ui-latency)"):format(
       out_path,
@@ -142,12 +209,42 @@ do
   )
 end
 
+-- Wall-clock anchors: the lazy.nvim slice and the UIEnter instant must sit
+-- on the log's axis (the child's hrtime stamps), not lazy.stats()'s process
+-- CPU time, which drifts a few ms either way. Ordering truths only, with
+-- 1 ms of slack for the anchor: lazy finishes before startup ends, and the
+-- UIEnter the child fires from the main loop comes after it.
+do
+  local lazy_slice, uienter, started
+  for _, event in ipairs(decoded.traceEvents) do
+    if event.name:find("^lazy%.nvim startup") then
+      lazy_slice = event
+    elseif event.name == "UIEnter" then
+      uienter = event
+    elseif event.name == "--- NVIM STARTED ---" then
+      started = event
+    end
+  end
+  assert_truthy(lazy_slice and uienter and started, "trace lacks the lazy slice, UIEnter or NVIM STARTED")
+  assert_equal(lazy_slice.args.clock, "wall", "lazy slice clock (the child's anchors were not found)")
+  assert_equal(uienter.args.clock, "wall", "UIEnter clock")
+  local started_end = started.ts + started.dur
+  assert_truthy(
+    lazy_slice.ts + lazy_slice.dur <= started_end + 1000,
+    ("lazy slice ends at %d us, after startup ended at %d us"):format(lazy_slice.ts + lazy_slice.dur, started_end)
+  )
+  assert_truthy(
+    uienter.ts >= started_end - 1000,
+    ("UIEnter at %d us precedes the end of startup at %d us"):format(uienter.ts, started_end)
+  )
+end
+
 -- Import health (round-4 V0.2): when native Perfetto tooling is installed,
 -- the trace must import with zero spilled (partially overlapping) complete
 -- events -- the exporter's nesting repair guarantees it. Guarded on the
 -- binary so the spec stays portable; the skip prints so it is visible.
 do
-  local shell = "/opt/local/perfetto/trace_processor_shell"
+  local shell = require("util").prefix("perfetto", "trace_processor_shell")
   if vim.uv.fs_stat(shell) then
     local sql_path = vim.fn.tempname() .. "-stats.sql"
     local sql = assert(io.open(sql_path, "w"))

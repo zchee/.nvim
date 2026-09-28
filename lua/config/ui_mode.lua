@@ -17,14 +17,12 @@ local M = {}
 
 local MODES = { chrome = true, plugins = true }
 local PLUGIN_NAMES = { "lualine.nvim", "bufferline.nvim" }
-local PLUGIN_CONFIGS = { "plugins.lualine", "plugins.bufferline" }
+-- The tabline expression bufferline.setup() installs.
+local BUFFERLINE_TABLINE = "%!v:lua.nvim_bufferline()"
 
 local state_file = vim.fs.joinpath(tostring(vim.fn.stdpath("state")), "ui-mode")
 
 local resolved ---@type string?
--- Their setup() has run, so lazy.load() is a no-op and re-taking the
--- statusline/tabline options means re-running the spec configs.
-local plugins_applied = false
 
 local function read_state()
   local fd = io.open(state_file, "r")
@@ -99,21 +97,33 @@ local function to_chrome()
   require("config.chrome").setup()
 end
 
+---@param name string
+---@return boolean
+local function loaded(name)
+  local plugin = require("lazy.core.config").plugins[name]
+  return plugin ~= nil and plugin._.loaded ~= nil
+end
+
+--- Load whichever of the pair has not run its setup() yet (lazy.load is a
+--- no-op for the rest), and show again the ones that had. Showing is all a
+--- loaded one gets: bufferline.setup() is not re-entrant -- each call adds
+--- another set of its ungrouped BufEnter/BufReadPost/SessionLoadPost/User
+--- autocmds -- so it runs once per session. Asking lazy rather than keeping
+--- a flag also covers a switch made before VeryLazy loaded them.
 local function to_plugins()
   if package.loaded["config.chrome"] then
     require("config.chrome").teardown()
   end
-  if plugins_applied then
+  local lualine_was_loaded, bufferline_was_loaded = loaded("lualine.nvim"), loaded("bufferline.nvim")
+  require("lazy").load({ plugins = PLUGIN_NAMES })
+  if lualine_was_loaded then
     pcall(function()
       require("lualine").hide({ place = { "statusline", "tabline", "winbar" }, unhide = true })
     end)
-    for _, mod in ipairs(PLUGIN_CONFIGS) do
-      package.loaded[mod] = nil
-      require(mod)
-    end
-  else
-    require("lazy").load({ plugins = PLUGIN_NAMES })
-    plugins_applied = true
+  end
+  if bufferline_was_loaded then
+    -- After lualine's unhide, which may write 'tabline' itself.
+    vim.o.tabline = BUFFERLINE_TABLINE
   end
 end
 
@@ -155,7 +165,6 @@ end
 --- trigger instead and the flash is theirs to have (it is why chrome won).
 function M.setup()
   if M.uses_plugins() then
-    plugins_applied = true
     return
   end
   require("config.chrome").setup()

@@ -19,8 +19,11 @@ package.path = table.concat({
   package.path,
 }, ";")
 
+local scratch = vim.fs.joinpath(vim.uv.os_tmpdir(), "ui-mode-spec-" .. vim.uv.os_getpid())
+
 local function fail(msg)
   io.stderr:write("FAIL: " .. msg .. "\n")
+  vim.fn.delete(scratch, "rf")
   os.exit(1)
 end
 
@@ -40,7 +43,6 @@ end
 local default_statusline = vim.o.statusline
 local default_tabline = vim.o.tabline
 
-local scratch = vim.fs.joinpath(vim.uv.os_tmpdir(), "ui-mode-spec-" .. vim.uv.os_getpid())
 vim.env.XDG_STATE_HOME = scratch
 local state_file = vim.fs.joinpath(scratch, "nvim", "ui-mode")
 
@@ -162,6 +164,89 @@ do
   assert_eq(0, #chrome.buffer_order(), "teardown() drops the tabline order")
   local ok = pcall(vim.api.nvim_get_autocmds, { group = "config_chrome" })
   assert_eq(false, ok, "teardown() deletes the config_chrome augroup")
+end
+
+-- 6. round trips with the real lualine+bufferline: bufferline.setup() is not
+-- re-entrant (each call adds another set of ungrouped BufEnter, BufReadPost,
+-- SessionLoadPost and User autocmds), so after the first load a switch may
+-- only show the pair again. Uses the installed plugins through lazy.nvim with
+-- installs, checker, change detection and the rtp reset all off, and the
+-- lockfile in the scratch dir; SKIPs when any of them is not installed.
+do
+  local root = vim.fs.joinpath(tostring(vim.fn.stdpath("data")), "lazy")
+  local missing = {}
+  for _, name in ipairs({ "lazy.nvim", "lualine.nvim", "bufferline.nvim", "nvim-web-devicons" }) do
+    if not vim.uv.fs_stat(vim.fs.joinpath(root, name)) then
+      missing[#missing + 1] = name
+    end
+  end
+  if #missing > 0 then
+    print("SKIP section 6 (not installed: " .. table.concat(missing, ", ") .. ")")
+  else
+    vim.opt.runtimepath:prepend(vim.fs.joinpath(root, "lazy.nvim"))
+    -- -u NONE clears 'loadplugins', and lazy.setup() returns early without it.
+    vim.go.loadplugins = true
+    require("lazy").setup({
+      {
+        "nvim-lualine/lualine.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        config = function()
+          require("plugins.lualine")
+        end,
+      },
+      {
+        "akinsho/bufferline.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        config = function()
+          require("plugins.bufferline")
+        end,
+      },
+    }, {
+      root = root,
+      lockfile = vim.fs.joinpath(scratch, "lazy-lock.json"),
+      defaults = { lazy = true },
+      install = { missing = false },
+      checker = { enabled = false },
+      change_detection = { enabled = false },
+      rocks = { enabled = false },
+      pkg = { enabled = false },
+      readme = { enabled = false },
+      performance = { cache = { enabled = false }, reset_packpath = false, rtp = { reset = false } },
+    })
+
+    clear_state()
+    local ui_mode = reload({ g = "chrome" })
+    ui_mode.setup()
+
+    ---@return integer
+    local function bufferline_bufenter()
+      local n = 0
+      for _, au in ipairs(vim.api.nvim_get_autocmds({ event = "BufEnter" })) do
+        if au.callback and debug.getinfo(au.callback, "S").source:find("bufferline.nvim/", 1, true) then
+          n = n + 1
+        end
+      end
+      return n
+    end
+
+    local switched, why = ui_mode.set("plugins", { persist = false })
+    assert_eq(true, switched, "switching to the installed plugins succeeds (" .. tostring(why) .. ")")
+    assert_contains(vim.o.tabline, "nvim_bufferline", "the first switch runs bufferline's setup")
+    assert_eq(1, bufferline_bufenter(), "bufferline's first setup registers one BufEnter autocmd")
+    local total = #vim.api.nvim_get_autocmds({})
+
+    for trip = 1, 3 do
+      assert_eq(true, ui_mode.set("chrome", { persist = false }), "trip " .. trip .. ": back to chrome")
+      assert_contains(vim.o.statusline, "config.chrome", "trip " .. trip .. ": chrome takes the statusline")
+      assert_contains(vim.o.tabline, "config.chrome", "trip " .. trip .. ": chrome takes the tabline")
+      assert_eq(true, ui_mode.set("plugins", { persist = false }), "trip " .. trip .. ": back to the plugins")
+      assert_contains(vim.o.tabline, "nvim_bufferline", "trip " .. trip .. ": bufferline's tabline is shown again")
+      assert_contains(vim.o.statusline, "lualine", "trip " .. trip .. ": lualine's statusline is shown again")
+    end
+    assert_eq(1, bufferline_bufenter(), "3 round trips leave one BufEnter autocmd from bufferline")
+    assert_eq(total, #vim.api.nvim_get_autocmds({}), "no autocmd accumulates across 3 round trips")
+    assert_eq(nil, vim.uv.fs_stat(state_file), "persist=false switches write no state file")
+  end
 end
 
 vim.fn.delete(scratch, "rf")

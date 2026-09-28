@@ -60,7 +60,9 @@ vim.g.no_man_maps = 1
 vim.o.autoindent = true
 vim.o.autoread = true
 vim.o.backup = true
-vim.o.backupdir = vim.fn.stdpath("state") .. "/backup/" -- NOTE(zchee): can't use `vim.fs.joinpath`
+-- Trailing "//": name each backup after its full path, so two files with
+-- the same basename in different directories stop overwriting one backup.
+vim.o.backupdir = vim.fn.stdpath("state") .. "/backup//" -- NOTE(zchee): can't use `vim.fs.joinpath`
 vim.o.backupcopy = "yes"
 vim.o.belloff = "all"
 vim.o.cindent = true
@@ -88,7 +90,6 @@ vim.o.foldcolumn = "0"
 vim.o.foldlevel = 0
 vim.o.foldlevelstart = 99 -- open all folds by default
 vim.o.foldmethod = "expr"
-vim.o.foldnestmax = 1 -- maximum fold depth
 vim.opt.formatoptions:append("c") -- Autowrap comments using textwidth - :help fo-table
 vim.opt.formatoptions:append("j") -- Delete comment character when joining commented lines
 vim.opt.formatoptions:append("l") -- do not wrap lines that have been longer when starting insert mode already
@@ -135,8 +136,6 @@ vim.o.number = true
 vim.opt.path:append("$PWD/**")
 vim.opt.path:append("**")
 vim.o.previewheight = 5
-vim.o.pumblend = 25
-vim.o.pumheight = 30
 vim.o.pyxversion = 3
 vim.o.redrawtime = 20000
 vim.o.regexpengine = 2
@@ -150,7 +149,6 @@ vim.o.secure = true
 -- the first typed key, so without it every freshly opened file showed the
 -- previous session's matches (e.g. one Search cell at each EOL for \s*$).
 vim.opt.shada = { "'20", "<50", "s10", "h" }
-vim.o.shiftround = true
 vim.o.shiftwidth = 2
 vim.opt.shortmess:append("c") -- atOIc " default: filnxtToOF
 vim.opt.shortmess:append("I") -- atOIc " default: filnxtToOF
@@ -296,19 +294,10 @@ vim.g.c_ansi_constants = 1
 vim.g.c_ansi_typedefs = 1
 vim.g.c_comment_strings = 1
 vim.g.c_gnu = 0
-vim.g.c_no_curly_error = 1
 vim.g.c_no_tab_space_error = 1
 vim.g.c_no_trail_space_error = 1
 vim.g.c_syntax_for_h = 0
 vim.g.c_no_curly_error = 1
-
--- CPP:
-vim.g.cpp_class_scope_highlight = 1
-vim.g.cpp_experimental_template_highlight = 1
-vim.g.cpp_concepts_highlight = 1
-
--- Json:
-vim.g.vim_json_syntax_conceal = 0
 
 -- Asm:
 vim.g.nasm_loose_syntax = 1
@@ -342,24 +331,10 @@ vim.g.markdown_fenced_languages = {
   "help",
   "mermaid",
   "mysql",
-  "objective-c",
+  "objective-c=objc",
   "proto",
   "python",
   "sh",
   "sql",
   "typescript",
 }
-
-vim.g["vista#renderer#enable_icon"] = true
-vim.g["vista#renderer#enable_kind"] = true
-vim.g.vista_blink = { 0, 0 }
-vim.g.vista_cursor_delay = 400 -- default
-vim.g.vista_default_executive = "nvim_lsp"
-vim.g.vista_disable_statusline = 0
-vim.g.vista_echo_cursor_strategy = "floating_win" -- echo, scroll, floating_win, both
-vim.g.vista_executive_for = {
-  markdown = "toc",
-}
-vim.g.vista_sidebar_width = "150"
-vim.g.vista_update_on_text_changed = true
-vim.g.vista_executive_nvim_lsp_fetching = true

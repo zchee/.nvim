@@ -51,18 +51,20 @@ vim.filetype.add({
     -- shader as C.
     metal = "metal",
     mm = "objcpp",
+    modulemap = "modulemap",
     pen = "json",
     pth = "python",
     pyd = "python",
     pyx = "python",
     replay = "json",
+    rl = "ragel",
     sb = "scheme",
     slide = "goslide",
     sql = "mysql",
     swig = "swig",
     swigcxx = "swig",
     tbd = "yaml",
-    tfstate = "teraterm",
+    tfstate = "json", -- Terraform state
     -- helmfile templated values (vim-helm ftdetect port)
     gotmpl = "helm",
     tmpl = "gotmpl",
@@ -92,20 +94,19 @@ vim.filetype.add({
     [".renovaterc.json"] = "json5",
     [".tern-config"] = "json",
     [".tigrc"] = "tigrc",
-    [".tfvars"] = "teraterm",
     [".yamlfmt"] = "yaml",
     [".yamllint"] = "yaml",
     -- ["docker-bake.hcl"]  = "docker-bake",
     ["glide.lock"] = "yaml",
     ["go.tool.mod"] = "gomod",
     ["Gopkg.lock"] = "toml",
+    Doxyfile = "doxyfile",
     ["kitty.conf"] = "kitty",
     ["lsif.json"] = "json5",
     ["netrc"] = "netrc",
     ["osquery.conf"] = "json",
     ["poetry.lock"] = "toml",
     ["proto.lock"] = "json",
-    ["tsconfig%.json"] = "json5",
     bash_profile = "sh",
     boto = "cfg",
     manifest = "json",
@@ -143,7 +144,15 @@ vim.filetype.add({
     [".*/.jira.d/templates/.*"] = "gotmpl",
     [".*/.vscode/.*%.json"] = "json5",
     [".*/argocd/config"] = "yaml",
-    [".*/c%+%+/.*"] = "cpp",
+    -- Standard-library trees (include/c++/<ver>/...): their headers carry no
+    -- extension or .h, and only those are C++ here -- a README.md under c++/
+    -- keeps its own filetype (nil falls through to the extension rules).
+    [".*/c%+%+/.*"] = function(path)
+      local ext = vim.fs.basename(path):match(".%.([^.]+)$")
+      if ext == nil or ext == "h" then
+        return "cpp"
+      end
+    end,
     [".*/google%-cloud%-sdk/properties"] = "cfg",
     [".*/kitty/.*%.conf"] = "kitty",
     -- ftdetect/kitty.lua port: its vim.b.filetype assignment was a no-op
@@ -156,14 +165,25 @@ vim.filetype.add({
     [".*/zed/settings.json"] = "jsonc",
     [".*/zsh/functions/.*"] = "zsh",
     [".*/zsh_history"] = "zsh",
-    [".*bashrc.*"] = "bash",
+    -- Priority -1: after the extension rules, so bashrc_test.go stays Go and
+    -- only a suffix no extension rule claims (.bashrc.local) is bash.
+    [".*bashrc%..+"] = { "bash", { priority = -1 } },
     [".*lima%-editor%-.*"] = "yaml", -- for limactl edit
     [".*renovate%.json"] = "json5",
-    [".env.*"] = "bash",
-    [".envrc.*"] = "bash",
+    -- direnv. Priority 1 beats the runtime's "^%.envrc%." (sh) instead of
+    -- tying with it, and "%." keeps the dot literal: ".env.*" matched any
+    -- tail with "env" after its first character (venv.py). Plain dotenv
+    -- files (.env, .env.<stage>) are left to the runtime's env filetype.
+    ["%.envrc.*"] = { "bash", { priority = 1 } },
     ["/private/etc/sudoers.d/.*"] = "sudoers",
-    ["[Dd]ockerfile.*[^.vim|^.lua]"] = "dockerfile",
-    ["~/Library/Application Support/Code - Insiders/User/keybindings.json"] = "json5",
+    -- Dockerfile.<stage> and the lowercase spelling the runtime lacks. The
+    -- old "[^.vim|^.lua]" was a one-character class, not an exclusion list,
+    -- and caught dockerfile_test.go; priority -1 lets any real extension
+    -- (go, vim, lua) decide first.
+    ["[Dd]ockerfile[%._-].*"] = { "dockerfile", { priority = -1 } },
+    -- "~" is expanded (and escaped) by vim.filetype.add; the rest is a Lua
+    -- pattern, so "-" and "." need escaping.
+    ["~/Library/Application Support/Code %- Insiders/User/keybindings%.json"] = "json5",
     -- vim.filetype.add matches `pattern` keys as Lua patterns, not globs, and
     -- an unescaped one here matched nothing: `-` is the lazy quantifier, so
     -- "go-build" stood for "gbuild"/"gobuild" and never the real directory,
@@ -190,7 +210,13 @@ vim.filetype.add({
         if bufnr == nil then
           return
         end
-        for _, line in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, 20, false)) do
+        local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 20, false)
+        -- A #! line names the language; the content detection that runs
+        -- after every pattern reads it, so let a script fall through to it.
+        if lines[1] and lines[1]:find("^#!") then
+          return
+        end
+        for _, line in ipairs(lines) do
           if line:find("{{%s*[%.%$]") then
             return "gotmpl"
           end

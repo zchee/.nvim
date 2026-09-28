@@ -10,8 +10,7 @@ vim.treesitter.language.register("starlark", "tiltfile")
 vim.treesitter.language.register("json", "jsonschema")
 vim.treesitter.language.register("json", "jsonl")
 vim.treesitter.language.register("gotmpl", "helm")
-vim.treesitter.language.register("docker-bake", "hcl")
-vim.treesitter.language.register("bash", "zsh")
+vim.treesitter.language.register("hcl", "docker-bake")
 -- Metal Shading Language is C++14 with added address-space and attribute
 -- syntax, and there is no metal grammar; cpp parses the bulk of a shader and
 -- leaves ERROR nodes on the Metal-only qualifiers, which still beats the

@@ -67,14 +67,19 @@ if vim.fn.has("mac") == 1 then
       vim.opt.path:append(vim.fs.joinpath(toolchain_dir, "usr/include/swift"))
       vim.opt.path:append(vim.fs.joinpath(toolchain_dir, "usr/lib/clang/**/include"))
     end
-    pcall(vim.system, { "xcode-select", "-p" }, { text = true }, function(result)
-      local developer_dir = result.code == 0 and vim.trim(result.stdout or "") or ""
-      if developer_dir ~= "" then
-        vim.schedule(function()
-          append_xcode_paths(developer_dir)
-        end)
-      end
-    end)
+    -- Through exepath, like every other spawn here; without xcode-select
+    -- (no Xcode or Command Line Tools) the Xcode paths are simply left out.
+    local xcode_select = vim.fn.exepath("xcode-select")
+    if xcode_select ~= "" then
+      pcall(vim.system, { xcode_select, "-p" }, { text = true }, function(result)
+        local developer_dir = result.code == 0 and vim.trim(result.stdout or "") or ""
+        if developer_dir ~= "" then
+          vim.schedule(function()
+            append_xcode_paths(developer_dir)
+          end)
+        end
+      end)
+    end
 
     -- macOS frameworks
     local frameworks_dir = vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "/path/Frameworks")

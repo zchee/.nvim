@@ -14,7 +14,7 @@ return {
   root_markers = { ".git" },
   -- yaml-language-server reports no documentFormattingProvider until settings
   -- arrive, so LspAttach-time supports_method("textDocument/formatting")
-  -- checks would see false; formatting is enabled in `settings` above.
+  -- checks would see false; formatting is enabled in `settings` below.
   on_init = function(client)
     client.server_capabilities.documentFormattingProvider = true
   end,

@@ -19,7 +19,8 @@ return {
         -- and without a path it reports "Pkl CLI is not configured and not
         -- found in PATH". It would find this one on $PATH; naming it keeps
         -- the server off whatever pkl a project's environment happens to
-        -- put there, the same reason every other binary here is absolute.
+        -- put there, the same reason most binaries here are named by
+        -- absolute path rather than looked up on $PATH.
         path = util.homebrew_binary("pkl", "pkl"),
       },
     },

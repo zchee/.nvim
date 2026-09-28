@@ -4,9 +4,9 @@
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = {
-    -- clangd version 18.0.0 (https://github.com/llvm/llvm-project 4b5366c9512aa273a5272af1d833961e1ed156e7)
+    -- clangd version 23.0.0git (https://github.com/llvm/llvm-project d036d309eebee3ac0b8077f0cc6e3a318bc0e6ab)
     -- Features: mac+grpc+xpc
-    -- Platform: x86_64-apple-darwin23.2.0
+    -- Platform: arm64-apple-darwin27.2.0
     "/opt/local/llvm/clangd/bin/clangd",
     -- "--query-driver=/usr/bin/**",
     "--all-scopes-completion",

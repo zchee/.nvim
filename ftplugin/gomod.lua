@@ -12,4 +12,4 @@ vim.opt_local.expandtab = false
 
 vim.bo.comments = "s1:/*,mb:*,ex:*/,://"
 vim.bo.commentstring = "// %s"
-vim.opt.formatoptions:remove("t")
+vim.opt_local.formatoptions:remove("t")

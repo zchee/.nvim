@@ -10,9 +10,10 @@
 --     config doing nothing while looking authoritative. Its knobs live in
 --     `~/.config/moxide/settings.toml` or a per-vault `.moxide.toml`.
 --   * Since nvim-lspconfig was removed from the dep tree, this config is the
---     only source of the root markers and the daily-note on_attach that used
+--     only source of the root markers and the daily-note commands that used
 --     to come from nvim-lspconfig's lsp/markdown_oxide.lua; both must stay
---     inlined here or they silently disappear.
+--     inlined (the commands in lua/lsp/on_attach.lua, the on_attach every
+--     server shares) or they silently disappear.
 --   * It indexes files that git ignores. That is the whole reason marksman was
 --     rejected: the agent memory trees live under a git-ignored
 --     claude/projects/, invisible to a server that honours .gitignore.
@@ -53,10 +54,34 @@ assert_true(vim.uv.fs_stat(config.cmd[1]) ~= nil, ("markdown-oxide is not instal
 assert_equal(1, #config.filetypes, "markdown_oxide serves markdown only (no mdx dialect support)")
 assert_equal("markdown", config.filetypes[1], "filetype must be markdown")
 assert_equal(nil, config.settings, "the server never pulls workspace/configuration, so settings would be dead weight")
-assert_true(
-  type(config.on_attach) == "function",
-  "the daily-note on_attach was inlined from nvim-lspconfig and must not disappear"
-)
+-- A per-server on_attach would replace the shared one (tbl_deep_extend "force"
+-- does not merge functions), so the daily notes are an entry of the shared one.
+assert_equal(nil, config.on_attach, "lsp/markdown_oxide.lua must not replace the shared on_attach")
+do
+  local on_attach = require("lsp.on_attach")
+  local buf = vim.api.nvim_create_buf(false, true)
+  local executed = {}
+  local fake = {
+    name = "markdown_oxide",
+    exec_cmd = function(_, command, ctx)
+      executed[#executed + 1] = { command = command.command, argument = command.arguments[1], bufnr = ctx.bufnr }
+    end,
+  }
+  on_attach(fake, buf)
+  local commands = vim.api.nvim_buf_get_commands(buf, {})
+  for _, day in ipairs({ "Today", "Tomorrow", "Yesterday" }) do
+    assert_true(
+      commands["Lsp" .. day] ~= nil,
+      ("the shared on_attach must create :Lsp%s for markdown_oxide"):format(day)
+    )
+  end
+  vim.api.nvim_buf_call(buf, function()
+    vim.cmd("LspTomorrow")
+  end)
+  assert_equal("jump", executed[1] and executed[1].command, ":LspTomorrow must run the server's jump command")
+  assert_equal("tomorrow", executed[1].argument, ":LspTomorrow must ask for tomorrow's note")
+  vim.api.nvim_buf_delete(buf, { force = true })
+end
 assert_true(type(config.root_markers) == "table", "the root markers were inlined from nvim-lspconfig")
 assert_true(
   vim.tbl_contains(config.root_markers, ".git"),

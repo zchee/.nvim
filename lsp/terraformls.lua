@@ -36,9 +36,7 @@ return {
       end, ctx.bufnr)
     end,
   },
-  on_attach = function(_, bufnr)
-    vim.lsp.codelens.enable(true, { bufnr = bufnr })
-  end,
+  -- The code lenses are switched on per buffer in lua/lsp/on_attach.lua.
   -- root_dir = require("lspconfig").util.root_pattern(
   --   ".terraform",
   --   ".terraform.lock.hcl",

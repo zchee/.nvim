@@ -20,49 +20,13 @@ local function detect_extra_paths()
   return paths
 end
 
--- Inlined from nvim-lspconfig's lsp/basedpyright.lua (removed from the dep
--- tree): reconfigure the running client's python.pythonPath in place.
-local function set_python_path(command)
-  local path = command.args
-  local clients = vim.lsp.get_clients({
-    bufnr = vim.api.nvim_get_current_buf(),
-    name = "basedpyright",
-  })
-  for _, client in ipairs(clients) do
-    if client.settings then
-      client.settings.python = vim.tbl_deep_extend("force", client.settings.python or {}, { pythonPath = path })
-    else
-      client.config.settings = vim.tbl_deep_extend("force", client.config.settings, { python = { pythonPath = path } })
-    end
-    client:notify("workspace/didChangeConfiguration", { settings = nil })
-  end
-end
+-- :LspPyrightOrganizeImports and :LspPyrightSetPythonPath are created in
+-- lua/lsp/on_attach.lua.
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.homebrew_binary("basedpyright-head", "basedpyright-langserver"), "--stdio" },
   filetypes = { "python" },
-  on_attach = function(client, bufnr)
-    vim.api.nvim_buf_create_user_command(bufnr, "LspPyrightOrganizeImports", function()
-      local params = {
-        command = "basedpyright.organizeimports",
-        arguments = { vim.uri_from_bufnr(bufnr) },
-      }
-      -- client.request() directly: "basedpyright.organizeimports" is private
-      -- (not advertised via capabilities), which client:exec_cmd() refuses.
-      ---@diagnostic disable-next-line: param-type-mismatch
-      client.request("workspace/executeCommand", params, nil, bufnr)
-    end, {
-      desc = "Organize Imports",
-    })
-
-    vim.api.nvim_buf_create_user_command(bufnr, "LspPyrightSetPythonPath", set_python_path, {
-      desc = "Reconfigure basedpyright with the provided python path",
-      nargs = 1,
-      complete = "file",
-    })
-  end,
-  single_file_support = true,
   root_markers = { ".venv", "pyproject.toml", "setup.py", ".git" },
   settings = {
     basedpyright = {
@@ -84,7 +48,9 @@ return {
         autoFormatStrings = true,
         diagnosticSeverityOverrides = {},
         exclude = {},
-        extraPaths = detect_extra_paths(),
+        -- extraPaths: filled in by before_init below, which runs when a
+        -- python buffer starts the server; the lookup stats the disk, and
+        -- vim.lsp.enable() resolves every config file at startup.
         ignore = {},
         include = {},
         typeCheckingMode = "off", -- "off", "basic", "standard", "strict", "recommended", "all"
@@ -94,4 +60,10 @@ return {
     --   venvPath = vim.fs.joinpath(vim.fn.getcwd(), ".venv"),
     -- },
   },
+  -- vim.lsp deepcopies the config per client start, so the assignment stays
+  -- scoped to the starting client.
+  ---@param config vim.lsp.ClientConfig
+  before_init = function(_, config)
+    config.settings.basedpyright.analysis.extraPaths = detect_extra_paths()
+  end,
 }

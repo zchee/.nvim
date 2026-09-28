@@ -9,7 +9,7 @@ local util = require("util")
 -- Not in lua/lsp/init.lua's vim.lsp.enable list: 467cac4 stopped starting it
 -- on markdown buffers. vim.lsp.enable("markdown_oxide") turns it back on.
 --
--- The root markers and the daily-note on_attach used to come from
+-- The root markers and the daily-note commands used to come from
 -- nvim-lspconfig's own `lsp/markdown_oxide.lua`; they are inlined here since
 -- nvim-lspconfig was removed. vim.lsp tries root_markers in list order, not
 -- nearest-first, so a vault's own `.moxide.toml` or `.obsidian` (equal
@@ -24,32 +24,12 @@ local util = require("util")
 -- makes it work on the agent memory trees (`claude/.gitignore` excludes
 -- `projects/`, where those notes live).
 --
--- The global on_attach in lua/lsp/init.lua only branches on other server
--- names, so replacing it with the daily-note one loses nothing.
-
----@param client vim.lsp.Client
----@param bufnr integer
----@param cmd string
-local function daily_note(client, bufnr, cmd)
-  return client:exec_cmd({
-    title = ("Markdown-Oxide-%s"):format(cmd),
-    command = "jump",
-    arguments = { cmd },
-  }, { bufnr = bufnr })
-end
+-- The daily-note commands (:LspToday, :LspTomorrow, :LspYesterday) are created
+-- in lua/lsp/on_attach.lua, the on_attach every server shares.
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.homebrew_binary("markdown-oxide", "markdown-oxide") },
   filetypes = { "markdown" },
   root_markers = { { ".moxide.toml", ".obsidian" }, ".git" },
-  on_attach = function(client, bufnr)
-    for _, cmd in ipairs({ "today", "tomorrow", "yesterday" }) do
-      vim.api.nvim_buf_create_user_command(bufnr, "Lsp" .. cmd:gsub("^%l", string.upper), function()
-        daily_note(client, bufnr, cmd)
-      end, {
-        desc = ("Open %s daily note"):format(cmd),
-      })
-    end
-  end,
 }

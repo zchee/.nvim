@@ -128,7 +128,9 @@ vim.keymap.set({ "n" }, "b", "b", { nowait = true, silent = true })
 -- default gcc mapping (runtime/lua/vim/_defaults.lua); a plain "gcc" rhs
 -- cannot work here because an rhs starting with its own lhs is excluded
 -- from remapping. The x-mode gc operator stays the built-in default.
-pcall(vim.keymap.del, { "n" }, "gcc")
+if vim.fn.maparg("gcc", "n") ~= "" then
+  vim.keymap.del({ "n" }, "gcc")
+end
 vim.keymap.set({ "n" }, "gc", function()
   return require("vim._comment").operator() .. "_"
 end, { expr = true, silent = true, nowait = true, desc = "Comment current line" })
@@ -229,7 +231,8 @@ vim.keymap.set({ "v" }, "p", '"_dp', { noremap = true, nowait = true })
 vim.keymap.set({ "v" }, "x", '"_x', { noremap = true, nowait = true })
 vim.keymap.set({ "v" }, "@", "^", { noremap = true, nowait = true })
 vim.keymap.set({ "v" }, "^", "$", { noremap = true, nowait = true })
-vim.keymap.set({ "v" }, "ga", "<Plug>(LiveEasyAlign)", { silent = true })
+-- ga (EasyAlign) lives on the vim-easy-align spec's `keys` in
+-- lua/plugins/init.lua, so the first press loads the plugin.
 -- TODO(zchee): fix
 vim.cmd([[vnoremap                <silent>gs   :<C-u>'<,'>sort i<CR>]])
 -- vim.keymap.set({ "v" }, "gs", "<Cmd>lua vim.cmd(\"<C-u>'<,'>sort i\")<CR>", { noremap = true, silent = true })
@@ -281,12 +284,6 @@ vim.keymap.set(
 --   "<Plug>(comment_toggle_linewise_visual)",
 --   { noremap = true, silent = true, nowait = true, desc = "Comment toggle linewise" }
 -- )
-vim.keymap.set(
-  { "x" },
-  "gb",
-  "<Plug>(comment_toggle_blockwise_visual)",
-  { noremap = true, silent = true, desc = "Comment toggle blockwise (visual)" }
-)
 -- vim.keymap.set({ "x" }, "<C-t>", "<cmd>Trans<CR>", { noremap = true, silent = true })
 -- vim.keymap.set(
 --   { "x" },
@@ -360,8 +357,16 @@ cnoremap <expr><Down>   pumvisible() ? "\<C-n>"  : "\<Down>"
 --
 -- " Emacs like mapping
 vim.keymap.set({ "t" }, "qq", "<C-\\><C-n>", { noremap = true, silent = true })
-vim.keymap.set({ "t" }, "<S-Left>", "<C-[>b", { noremap = true, silent = true, buffer = true })
-vim.keymap.set({ "t" }, "<C-Left>", "<C-[>b", { noremap = true, silent = true, buffer = true })
-vim.keymap.set({ "t" }, "<S-Right>", "<C-[>f", { noremap = true, silent = true, buffer = true })
-vim.keymap.set({ "t" }, "<C-Right>", "<C-[>f", { noremap = true, silent = true, buffer = true })
-vim.keymap.set({ "t" }, "<BS>", "<BS>", { noremap = true, silent = true, buffer = true, nowait = true })
+-- Buffer-local, so set per terminal: at module load `buffer = true` named the
+-- startup buffer, and no terminal ever got these.
+vim.api.nvim_create_autocmd("TermOpen", {
+  group = autocmd_user,
+  callback = function(args)
+    local opts = { noremap = true, silent = true, buffer = args.buf }
+    vim.keymap.set({ "t" }, "<S-Left>", "<C-[>b", opts)
+    vim.keymap.set({ "t" }, "<C-Left>", "<C-[>b", opts)
+    vim.keymap.set({ "t" }, "<S-Right>", "<C-[>f", opts)
+    vim.keymap.set({ "t" }, "<C-Right>", "<C-[>f", opts)
+    vim.keymap.set({ "t" }, "<BS>", "<BS>", { noremap = true, silent = true, buffer = args.buf, nowait = true })
+  end,
+})

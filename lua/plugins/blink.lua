@@ -98,9 +98,10 @@ blink.setup({
 
       snacks_picker_input = { "path", "buffer" },
     },
-    ----@param ctx blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
+    ---@param ctx blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
     ---@return number
-    min_keyword_length = function()
+    min_keyword_length = function(ctx)
+      _ = ctx
       return 1
     end,
   },

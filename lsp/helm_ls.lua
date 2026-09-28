@@ -1,3 +1,5 @@
+local util = require("util")
+
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   -- A function, not a table: vim.fn.exepath walks $PATH, so a table literal
@@ -31,7 +33,11 @@ return {
         enabled = true,
         diagnosticsLimit = 50,
         showDiagnosticsDirectly = false,
-        path = "yaml-language-server",
+        -- An argv, not a name: helm-ls (YamllsPath) takes the executable
+        -- plus its arguments, so the node that runs the #!/usr/bin/env node
+        -- bin is pinned the way lsp/yamlls.lua pins it, instead of a chart's
+        -- .node-version choosing it through the nodenv shim.
+        path = { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" },
         config = {
           schemas = {
             kubernetes = "templates/**",

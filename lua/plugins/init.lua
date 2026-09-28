@@ -929,8 +929,7 @@ return {
       "haya14busa/vim-asterisk",
       ---@type LazyKeysSpec
       keys = {
-        ---@diagnostic disable-next-line
-        { "*", "<Plug>(asterisk-gz*)", desc = "Run 'asterisk-gz*'", { "n", "v", "x", "s", "o", "i", "t" } },
+        { "*", "<Plug>(asterisk-gz*)", mode = { "n", "x" }, desc = "Run 'asterisk-gz*'" },
       },
     },
     {

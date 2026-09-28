@@ -22,6 +22,7 @@ Content is mostly `vim.opt_local`/`vim.bo` indentation and comment settings;
 | `gitcommit.lua` | Git commit msg: `colorcolumn=72`, `expandtab`, 4-space indent |
 | `gitconfig.lua` | Git config: `comments`/`commentstring` for `#`, `noexpandtab`, 4-space indent |
 | `go.lua` | Go: `noexpandtab` (tabs), 4-space `shiftwidth`/`softtabstop`/`tabstop` |
+| `gomod.lua` | `go.mod`: 4-space `shiftwidth`/`softtabstop`/`tabstop`, Go-style `comments`. Here so `$VIMRUNTIME/ftplugin/gomod.vim` sets `noexpandtab`, `formatoptions-=tc`, `commentstring` and `b:undo_ftplugin` first |
 | `helm.lua` | Go-template `commentstring` (`{{/* %s */}}`) for Helm chart templates |
 | `help.vim` | Help buffers: keeps the cursor column right when clicking or moving across concealed characters (buffer-local `<LeftMouse>` map, `BufEnter`/`CursorMoved` autocmds). Here rather than in `ftplugin/` so `$VIMRUNTIME/ftplugin/help.vim` runs first (conceallevel 2, `keywordprg=:help!`) |
 | `json.lua` | JSON: `expandtab`, 2-space indent, `conceallevel=0` |

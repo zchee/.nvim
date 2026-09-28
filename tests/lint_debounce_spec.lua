@@ -2,7 +2,9 @@
 -- for filetypes with a configured linter, FileType/BufWritePost stay
 -- immediate, and InsertLeave is debounced trailing-edge per buffer (at most
 -- one run per 500 ms quiet window). "lint" is stubbed via package.preload
--- with a counting try_lint before plugins.lint is required.
+-- with a counting try_lint before plugins.lint is required. The spec drives
+-- whichever filetype plugins.lint configures (the first in sorted order),
+-- so disabling one linter there does not strand the spec on a dead filetype.
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
@@ -30,7 +32,11 @@ end
 
 require("plugins.lint")
 
-assert_equal(fake_lint.linters_by_ft.go[1], "golangcilint", "plugins.lint must configure golangcilint for go")
+local configured = vim.tbl_keys(fake_lint.linters_by_ft)
+table.sort(configured)
+local ft = configured[1]
+assert(ft ~= nil, "plugins.lint must configure at least one filetype in linters_by_ft")
+assert_equal(fake_lint.linters_by_ft.text, nil, "the unconfigured control filetype (text) must stay unconfigured")
 assert_equal(try_lint_count, 0, "load in an empty no-filetype buffer must not lint")
 
 local function fire_insert_leave(buf, times)
@@ -53,8 +59,8 @@ local buf = vim.api.nvim_create_buf(true, false)
 vim.api.nvim_win_set_buf(0, buf)
 
 do -- FileType fires immediately for a configured filetype
-  vim.api.nvim_set_option_value("filetype", "go", { buf = buf })
-  assert_equal(try_lint_count, 1, "FileType go must lint immediately (no debounce)")
+  vim.api.nvim_set_option_value("filetype", ft, { buf = buf })
+  assert_equal(try_lint_count, 1, ("FileType %s must lint immediately (no debounce)"):format(ft))
 end
 
 do -- InsertLeave burst collapses to exactly one debounced run
@@ -85,7 +91,7 @@ end
 
 do -- deleting the buffer cancels its pending debounce timer
   local scratch = vim.api.nvim_create_buf(true, false)
-  vim.api.nvim_set_option_value("filetype", "go", { buf = scratch })
+  vim.api.nvim_set_option_value("filetype", ft, { buf = scratch })
   local base = try_lint_count
   fire_insert_leave(scratch, 3)
   vim.api.nvim_buf_delete(scratch, { force = true })

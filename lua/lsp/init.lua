@@ -163,17 +163,6 @@ local on_attach = function(client, bufnr)
     -- client.server_capabilities.semanticTokensProvider.range = true
     -- client.server_capabilities.semanticTokensProvider.full.delta = true
   end
-
-  if client.name == "yamlls" then
-    local bufname = vim.api.nvim_buf_get_name(bufnr)
-    if
-      bufname:match(".*/templates/.*%.ya?ml")
-      or bufname:match(".*/templates/.*%.tpl")
-      or bufname:match("helmfile.*%.ya?ml")
-    then
-      client:stop(true)
-    end
-  end
 end
 
 -- Registered but not enabled (vtsls owns TypeScript buffers); start it

@@ -15,7 +15,7 @@ return {
       logLevel = "error",
       includeAllWorkspaceSymbols = true,
       shellcheckArguments = { "-f", "gcc", "-s", "bash" }, --  "--enable=all"
-      shellcheckPath = "/opt/local/bin/shellcheck",
+      shellcheckPath = util.prefix("bin", "shellcheck"),
       shfmt = {
         path = util.homebrew_binary("shfmt", "shfmt"),
         -- // Ignore shfmt config options in .editorconfig (always use language server config)

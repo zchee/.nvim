@@ -248,10 +248,12 @@ snacks.setup({
 
     ---@type fun(notif: snacks.notifier.Notif): boolean # filter our unwanted notifications (return false to hide)
     filter = function(notif)
+      -- "timeout" belongs under is_gopls: ungrouped, `and` bound tighter and
+      -- every timeout notice was dropped, conform's "Formatter 'x' timeout"
+      -- included.
       local is_gopls = string.find(notif.msg, "gopls")
       if
-        is_gopls and string.find(notif.msg, "context canceled")
-        or string.find(notif.msg, "timeout")
+        is_gopls and (string.find(notif.msg, "context canceled") or string.find(notif.msg, "timeout"))
         or string.find(notif.msg, "pull diagnostics not supported for this file kind")
       then
         return false

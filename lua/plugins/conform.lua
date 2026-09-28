@@ -249,16 +249,15 @@ return {
     end
     -- conform fills in a formatters_by_ft entry's own lsp_format only for the
     -- keys the caller leaves nil, and this function supplies one -- so a
-    -- pinned "never" is silently discarded unless it is read back here.
-    -- Only "never" is honoured, because it can only ever stop the server from
-    -- formatting: json5 needs exactly that (jsonls has no JSON5 mode and
-    -- rewrites the file as strict JSON, injecting a space inside
-    -- 'https://...'), hujson too (see its formatters_by_ft entry), and every
-    -- other filetype keeps the fallback it has now.
+    -- pinned value is silently discarded unless it is read back here. json5
+    -- and hujson pin "never" (jsonls has no JSON5 mode and rewrites the file
+    -- as strict JSON, injecting a space inside 'https://...'; see the hujson
+    -- entry), go and goasm pin "first" (gopls formats before the CLI chain);
+    -- filetypes without a pin keep the fallback.
     local ft_opts = require("conform").formatters_by_ft[vim.bo[bufnr].filetype]
     local pinned = type(ft_opts) == "table" and ft_opts.lsp_format or nil
     return {
-      lsp_format = pinned == "never" and "never" or "fallback",
+      lsp_format = pinned or "fallback",
       timeout_ms = format_timeout_ms[vim.bo[bufnr].filetype] or 500,
     }
   end,

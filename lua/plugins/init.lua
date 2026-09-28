@@ -803,9 +803,6 @@ return {
         "MeanderingProgrammer/render-markdown.nvim",
         ft = {
           "markdown",
-          "Avante",
-          "codecompanion",
-          "copilot-chat",
         },
         dependencies = {
           "nvim-treesitter/nvim-treesitter",

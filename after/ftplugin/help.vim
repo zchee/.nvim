@@ -1,7 +1,5 @@
-if exists('b.did_ftplugin')
-  finish
-endif
-let b:did_ftplugin = 1
+" after/, with no did_ftplugin guard: $VIMRUNTIME/ftplugin/help.vim sets the
+" guard and must run first for conceallevel, keywordprg and omnifunc.
 
 " Adjusts the click position of the mouse on lines with concealed characters
 function! s:cursor_adjust() abort
@@ -39,7 +37,7 @@ function! s:cursor_adjust() abort
     call cursor(l:lnum, l:cpos)
   endif
 endfunction
-nnoremap <silent> <LeftMouse> <LeftMouse>:<c-u>call <sid>cursor_adjust()<cr>
+nnoremap <silent><buffer> <LeftMouse> <LeftMouse>:<c-u>call <sid>cursor_adjust()<cr>
 
 function! s:adjust_cursor(...) abort
   let l:pos = getpos('.')[1:2]

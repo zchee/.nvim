@@ -22,8 +22,8 @@
 --
 -- gopls note: the config runs gopls in forwarder mode
 -- (-remote=unix;/tmp/gopls.sock), which exits unless a daemon serves the
--- socket. The spec starts one when the socket is absent and stops only a
--- daemon it started itself.
+-- socket. The spec starts one when no daemon accepts a connection there, and
+-- stops (and unlinks the socket of) only a daemon it started itself.
 --
 -- Run from the repo root: nvim --headless -u NONE -l tests/perf/startup_budget_spec.lua
 
@@ -240,13 +240,49 @@ local first_file_present = {
   "nvim-ts-context-commentstring",
 }
 
--- gopls daemon: forwarder-mode gopls needs a live socket; start a daemon only
--- when none is serving, and stop only what this spec started.
+-- gopls daemon: forwarder-mode gopls needs a live socket. A socket FILE is no
+-- proof of a daemon: gopls leaves it behind when stopped (jobstop's SIGTERM),
+-- and a daemon asked to listen on that leftover dies with "address already in
+-- use". So probe with a real connect, clear a file that refuses connections,
+-- start a daemon only when none is serving, and stop only what this spec
+-- started -- removing its socket afterwards so the next run finds none.
+local gopls_sock = "/tmp/gopls.sock"
+
+--- Connects to the unix socket once.
+--- @return string|true result true when a server accepted, else the uv error name
+local function probe_socket(path)
+  local pipe = assert(vim.uv.new_pipe(false))
+  local result
+  pipe:connect(path, function(err)
+    result = err or true
+  end)
+  vim.wait(1000, function()
+    return result ~= nil
+  end, 10)
+  pipe:close()
+  return result or "ETIMEDOUT"
+end
+
 local daemon_job
-if not vim.uv.fs_stat("/tmp/gopls.sock") then
-  daemon_job = vim.fn.jobstart({ util.go_path("bin", "gopls"), "-listen=unix;/tmp/gopls.sock", "serve" })
+local probe = probe_socket(gopls_sock)
+if probe ~= true then
+  if probe == "ECONNREFUSED" then
+    -- a file with no listener behind it: a leftover of a stopped daemon
+    os.remove(gopls_sock)
+  elseif probe ~= "ENOENT" then
+    fail(("gopls socket %s is unusable (%s); not starting a daemon over it"):format(gopls_sock, probe))
+  end
+  daemon_job = vim.fn.jobstart({ util.go_path("bin", "gopls"), "-listen=unix;" .. gopls_sock, "serve" })
   assert(daemon_job > 0, "failed to start the gopls daemon for attach checks")
-  vim.wait(1500)
+  local serving = false
+  for _ = 1, 50 do
+    if probe_socket(gopls_sock) == true then
+      serving = true
+      break
+    end
+    vim.wait(100)
+  end
+  assert(serving, "the gopls daemon this spec started never accepted on " .. gopls_sock)
 end
 
 local go_dir = vim.fn.tempname() .. "_gomod"
@@ -339,6 +375,9 @@ end)
 
 if daemon_job then
   vim.fn.jobstop(daemon_job)
+  if vim.fn.jobwait({ daemon_job }, 5000)[1] ~= -1 then
+    os.remove(gopls_sock)
+  end
 end
 vim.fn.delete(go_dir, "rf")
 os.remove(json_fixture)

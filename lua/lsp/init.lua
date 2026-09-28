@@ -107,8 +107,6 @@ lspkind.init({
 --   vim.lsp.handlers["textDocument/inlayHint"](err, result, ctx)
 -- end
 
-local protocol = require("lsp.protocol")
-
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#clientCapabilities
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentClientCapabilities
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#serverCapabilities
@@ -139,7 +137,7 @@ local default_capabilities_config = function()
         completionItem = {
           commitCharactersSupport = true,
           preselectSupport = true,
-          documentationFormat = { protocol.constants.MarkupKind.Markdown },
+          documentationFormat = { vim.lsp.protocol.MarkupKind.Markdown },
         },
       },
     },

@@ -27,11 +27,6 @@ configs on the first FileType event of any filetype, and silently drop a
 | `init.lua` | Orchestrates LSP: semantic-tokens crash guard, diagnostics config, capabilities/on_attach, `vim.lsp.enable()` list (incl. inline `tsgo` registration), global LSP keymaps |
 | `capabilities.lua` | Static snapshot of `require("blink.cmp").get_lsp_capabilities({}, false)`; merged into every server so blink stays unloaded until InsertEnter. Drift-guarded by `tests/lsp_capabilities_snapshot_spec.lua`; regeneration recipe in its header |
 
-## Subdirectories
-| Directory | Purpose |
-|-----------|---------|
-| `protocol/` | LSP 3.17 constants module (`init.lua`, `M.constants`: DiagnosticSeverity, MessageType, CompletionItemKind, MarkupKind, CodeActionKind, CodeActionTriggerKind, InlineCompletionTriggerKind, FileChangeType, ...), required as `require("lsp.protocol")` in `init.lua` and used to build `capabilities.textDocument.completion.completionItem.documentationFormat` (documented here — no separate AGENTS.md) |
-
 ## For AI Agents
 
 ### Working In This Directory
@@ -131,8 +126,6 @@ configs on the first FileType event of any filetype, and silently drop a
   `bun_prefix()`, `nodenv_prefix()`, `pnpm_prefix()`, `go_path()`, `src_path()`,
   `xdg_config_home()`, `is_exists()`; used throughout for binary/path
   resolution.
-- `lua/lsp/protocol/init.lua` — LSP spec constants consumed by `init.lua`'s
-  `default_capabilities_config()` (e.g. `protocol.constants.MarkupKind`).
 - `lua/lsp/capabilities.lua` — blink.cmp capabilities snapshot (see Key
   Files).
 - `lua/plugins/` — `rustaceanvim` (configured under `lua/plugins/`) owns

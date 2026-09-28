@@ -195,7 +195,7 @@ blink.setup({
     menu = {
       enabled = true,
       min_width = 40,
-      max_height = 50,
+      max_height = 100,
       -- border inherits vim.o.winborder
       winblend = 0,
       winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",

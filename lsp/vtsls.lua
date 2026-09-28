@@ -1,3 +1,5 @@
+local util = require("util")
+
 -- Codes: https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
 local ignored_diagnostic_codes = {
   -- "File is a CommonJS module; it may be converted to an ES module."
@@ -26,17 +28,26 @@ end
 -- TypeScript-only, and vtsls ignores an unknown key rather than erroring.
 local inlay_hints = {
   parameterNames = {
-    enabled = "all",
+    -- enabled = "all",
+    enabled = false,
     suppressWhenArgumentMatchesName = false,
   },
-  parameterTypes = { enabled = true },
+  parameterTypes = {
+    enabled = true,
+  },
   variableTypes = {
     enabled = true,
     suppressWhenTypeMatchesName = false,
   },
-  propertyDeclarationTypes = { enabled = true },
-  functionLikeReturnTypes = { enabled = true },
-  enumMemberValues = { enabled = true },
+  propertyDeclarationTypes = {
+    enabled = true,
+  },
+  functionLikeReturnTypes = {
+    enabled = true,
+  },
+  enumMemberValues = {
+    enabled = true,
+  },
 }
 
 -- Bound on LspAttach rather than in an `on_attach` here, for the reason
@@ -62,7 +73,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { "vtsls", "--stdio" },
+  cmd = { util.bun_prefix("vtsls"), "--stdio" },
   handlers = {
     ["textDocument/publishDiagnostics"] = filter_ignored_diagnostics,
   },
@@ -77,7 +88,12 @@ return {
     "typescriptreact",
     "typescript.tsx",
   },
-  root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
+  root_markers = {
+    "tsconfig.json",
+    "jsconfig.json",
+    "package.json",
+    ".git",
+  },
   settings = {
     -- Literal "js/ts" section: vtsls reads this one under that exact name,
     -- unlike everything else, which is split per language. 500 is the default

@@ -1,14 +1,13 @@
 local M = {}
 
+--- Print every argument through vim.inspect, one per line, nils included.
+--- vim.inspect(...) alone read the second argument as its options table.
 function _G.dump(...)
-  vim.print(vim.inspect(...))
-end
-
-function M.cmp_or(val, default)
-  if val == nil then
-    return default
+  local inspected = {}
+  for i = 1, select("#", ...) do
+    inspected[i] = vim.inspect((select(i, ...)))
   end
-  return val
+  vim.print(table.concat(inspected, "\n"))
 end
 
 --- Dynamically builds an ultra-fast if-elseif dispatch function.
@@ -18,7 +17,7 @@ end
 --- @return function The generated optimized function.
 ---
 ---```lua
----local my_fast_switch = util.switch(
+---local my_fast_switch = util.fast_switch(
 ---  "return 0", -- default case
 ---  {
 ---    ["add"] = "local a, b = ...; return a + b",
@@ -39,9 +38,11 @@ function M.fast_switch(default_code, cases_config)
   local code_lines = { "return function(key, ...)" }
   local is_first = true
 
-  for k, v in ipairs(cases_config) do
+  -- pairs, not ipairs: the cases are keyed by name, and ipairs saw none of
+  -- them, so every call fell through to an empty function body.
+  for k, v in pairs(cases_config) do
     -- Handle quotes based on the key's type
-    local condition = type(k) == "string" and ('"' .. k .. '"') or tostring(k)
+    local condition = type(k) == "string" and string.format("%q", k) or tostring(k)
 
     if is_first then
       table.insert(code_lines, "  if key == " .. condition .. " then")
@@ -57,6 +58,8 @@ function M.fast_switch(default_code, cases_config)
     table.insert(code_lines, "  else")
     table.insert(code_lines, "    " .. default_code)
     table.insert(code_lines, "  end")
+  else
+    table.insert(code_lines, "  " .. default_code)
   end
   table.insert(code_lines, "end")
 
@@ -107,37 +110,28 @@ function M.is_exists(path)
   end
 end
 
---- Returns true if the given table contains the specified element string,
---- false otherwise.
----
----@param tbl string[]
----@param element string
----@return boolean
-function M.contains(tbl, element)
-  for _, value in pairs(tbl) do
-    if value == element then
-      return true
-    end
-  end
-  return false
-end
-
---- Returns the value of the process environment variable `varname`.
+--- Returns the value of the process environment variable `varname`, or nil
+--- when it is unset or empty. Not tostring()'d: the string "nil" is truthy,
+--- so a caller could not fall back, and it joined into a relative path.
 ---
 ---@param varname string
 ---@return string?
 ---@nodiscard
 function M.getenv(varname)
-  return tostring(os.getenv(varname))
+  local value = os.getenv(varname)
+  if value == "" then
+    return nil
+  end
+  return value
 end
 
---- Expands env path and reads symbolic link.
+--- Memoized per varname: fs_realpath is a stat per call and
+--- xdg_cache_home() runs while filetype.lua is sourced at startup. The cache
+--- lives in a module-local, so a module reload (as the filetype specs do)
+--- starts fresh.
 ---
----@param path string
----@return string
-function M.readlink(path)
-  return vim.uv.fs_readlink(path) or ""
-end
+---@type table<string, string>
+local xdg_home_cache = {}
 
 --- Return the XDG base directory `varname` names, symbolic links resolved.
 ---
@@ -153,15 +147,6 @@ end
 --- absolute. It may still name a path that is not there -- callers handing it
 --- to a tool that hard-errors on an unreadable path must stat it first.
 ---
----
---- Memoized per varname: fs_realpath is a stat per call and
---- xdg_cache_home() runs while filetype.lua is sourced at startup. The cache
---- lives in a module-local, so a module reload (as the filetype specs do)
---- starts fresh.
----
----@type table<string, string>
-local xdg_home_cache = {}
-
 ---@param varname string
 ---@param default string relative to $HOME, per the XDG base directory spec
 ---@return string
@@ -265,13 +250,6 @@ function M.homebrew_prefix()
   return homebrew_prefix_cache
 end
 
----@param binary string binary name
----@return string
-function M.homebrew_portable_ruby(binary)
-  local prefix = M.homebrew_prefix()
-  return vim.fs.joinpath(prefix, "Library/Homebrew/vendor/portable-ruby/current/bin", binary)
-end
-
 --- Returns the Homebrew binary path for the given formula and binary name.
 ---
 ---@param formula string homebrew formula name
@@ -281,12 +259,58 @@ function M.homebrew_binary(formula, binary)
   return vim.fs.joinpath(M.homebrew_prefix(), "opt", formula, "bin", binary)
 end
 
---- Returns the bun binary path for the given binary name.
+---@type table<string, true>
+local warned = {}
+
+--- Return `candidate` when it is an executable file, else `binary` from
+--- $PATH, else `candidate` anyway -- warning once per helper and binary in
+--- both fallback cases.
+---
+--- The prefix helpers feed `cmd` tables, where a relative or missing path
+--- fails at spawn time with an error that does not name the toolchain
+--- variable that was wrong. Every answer is absolute: when neither the
+--- candidate nor $PATH has the binary, nothing can be run, and the absolute
+--- candidate makes the spawn error name the place it was expected.
+---
+---@param helper string helper name, for the warning
+---@param candidate string absolute path the helper derived
+---@param binary string binary name
+---@param problem string? why `candidate` is not to be trusted; skips the check
+---@return string
+local function executable_or_exepath(helper, candidate, binary, problem)
+  if not problem and vim.uv.fs_access(candidate, "X") then
+    return candidate
+  end
+  local found = vim.fn.exepath(binary)
+  local key = helper .. "\0" .. binary
+  if not warned[key] then
+    warned[key] = true
+    vim.notify(
+      string.format(
+        "util.%s: %s; %s",
+        helper,
+        problem or (candidate .. " is not executable"),
+        found ~= "" and ("using " .. found .. " from $PATH") or (binary .. " is not on $PATH either")
+      ),
+      vim.log.levels.WARN
+    )
+  end
+  if found ~= "" then
+    return found
+  end
+  return candidate
+end
+
+--- Returns the bun global binary path for the given binary name:
+--- `$BUN_INSTALL/bin/<binary>`, with bun's own default `~/.bun` when
+--- $BUN_INSTALL is unset. Falls back to $PATH (one WARN) when that file is not
+--- executable.
 ---
 ---@param binary string binary name
 ---@return string
 function M.bun_prefix(binary)
-  return tostring(vim.fs.joinpath(os.getenv("BUN_INSTALL"), "bin", binary))
+  local root = M.getenv("BUN_INSTALL") or vim.fs.joinpath(vim.uv.os_homedir(), ".bun")
+  return executable_or_exepath("bun_prefix", vim.fs.joinpath(root, "bin", binary), binary)
 end
 
 --- Returns the binary path inside nodenv's globally selected node version.
@@ -296,86 +320,41 @@ end
 --- pinning a version this machine has not installed kills the server outright
 --- -- with the nodenv-nvmrc hook in play, an .nvmrc at a monorepo root even
 --- wins over a nearer .node-version. The node a language server runs on is
---- not a project concern, so resolve it once from $NODENV_ROOT/version.
+--- not a project concern, so resolve it once from $NODENV_ROOT/version
+--- ($NODENV_ROOT defaults to ~/.nodenv, as in nodenv itself).
 ---
---- Falls back to the shim when that file is unreadable, which keeps the
---- cwd-dependent behavior rather than handing the caller a path that does not
---- exist.
+--- Falls back to $PATH (one WARN) when the version file is unreadable or the
+--- version it names has no such binary; that $PATH answer may be the
+--- cwd-dependent shim, which is still better than a path that does not exist.
 ---
 ---@param binary string binary name
 ---@return string
 function M.nodenv_prefix(binary)
-  local root = os.getenv("NODENV_ROOT")
-  local fd = root and io.open(vim.fs.joinpath(root, "version"), "r")
+  local root = M.getenv("NODENV_ROOT") or vim.fs.joinpath(vim.uv.os_homedir(), ".nodenv")
+  local fd = io.open(vim.fs.joinpath(root, "version"), "r")
   local version = fd and fd:read("l")
   if fd then
     fd:close()
   end
-  if not version or version == "" then
-    return tostring(vim.fs.joinpath(root, "shims", binary))
+  if version and version ~= "" then
+    return executable_or_exepath("nodenv_prefix", vim.fs.joinpath(root, "versions", version, "bin", binary), binary)
   end
-  return tostring(vim.fs.joinpath(root, "versions", version, "bin", binary))
-end
-
---- Returns the pnpm binary path for the given binary name.
----
----@param binary string binary name
----@return string
-function M.pnpm_prefix(binary)
-  return tostring(vim.fs.joinpath(os.getenv("PNPM_HOME"), binary))
-end
-
---- Returns the rbenv binary path for the given binary name.
----
----@param binary string binary name
----@return string
-function M.rbenv_prefix(binary)
-  return tostring(vim.fs.joinpath(os.getenv("RBENV_ROOT"), "shims", binary))
+  local problem = "cannot read " .. vim.fs.joinpath(root, "version")
+  return executable_or_exepath("nodenv_prefix", vim.fs.joinpath(root, "shims", binary), binary, problem)
 end
 
 --- Registers a callback function to be executed when the "VeryLazy" event is triggered.
 ---
+--- No augroup: the one this used to create (and clear) wiped every earlier
+--- registration, so only the last caller's callback ever ran.
+---
 ---@param fn fun()
 M.on_very_lazy = function(fn)
   vim.api.nvim_create_autocmd("User", {
-    group = vim.api.nvim_create_augroup("Lazy", { clear = true }),
     pattern = "VeryLazy",
+    once = true,
     callback = function()
       fn()
-    end,
-  })
-end
-
---- Loads the specified modules either immediately or lazily based on whether a file is opened at startup.
----
----@param modules string[] modules like "autocmds" | "options" | "keymaps"
-M.lazy_load = function(modules)
-  -- when no file is opened at startup
-  if vim.fn.argc(-1) == 0 then
-    -- autocmds and keymaps can wait to load
-    -- always load lazyvim, then user file
-    M.on_very_lazy(function()
-      for i = 1, #modules do
-        require(modules[i])
-      end
-    end)
-  else
-    -- load them now so they affect the opened buffers
-    for i = 1, #modules do
-      require(modules[i])
-    end
-  end
-end
-
---- Registers a callback function to be executed when an LSP client attaches to a buffer.
----
----@param on_attach fun(client, bufnr)
-function M.on_attach(on_attach)
-  vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function(args)
-      local bufnr = args.buf
-      local client = vim.lsp.get_client_by_id(args.data.client_id)
-      on_attach(client, bufnr)
     end,
   })
 end

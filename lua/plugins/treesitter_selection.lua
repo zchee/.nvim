@@ -37,7 +37,9 @@ local function select_node(node)
   vim.api.nvim_buf_set_mark(0, "<", srow + 1, scol, {})
   vim.api.nvim_buf_set_mark(0, ">", erow + 1, math.max(ecol - 1, 0), {})
   selecting = true
-  local ok, err = pcall(vim.cmd, "normal! gv")
+  local ok, err = pcall(function()
+    vim.cmd("normal! gv")
+  end)
   selecting = false
   if not ok then
     error(err, 0)

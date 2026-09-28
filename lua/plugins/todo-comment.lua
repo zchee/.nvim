@@ -1,4 +1,4 @@
-return {
+local opts = {
   signs = false, -- show icons in the signs column
   sign_priority = 8, -- sign priority
   keywords = {
@@ -71,3 +71,73 @@ return {
     pattern = [[\b(KEYWORDS)(\([^\)]*\))?\b:]], -- default: [[\b(KEYWORDS):]]
   },
 }
+
+-- todo-comments' setup probes `pcall(require, "snacks.picker")` to
+-- register its picker source, re-loading the ~3.4 ms picker tree
+-- that round-3 W2.1 removed from startup. An erroring preload stub
+-- makes that probe fail fast while it is armed; a picker some other
+-- caller already loaded short-circuits through package.loaded, so
+-- only todo-as-loader is blocked and the registration still happens
+-- whenever the picker is genuinely in. setup() defers its real work
+-- past VimEnter, so the disarm mirrors that scheduling to run after.
+local function arm()
+  package.preload["snacks.picker"] = function()
+    error("snacks.picker load deferred during todo-comments setup (lua/plugins/todo-comment.lua)")
+  end
+end
+local function disarm()
+  package.preload["snacks.picker"] = nil
+  -- a failed require leaves a sentinel in package.loaded that turns
+  -- every later require into "loop or previous error"; on this
+  -- LuaJIT it is a NaN-boxed lightuserdata whose type() reads
+  -- "number", so match anything that is not the module's real table
+  local sentinel = package.loaded["snacks.picker"]
+  if sentinel ~= nil and type(sentinel) ~= "table" then
+    package.loaded["snacks.picker"] = nil
+  end
+end
+arm()
+local ok, err = pcall(function()
+  require("todo-comments").setup(opts)
+end)
+if vim.api.nvim_get_vvar("vim_did_enter") == 0 then
+  vim.defer_fn(disarm, 0)
+else
+  disarm()
+end
+if not ok then
+  error(err)
+end
+-- highlight.start() registers the current window in its own `wins`
+-- table, and attach() only repaints when the window is new to it --
+-- so a file opened into a window that is already known never gets a
+-- repaint and keeps whatever the legacy syntax painted (Todo,
+-- #ffcc00, where TodoFg<KW> belongs). Drive the repaint from the
+-- events that expose a new range instead, and call _update directly
+-- rather than update(): the latter hops through a uv timer and
+-- vim.schedule, so the paint lands a frame or more after the event
+-- that revealed the text. A cold full viewport costs 0.33 ms and a
+-- warm one 0.001 ms, both off any keystroke path. VimEnter is
+-- deliberately not in this list -- it runs before the buffer's syntax
+-- is applied, and comments_only would reject every keyword and mark
+-- the lines clean.
+vim.api.nvim_create_autocmd({ "BufWinEnter", "WinResized" }, {
+  group = vim.api.nvim_create_augroup("todo_comments_repaint", { clear = true }),
+  callback = function()
+    local loaded, hl = pcall(require, "todo-comments.highlight")
+    if not (loaded and hl.enabled) then
+      return
+    end
+    -- This autocmd is created before highlight.start() (setup defers
+    -- that past VimEnter) and so runs ahead of the plugin's own
+    -- BufWinEnter attach: _update walks only buffers attach() has
+    -- registered, and a buffer newly opened into a known window was
+    -- not one yet, so it never painted. attach() is idempotent.
+    hl.attach()
+    if type(hl._update) == "function" then
+      hl._update()
+    else
+      hl.update()
+    end
+  end,
+})

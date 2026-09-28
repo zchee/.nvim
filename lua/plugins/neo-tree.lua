@@ -373,59 +373,6 @@ neotree.setup({
         },
       },
     },
-    mappings = {
-      ["<Sace>"] = {
-        "toggle_node",
-        nowait = false,
-      },
-      ["<CR>"] = "open", -- { "open", config = { expand_nested_files = true } }, -- expand nested file takes precedence
-      ["o"] = "open",
-      ["<Esc>"] = "cancel", -- close preview or floating neo-tree window
-      ["P"] = {
-        "toggle_preview",
-        config = {
-          use_float = true,
-          use_snacks_image = true,
-          use_image_nvim = true,
-          -- title = "Neo-tree Preview", -- You can define a custom title for the preview floating window.
-        },
-      },
-      ["<C-f>"] = { "scroll_preview", config = { direction = -10 } },
-      ["<C-b>"] = { "scroll_preview", config = { direction = 10 } },
-      ["l"] = "focus_preview",
-      ["s"] = "open_split",
-      ["<C-v>"] = "open_vsplit",
-      ["t"] = "open_tabnew",
-      -- ["<cr>"] = "open_drop",
-      -- ["t"] = "open_tab_drop",
-      ["w"] = "open_with_window_picker",
-      ["C"] = "close_node",
-      --["C"] = "close_all_subnodes",
-      ["z"] = "close_all_nodes",
-      --["Z"] = "expand_all_nodes",
-      --["Z"] = "expand_all_subnodes",
-      ["R"] = "refresh",
-      ["a"] = {
-        "add",
-        -- some commands may take optional config options, see `:h neo-tree-mappings` for details
-        config = {
-          show_path = "none", -- "none", "relative", "absolute"
-        },
-      },
-      ["A"] = "add_directory", -- also accepts the config.show_path and config.insert_as options.
-      ["d"] = "delete",
-      ["r"] = "rename",
-      ["y"] = "copy_to_clipboard",
-      ["x"] = "cut_to_clipboard",
-      ["p"] = "paste_from_clipboard",
-      ["c"] = "copy", -- takes text input for destination, also accepts the config.show_path and config.insert_as options
-      ["m"] = "move", -- takes text input for destination, also accepts the config.show_path and config.insert_as options
-      -- ["e"] = "toggle_auto_expand_width",
-      ["q"] = "close_window",
-      ["?"] = "show_help",
-      ["<"] = "prev_source",
-      [">"] = "next_source",
-    },
     async_directory_scan = "always", -- "auto"   means refreshes are async, but it's synchronous when called from the Neotree commands. "always" means directory scans are always async. "never"  means directory scans are never async.
     scan_mode = "shallow", -- "shallow": Don't scan into directories to detect possible empty directory a priority. "deep": Scan into directories to detect empty or grouped empty directories a priori.
     bind_to_cwd = true, -- true creates a 2-way binding between vim's cwd and neo-tree's root
@@ -559,6 +506,62 @@ neotree.setup({
     mapping_options = {
       noremap = true,
       nowait = true,
+    },
+    -- Shared by every source; a source's own window.mappings wins per key.
+    -- This block used to sit at filesystem.mappings, a key neo-tree never
+    -- reads, so none of it applied.
+    mappings = {
+      ["<Space>"] = {
+        "toggle_node",
+        nowait = false,
+      },
+      ["<CR>"] = "open", -- { "open", config = { expand_nested_files = true } }, -- expand nested file takes precedence
+      ["o"] = "open",
+      ["<Esc>"] = "cancel", -- close preview or floating neo-tree window
+      ["P"] = {
+        "toggle_preview",
+        config = {
+          use_float = true,
+          use_snacks_image = true,
+          use_image_nvim = true,
+          -- title = "Neo-tree Preview", -- You can define a custom title for the preview floating window.
+        },
+      },
+      ["<C-f>"] = { "scroll_preview", config = { direction = -10 } },
+      ["<C-b>"] = { "scroll_preview", config = { direction = 10 } },
+      ["l"] = "focus_preview",
+      ["s"] = "open_split",
+      ["<C-v>"] = "open_vsplit",
+      ["t"] = "open_tabnew",
+      -- ["<cr>"] = "open_drop",
+      -- ["t"] = "open_tab_drop",
+      ["w"] = "open_with_window_picker",
+      ["C"] = "close_node",
+      --["C"] = "close_all_subnodes",
+      ["z"] = "close_all_nodes",
+      --["Z"] = "expand_all_nodes",
+      --["Z"] = "expand_all_subnodes",
+      ["R"] = "refresh",
+      ["a"] = {
+        "add",
+        -- some commands may take optional config options, see `:h neo-tree-mappings` for details
+        config = {
+          show_path = "none", -- "none", "relative", "absolute"
+        },
+      },
+      ["A"] = "add_directory", -- also accepts the config.show_path and config.insert_as options.
+      ["d"] = "delete",
+      ["r"] = "rename",
+      ["y"] = "copy_to_clipboard",
+      ["x"] = "cut_to_clipboard",
+      ["p"] = "paste_from_clipboard",
+      ["c"] = "copy", -- takes text input for destination, also accepts the config.show_path and config.insert_as options
+      ["m"] = "move", -- takes text input for destination, also accepts the config.show_path and config.insert_as options
+      -- ["e"] = "toggle_auto_expand_width",
+      ["q"] = "close_window",
+      ["?"] = "show_help",
+      ["<"] = "prev_source",
+      [">"] = "next_source",
     },
   },
   git_status = {

@@ -23,9 +23,10 @@ local function filter_ignored_diagnostics(err, result, ctx)
   return vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx)
 end
 
--- Every inlay hint kind the schema offers, with the two suppressWhen* filters
--- off so nothing is hidden. Shared by both languages; enumMemberValues is
--- TypeScript-only, and vtsls ignores an unknown key rather than erroring.
+-- Every inlay hint kind the schema offers except parameter names, which are
+-- switched off; the two suppressWhen* filters stay off so nothing else is
+-- hidden. Shared by both languages; enumMemberValues is TypeScript-only, and
+-- vtsls ignores an unknown key rather than erroring.
 local inlay_hints = {
   parameterNames = {
     -- enabled = "all",
@@ -73,7 +74,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  cmd = { util.bun_prefix("vtsls"), "--stdio" },
+  -- Interpreter spelled out for the same reason as lsp/jsonls.lua: the bin is
+  -- a `#!/usr/bin/env node` script, and through the nodenv shim its node
+  -- version follows the root it is spawned in -- see util.nodenv_prefix.
+  cmd = { util.nodenv_prefix("node"), util.bun_prefix("vtsls"), "--stdio" },
   handlers = {
     ["textDocument/publishDiagnostics"] = filter_ignored_diagnostics,
   },

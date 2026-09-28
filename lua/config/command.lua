@@ -61,13 +61,11 @@ vim.api.nvim_create_user_command("TrimSpace", function()
   local ft = vim.api.nvim_get_option_value("filetype", { buf = 0 })
   local is_binary = vim.api.nvim_get_option_value("binary", { buf = 0 })
   if not is_binary and not (ft == "diff" or ft == "markdown") then
-    vim.cmd([[
-      normal mz
-      normal Hmy
-      %s/\s\+$//e
-      normal 'yz<CR>
-      normal `z
-    ]])
+    -- winsaveview/keeppatterns instead of the marks y/z and the search
+    -- register the old :normal sequence overwrote.
+    local view = vim.fn.winsaveview()
+    vim.cmd([[silent keeppatterns keepjumps %s/\s\+$//e]])
+    vim.fn.winrestview(view)
   end
 end, {
   nargs = "*",
@@ -77,7 +75,7 @@ vim.api.nvim_create_user_command("LuaVimInspect", function(opts)
   vim.print(vim.inspect(opts.args))
 end, {
   nargs = "*",
-  desc = "Gets a human-readable representation of the given object.",
+  desc = "Print the argument text through vim.inspect (a quoted string; it is not evaluated).",
   complete = "lua",
 })
 
@@ -166,7 +164,7 @@ end, {
 vim.api.nvim_create_user_command("DiagramToggle", function()
   vim.cmd("Lazy load diagram.nvim")
 end, {
-  desc = "Toggle diagram.nvim.",
+  desc = "Load diagram.nvim",
 })
 
 -- Swap the statusline/tabline renderer without restarting; no argument

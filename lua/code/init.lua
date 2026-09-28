@@ -1,4 +1,6 @@
-jit.off()
+-- No jit.off() here: it switches the whole JIT engine off, and the
+-- jit.on(true, true) below only sets this chunk's per-function mode, so the
+-- engine stayed off for the entire VSCode session.
 jit.opt.start(3)
 jit.opt.start("-fma")
 jit.opt.start("-dce")
@@ -11,7 +13,8 @@ jit.opt.start("maxtrace=8000", "maxrecord=16000", "minstitch=3", "maxmcode=40960
 jit.on(true, true)
 
 -- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "code/lazy/lazy.nvim"
+-- Inside the plugin root that code.config.lazy sets (data/vscode/lazy).
+local lazypath = vim.fs.joinpath(tostring(vim.fn.stdpath("data")), "vscode", "lazy", "lazy.nvim")
 
 if not vim.uv.fs_stat(lazypath) then
   vim.api.nvim_echo({
@@ -35,7 +38,12 @@ if not vim.uv.fs_stat(lazypath) then
       { vim.trim(out or ""), "WarningMsg" },
       { "\nPress any key to exit...", "MoreMsg" },
     }, true, {})
-    vim.fn.getchar()
+    -- Nothing can answer getchar() without a UI: a headless bootstrap
+    -- (`nvim --headless "+Lazy! sync" +qa`) blocks on it forever, and an
+    -- `nvim -l` run exits 0 there as if the clone had worked.
+    if #vim.api.nvim_list_uis() > 0 then
+      vim.fn.getchar()
+    end
     os.exit(1)
   end
 end

@@ -1,3 +1,4 @@
+local lsp_cmd = require("lsp.cmd")
 local util = require("util")
 
 -- local function add_ruby_deps_command(client, bufnr)
@@ -83,13 +84,9 @@ local util = require("util")
 
 ---@type vim.lsp.Config
 return {
-  cmd = function(dispatchers, config)
-    return vim.lsp.rpc.start(
-      { util.homebrew_binary("ruby-lsp", "ruby-lsp"), "--beta", "--use-launcher" },
-      dispatchers,
-      config and config.root_dir and { cwd = config.cmd_cwd or config.root_dir }
-    )
-  end,
+  cmd = lsp_cmd.lazy(function()
+    return { util.homebrew_binary("ruby-lsp", "ruby-lsp"), "--beta", "--use-launcher" }
+  end),
   filetypes = { "ruby" },
   root_markers = { ".git" },
   -- ruby-lsp reads its options from initializationOptions alone (GlobalState

@@ -43,10 +43,11 @@ vim.filetype.add({
     jsonc = "jsonc",
     jsonl = "jsonl",
     -- Metal Shading Language. Unmapped, these fell through to scripts.vim,
-    -- which sees the leading #include and guesses "conf" -- no clangd (which
-    -- lists metal), no Tree-sitter, and a "# %s" commentstring for a
-    -- C++-derived language. The name has to be its own filetype rather than
-    -- an alias for cpp: lsp/clangd.lua distinguishes it.
+    -- which sees the leading #include and guesses "conf" -- no Tree-sitter
+    -- and a "# %s" commentstring for a C++-derived language. The name has to
+    -- be its own filetype rather than an alias for cpp: lsp/clangd.lua leaves
+    -- metal out of its filetypes on purpose, since upstream clangd parses a
+    -- shader as C.
     metal = "metal",
     mm = "objcpp",
     pen = "json",

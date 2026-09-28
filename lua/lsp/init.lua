@@ -151,21 +151,6 @@ local default_capabilities_config = function()
   return capabilities
 end
 
---- @param client vim.lsp.Client
---- @param bufnr integer
-local on_attach = function(client, bufnr)
-  if client.name == "bashls" or client.name == "lua_ls" then
-    return
-  end
-
-  if client.name == "dockerls" then
-    client.server_capabilities.documentHighlightProvider = false
-    client.server_capabilities.semanticTokensProvider = nil
-    -- client.server_capabilities.semanticTokensProvider.range = true
-    -- client.server_capabilities.semanticTokensProvider.full.delta = true
-  end
-end
-
 -- Registered but not enabled (vtsls owns TypeScript buffers); start it
 -- explicitly with vim.lsp.enable("tsgo"). Previously registered through
 -- lspconfig.configs, now a plain native config.
@@ -283,7 +268,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 vim.lsp.config("*", {
   capabilities = default_capabilities_config(),
-  on_attach = on_attach,
+  -- Every server's attach-time work, one entry per server name.
+  on_attach = require("lsp.on_attach"),
   root_markers = { ".git" },
 })
 

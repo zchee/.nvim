@@ -16,27 +16,14 @@ return {
   --     end
   --   end
   -- end,
-  root_markers = { "Dockerfile", "*.dockerfile", "Dockerfile*" },
-  init_options = {
-    docker = {
-      languageserver = {
-        diagnostics = {
-          -- string values must be equal to "ignore", "warning", or "error"
-          deprecatedMaintainer = "error",
-          directiveCasing = "warning",
-          emptyContinuationLine = "ignore",
-          instructionCasing = "error",
-          instructionCmdMultiple = "error",
-          instructionEntrypointMultiple = "error",
-          instructionHealthcheckMultiple = "error",
-          instructionJSONInSingleQuotes = "error",
-        },
-        formatter = {
-          ignoreMultilineInstructions = true,
-        },
-      },
-    },
-  },
+  -- root_markers are file names, never globs: vim.fs.root compared
+  -- "*.dockerfile" and "Dockerfile*" literally, so an app.dockerfile beside
+  -- no plain Dockerfile got no root at all.
+  root_markers = { "Dockerfile", ".git" },
+  -- The server pulls "docker.languageserver.formatter" and
+  -- "docker.languageserver.diagnostics" through workspace/configuration and
+  -- never reads initializationOptions (lib/server.js), so settings is the one
+  -- place these take effect.
   settings = {
     docker = {
       languageserver = {

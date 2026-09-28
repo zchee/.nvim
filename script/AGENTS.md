@@ -13,7 +13,7 @@ highlight dump) with the helpers they share under `lib/`. The specs under
 ## Key Files
 | File | Description |
 |------|-------------|
-| `gen-kitty-syntax.py` | Regenerates the generated tail of `syntax/kitty.vim` from Kitty's own option/action metadata. Adapted from `fladson/vim-kitty`'s `gen-syntax.py` (its header comment still uses that name) |
+| `gen-kitty-syntax.py` | Regenerates the generated tail of `syntax/kitty.vim` from Kitty's own option/action metadata. Adapted from `fladson/vim-kitty`'s `gen-syntax.py` |
 | `hl-dump.lua` | `nvim --headless -l script/hl-dump.lua [outfile] [--reapply]`: applies `equinusocio_material` from this checkout (the script's repo root goes first on the rtp) and writes every highlight group in canonical sorted form. `tests/perf/hl_dump_spec.lua` compares it with `tests/perf/fixtures/hl_baseline.txt`, which the same command regenerates |
 | `perf-report.sh` | The timing report: clean-vs-full `--startuptime` medians (headless and pty), `lazy.stats()` startup, a UIEnter stall probe, the first-insert probe, the burst/warmup split, embed UI latency and a Perfetto trace. Reported, never pass/fail. Runs from any cwd and picks the BSD or util-linux `script(1)` calling form |
 | `perf-trace.lua` | `nvim -l script/perf-trace.lua [--out <f>] [--startuptime <log>] [--ui-latency <json>]`: one full-config startup as Chrome trace-event JSON for ui.perfetto.dev (default `$TMPDIR/nvim-perf-trace.json`). lazy.nvim/warmup slices sit on the log's wall-clock axis through hrtime anchors taken in the child; pinned by `tests/perf/trace_export_spec.lua` |
@@ -34,7 +34,8 @@ highlight dump) with the helpers they share under `lib/`. The specs under
   versions differ, the generated lists follow the Python package, not the
   terminal.
 - Verified behavior: it reads `syntax/kitty.vim`, finds the literal line
-  `" START GENERATED CODE\n"` (present at line 41 of the current file),
+  `" START GENERATED CODE\n"` (line 47 of the current file, below the
+  hand-written header),
   keeps everything **before and including** that line, and replaces
   everything after it with two freshly generated `syn keyword` blocks —
   `kittyKeyword` (from `option_names_for_completion()` plus

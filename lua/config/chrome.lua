@@ -1,7 +1,8 @@
--- Hand-rolled statusline + tabline replacing lualine.nvim and
--- bufferline.nvim (round-3 W3.2). Parity contract:
--- .omc/plans/round3-chrome-parity.md. Palette copied verbatim from the
--- retired lua/lualine/themes/equinusocio_material.lua theme table.
+-- Hand-rolled statusline + tabline standing in for lualine.nvim and
+-- bufferline.nvim (round-3 W3.2); both plugins stay switchable through
+-- config.ui_mode, and this module renders what they render with this
+-- config's options. Palette copied verbatim from the lualine theme table in
+-- lua/lualine/themes/equinusocio_material.lua.
 --
 -- Redraw path (statusline()/tabline()) uses nvim_* API + table.concat only;
 -- everything slow (diagnostics, newfile stat) is cached event-driven.
@@ -57,7 +58,7 @@ local mode_hl = {
 }
 
 -- statusline diagnostics: lualine default icons; tabline: bufferline's
--- custom indicator (icon only on error level).
+-- custom indicator (see tab_diag).
 local sev_stl = {
   { "ChromeDiagError", " " },
   { "ChromeDiagWarn", " " },
@@ -80,6 +81,8 @@ local home = vim.env.HOME
 -- Before the plugin loads (setup() schedules it shortly after UIEnter),
 -- entries render without an icon and the next redraw picks them up.
 -- Cache holds the full "%#group#icon " prefix per (filetype, section-bg).
+-- Emptied on ColorScheme: :colorscheme clears the ChromeIcon* groups the
+-- cached prefixes name, and only a cache miss defines them again.
 local icon_cache = {}
 
 local function icon_provider()
@@ -212,7 +215,8 @@ end
 --- Click handler for tabline entries (%@ label). Receives
 --- (minwid=bufnr, clicks, button, mods); parity with bufferline's
 --- left_mouse_command "buffer %d" / right_mouse_command "bdelete! %d",
---- middle disabled.
+--- middle disabled. setup() publishes it as _G.Chrome_click (a %@ label can
+--- only name a global) and teardown() withdraws it.
 function M.click(bufnr, _, button, _)
   if not api.nvim_buf_is_valid(bufnr) then
     return
@@ -220,10 +224,11 @@ function M.click(bufnr, _, button, _)
   if button == "l" then
     api.nvim_set_current_buf(bufnr)
   elseif button == "r" then
-    pcall(api.nvim_buf_delete, bufnr, { force = true })
+    -- :bdelete!, not nvim_buf_delete (a :bwipeout): the buffer keeps its
+    -- marks and stays reachable through :ls!, as under bufferline.
+    pcall(vim.cmd, "bdelete! " .. bufnr)
   end
 end
-_G.Chrome_click = M.click
 
 -- lualine filename path=3: absolute, ~ for home, shorting_target=40.
 local function stl_filename(buf)
@@ -354,8 +359,10 @@ local function truncate_name(name, limit)
   if api.nvim_strwidth(name) <= limit then
     return name
   end
-  local stem, ext = name:match("^(.*)%.(%w+)$")
-  if stem and api.nvim_strwidth(stem) < limit then
+  -- A dotfile such as ".averyveryverylongrc" has an empty stem, which would
+  -- "fit" and leave a bare ellipsis; it takes the cell cut instead.
+  local stem = name:match("^(.*)%.%w+$")
+  if stem and stem ~= "" and api.nvim_strwidth(stem) < limit then
     return stem .. "…"
   end
   local out = name
@@ -365,19 +372,30 @@ local function truncate_name(name, limit)
   return out .. "…"
 end
 
+--- bufferline's diagnostics_indicator(count, level) from
+--- lua/plugins/bufferline.lua: bufferline passes ONE count, the total over
+--- every severity, and the highest severity present, and the indicator
+--- draws U+F05C and a space for an error, U+F071 otherwise. Escapes, not
+--- literal glyphs: the literals this file started with were lost to plain
+--- spaces.
+local TAB_DIAG_ERROR, TAB_DIAG_OTHER = "\u{f05c} ", "\u{f071}"
 local function tab_diag(buf)
   local dc = diag_counts[buf]
   if not dc then
     return ""
   end
-  local out = {}
+  local total, highest = 0, nil
   for sev = 1, 4 do
     local n = dc[sev]
     if n and n > 0 then
-      out[#out + 1] = " " .. (sev == 1 and " " or "") .. n
+      total = total + n
+      highest = highest or sev
     end
   end
-  return table.concat(out)
+  if total == 0 then
+    return ""
+  end
+  return " " .. (highest == vim.diagnostic.severity.ERROR and TAB_DIAG_ERROR or TAB_DIAG_OTHER) .. total
 end
 
 --- Current tabline buffer order (copy); test/introspection hook.
@@ -498,6 +516,7 @@ local saved
 function M.teardown()
   pcall(api.nvim_del_augroup_by_name, "config_chrome")
   order, diag_counts, diag_dirty, newfile, modstate = {}, {}, {}, {}, {}
+  _G.Chrome_click = nil
   if saved then
     vim.o.statusline, vim.o.tabline = saved.statusline, saved.tabline
   end
@@ -515,6 +534,7 @@ function M.setup()
       update_diag(buf)
     end
   end
+  _G.Chrome_click = M.click
   vim.o.statusline = "%!v:lua.require'config.chrome'.statusline()"
   vim.o.tabline = "%!v:lua.require'config.chrome'.tabline()"
 
@@ -621,6 +641,7 @@ function M.setup()
     group = g,
     callback = function()
       define_highlights()
+      icon_cache = {}
       redraw()
     end,
   })

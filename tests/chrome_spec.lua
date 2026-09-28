@@ -80,6 +80,14 @@ local function in_insert_mode(fn)
   end
 end
 
+--- The tabline text of one buffer's entry (between its %N@ and %X).
+---@param tal string
+---@param buf integer
+---@return string
+local function tab_entry(tal, buf)
+  return tal:match("%%" .. buf .. "@(.-)%%X") or ""
+end
+
 -- 1. module load budget: plain require must stay under 1.5 ms
 local t0 = vim.uv.hrtime()
 local chrome = require("config.chrome")
@@ -182,6 +190,10 @@ assert_contains(stl, " 2", "warn count with lualine warn icon")
 -- 7. tabline: buffer ids, click regions, modified marker, diagnostics string
 vim.o.columns = 200 -- four 20-cell entries must fit the overflow window
 vim.bo[buf_b].modified = true
+vim.diagnostic.set(ns, buf_d, {
+  { lnum = 0, col = 0, severity = vim.diagnostic.severity.WARN, message = "w1" },
+  { lnum = 0, col = 1, severity = vim.diagnostic.severity.HINT, message = "h1" },
+})
 local tal = chrome.tabline()
 for _, buf in ipairs({ buf_a, buf_b, buf_c, buf_d }) do
   assert_contains(tal, "%" .. buf .. "@v:lua.Chrome_click@", "click region for buffer " .. buf)
@@ -189,8 +201,14 @@ for _, buf in ipairs({ buf_a, buf_b, buf_c, buf_d }) do
 end
 assert_contains(tal, "●", "modified marker on modified buffer")
 assert_contains(tal, "alpha.txt", "buffer name rendered")
-assert_contains(tal, "  1", "bufferline diagnostics string: error icon + count")
-assert_contains(tal, " 2", "bufferline diagnostics string: bare warn count")
+-- bufferline hands diagnostics_indicator ONE count (the total over every
+-- severity) and the highest level, and lua/plugins/bufferline.lua draws
+-- U+F05C for an error, U+F071 otherwise: 1 error + 2 warnings is one
+-- " \u{f05c} 3", never a count per severity.
+assert_contains(tab_entry(tal, buf_a), "alpha.txt \u{f05c} 3", "error + warnings: error icon and the total")
+assert_not_contains(tab_entry(tal, buf_a), "2", "no separate per-severity warn count")
+assert_contains(tab_entry(tal, buf_d), "delta.txt \u{f071}2", "warning + hint: the other icon and the total")
+assert_not_contains(tab_entry(tal, buf_d), "\u{f05c}", "no error icon without an error")
 assert_contains(tal, "", "bufferline slant left edge (U+E0BC) present")
 assert_contains(tal, "", "bufferline slant right edge (U+E0BE) present")
 assert_contains(tal, "ChromeTabSel", "selected-entry highlight present")
@@ -202,6 +220,7 @@ if not ok then
 end
 assert_contains(rendered.str, "alpha.txt", "evaluated tabline renders buffer names")
 vim.bo[buf_b].modified = false
+vim.diagnostic.set(ns, buf_d, {})
 
 -- 8. diagnostics do not churn while in insert mode (bufferline parity)
 vim.diagnostic.set(ns, buf_c, {})
@@ -246,6 +265,7 @@ do
     "startup_budget_spec.lua", -- stem 19 cells: over budget too -> cell cut
     "aaaaaaaaaaaaaaaaaaaaaaaa", -- no extension: cell cut
     "chrome_specs.luaaaa", -- stem 12 cells: extension drop wins
+    ".averyveryverylongrc", -- dotfile: empty stem, so the cell cut
   }) do
     vim.cmd.edit(scratch .. "/" .. name)
     trunc_bufs[#trunc_bufs + 1] = api.nvim_get_current_buf()
@@ -255,6 +275,7 @@ do
   assert_contains(tal, "startup_budget…", "over-budget stem falls through to the cell cut")
   assert_contains(tal, "aaaaaaaaaaaaaa…", "extension-less name is cut by cell")
   assert_contains(tal, "chrome_specs…", "extension is dropped when the stem fits")
+  assert_contains(tal, ".averyveryvery…", "a long dotfile is cut by cell, not reduced to a bare ellipsis")
   for _, b in ipairs(trunc_bufs) do
     vim.cmd("bdelete! " .. b)
   end
@@ -269,7 +290,8 @@ chrome.click(buf_c, 1, "m", "")
 assert_eq(true, api.nvim_buf_is_valid(buf_c) and vim.bo[buf_c].buflisted, "middle click is a no-op")
 vim.bo[buf_c].modified = true -- force path: bdelete! parity
 chrome.click(buf_c, 1, "r", "")
-assert_eq(false, api.nvim_buf_is_valid(buf_c) and vim.bo[buf_c].buflisted, "right click force-deletes buffer")
+assert_eq(true, api.nvim_buf_is_valid(buf_c), "right click is :bdelete!, not a wipeout")
+assert_eq(false, vim.bo[buf_c].buflisted, "right click unlists the buffer")
 assert_not_contains(table.concat(chrome.buffer_order(), ","), tostring(buf_c), "deleted buffer left the order")
 
 -- 11. statusline suppressed in the snacks picker input
@@ -284,6 +306,40 @@ local buf_p = api.nvim_get_current_buf()
 assert_contains(chrome.statusline(), "we%%ird.txt", "statusline escapes % in filenames")
 assert_contains(chrome.tabline(), "we%%ird.txt", "tabline escapes % in filenames")
 vim.cmd("bdelete! " .. buf_p)
+
+-- 13. file icons survive :colorscheme. It clears the ChromeIcon* groups the
+-- cached "%#group#icon " prefixes name, so ColorScheme must empty the cache
+-- and let the next draw define them again. The provider is the installed
+-- nvim-web-devicons; chrome asks lazy's plugin table whether it has loaded,
+-- so that one table is stood in for (and removed again).
+do
+  local devicons_dir = vim.fs.joinpath(tostring(vim.fn.stdpath("data")), "lazy", "nvim-web-devicons")
+  if not vim.uv.fs_stat(devicons_dir) then
+    print("SKIP section 13 (nvim-web-devicons not installed)")
+  else
+    vim.opt.runtimepath:prepend(devicons_dir)
+    package.loaded["lazy.core.config"] = { plugins = { ["nvim-web-devicons"] = { _ = { loaded = {} } } } }
+    api.nvim_set_current_buf(buf_a)
+    vim.bo[buf_a].filetype = "lua"
+    assert_contains(chrome.statusline(), "ChromeIconBlua", "lua buffers get a devicons prefix")
+    assert_eq(true, api.nvim_get_hl(0, { name = "ChromeIconBlua" }).fg ~= nil, "icon group defined")
+    vim.cmd.colorscheme("default")
+    chrome.statusline()
+    assert_eq(
+      true,
+      api.nvim_get_hl(0, { name = "ChromeIconBlua" }).fg ~= nil,
+      "icon group defined again after :colorscheme"
+    )
+    package.loaded["lazy.core.config"] = nil
+    vim.bo[buf_a].filetype = ""
+  end
+end
+
+-- 14. the %@ click handler is global only while chrome owns the tabline
+chrome.teardown()
+assert_eq(nil, _G.Chrome_click, "teardown() withdraws the global click handler")
+chrome.setup()
+assert_eq("function", type(_G.Chrome_click), "setup() publishes it again")
 
 finished = true
 vim.fn.delete(scratch, "rf")

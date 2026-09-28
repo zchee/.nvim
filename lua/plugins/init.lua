@@ -973,6 +973,19 @@ return {
     {
       "andymass/vim-matchup",
       event = { "BufReadPost", "BufNewFile" },
+      init = function()
+        -- plugin/matchup.vim runs `au! matchparen` to clear pi_paren's group,
+        -- but pi_paren (plugin/matchparen.lua on this nightly) never runs --
+        -- lazy.nvim's disabled_plugins keeps it off -- so the group did not
+        -- exist and every first file left v:errmsg = "E216: No such group or
+        -- event: matchparen". An empty group lets that clear succeed;
+        -- loaded_matchparen = 1 is what match-up's own E216 fallback sets.
+        -- matchup_no_version_check is read by the same file, so it is set
+        -- here, before the plugin loads, rather than in its config.
+        vim.api.nvim_create_augroup("matchparen", { clear = true })
+        vim.g.loaded_matchparen = 1
+        vim.g.matchup_no_version_check = true
+      end,
       config = function()
         require("plugins.matchup")
       end,

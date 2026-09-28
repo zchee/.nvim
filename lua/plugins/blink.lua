@@ -31,6 +31,9 @@ local function per_filetype_sources()
     go = { "copilot", inherit_defaults = true },
     lua = { "lazydev", inherit_defaults = true },
     python = { "copilot", inherit_defaults = true },
+    rust = { "copilot", inherit_defaults = true },
+    yaml = { "copilot", inherit_defaults = true },
+
     snacks_picker_input = { "path", "buffer" },
   }
 end

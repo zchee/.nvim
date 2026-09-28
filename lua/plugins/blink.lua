@@ -94,8 +94,8 @@ blink.setup({
           kind_hl = false,
           debounce = 200,
           auto_refresh = {
-            backward = false,
-            forward = false,
+            backward = true,
+            forward = true,
           },
         },
       },

@@ -15,13 +15,13 @@ require("config.ui_mode").setup()
 require("config.keymap")
 require("config.autocmd")
 
--- User commands are not consulted before the UI is up, so they can wait
--- until VeryLazy. nvim/keymap/autocmd above stay synchronous: they are
--- ordering-sensitive against the first buffer. The former highlight
--- override module is folded into colors/equinusocio_material.lua.
-require("util").on_very_lazy(function()
-  require("config.command")
-end)
+-- User commands load synchronously: 'keywordprg' is ":Help" (config.nvim),
+-- so K, +'Help ...' on the command line and any headless run (where
+-- VeryLazy never fires) need :Help before the UI is up. Measured
+-- 2026-09-29 with vim.loader on: 0.29 ms median over 11 cold requires. The
+-- former highlight override module is folded into
+-- colors/equinusocio_material.lua.
+require("config.command")
 
 -- Cooperative insert-stack warmup (round-2 R2): arms only on UIEnter, so
 -- headless sessions are untouched; costs one autocmd registration here.

@@ -740,6 +740,12 @@ return {
             if not (loaded and hl.enabled) then
               return
             end
+            -- This autocmd is created before highlight.start() (setup defers
+            -- that past VimEnter) and so runs ahead of the plugin's own
+            -- BufWinEnter attach: _update walks only buffers attach() has
+            -- registered, and a buffer newly opened into a known window was
+            -- not one yet, so it never painted. attach() is idempotent.
+            hl.attach()
             if type(hl._update) == "function" then
               hl._update()
             else

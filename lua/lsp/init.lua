@@ -1,4 +1,4 @@
--- local util = require("util")
+local util = require("util")
 
 -- Work around a Neovim 0.13-dev regression in the semantic-tokens capability.
 --
@@ -169,7 +169,9 @@ end
 -- explicitly with vim.lsp.enable("tsgo"). Previously registered through
 -- lspconfig.configs, now a plain native config.
 vim.lsp.config("tsgo", {
-  cmd = { "tsgo", "--lsp", "-stdio" },
+  -- node spelled out as for vtsls: bin/tsgo is a `#!/usr/bin/env node`
+  -- launcher, so the nodenv shim would pick node from the project root.
+  cmd = { util.nodenv_prefix("node"), util.bun_prefix("tsgo"), "--lsp", "-stdio" },
   filetypes = {
     "javascript",
     "javascriptreact",
@@ -179,8 +181,6 @@ vim.lsp.config("tsgo", {
     "typescript.tsx",
   },
   root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
-  single_file_support = true,
-  capabilities = default_capabilities_config(),
 })
 
 -- Drop formatting edits that cannot change a single byte.

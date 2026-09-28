@@ -321,6 +321,24 @@ return {
       "DapVirtualTextForceRefresh",
       "DapVirtualTextToggle",
     },
+    keys = {
+      {
+        "<LocalLeader>dp",
+        function()
+          require("dap").toggle_breakpoint()
+        end,
+        silent = true,
+        desc = "DAP: toggle breakpoint",
+      },
+      {
+        "<LocalLeader>dc",
+        function()
+          require("dap").continue()
+        end,
+        silent = true,
+        desc = "DAP: continue",
+      },
+    },
     dependencies = {
       "rcarriga/nvim-dap-ui",
       "theHamsta/nvim-dap-virtual-text",

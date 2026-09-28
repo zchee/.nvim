@@ -16,10 +16,10 @@
 #     dir for ui.perfetto.dev
 #   - first-insert probe: wall time of the InsertEnter dispatch fed at
 #     UIEnter+3 s and whether blink.cmp was already loaded before it
-#   - burst vs warmup split: plugins tagged in vim.g.warmup_loaded (by a
-#     future warmup module) are reported apart from the untagged burst
+#   - burst vs warmup split: plugins tagged in vim.g.warmup_loaded (by
+#     lua/config/warmup.lua) are reported apart from the untagged burst
 #
-# pty note: under `script -q /dev/null` a ~100 ms DSR/termresponse artifact
+# pty note: under script(1) a ~100 ms DSR/termresponse artifact
 # inflates wall times for BOTH clean and full runs, so pty absolutes are
 # inflated but the pty delta (full - clean, same method both sides) is
 # meaningful. lazy.stats().startuptime exists only in the full config, so
@@ -29,7 +29,19 @@
 # Timing lives here, NOT in tests/perf/*.lua -- wall-clock numbers depend on
 # machine load, so they are reported, never pass/fail. Run on a quiet
 # machine; do not run concurrently with the spec suite.
+#
+# Exception (kept on purpose, 2026-09-29): two specs do assert a wall-clock
+# budget, each far above the normal cost so only a real regression trips
+# it -- tests/chrome_spec.lua (config.chrome module load under 1.5 ms) and
+# tests/perf/warmup_spec.lua (every warmup tick under 8 ms, taking the
+# per-tick minimum of up to three children). Judge those two on a quiet
+# machine as well; a miss under concurrent load is not a regression.
+#
+# Runs from anywhere: it cds to the repo root, since the nvim -l harnesses
+# below are addressed as script/<name>.lua.
 set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 runs=3
 run_timeout_s=90
@@ -59,9 +71,22 @@ else
   shada_probe=NONE
 fi
 
+# script(1) takes its command differently per implementation: util-linux
+# (Linux) wants one shell string via -c, the BSD one (macOS) takes it as
+# trailing arguments. Only util-linux answers --version.
+if script --version 2>/dev/null | grep -q util-linux; then
+  script_style=util-linux
+else
+  script_style=bsd
+fi
+
 # Runs one nvim inside a pty (script(1)) with a kill-after timeout.
 run_pty() {
-  script -q /dev/null nvim "$@" </dev/null >/dev/null 2>&1 &
+  if [ "$script_style" = util-linux ]; then
+    script -q -c "$(printf '%q ' nvim "$@")" /dev/null </dev/null >/dev/null 2>&1 &
+  else
+    script -q /dev/null nvim "$@" </dev/null >/dev/null 2>&1 &
+  fi
   local pid=$!
   for _ in $(seq 1 $((run_timeout_s * 2))); do
     kill -0 "$pid" 2>/dev/null || break
@@ -427,8 +452,9 @@ else
 end
 
 -- burst vs warmup split from the median probe run: warmup-tagged plugins
--- (vim.g.warmup_loaded, appended by the future warmup module) are excluded
--- from the burst; until warmup exists the tagged set is empty.
+-- (vim.g.warmup_loaded, appended by lua/config/warmup.lua) are excluded
+-- from the burst. An empty tagged set means the warmup never ran in the
+-- probe session (it arms on UIEnter), not that there is no warmup.
 local warmup_set = {}
 for _, name in ipairs(median_run.warmup_loaded or {}) do
   warmup_set[name] = true
@@ -449,7 +475,7 @@ print("")
 print("== burst vs warmup split (median pty run, snapshot at 6.5s idle) ==")
 print(string.format("  burst (untagged):  %d plugins, load-time sum %.1f ms", #burst, burst_sum))
 if #warmup == 0 then
-  print("  warmup (tagged):   0 plugins, load-time sum 0.0 ms (no warmup module yet)")
+  print("  warmup (tagged):   0 plugins, load-time sum 0.0 ms (warmup did not run)")
 else
   print(string.format("  warmup (tagged):   %d plugins, load-time sum %.1f ms", #warmup, warmup_sum))
   for _, plugin in ipairs(warmup) do

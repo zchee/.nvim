@@ -1,11 +1,16 @@
 ---@diagnostic disable: undefined-global
 -- Regression spec for lua/config/chrome.lua (round-3 W3.2), the hand-rolled
--- statusline + tabline that replaces lualine.nvim + bufferline.nvim.
--- Runs under `nvim --headless -u NONE -l tests/chrome_spec.lua`: no plugins,
--- rtp stubbed to the repo. Asserts the parity surface from
--- .omc/plans/round3-chrome-parity.md: component presence, buffer-id numbers,
--- modified marker, diagnostics strings, insert-after-current ordering, and
--- the click handler's button discrimination.
+-- statusline + tabline that stands in for lualine.nvim + bufferline.nvim.
+-- Runs under `nvim --headless -u NONE -i NONE -l tests/chrome_spec.lua`: no
+-- plugin manager, rtp extended to the repo. Asserts the parity surface:
+-- component presence, buffer-id numbers, modified marker, diagnostics
+-- strings, insert-after-current ordering, and the click handler's button
+-- discrimination.
+--
+-- Exits 0 only after its last assertion: a VimLeavePre guard turns any
+-- earlier exit into exit 1. An -l script that fed "i" with feedkeys "x!"
+-- used to end right there with exit 0 -- Insert mode had nothing more to
+-- read -- and everything after it never ran.
 
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
@@ -14,8 +19,25 @@ package.path = table.concat({
   package.path,
 }, ";")
 
+local api = vim.api
+local scratch = vim.fs.joinpath(vim.uv.os_tmpdir(), "chrome-spec-" .. vim.uv.os_getpid())
+vim.uv.fs_mkdir(scratch, 448)
+
+local finished = false
+api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    vim.fn.delete(scratch, "rf")
+    if not finished then
+      io.stderr:write("FAIL: chrome_spec exited before its last assertion\n")
+      os.exit(1)
+    end
+  end,
+})
+
 local function fail(msg)
   io.stderr:write("FAIL: " .. msg .. "\n")
+  finished = true -- reported here; the VimLeavePre guard need not repeat it
+  vim.fn.delete(scratch, "rf")
   os.exit(1)
 end
 
@@ -37,9 +59,26 @@ local function assert_eq(expected, actual, message)
   end
 end
 
-local api = vim.api
-local scratch = vim.fs.joinpath(vim.uv.os_tmpdir(), "chrome-spec-" .. vim.uv.os_getpid())
-vim.uv.fs_mkdir(scratch, 448)
+--- Run `fn` while Neovim is really in Insert mode, then leave it. An -l
+--- script cannot enter Insert mode and carry on: startinsert and nvim_input
+--- take effect only once the script yields to the main loop, and feedkeys
+--- "x!" returns only when Insert mode ends. So `fn` runs from a callback
+--- scheduled onto the Insert-mode input loop, and feeds the <Esc> itself.
+---@param fn fun()
+local function in_insert_mode(fn)
+  local err
+  vim.schedule(function()
+    local ok, e = pcall(fn)
+    if not ok then
+      err = e
+    end
+    api.nvim_feedkeys(api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+  end)
+  api.nvim_feedkeys("i", "x!", false)
+  if err then
+    fail(tostring(err))
+  end
+end
 
 -- 1. module load budget: plain require must stay under 1.5 ms
 local t0 = vim.uv.hrtime()
@@ -167,13 +206,16 @@ vim.bo[buf_b].modified = false
 -- 8. diagnostics do not churn while in insert mode (bufferline parity)
 vim.diagnostic.set(ns, buf_c, {})
 api.nvim_set_current_buf(buf_c)
-api.nvim_feedkeys("i", "x!", false) -- enter and stay in insert mode
-assert_eq("i", api.nvim_get_mode().mode, "feedkeys entered insert mode")
-vim.diagnostic.set(ns, buf_c, {
-  { lnum = 0, col = 0, severity = vim.diagnostic.severity.ERROR, message = "late" },
-})
-assert_not_contains(chrome.statusline(), "ChromeDiagError", "insert mode defers diagnostic updates")
-api.nvim_feedkeys(api.nvim_replace_termcodes("<Esc>", true, false, true), "x", false)
+local insert_ran = false
+in_insert_mode(function()
+  assert_eq("i", api.nvim_get_mode().mode, "the body runs in insert mode")
+  vim.diagnostic.set(ns, buf_c, {
+    { lnum = 0, col = 0, severity = vim.diagnostic.severity.ERROR, message = "late" },
+  })
+  assert_not_contains(chrome.statusline(), "ChromeDiagError", "insert mode defers diagnostic updates")
+  insert_ran = true
+end)
+assert_eq(true, insert_ran, "the insert-mode body ran")
 assert_eq("n", api.nvim_get_mode().mode, "back to normal mode")
 assert_contains(chrome.statusline(), "ChromeDiagError", "InsertLeave flushes deferred diagnostics")
 vim.diagnostic.set(ns, buf_c, {})
@@ -243,5 +285,7 @@ assert_contains(chrome.statusline(), "we%%ird.txt", "statusline escapes % in fil
 assert_contains(chrome.tabline(), "we%%ird.txt", "tabline escapes % in filenames")
 vim.cmd("bdelete! " .. buf_p)
 
+finished = true
+vim.fn.delete(scratch, "rf")
 print("ALL PASS: chrome_spec")
 os.exit(0)

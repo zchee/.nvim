@@ -331,25 +331,12 @@ return {
       keepLines = {
         enable = true,
       },
-      colorDecorators = {
-        enable = true,
-      },
-      maxItemsComputed = 50000,
-      schemaDownload = {
-        enable = true,
-        trustedDomains = {
-          ["https://schemastore.azurewebsites.net/"] = true,
-          ["https://raw.githubusercontent.com/microsoft/vscode/"] = true,
-          ["https://raw.githubusercontent.com/devcontainers/spec/"] = true,
-          ["https://www.schemastore.org/"] = true,
-          ["https://json.schemastore.org/"] = true,
-          ["https://json-schema.org/"] = true,
-          ["https://developer.microsoft.com/json-schemas/"] = true,
-          -- additional
-          ["https://raw.githubusercontent.com/SchemaStore/schemastore/"] = true,
-          ["https://raw.githubusercontent.com/zchee/schema/"] = true,
-        },
-      },
+      -- Nothing else under `json` reaches this server: its configuration
+      -- handler reads schemas, validate.enable, keepLines.enable,
+      -- format.enable and the resultLimit/*FoldingLimit/*ColorDecoratorLimit
+      -- caps, and leaves every limit unbounded when unset. VS Code's
+      -- colorDecorators, maxItemsComputed and schemaDownload are settings of
+      -- its client extension, which the server never sees.
     },
   },
   -- vim.lsp deepcopies the config per client start, so this mutation stays

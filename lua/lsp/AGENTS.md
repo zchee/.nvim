@@ -119,7 +119,8 @@ every session, whether or not that server ever starts.
     while blink stays unloaded; needs the gopls daemon.
 - Under `-u NONE` the `~/.config/nvim` symlink keeps this repo on the rtp,
   so `require("lsp")` loads the repo's files even from a copy of the tree;
-  run such a copy with `--clean`.
+  run such a copy with `XDG_CONFIG_HOME` pointed at an empty directory
+  (the exact command is in `tests/AGENTS.md`).
 - gopls runs in forwarder mode (`-remote=unix;/tmp/gopls.sock`) and exits
   without a daemon — start `gopls -listen="unix;/tmp/gopls.sock" serve`
   before attach checks.

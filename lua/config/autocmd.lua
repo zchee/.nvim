@@ -183,14 +183,21 @@ vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 -- WinClosed, not WinEnter: <C-w>T on a qf window also enters a tab holding
 -- one qf window, and must keep it. Only the current window being closed
 -- counts (not :only run from the qf window, not a plugin closing another
--- window), and not a qf/git window itself (<C-w>T closes the old qf window).
+-- window), and not a qf/git window itself (<C-w>T closes the old qf window),
+-- nor a floating window (a focused hover or picker float closed in a qf-only
+-- tab). The window is still valid inside WinClosed, so its config is readable.
 local function is_pager_ft(ft)
   return ft == "qf" or ft == "git"
 end
 vim.api.nvim_create_autocmd({ "WinClosed" }, {
   group = autocmd_user,
   callback = function(args)
-    if tonumber(args.match) ~= vim.api.nvim_get_current_win() or is_pager_ft(vim.bo[args.buf].filetype) then
+    local win = tonumber(args.match) --[[@as integer]]
+    if
+      win ~= vim.api.nvim_get_current_win()
+      or is_pager_ft(vim.bo[args.buf].filetype)
+      or vim.api.nvim_win_get_config(win).relative ~= ""
+    then
       return
     end
     local tab = vim.api.nvim_get_current_tabpage()

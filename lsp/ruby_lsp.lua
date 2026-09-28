@@ -92,6 +92,9 @@ return {
   end,
   filetypes = { "ruby" },
   root_markers = { ".git" },
+  -- ruby-lsp reads its options from initializationOptions alone (GlobalState
+  -- apply_options); it never requests workspace/configuration, so there is
+  -- no settings table to keep in step with this one.
   init_options = {
     rubyVersionManager = {
       identifier = "rbenv",
@@ -107,24 +110,6 @@ return {
       -- excludedMagicComments = { "compiled:true" },
     },
     experimentalFeaturesEnabled = true,
-  },
-  settings = {
-    rubyLsp = {
-      rubyVersionManager = {
-        identifier = "rbenv",
-      },
-      formatter = "rubyfmt",
-      bundleGemfile = vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/Gemfile"),
-      indexing = {
-        includedPatterns = {
-          vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/**"),
-        },
-        -- excludedPatterns = { "**/test/**/*.rb" },
-        -- excludedGems = { "rubocop", "rubocop-performance" },
-        -- excludedMagicComments = { "compiled:true" },
-      },
-      experimentalFeaturesEnabled = true,
-    },
   },
   -- reuse_client = function(client, config)
   --   config.cmd_cwd = config.root_dir

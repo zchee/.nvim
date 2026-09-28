@@ -20,7 +20,7 @@ local lua_ls_bin = util.homebrew_binary("lua-language-server-head", "lua-languag
 -- slow LSP beats no LSP. LUA_LS_NO_LSPMUX=1 bypasses the daemon for bisecting.
 ---@param dispatchers vim.lsp.rpc.Dispatchers
 ---@param config vim.lsp.ClientConfig
----@return vim.lsp.rpc.PublicClient
+---@return vim.lsp.rpc.Client
 local function lua_ls_cmd(dispatchers, config)
   local function direct()
     return vim.lsp.rpc.start({ lua_ls_bin }, dispatchers, { cwd = config.root_dir })
@@ -130,7 +130,7 @@ return {
         },
       },
       semantic = {
-        enabled = true,
+        enable = true,
         variable = true,
         annotation = true,
         keyword = true,
@@ -138,17 +138,19 @@ return {
       signatureHelp = {
         enable = false,
       },
-      telemetry = {
-        enable = false,
-      },
       window = {
         statusBar = true,
         progressBar = true,
       },
+      -- A string map under `config` (template.lua types it
+      -- Hash(String, String)); the keys directly under typeFormat were never
+      -- read.
       typeFormat = {
-        auto_complete_end = true,
-        auto_complete_table_sep = true,
-        format_line = true,
+        config = {
+          auto_complete_end = "true",
+          auto_complete_table_sep = "true",
+          format_line = "true",
+        },
       },
       workspace = {
         checkThirdParty = "Disable",

@@ -14,7 +14,7 @@ runtime `:colorscheme equinusocio_material` repaints everything in one pass.
 ## Key Files
 | File | Description |
 |------|-------------|
-| `equinusocio_material.lua` | Dark Material colorscheme: palette locals, `hl()` base paint (editor, syntax, nvim-lspconfig/Diagnostic groups), then `ovr()` overrides (blink.cmp menu, gitsigns, Go/Rust/Lua/TypeScript/Python/YAML/GraphQL/Diff/C/C++ Tree-sitter and LSP groups, third-party plugin groups) |
+| `equinusocio_material.lua` | Dark Material colorscheme: palette locals, `hl()` base paint (editor, syntax, nvim-lspconfig/Diagnostic groups), then `ovr()` overrides (blink.cmp menu, gitsigns, Go/Rust/Lua/TypeScript/Python/YAML/GraphQL/Diff/C/C++ Tree-sitter and LSP groups, the `syntax/go.vim` `go*` groups, third-party plugin groups) |
 
 ## For AI Agents
 

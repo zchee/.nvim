@@ -285,9 +285,6 @@ vim.g.go_highlight_debug = 1 -- default : 1
 vim.g.go_fold_enable = { "block", "import", "varconst", "comment", "package_comment" }
 vim.g.go_highlight_error = 1
 vim.g.go_highlight_return = 1
-vim.api.nvim_set_hl(0, "goImportString", { link = "Comment", force = true })
-vim.api.nvim_set_hl(0, "goPredefinedIdentifiers", { link = "Keyword", force = true })
-vim.api.nvim_set_hl(0, "goReceiverType", { link = "Keyword", force = true })
 
 -- C:
 vim.g.c_ansi_constants = 1

@@ -88,6 +88,10 @@ end
 -- server would then send commit characters or preselect flags that nothing
 -- acts on. Load the module the way the config does, with lspkind stubbed and
 -- vim.lsp.enable recorded instead of run, so no server config resolves here.
+-- Then resolve every enabled config (and tsgo, registered but not enabled):
+-- the lsp/*.lua files and lua/lsp/init.lua load in every session, so none of
+-- them may look a binary up on disk or on $PATH before its server starts
+-- (lua/lsp/AGENTS.md) -- the node servers' lookups live in a function cmd.
 do
   package.loaded["lspkind"] = { init = function() end }
   local enable = vim.lsp.enable
@@ -96,9 +100,33 @@ do
   vim.lsp.enable = function(names)
     vim.list_extend(enabled, type(names) == "table" and names or { names })
   end
+  local util = require("util")
+  local lookups = {}
+  local originals = { bun_prefix = util.bun_prefix, nodenv_prefix = util.nodenv_prefix }
+  for name, original in pairs(originals) do
+    util[name] = function(binary)
+      local info = debug.getinfo(2, "Sl")
+      lookups[#lookups + 1] = ("util.%s(%q) at %s:%d"):format(name, binary, info.short_src, info.currentline)
+      return original(binary)
+    end
+  end
+  local exepath = vim.fn.exepath
+  vim.fn.exepath = function(binary)
+    local info = debug.getinfo(2, "Sl")
+    lookups[#lookups + 1] = ("vim.fn.exepath(%q) at %s:%d"):format(binary, info.short_src, info.currentline)
+    return exepath(binary)
+  end
   require("lsp")
   vim.lsp.enable = enable
   assert(#enabled > 0, "lua/lsp/init.lua must still enable its servers")
+  for _, name in ipairs(vim.list_extend({ "tsgo" }, enabled)) do
+    assert(vim.lsp.config[name] ~= nil, ("vim.lsp.config.%s must resolve"):format(name))
+  end
+  vim.fn.exepath = exepath
+  for name, original in pairs(originals) do
+    util[name] = original
+  end
+  assert(#lookups == 0, "server configs looked binaries up at load time:\n" .. table.concat(lookups, "\n"))
 
   local merged = vim.lsp.config["*"].capabilities.textDocument.completion.completionItem
   for key, value in pairs(live.textDocument.completion.completionItem) do
@@ -114,4 +142,6 @@ do
   end
 end
 
-print("OK: capabilities snapshot matches blink.cmp and the merged completionItem claims nothing blink lacks")
+print(
+  "OK: capabilities snapshot matches blink.cmp, the merged completionItem claims nothing blink lacks, and no server config looks a binary up at load time"
+)

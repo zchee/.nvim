@@ -34,11 +34,7 @@ return {
         enabled = true,
         diagnosticsLimit = 50,
         showDiagnosticsDirectly = false,
-        -- An argv, not a name: helm-ls (YamllsPath) takes the executable
-        -- plus its arguments, so the node that runs the #!/usr/bin/env node
-        -- bin is pinned the way lsp/yamlls.lua pins it, instead of a chart's
-        -- .node-version choosing it through the nodenv shim.
-        path = { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" },
+        -- path: an argv set by before_init below.
         config = {
           schemas = {
             kubernetes = "templates/**",
@@ -50,4 +46,16 @@ return {
       },
     },
   },
+  -- yamlls.path is an argv, not a name: helm-ls (YamllsPath) takes the
+  -- executable plus its arguments, so the node that runs the
+  -- #!/usr/bin/env node bin is pinned the way lsp/yamlls.lua pins it, instead
+  -- of a chart's .node-version choosing it through the nodenv shim. Set here,
+  -- not in the table above, so the lookups run when a helm buffer starts the
+  -- server; vim.lsp deepcopies the config per start, and client.settings is
+  -- this same table, so helm-ls pulls the path with the rest.
+  ---@param config vim.lsp.ClientConfig
+  before_init = function(_, config)
+    config.settings["helm-ls"].yamlls.path =
+      { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" }
+  end,
 }

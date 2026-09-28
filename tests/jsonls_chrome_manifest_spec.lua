@@ -99,9 +99,11 @@ do
 end
 
 -- The live half.
+-- cmd is a function (the lookups run at server start), so ask util here.
+local server_bin = require("util").bun_prefix("vscode-json-language-server")
 assert_true(
-  vim.uv.fs_stat(config.cmd[2]) ~= nil,
-  ("vscode-json-language-server is not installed at %s"):format(config.cmd[2])
+  vim.uv.fs_stat(server_bin) ~= nil,
+  ("vscode-json-language-server is not installed at %s"):format(server_bin)
 )
 
 local root = vim.fn.tempname()

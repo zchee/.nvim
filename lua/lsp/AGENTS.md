@@ -134,9 +134,12 @@ every session, whether or not that server ever starts.
     toolchain: gopls's `go`, bashls's `shellcheck`.
   - Node servers name their interpreter and script separately, so the
     nodenv shim cannot pick node from the project's version file:
-    `{ util.nodenv_prefix("node"), util.bun_prefix("<bin>"), "--stdio" }` —
-    jsonls, yamlls, vtsls, tsgo (in `init.lua`), and helm-ls's yamlls child
-    (`settings["helm-ls"].yamlls.path`).
+    `{ util.nodenv_prefix("node"), util.bun_prefix("<bin>"), "--stdio" }`,
+    built inside a function `cmd` (the `lsp/sourcekit.lua` shape) so both
+    lookups run when the server starts — jsonls, yamlls, vtsls, tsgo (in
+    `init.lua`) — and, for helm-ls's yamlls child, in `before_init`
+    (`settings["helm-ls"].yamlls.path`). `tests/lsp_capabilities_snapshot_spec.lua`
+    fails when any config looks a binary up at load time.
   - `vim.fn.exepath()` inside a function `cmd` where `$PATH` is meant to
     choose (helm_ls, sourcekit's toolchain), so the walk happens only when
     the server starts.

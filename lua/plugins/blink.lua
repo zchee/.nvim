@@ -64,7 +64,7 @@ blink.setup({
       snippets = {
         name = "LuaSnip",
         module = "blink.cmp.sources.snippets",
-        score_offset = 300, -- receives a -3 from top level snippets.score_offset
+        score_offset = 100, -- receives a -3 from top level snippets.score_offset
         async = true,
         opts = {
           use_show_condition = true, -- Whether to use show_condition for filtering snippets
@@ -75,7 +75,7 @@ blink.setup({
       copilot = {
         name = "copilot",
         module = "blink-copilot",
-        score_offset = 100,
+        score_offset = 300,
         async = true,
         -- Same restriction the old cmp entry_filter enforced: in Go buffers,
         -- only offer Copilot on comment lines or inside fmt.Errorf format
@@ -102,7 +102,7 @@ blink.setup({
       lazydev = {
         name = "LazyDev",
         module = "lazydev.integrations.blink",
-        score_offset = 500,
+        score_offset = 600,
         async = true,
       },
     },

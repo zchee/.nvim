@@ -220,6 +220,15 @@ FloatTitle {link="Title"}
 FoldColumn {blend=0,fg=15922163}
 Folded {bg=5526612,blend=0,fg=15922163}
 Function {blend=0,fg=7772903}
+GitSignsAdd {bg=65793,fg=39168}
+GitSignsAddLn {link="DiffAdd"}
+GitSignsAddNr {link="CursorLineNr"}
+GitSignsChange {bg=65793,fg=12303104}
+GitSignsChangeLn {link="DiffChange"}
+GitSignsChangeNr {link="CursorLineNr"}
+GitSignsDelete {bg=65793,fg=16720418}
+GitSignsDeleteLn {link="DiffDelete"}
+GitSignsDeleteNr {link="CursorLineNr"}
 HoverFloat {bg=2105634,blend=5,fg=13093064}
 Identifier {blend=0,fg=16763755}
 Ignore {blend=0,strikethrough=true}
@@ -246,7 +255,7 @@ LspReferenceWrite {link="LspReferenceText"}
 LspSignatureActiveParameter {bg=3422529,blend=10}
 LspWarningHighlight {blend=0,underline=true}
 LspWarningText {blend=0,fg=16763755}
-MCursor {link="Cursor"}
+MCursor {link="CurSearch"}
 MCursorVisual {link="Visual"}
 Macro {blend=0,fg=7723007}
 MatchParen {bg=3422529}
@@ -474,7 +483,10 @@ diffRemoved {fg=16711680}
 doxygenBrief {fg=8495806}
 doxygenSpecialMultilineDesc {fg=8495806}
 doxygenSpecialOnelineDesc {fg=8495806}
+goImportString {link="Comment"}
 goImportedPkg {blend=10,cterm={italic=true},fg=7772903,italic=true}
+goPredefinedIdentifiers {link="Keyword"}
+goReceiverType {link="Keyword"}
 illuminatedWord {cterm={underline=true},underline=true}
 lCursor {bg=15922163,cterm={reverse=true}}
 manBold {blend=0,bold=true,fg=15779444}

@@ -192,8 +192,9 @@ return {
       -- },
       -- schemas: filled in by before_init below, so the SchemaStore catalog
       -- (~1000 entries) only materializes when a JSON buffer actually starts
-      -- the server. Config files under lsp/ are read on the first FileType
-      -- event of ANY filetype, so even a module-scope require here would
+      -- the server. Every config file under lsp/ is read when
+      -- vim.lsp.enable() runs in lua/lsp/init.lua (and again on the first
+      -- FileType of any filetype), so even a module-scope require here would
       -- load the catalog for a Go-only session.
       validate = {
         enable = true,

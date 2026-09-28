@@ -287,8 +287,11 @@ vim.lsp.config("*", {
 --   lua/plugins/init.lua); enabling it here as well would attach a second
 --   rust-analyzer to every Rust buffer.
 -- Every enabled server lives in the native runtimepath form, lsp/<name>.lua
--- at the repo root: vim.lsp resolves those lazily on the first FileType
--- event, so no server module loads with this file.
+-- at the repo root, and none of them is lazy: vim.lsp.enable() below loads
+-- each file to validate it (runtime lsp.lua, `_ = lsp.config[nm]`), and the
+-- first FileType event of any filetype loads them all again to cache the
+-- resolved configs. Work a server needs only when it starts belongs in its
+-- before_init or a function cmd, never at module scope.
 vim.lsp.enable({
   "asm_lsp",
   "basedpyright",

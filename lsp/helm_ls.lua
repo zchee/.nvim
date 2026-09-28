@@ -3,8 +3,9 @@ local util = require("util")
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   -- A function, not a table: vim.fn.exepath walks $PATH, so a table literal
-  -- would pay that walk when the config resolves (any first FileType event)
-  -- rather than when a helm buffer actually starts the server.
+  -- would pay that walk whenever the config resolves -- vim.lsp.enable() in
+  -- lua/lsp/init.lua, then the first FileType of any filetype -- rather than
+  -- when a helm buffer actually starts the server.
   cmd = function(dispatchers)
     return vim.lsp.rpc.start({ vim.fn.exepath("helm_ls"), "serve" }, dispatchers)
   end,

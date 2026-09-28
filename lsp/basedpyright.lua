@@ -50,7 +50,7 @@ return {
         exclude = {},
         -- extraPaths: filled in by before_init below, which runs when a
         -- python buffer starts the server; the lookup stats the disk, and
-        -- vim.lsp.enable() resolves every config file at startup.
+        -- vim.lsp.enable() in lua/lsp/init.lua loads every config file.
         ignore = {},
         include = {},
         typeCheckingMode = "off", -- "off", "basic", "standard", "strict", "recommended", "all"

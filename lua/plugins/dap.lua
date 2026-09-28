@@ -68,9 +68,9 @@ dap.configurations.docker = {
   },
 }
 
---- Resolves an adapter binary on PATH (Mason's bin dir included once
---- mason-nvim-dap has set Mason up), keeping the bare name when it is not
---- installed so the launch error names what is missing.
+--- Resolves an adapter (or adapter helper) binary on PATH (Mason's bin dir
+--- included once mason-nvim-dap has set Mason up), keeping the bare name when
+--- it is not installed so the launch error names what is missing.
 ---@param name string
 ---@return string
 local function adapter_command(name)
@@ -176,10 +176,11 @@ dap.configurations.sh = {
     cwd = "${fileDirname}",
     pathBashdb = vim.fs.joinpath(bashdb_dir, "bashdb"),
     pathBashdbLib = bashdb_dir,
-    pathBash = "bash",
-    pathCat = "cat",
-    pathMkfifo = "mkfifo",
-    pathPkill = "pkill",
+    -- Absolute, as the adapter commands above: the adapter spawns these.
+    pathBash = adapter_command("bash"),
+    pathCat = adapter_command("cat"),
+    pathMkfifo = adapter_command("mkfifo"),
+    pathPkill = adapter_command("pkill"),
     env = {},
     args = {},
     terminalKind = "integrated",

@@ -184,8 +184,8 @@ vim.diagnostic.set(ns, buf_a, {
 })
 stl = chrome.statusline()
 assert_contains(stl, "ChromeDiagError", "error diagnostics segment present")
-assert_contains(stl, " 1", "error count with lualine error icon")
-assert_contains(stl, " 2", "warn count with lualine warn icon")
+assert_contains(stl, "󰅚 1", "error count with lualine error icon")
+assert_contains(stl, "󰀪 2", "warn count with lualine warn icon")
 
 -- 7. tabline: buffer ids, click regions, modified marker, diagnostics string
 vim.o.columns = 200 -- four 20-cell entries must fit the overflow window

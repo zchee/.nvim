@@ -62,10 +62,34 @@ assert_true(
   vim.tbl_contains(config.root_markers, ".git"),
   "the .git marker is what roots a vault that carries no .moxide.toml"
 )
-assert_true(
-  vim.tbl_contains(config.root_markers, ".moxide.toml"),
-  "a per-vault .moxide.toml must still win over the repository .git"
-)
+
+-- vim.lsp tries root_markers in list order, so precedence is only real if the
+-- vault markers sit ahead of .git. Checked on a tree rather than by reading
+-- the list: a vault inside a repository must root at the vault, a note with
+-- no vault marker at the repository.
+do
+  local tree = vim.fs.joinpath(vim.fn.tempname(), "repo")
+  vim.fn.mkdir(vim.fs.joinpath(tree, ".git"), "p")
+  vim.fn.mkdir(vim.fs.joinpath(tree, "moxide", "notes"), "p")
+  vim.fn.mkdir(vim.fs.joinpath(tree, "obsidian", ".obsidian"), "p")
+  vim.fn.mkdir(vim.fs.joinpath(tree, "plain"), "p")
+  vim.fn.writefile({}, vim.fs.joinpath(tree, "moxide", ".moxide.toml"))
+  local function root_of(...)
+    return vim.fs.root(vim.fs.joinpath(tree, ...), config.root_markers)
+  end
+  assert_equal(
+    vim.fs.joinpath(tree, "moxide"),
+    root_of("moxide", "notes", "a.md"),
+    "a vault's .moxide.toml must root it ahead of the repository .git"
+  )
+  assert_equal(
+    vim.fs.joinpath(tree, "obsidian"),
+    root_of("obsidian", "b.md"),
+    "an .obsidian vault must root at itself ahead of the repository .git"
+  )
+  assert_equal(tree, root_of("plain", "c.md"), "a note outside any vault roots at the repository .git")
+  vim.fn.delete(vim.fs.dirname(tree), "rf")
+end
 
 -- The live half: a vault whose notes git ignores, which is the shape of the
 -- agent memory trees this server exists to navigate.

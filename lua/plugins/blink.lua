@@ -212,8 +212,17 @@ blink.setup({
         gap = 1, -- Gap between columns
         treesitter = { "lsp" }, -- Use treesitter to highlight the label text for the given list of sources
         columns = { -- Components to render, grouped by column
-          { "label", "label_description", gap = 2 },
-          { "kind_icon", "kind", "source_name", gap = 2 },
+          {
+            "label",
+            "label_description",
+            gap = 2,
+          },
+          {
+            "kind_icon",
+            "kind",
+            "source_name",
+            gap = 2,
+          },
         },
         components = {
           kind_icon = {
@@ -233,7 +242,10 @@ blink.setup({
             end,
           },
           label = {
-            width = { fill = true, max = 60 },
+            width = {
+              fill = true,
+              max = 60,
+            },
             -- rust-analyzer carries the import hint in label_detail, so the
             -- two run together as `type_id()(use std::any::Any)`. Separate
             -- them; the highlight offsets below skip the two-space separator.

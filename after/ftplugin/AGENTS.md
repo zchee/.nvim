@@ -29,7 +29,7 @@ Content is mostly `vim.opt_local`/`vim.bo` indentation and comment settings;
 | `json5.lua` | JSON5: `expandtab`, `shiftwidth=0`, `tabstop=4` (no `softtabstop`) |
 | `jsonc.lua` | JSONC: `expandtab`, 2-space indent, `conceallevel=0` |
 | `kitty.lua` | kitty.conf: `commentstring = "# %s"`, appends `b:#` and `b:#\:` to `comments` (`$VIMRUNTIME/ftplugin/kitty.vim` resets both, so they must come after it) |
-| `sh.lua` | Shell scripts: `expandtab`, `sw=ts=sts=2`. Here so `$VIMRUNTIME/ftplugin/sh.vim` sets `comments`/`commentstring` first |
+| `sh.lua` | Shell scripts: `expandtab`, `sw=ts=sts=2`, and an empty local `keywordprg` (the runtime's bash `:ShKeywordPrg` calls Vim-only `term_start()`; empty falls back to the global `:Help`). Here so `$VIMRUNTIME/ftplugin/sh.vim` sets `comments`/`commentstring` first |
 | `terraform.lua` | Terraform: C-style `comments`, `// %s` `commentstring` |
 | `typescript.lua` | TypeScript: C-style `comments`, `// %s` `commentstring` (no indent opts) |
 | `zsh.lua` | Zsh: shell-comment leader string, `# %s` `commentstring`, 2-space indent, drops `t` from `formatoptions` |

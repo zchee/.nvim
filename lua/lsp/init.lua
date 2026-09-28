@@ -127,6 +127,10 @@ local default_capabilities_config = function()
   -- registration (it watches the vault, and its create-unresolved-file code
   -- action depends on the watcher). Nothing left to force.
 
+  -- commitCharactersSupport and preselectSupport stay at blink's false: blink
+  -- implements neither (both are TODOs in its get_lsp_capabilities), so
+  -- advertising them only makes servers send commit characters and preselect
+  -- flags nothing acts on. tests/lsp_capabilities_snapshot_spec.lua guards it.
   ---@type lsp.ClientCapabilities
   local capabilities_override = {
     general = {
@@ -135,8 +139,6 @@ local default_capabilities_config = function()
     textDocument = {
       completion = {
         completionItem = {
-          commitCharactersSupport = true,
-          preselectSupport = true,
           documentationFormat = { vim.lsp.protocol.MarkupKind.Markdown },
         },
       },

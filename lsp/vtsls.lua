@@ -51,26 +51,8 @@ local inlay_hints = {
   },
 }
 
--- Bound on LspAttach rather than in an `on_attach` here, for the reason
--- lsp/jsonls.lua spells out: configs resolve through
--- vim.tbl_deep_extend("force", config["*"], ...), which replaces rather than
--- merges a function, so an `on_attach` in this file would silently drop the
--- shared one lua/lsp/init.lua installs for every server.
---
--- Both features are pull-based: without these calls Neovim never sends
--- textDocument/inlayHint or textDocument/codeLens, so the settings below would
--- reach the server and never show up on screen.
-vim.api.nvim_create_autocmd("LspAttach", {
-  group = vim.api.nvim_create_augroup("vtsls_hints_and_lenses", { clear = true }),
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client == nil or client.name ~= "vtsls" then
-      return
-    end
-    vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
-    vim.lsp.codelens.enable(true, { bufnr = args.buf })
-  end,
-})
+-- Inlay hints and code lenses are switched on per buffer in
+-- lua/lsp/on_attach.lua; both are pull-based, so the settings below need it.
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {

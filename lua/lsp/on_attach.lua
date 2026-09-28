@@ -138,6 +138,126 @@ attach.markdown_oxide = function(client, bufnr)
   end
 end
 
+-- Both features are pull-based: without these calls Neovim never sends
+-- textDocument/inlayHint or textDocument/codeLens, so the inlayHints and
+-- *CodeLens settings in lsp/vtsls.lua would reach the server and never show up
+-- on screen.
+attach.vtsls = function(_, bufnr)
+  vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+  vim.lsp.codelens.enable(true, { bufnr = bufnr })
+end
+
+-- <C-]> on a `$ref` jumps to the JSON Pointer's target.
+--
+-- vscode-json-language-server answers no `textDocument/definition` at all:
+-- measured against the real server, its initialize result carries
+-- `definitionProvider = nil`, and vscode-json-languageservice 5.7.2 ships no
+-- services/jsonDefinition.js to back one. So the global <C-]>
+-- (snacks.picker.lsp_definitions, lua/lsp/init.lua) has nothing to ask on a
+-- JSON buffer and a `$ref` is a dead end.
+--
+-- The resolution does exist -- under a different request. services/jsonLinks.js
+-- walks every `$ref` property, resolves the RFC 6901 pointer against the
+-- document AST, and hands it back as a DocumentLink; the server advertises
+-- `documentLinkProvider` and returns 38 links for ganja-config.schema.json.
+-- Neovim carries the documentLink types in vim.lsp.protocol but implements no
+-- client for the request -- there is no vim.lsp.buf.document_link -- so nothing
+-- ever surfaces them.
+--
+-- Two shapes of that reply are load-bearing here:
+--
+--   * `target` is not a plain URI. findLinks builds
+--     `${document.uri}#${line + 1},${character + 1}`, a VS Code fragment
+--     convention rather than an lsp.Location, so the position is parsed back
+--     out of the string and rebuilt into one for show_document.
+--   * It points at the *value* node, not the key: findNode returns
+--     `propertyNode.valueNode`, so `#/$defs/AgentConfig` lands on the `{`
+--     opening the definition rather than on `"AgentConfig"`.
+--
+-- Pointers are same-document only -- parseJSONPointer bails unless the path
+-- starts with "#/" -- so a cross-file `other.json#/$defs/X` produces no link and
+-- falls through to the global definition picker, as does any cursor position
+-- outside a `$ref` string.
+local LINK_TARGET_PATTERN = "^(.*)#(%d+),(%d+)$"
+
+---Whether a 0-indexed, end-exclusive `range` covers `line`/`character`.
+---
+---The range findLinks reports spans the string's contents, not its quotes
+---(`positionAt(offset + 1)` to `positionAt(offset + length - 1)`), so a cursor
+---parked on either `"` is deliberately outside it.
+---@param range lsp.Range
+---@param line integer
+---@param character integer
+---@return boolean
+local function range_covers(range, line, character)
+  if line < range.start.line or line > range["end"].line then
+    return false
+  end
+  if line == range.start.line and character < range.start.character then
+    return false
+  end
+  if line == range["end"].line and character >= range["end"].character then
+    return false
+  end
+  return true
+end
+
+---Jumps to the `$ref` target under the cursor, or falls back to LSP definitions.
+---
+---The request is async so a keypress never blocks on the server; the cursor is
+---sampled up front because the reply lands after it may have moved.
+---@param client vim.lsp.Client
+---@param bufnr integer
+local function jump_to_ref(client, bufnr)
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = row - 1
+
+  -- Not lsp_definitions() from init.lua: that one first nudges the cursor onto
+  -- the next identifier character for rust-analyzer's attribute macros, which
+  -- no JSON buffer wants.
+  local function fallback()
+    require("snacks").picker.lsp_definitions()
+  end
+
+  local ok = client:request("textDocument/documentLink", {
+    textDocument = vim.lsp.util.make_text_document_params(bufnr),
+  }, function(err, result)
+    if err ~= nil or type(result) ~= "table" then
+      return fallback()
+    end
+    for _, link in ipairs(result) do
+      if type(link.target) == "string" and range_covers(link.range, line, col) then
+        local uri, target_line, target_character = link.target:match(LINK_TARGET_PATTERN)
+        if uri ~= nil then
+          local position = {
+            line = tonumber(target_line) - 1,
+            character = tonumber(target_character) - 1,
+          }
+          -- show_document saves the jumplist position under `focus`, so <C-o>
+          -- comes back, and converts `character` out of the server's encoding.
+          return vim.lsp.util.show_document(
+            { uri = uri, range = { start = position, ["end"] = position } },
+            client.offset_encoding,
+            { reuse_win = true, focus = true }
+          )
+        end
+      end
+    end
+    return fallback()
+  end, bufnr)
+
+  if not ok then
+    fallback()
+  end
+end
+
+-- Buffer-local, so it shadows the global <C-]> only where jsonls is attached.
+attach.jsonls = function(client, bufnr)
+  vim.keymap.set("n", "<C-]>", function()
+    jump_to_ref(client, bufnr)
+  end, { buffer = bufnr, silent = true, desc = "jsonls: jump to $ref target" })
+end
+
 ---@param client vim.lsp.Client
 ---@param bufnr integer
 return function(client, bufnr)

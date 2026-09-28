@@ -22,6 +22,13 @@ local go_string_node_types = {
 np.setup({
   disable_filetype = {
     "TelescopePrompt",
+    -- nvim-autopairs keeps check_ts state in one global (state.ts_node) that
+    -- every attach overwrites. fidget draws its float with that float's
+    -- buffer current, so each LSP progress message ran an attach that
+    -- cleared the state, and ts_config stopped applying in the Go buffer
+    -- until its next BufEnter. A disabled filetype returns before the state
+    -- is touched.
+    "fidget",
   },
   fast_wrap = {
     map = "<M-e>",

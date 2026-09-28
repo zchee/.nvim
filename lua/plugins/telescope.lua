@@ -1,3 +1,5 @@
+local util = require("util")
+
 local telescope = require("telescope")
 
 local live_grep_args = require("telescope-live-grep-args.actions")
@@ -18,9 +20,6 @@ local function get_pickers(actions)
         "--exclude=_tmp",
         "--exclude=.aider.chat.history.md",
       },
-      search_dirs = {
-        vim.lsp.buf.list_workspace_folders()[0],
-      },
     },
     file_browser = {
       date = true,
@@ -30,7 +29,6 @@ local function get_pickers(actions)
       },
     },
     live_grep = {
-      cwd = vim.lsp.buf.list_workspace_folders()[0],
       only_sort_text = true,
     },
     grep_string = {
@@ -74,6 +72,7 @@ end
 
 local ok, actions = pcall(require, "telescope.actions")
 if not ok then
+  vim.notify("plugins.telescope: setup skipped, telescope.actions failed to load: " .. actions, vim.log.levels.ERROR)
   return
 end
 
@@ -154,7 +153,7 @@ telescope.setup({
       hijack_netrw = true,
     },
     ghq = {
-      bin = vim.fs.joinpath(vim.uv.os_homedir(), "go", "bin", "ghq"),
+      bin = util.go_path("bin", "ghq"),
       cwd = vim.uv.cwd(),
     },
     grep_app = {
@@ -180,12 +179,6 @@ telescope.setup({
       theme = "dropdown",
       order_by = "asc",
       search_by = "path", -- "title",
-      sync_with_nvim_tree = true, -- default false
-    },
-    ["ui-select"] = {
-      require("telescope.themes").get_dropdown({
-        -- even more opts
-      }),
     },
   },
 })
@@ -194,4 +187,20 @@ telescope.load_extension("file_browser")
 telescope.load_extension("ghq")
 telescope.load_extension("grep_app")
 telescope.load_extension("live_grep_args")
-telescope.load_extension("ui-select")
+
+-- find_files and live_grep run in the buffer's first LSP workspace folder.
+-- Picker config values are fixed when telescope loads, which would pin the
+-- folder of whatever buffer was current then, so the lookup happens per call
+-- by wrapping the builtins; :Telescope <picker> dispatches through this same
+-- table. find_files takes it as cwd, not search_dirs: fd refuses a search
+-- path together with the --strip-cwd-prefix its find_command passes. An
+-- explicit cwd from the caller (the <C-g> git-root grep) still wins.
+local builtin = require("telescope.builtin")
+for _, name in ipairs({ "find_files", "live_grep" }) do
+  local picker = builtin[name]
+  builtin[name] = function(opts)
+    opts = opts or {}
+    opts.cwd = opts.cwd or vim.lsp.buf.list_workspace_folders()[1]
+    return picker(opts)
+  end
+end

@@ -8,7 +8,9 @@ return {
   -- a `#!/usr/bin/env node` script, and through the nodenv shim its node
   -- version follows the cwd it is spawned in -- see util.nodenv_prefix.
   cmd = { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" },
-  filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values" },
+  -- yaml.docker-compose and yaml.gitlab were nvim-lspconfig's names; no
+  -- filetype rule here produces them, so only :checkhealth ever saw them.
+  filetypes = { "yaml", "yaml.helm-values" },
   root_markers = { ".git" },
   -- yaml-language-server reports no documentFormattingProvider until settings
   -- arrive, so LspAttach-time supports_method("textDocument/formatting")

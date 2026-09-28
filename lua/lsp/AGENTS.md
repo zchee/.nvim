@@ -26,7 +26,7 @@ every session, whether or not that server ever starts.
 |------|-------------|
 | `init.lua` | Semantic-tokens `reset_timer` crash guard, diagnostics config, `default_capabilities_config()` (Neovim's capabilities + the blink snapshot + overrides), the `tsgo` registration (configured, not enabled), the no-op formatting-edit filter for every client, `vim.lsp.config("*")`, the `vim.lsp.enable()` list with the deliberately absent servers (marksman, markdown_oxide, rust_analyzer), and the global LSP keymaps |
 | `on_attach.lua` | The `on_attach` every server shares, as a table keyed by server name: dockerls capability stripping, clangd and basedpyright user commands, terraformls and vtsls code lenses / inlay hints, markdown_oxide daily notes, the jsonls `$ref` `<C-]>` |
-| `cmd.lua` | `require("lsp.cmd").lazy(argv)`: a function `cmd` that builds its argv when the server starts and spawns it with the options vim.lsp passes for a table `cmd` (`cwd = cmd_cwd or root_dir`, `env = cmd_env`, `detached`, as runtime `lua/vim/lsp/client.lua` `Client.create`). Used by jsonls, yamlls, vtsls, sourcekit and tsgo. Required as `lsp.cmd`, never via `require("lsp")`, whose `vim.lsp.enable()` loads the `lsp/` files |
+| `cmd.lua` | `require("lsp.cmd").lazy(argv)`: a function `cmd` that builds its argv when the server starts and spawns it with the options vim.lsp passes for a table `cmd` (`cwd = cmd_cwd or root_dir`, `env = cmd_env`, `detached`, as runtime `lua/vim/lsp/client.lua` `Client.create`). Used by jsonls, yamlls, vtsls, helm_ls, sourcekit and tsgo. Required as `lsp.cmd`, never via `require("lsp")`, whose `vim.lsp.enable()` loads the `lsp/` files |
 | `capabilities.lua` | Static snapshot of `require("blink.cmp").get_lsp_capabilities({}, false)`, merged into every server so blink stays unloaded until InsertEnter. Drift-guarded by `tests/lsp_capabilities_snapshot_spec.lua`; regeneration recipe in its header |
 
 ## For AI Agents
@@ -148,8 +148,8 @@ every session, whether or not that server ever starts.
     (`settings["helm-ls"].yamlls.path`). `tests/lsp_capabilities_snapshot_spec.lua`
     fails when any config looks a binary up at load time.
   - `vim.fn.exepath()` inside a function `cmd` where `$PATH` is meant to
-    choose (helm_ls, sourcekit's toolchain through `lsp.cmd.lazy`), so the
-    walk happens only when the server starts.
+    choose (helm_ls, sourcekit's toolchain), both through `lsp.cmd.lazy`, so
+    the walk happens only when the server starts.
   - `$ZVM_PATH` for zls, with one ERROR and no `cmd` when it is unset;
     clangd keeps its absolute `/opt/local/llvm/clangd` path.
   - `util.src_path()` for auxiliary include/library paths (protols).

@@ -1,14 +1,17 @@
+local lsp_cmd = require("lsp.cmd")
 local util = require("util")
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  -- A function, not a table: vim.fn.exepath walks $PATH, so a table literal
-  -- would pay that walk whenever the config resolves -- vim.lsp.enable() in
-  -- lua/lsp/init.lua, then the first FileType of any filetype -- rather than
-  -- when a helm buffer actually starts the server.
-  cmd = function(dispatchers)
-    return vim.lsp.rpc.start({ vim.fn.exepath("helm_ls"), "serve" }, dispatchers)
-  end,
+  -- Built through lsp.cmd.lazy, not a table: vim.fn.exepath walks $PATH, so a
+  -- table literal would pay that walk whenever the config resolves --
+  -- vim.lsp.enable() in lua/lsp/init.lua, then the first FileType of any
+  -- filetype -- rather than when a helm buffer actually starts the server.
+  -- lsp.cmd.lazy also spawns it in the chart root (root_dir), as a table cmd
+  -- would, instead of Nvim's cwd.
+  cmd = lsp_cmd.lazy(function()
+    return { vim.fn.exepath("helm_ls"), "serve" }
+  end),
   filetypes = { "helm" },
   root_markers = { "Chart.yaml" },
   capabilities = {

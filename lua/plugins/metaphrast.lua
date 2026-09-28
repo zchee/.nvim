@@ -47,7 +47,11 @@ metaphrast.setup({
     },
     google = {
       api_key = vim.env.GOOGLE_API_KEY or vim.env.GOOGLE_TRANSLATE_KEY,
-      gcp_project_id = vim.env.METAFRASTIS_GCP_PROJECT,
+      -- The standard variable wins; METAFRASTIS_* is the spelling from before
+      -- the plugin was renamed to metaphrast, still what the shell exports.
+      gcp_project_id = vim.env.GOOGLE_CLOUD_PROJECT
+        or vim.env.METAPHRAST_GCP_PROJECT
+        or vim.env.METAFRASTIS_GCP_PROJECT,
       model = "v2",
       base_url = "https://translation.googleapis.com/language/translate/v2",
       price_per_million_chars = 20.0,
@@ -67,7 +71,7 @@ metaphrast.setup({
       output_per_million = 2.50,
     },
     openrouter = {
-      api_key = vim.env.OPENROUTER_METAFRASTIS_API_KEY,
+      api_key = vim.env.OPENROUTER_METAPHRAST_API_KEY or vim.env.OPENROUTER_METAFRASTIS_API_KEY,
       model = "deepseek/deepseek-v4-flash",
       base_url = "https://openrouter.ai/api/v1/chat/completions",
       input_per_million = 0.15,

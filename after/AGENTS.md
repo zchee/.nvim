@@ -7,7 +7,7 @@
 Neovim's `after/` runtime directory: everything under here loads *after* the
 rest of `runtimepath` (`$VIMRUNTIME` and plugins included), so files here get
 the final say over per-filetype buffer options and Tree-sitter query
-behavior. Three subdirectories: `ftplugin/` (per-filetype settings for 18
+behavior. Three subdirectories: `ftplugin/` (per-filetype settings for 19
 filetypes, applied after the runtime's own ftplugin), `queries/` (Tree-sitter
 queries that `extends` nvim-treesitter's for 10 languages, plus the full
 query set of the private `goasm` grammar), and `syntax/` (holds only its
@@ -20,7 +20,7 @@ lives in the subdirectories below.
 ## Subdirectories
 | Directory | Purpose |
 |-----------|---------|
-| `ftplugin/` | Per-filetype settings (indent, comments, a few maps) for 18 filetypes (see `ftplugin/AGENTS.md`) |
+| `ftplugin/` | Per-filetype settings (indent, comments, a few maps) for 19 filetypes (see `ftplugin/AGENTS.md`) |
 | `queries/` | Tree-sitter query extensions for 10 languages plus the base `goasm` query set (see `queries/AGENTS.md`) |
 | `syntax/` | No syntax files -- legacy Vim syntax overrides were removed in favor of Tree-sitter (see `syntax/AGENTS.md`) |
 

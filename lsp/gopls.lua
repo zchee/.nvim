@@ -41,7 +41,7 @@ local std_lib = nil
 ---@param custom_args go_dir_custom_args
 ---@param on_complete fun(dir: string | nil)
 local function identify_go_dir(custom_args, on_complete)
-  local cmd = { "go", "env", custom_args.envvar_id }
+  local cmd = { util.prefix("go", "bin", "go"), "env", custom_args.envvar_id }
   vim.system(cmd, { text = true }, function(output)
     local res = vim.trim(output.stdout or "")
     if output.code == 0 and res ~= "" then

@@ -3,6 +3,11 @@
 -- this spec replaces vim.fn with a proxy that errors on any access, then
 -- drives the handler through the search-key truth table and the typed==""
 -- (mapping expansion) and non-normal-mode early returns.
+--
+-- Run: nvim --headless -u NONE -i NONE -l tests/auto_hlsearch_on_key_spec.lua
+-- Exits 0 only after printing "ALL PASS": a VimLeavePre guard turns any
+-- earlier exit into exit 1. Entering Insert mode with feedkeys "nx!" used to
+-- end the process right there with exit 0, before the Insert-mode checks.
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
@@ -16,6 +21,38 @@ local on_key = autocmd.auto_hlsearch_on_key
 local function assert_equal(got, want, msg)
   if got ~= want then
     error(("%s: got %s, want %s"):format(msg, vim.inspect(got), vim.inspect(want)), 2)
+  end
+end
+
+local finished = false
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    if not finished then
+      io.stderr:write("FAIL: auto_hlsearch_on_key_spec exited before its last assertion\n")
+      os.exit(1)
+    end
+  end,
+})
+
+--- Run `fn` while Neovim is really in Insert mode, then leave it. An -l
+--- script cannot enter Insert mode and carry on: startinsert and nvim_input
+--- take effect only once the script yields to the main loop, and feedkeys
+--- "x!" returns only when Insert mode ends. So `fn` runs from a callback
+--- scheduled onto the Insert-mode input loop, and feeds the <Esc> itself.
+--- Errors are re-raised after Insert mode ends.
+---@param fn fun()
+local function in_insert_mode(fn)
+  local err
+  vim.schedule(function()
+    local ok, e = pcall(fn)
+    if not ok then
+      err = e
+    end
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+  end)
+  vim.api.nvim_feedkeys("i", "x!", false)
+  if err then
+    error(err, 0)
   end
 end
 
@@ -74,20 +111,29 @@ local ok, err = pcall(function()
   end
 
   do -- non-normal mode is ignored
-    vim.api.nvim_feedkeys("i", "nx!", false)
-    assert_equal(vim.api.nvim_get_mode().mode:sub(1, 1), "i", "spec precondition: feedkeys must enter insert mode")
-    vim.o.hlsearch = false
-    on_key(nil, "/")
-    assert_equal(vim.o.hlsearch, false, "insert-mode '/' must not enable hlsearch")
-    vim.o.hlsearch = true
-    on_key(nil, "j")
-    assert_equal(vim.o.hlsearch, true, "insert-mode 'j' must not clear hlsearch")
+    local insert_ran = false
+    in_insert_mode(function()
+      assert_equal(vim.api.nvim_get_mode().mode:sub(1, 1), "i", "spec precondition: the body runs in insert mode")
+      vim.o.hlsearch = false
+      on_key(nil, "/")
+      assert_equal(vim.o.hlsearch, false, "insert-mode '/' must not enable hlsearch")
+      vim.o.hlsearch = true
+      on_key(nil, "j")
+      assert_equal(vim.o.hlsearch, true, "insert-mode 'j' must not clear hlsearch")
+      insert_ran = true
+    end)
+    assert_equal(insert_ran, true, "the insert-mode checks ran")
+    assert_equal(vim.api.nvim_get_mode().mode:sub(1, 1), "n", "back in normal mode")
   end
 end)
 
 vim.fn = real_fn
 if not ok then
-  error(err, 0)
+  io.stderr:write("FAIL: " .. tostring(err) .. "\n")
+  finished = true -- reported here; the VimLeavePre guard need not repeat it
+  os.exit(1)
 end
 
-vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "nx", false)
+finished = true
+print("ALL PASS: auto_hlsearch_on_key_spec")
+os.exit(0)

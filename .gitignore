@@ -20,18 +20,20 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+# Anchored to the repo root: unanchored, these hid any lib/, build/ or var/
+# directory anywhere in the tree (script/lib/, a lua/<mod>/lib/).
 .Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
+/env/
+/build/
+/develop-eggs/
+/dist/
+/downloads/
+/eggs/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -39,8 +41,8 @@ var/
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+/*.manifest
+/*.spec
 
 # Installer logs
 pip-log.txt
@@ -87,3 +89,14 @@ test/vint
 
 # packaer.nvim
 plugin/packer_compiled.lua
+
+# macOS Finder metadata
+.DS_Store
+
+# oh-my-claudecode runtime state; .omc/skills/ holds project-scoped skills
+# and is committed. The global excludes file ignores .omc/ as a directory,
+# and git never descends into an excluded directory, so un-ignore the
+# directory itself before ignoring its contents.
+!/.omc/
+/.omc/*
+!/.omc/skills/

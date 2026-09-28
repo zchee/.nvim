@@ -786,14 +786,25 @@ return {
       end,
     },
 
-    -- marp.nvim: Markdown presentations
+    -- marp.nvim: Markdown presentations. marp_command stays the plugin's
+    -- default ("marp" on PATH); the pinned Homebrew node + marp pair is not
+    -- installed.
     {
       "nwiizo/marp.nvim",
       ft = "markdown",
+      cmd = {
+        "MarpConfig",
+        "MarpCopyPath",
+        "MarpDebug",
+        "MarpInfo",
+        "MarpList",
+        "MarpPreview",
+        "MarpStop",
+        "MarpStopAll",
+        "MarpWatch",
+      },
       config = function()
-        require("marp").setup({
-          marp_command = "/opt/homebrew/opt/node/bin/node /opt/homebrew/bin/marp",
-        })
+        require("marp").setup({})
       end,
     },
 
@@ -813,9 +824,11 @@ return {
         end,
       },
       {
+        -- Loaded by :DiagramToggle (lua/config/command.lua), which runs
+        -- `Lazy load diagram.nvim`; the plugin defines no such command, so a
+        -- lazy cmd stub under that name only raced the real one.
         "3rd/diagram.nvim",
         lazy = true,
-        cmd = { "DiagramToggle" },
         dependencies = {
           {
             "nvim-treesitter/nvim-treesitter",
@@ -835,7 +848,8 @@ return {
         "wallpants/github-preview.nvim",
         lazy = true,
         build = "bun i && git reset --hard",
-        ft = { "markdown" },
+        -- setup() creates these commands; a markdown ft trigger only started
+        -- the plugin in every markdown buffer.
         cmd = {
           "GithubPreviewToggle",
           "GithubPreviewStart",

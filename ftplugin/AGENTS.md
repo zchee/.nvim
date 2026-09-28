@@ -23,7 +23,7 @@ ftplugin belong in `after/ftplugin/` (see `after/ftplugin/AGENTS.md`).
 | `metal.lua` | Metal Shading Language: `commentstring = "// %s"`. Like `goasm.lua` it also exists so `metal` is a filetype nvim knows -- `filetype.lua` maps the extension, `lua/plugins/tree-sitter.lua` registers the `cpp` parser for it, and `lsp/clangd.lua` deliberately does NOT list it (upstream clangd has no Metal mode and compiles a shader as C) |
 | `modulemap.lua` | Entirely commented out -- a note on the old autocmd detection. The filetype itself is live: `filetype.lua` maps `*.modulemap` and `syntax/modulemap.lua` highlights it |
 | `proto.lua` | Protobuf: `autoindent`/`cindent`, `colorcolumn=100`, `commentstring = "// %s"`, `copyindent`, `expandtab`, `formatoptions+=croq`, `sw=4 sts=4 ts=8`, `smartindent=false`, `smarttab=true`, buffer-local `foldmethod=expr` (the Tree-sitter `foldexpr` line is commented out). No guard, so `$VIMRUNTIME/ftplugin/proto.vim` still runs after it |
-| `qf.lua` | Quickfix/location-list windows (filetype `qf`): `nolist`, `nonumber` |
+| `qf.lua` | Quickfix/location-list windows (filetype `qf`): `nolist`, `nonumber`. nvim-bqf turns `number` back on (with `signcolumn=number`, for its item signs) in every window it enables, which with `auto_enable` is every qf window of a full session |
 | `tigrc.lua` | `tig` config: guard; `commentstring="# %s"`, `comments=":#"`, sets `b:undo_ftplugin` to restore both on filetype change |
 | `tiltfile.lua` | `Tiltfile`: `commentstring="# %s"`, `expandtab`, `sw=sts=ts=4` |
 

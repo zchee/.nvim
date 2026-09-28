@@ -60,9 +60,9 @@ local mode_hl = {
 -- statusline diagnostics: lualine default icons; tabline: bufferline's
 -- custom indicator (see tab_diag).
 local sev_stl = {
-  { "ChromeDiagError", " " },
-  { "ChromeDiagWarn", " " },
-  { "ChromeDiagInfo", " " },
+  { "ChromeDiagError", "󰅚 " },
+  { "ChromeDiagWarn", "󰀪 " },
+  { "ChromeDiagInfo", "󰋽 " },
   { "ChromeDiagHint", "󰌶 " },
 }
 

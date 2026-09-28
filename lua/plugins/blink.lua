@@ -21,23 +21,6 @@ local blink = require("blink.cmp")
 -- the loader is idempotent, so exactly one scan happens on every path.
 require("plugins.luasnip").load_snippets()
 
----Returns the sources.per_filetype map; filetypes not listed get
----sources.default. The order of provider ids does not rank items: blink
----regroups them by provider id before fuzzy sorting, so score_offset is
----the only priority.
----@return table<string, blink.cmp.SourceListPerFiletype>
-local function per_filetype_sources()
-  return {
-    go = { "copilot", inherit_defaults = true },
-    lua = { "lazydev", inherit_defaults = true },
-    python = { "copilot", inherit_defaults = true },
-    rust = { "copilot", inherit_defaults = true },
-    yaml = { "copilot", inherit_defaults = true },
-
-    snacks_picker_input = { "path", "buffer" },
-  }
-end
-
 ---@type blink.cmp.Config
 blink.setup({
   sources = {
@@ -106,7 +89,15 @@ blink.setup({
         async = true,
       },
     },
-    per_filetype = per_filetype_sources(),
+    per_filetype = {
+      go = { "copilot", inherit_defaults = true },
+      lua = { "lazydev", inherit_defaults = true },
+      python = { "copilot", inherit_defaults = true },
+      rust = { "copilot", inherit_defaults = true },
+      yaml = { "copilot", inherit_defaults = true },
+
+      snacks_picker_input = { "path", "buffer" },
+    },
     ----@param ctx blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
     ---@return number
     min_keyword_length = function()

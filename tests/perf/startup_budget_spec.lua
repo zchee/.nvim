@@ -129,19 +129,11 @@ do
   f:close()
 end
 
+local throwaway_shada = dofile(vim.fs.joinpath(vim.fn.getcwd(), "script", "lib", "throwaway_shada.lua"))
+
 --- Runs one full-config Neovim inside a pty and returns the probe's report.
 --- @param mode string "idle" | "gopls" | "schemastore"
 --- @param file string|nil file argument for the session
-local function throwaway_shada()
-  local real = vim.fs.joinpath(tostring(vim.fn.stdpath("state")), "shada", "main.shada")
-  if not vim.uv.fs_stat(real) then
-    return "NONE"
-  end
-  local copy = vim.fn.tempname() .. ".shada"
-  local ok = vim.uv.fs_copyfile(real, copy)
-  return ok and copy or "NONE"
-end
-
 --- @param budget_ms integer host-side wall-clock budget for the whole session
 local function run_pty(mode, file, budget_ms)
   local out = vim.fn.tempname() .. "_report.json"

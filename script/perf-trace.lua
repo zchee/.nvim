@@ -176,21 +176,8 @@ end
 local self_path = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p")
 local child_log = vim.fn.tempname() .. "-startuptime.log"
 local dump_path = vim.fn.tempname() .. "-perf-trace-dump.json"
--- Full-config child sessions write ShaDa on exit, and a round runs dozens of
--- them: they race for the main.shada.tmp.a-z namespace and any child killed
--- mid-write strands a temp file, until all 26 are taken and every later write
--- fails with E138 (the user's interactive nvim included). Point the child at a
--- throwaway copy instead -- seeded from the real file so its read cost stays
--- representative, empty (-i NONE) when there is nothing to copy.
-local function throwaway_shada()
-  local real = vim.fs.joinpath(tostring(vim.fn.stdpath("state")), "shada", "main.shada")
-  if not vim.uv.fs_stat(real) then
-    return "NONE"
-  end
-  local copy = vim.fn.tempname() .. ".shada"
-  local ok = vim.uv.fs_copyfile(real, copy)
-  return ok and copy or "NONE"
-end
+-- The full-config child gets a throwaway ShaDa copy (see the helper for why).
+local throwaway_shada = dofile(vim.fs.joinpath(vim.fs.dirname(self_path), "lib", "throwaway_shada.lua"))
 
 local cmd = { vim.v.progpath, "--headless", "-i", throwaway_shada() }
 if not user_log then

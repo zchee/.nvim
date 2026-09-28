@@ -380,7 +380,6 @@ return {
         "nvim-telescope/telescope-file-browser.nvim",
         "nvim-telescope/telescope-live-grep-args.nvim",
         "nvim-telescope/telescope-project.nvim",
-        "nvim-telescope/telescope-ui-select.nvim",
         "matheusfillipe/grep_app.nvim",
         "nvim-telescope/telescope-ghq.nvim",
       },

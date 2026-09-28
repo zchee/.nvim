@@ -378,7 +378,6 @@ return {
     build = ":TSUpdate",
     dependencies = {
       "JoosepAlviste/nvim-ts-context-commentstring",
-      "yamatsum/nvim-nonicons",
       "tree-sitter-goasm",
     },
     config = function()
@@ -393,7 +392,8 @@ return {
       cmd = "Telescope",
       dependencies = {
         "nvim-lua/plenary.nvim",
-        "nvim-lua/popup.nvim",
+        -- plugins/telescope.lua takes its prompt icon from nonicons
+        "yamatsum/nvim-nonicons",
         "nvim-telescope/telescope-dap.nvim",
         "nvim-telescope/telescope-file-browser.nvim",
         "nvim-telescope/telescope-live-grep-args.nvim",
@@ -595,7 +595,7 @@ return {
         "Fugit2Graph",
       },
       keys = {
-        { "<Leader>g", mode = "n", "<cmd>Fugit2<cr>" },
+        { "<Leader>g", "<cmd>Fugit2<cr>", mode = "n", desc = "Fugit2: git status" },
       },
       ---@module 'fugit2'
       ---@type Fugit2Config
@@ -750,6 +750,11 @@ return {
       "junegunn/vim-easy-align",
       cmd = {
         "EasyAlign",
+      },
+      -- Visual mode only, as the former lua/config/keymap.lua map was: normal
+      -- ga is text-case.nvim's prefix.
+      keys = {
+        { "ga", "<Plug>(LiveEasyAlign)", mode = "v", silent = true, desc = "LiveEasyAlign" },
       },
     },
     {

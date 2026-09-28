@@ -1,48 +1,17 @@
 local gitsigns = require("gitsigns")
 local gitsigns_config = require("gitsigns.config").config
 
-vim.api.nvim_set_hl(0, "GitSignsChange", { fg = "#bbbb00", bg = "#010101" })
-vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = "#ff2222", bg = "#010101" })
-vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = "#009900", bg = "#010101" })
-vim.api.nvim_set_hl(0, "GitSignsAddLn", { link = "DiffAdd" })
-vim.api.nvim_set_hl(0, "GitSignsAddNr", { link = "CursorLineNr" })
-vim.api.nvim_set_hl(0, "GitSignsChangeLn", { link = "DiffChange" })
-vim.api.nvim_set_hl(0, "GitSignsChangeNr", { link = "CursorLineNr" })
-vim.api.nvim_set_hl(0, "GitSignsDeleteLn", { link = "DiffDelete" })
-vim.api.nvim_set_hl(0, "GitSignsDeleteNr", { link = "CursorLineNr" })
-
+-- The GitSigns* highlight groups live in colors/equinusocio_material.lua, so
+-- a :colorscheme re-apply keeps them. Per-sign hl/numhl/linehl keys are gone
+-- from gitsigns (SignConfig is text + show_count); it derives GitSigns<Type>,
+-- <Type>Nr and <Type>Ln from the sign type itself.
 gitsigns.setup({
   signs = {
-    add = {
-      hl = "GitSignsAdd",
-      text = "+",
-      numhl = "GitSignsAddNr",
-      linehl = "GitSignsAddLn",
-    },
-    change = {
-      hl = "GitSignsChange",
-      text = "~",
-      numhl = "GitSignsChangeNr",
-      linehl = "GitSignsChangeLn",
-    },
-    delete = {
-      hl = "GitSignsDelete",
-      text = "_",
-      numhl = "GitSignsDeleteNr",
-      linehl = "GitSignsDeleteLn",
-    },
-    topdelete = {
-      hl = "GitSignsDelete",
-      text = "‾",
-      numhl = "GitSignsDeleteNr",
-      linehl = "GitSignsDeleteLn",
-    },
-    changedelete = {
-      hl = "GitSignsChange",
-      text = "~_",
-      numhl = "GitSignsChangeNr",
-      linehl = "GitSignsChangeLn",
-    },
+    add = { text = "+" },
+    change = { text = "~" },
+    delete = { text = "_" },
+    topdelete = { text = "‾" },
+    changedelete = { text = "~_" },
   },
   current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
   current_line_blame_opts = {

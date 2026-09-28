@@ -1,5 +1,5 @@
 ---@diagnostic disable: undefined-global
--- Regression spec for the `$ref` jump in lsp/jsonls.lua.
+-- Regression spec for the jsonls `$ref` jump in lua/lsp/on_attach.lua.
 --
 -- vscode-json-language-server exposes no definitionProvider, so <C-]> on a
 -- `"$ref": "#/$defs/Foo"` can only be served by textDocument/documentLink. Two
@@ -20,11 +20,6 @@ vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
   vim.fn.getcwd() .. "/lua/?/init.lua",
-  -- The server config migrated to the native runtimepath form at the repo
-  -- root (lsp/jsonls.lua), so require("lsp.jsonls") resolves through this
-  -- entry rather than lua/. Its SchemaStore catalog now loads in before_init,
-  -- so schemastore.nvim need not be on the runtimepath here.
-  vim.fn.getcwd() .. "/?.lua",
   package.path,
 }, ";")
 
@@ -34,8 +29,8 @@ local function assert_equal(expected, actual, message)
   end
 end
 
--- Requiring the module is what registers the LspAttach handler.
-require("lsp.jsonls")
+-- The on_attach every server shares; its jsonls entry binds the key.
+local on_attach = require("lsp.on_attach")
 
 local FIXTURE = {
   "{",
@@ -103,24 +98,15 @@ local fake_client = {
   end,
 }
 
-local real_get_client_by_id = vim.lsp.get_client_by_id
----@diagnostic disable-next-line: duplicate-set-field
-vim.lsp.get_client_by_id = function(id)
-  return id == 1 and fake_client or real_get_client_by_id(id)
-end
-
-vim.api.nvim_exec_autocmds("LspAttach", { buffer = bufnr, data = { client_id = 1 } })
+on_attach(fake_client, bufnr)
 
 local mapping = vim.fn.maparg("<C-]>", "n", false, true)
 assert(mapping.buffer == 1, "jsonls must bind <C-]> buffer-locally, not globally")
 assert(type(mapping.callback) == "function", "the <C-]> mapping must carry a Lua callback")
 
--- A non-jsonls client on the same buffer must not claim the key.
+-- A non-jsonls client must not claim the key.
 local other_bufnr = vim.api.nvim_create_buf(false, true)
-vim.lsp.get_client_by_id = function(id)
-  return id == 2 and { name = "yamlls" } or real_get_client_by_id(id)
-end
-vim.api.nvim_exec_autocmds("LspAttach", { buffer = other_bufnr, data = { client_id = 2 } })
+on_attach({ name = "yamlls" }, other_bufnr)
 assert_equal(
   0,
   vim.api.nvim_buf_call(other_bufnr, function()
@@ -128,9 +114,6 @@ assert_equal(
   end),
   "only jsonls buffers may take the buffer-local <C-]>"
 )
-vim.lsp.get_client_by_id = function(id)
-  return id == 1 and fake_client or real_get_client_by_id(id)
-end
 
 local fallbacks = 0
 package.loaded["snacks"] = {
@@ -157,5 +140,4 @@ mapping.callback()
 assert_equal(1, fallbacks, "a cursor outside every link must fall back")
 assert_equal(ref_line, vim.api.nvim_win_get_cursor(0)[1], "the fallback must not move the cursor itself")
 
-vim.lsp.get_client_by_id = real_get_client_by_id
 print("OK: jsonls resolves $ref through documentLink and falls back elsewhere")

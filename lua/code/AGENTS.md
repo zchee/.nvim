@@ -17,7 +17,7 @@ extension itself.
 ## Key Files
 | File | Description |
 |------|--------------|
-| `init.lua` | Entry point: LuaJIT tuning (`jit.opt.start(...)`), lazy.nvim bootstrap clone, sets leader keys, requires `code.config.lazy`, `code.plugins`, `code.config` |
+| `init.lua` | Entry point: LuaJIT tuning (`jit.opt.start(...)`), lazy.nvim bootstrap clone into `stdpath("data")/vscode/lazy/lazy.nvim` (exit 1 when the clone fails; `getchar()` only with a UI), sets leader keys, requires `code.config.lazy`, `code.plugins`, `code.config` |
 
 ## Subdirectories
 | Directory | Purpose |
@@ -28,8 +28,8 @@ extension itself.
 ### `config/`
 | File | Description |
 |------|--------------|
-| `init.lua` | Two keymaps only: swaps `@`/`^` in normal mode (`nvim_set_keymap`, legacy API) |
-| `lazy.lua` | `lazy.nvim` `LazyConfig` scoped to `vscode`-suffixed cache/data/state dirs; `require("lazy").setup(require("code.plugins"), lazy_config)` |
+| `init.lua` | Two keymaps only: swaps `@`/`^` in normal mode (`vim.keymap.set`) |
+| `lazy.lua` | `lazy.nvim` `LazyConfig` scoped to a `vscode` subdirectory of the cache/data/state dirs (plugin root `stdpath("data")/vscode/lazy`); `require("lazy").setup(require("code.plugins"), lazy_config)` |
 
 ### `plugins/`
 | File | Description |
@@ -43,17 +43,22 @@ extension itself.
   reached — it is a fully separate bootstrap, not a thin wrapper around the
   main config. Do not assume anything from `lua/config/*` or `lua/plugins/*`
   is available here; if a setting is needed under VSCode-Neovim too, it must
-  be duplicated (or factored into `lua/util`, which both trees already
-  share) rather than `require`d cross-tree.
+  be duplicated rather than `require`d cross-tree. This tree requires
+  nothing outside itself except lazy.nvim and its one plugin — not even
+  `lua/util` — so factoring into `lua/util` would be its first shared
+  dependency.
 - `code/init.lua` sets `vim.g.mapleader = " "` / `vim.g.maplocalleader =
   vim.keycode("<BS>")` independently of the repo-root `init.lua` — keep these two
   definitions in sync by hand if the leader keys ever change, since there is
   no shared source of truth between the two trees.
 - The JIT tuning block at the top of `code/init.lua`
   (`jit.opt.start("hotloop=1", "loopunroll=1000000", ...)`) is unique to this
-  entry point — it is not present in the root `lua/init.lua` path. Treat any
-  change here as VSCode-Neovim-specific performance tuning, not a
-  general-purpose default to backport.
+  entry point — the main path (repo-root `init.lua` -> `lua/config`) has no
+  such block, and there is no `lua/init.lua`. Treat any change here as
+  VSCode-Neovim-specific performance tuning, not a general-purpose default to
+  backport. Never add `jit.off()`: it stops the whole JIT engine, and the
+  `jit.on(true, true)` after the tuning only sets this chunk's per-function
+  mode, so the engine stayed off for the session (`jit.status()` false).
 - `code/config/lazy.lua` mirrors `lua/config/lazy.lua` closely but scopes
   `cache_dir`/`data_dir`/`state_dir` under a `vscode` subdirectory of each
   `stdpath()` root, and drops several options present in the main config
@@ -64,17 +69,19 @@ extension itself.
   `accelerated-jk.nvim` plugin (with `lazy = false`) — this is the current,
   deliberately minimal VSCode plugin surface; do not bulk-import the main
   `lua/plugins/` spec list into this file.
-- `code/config/init.lua` uses the legacy `vim.api.nvim_set_keymap` API
-  rather than `vim.keymap.set` used throughout `lua/config/keymap.lua` —
-  match the existing style within this file if extending it, but prefer
-  `vim.keymap.set` for genuinely new keymaps added here.
+- Keymaps here use `vim.keymap.set`, as `lua/config/keymap.lua` does.
 
 ### Testing Requirements
-No spec files exist for this tree. Since it only activates when
-`vim.g.vscode` is set, it cannot be exercised via a normal
-`nvim --headless` run without VSCode-Neovim's extension host. Syntax-check
-individual files instead:
-`nvim --headless -u NONE -c "set rtp+=." -c 'luafile lua/code/config/init.lua' -c 'qa'`
+No spec files exist for this tree. `--cmd 'let g:vscode=1'` enters it
+headless, but a plain run clones lazy.nvim and installs any missing plugin
+under `stdpath("data")/vscode`. To check the entry without that, run the repo-root
+`init.lua` from an `nvim -l` probe with a scratch `XDG_DATA_HOME` (holding an
+empty `nvim/vscode/lazy/lazy.nvim` dir) and `package.preload` stubs for
+`code.config.lazy`, `code.plugins` and `code.config`, then read
+`jit.status()` and the lazy.nvim rtp entry:
+`XDG_DATA_HOME=<scratch> nvim --headless -u NONE -i NONE --cmd 'let g:vscode=1' -l <probe.lua>`.
+Syntax-check individual files with
+`nvim --headless -u NONE -i NONE -c "set rtp+=." -c 'luafile lua/code/config/init.lua' -c 'qa'`.
 
 ### Common Patterns
 - Mirrors the shape of the root config's bootstrap (`bootstrap lazy.nvim`

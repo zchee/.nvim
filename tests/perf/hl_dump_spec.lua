@@ -21,7 +21,7 @@ end
 --- @param reapply boolean re-issue :colorscheme before dumping
 local function dump(reapply)
   local out = vim.fn.tempname() .. "_hl.txt"
-  local cmd = { "nvim", "--headless", "-l", "script/hl-dump.lua", out }
+  local cmd = { vim.v.progpath, "--headless", "-l", "script/hl-dump.lua", out }
   if reapply then
     cmd[#cmd + 1] = "--reapply"
   end

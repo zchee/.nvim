@@ -19,6 +19,13 @@
 -- user re-applying it mid-session; the dump must not change (round-1's
 -- known gap was overrides lost on re-apply).
 
+-- Dump the colorscheme of the checkout this script lives in: the only
+-- config dir on a `-l` rtp is ~/.config/nvim, which may point at another
+-- tree (a worktree, a second clone).
+vim.opt.runtimepath:prepend(
+  vim.fs.dirname(vim.fs.dirname(vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p")))
+)
+
 vim.cmd.colorscheme("equinusocio_material")
 
 local outfile

@@ -40,6 +40,7 @@ vim.filetype.add({
     i = "swig",
     icls = "xml",
     inc = "masm",
+    ispc = "ispc",
     jsonc = "jsonc",
     jsonl = "jsonl",
     -- Metal Shading Language. Unmapped, these fell through to scripts.vim,
@@ -90,6 +91,7 @@ vim.filetype.add({
     [".renovaterc"] = "json5",
     [".renovaterc.json"] = "json5",
     [".tern-config"] = "json",
+    [".tigrc"] = "tigrc",
     [".tfvars"] = "teraterm",
     [".yamlfmt"] = "yaml",
     [".yamllint"] = "yaml",
@@ -109,6 +111,7 @@ vim.filetype.add({
     manifest = "json",
     PROJECT = "yaml",
     Tiltfile = "tiltfile",
+    tigrc = "tigrc",
   },
   pattern = {
     -- vim-helm ftdetect port: chart templates (Chart.yaml-gated, nil falls
@@ -135,7 +138,7 @@ vim.filetype.add({
     [".*/.config/go/env/.*"] = "sh",
     [".*/.config/jira.d/templates/.*"] = "gotmpl",
     [".*/.config/op/config"] = "json",
-    [".*/.config/tig/config*"] = "tigrc",
+    [".*/%.config/tig/config"] = "tigrc",
     [".*/.config/zsh/completions/.*"] = "zsh",
     [".*/.jira.d/templates/.*"] = "gotmpl",
     [".*/.vscode/.*%.json"] = "json5",

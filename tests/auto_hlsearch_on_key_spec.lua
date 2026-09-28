@@ -74,7 +74,7 @@ local ok, err = pcall(function()
   do -- search keys turn hlsearch on
     for _, key in ipairs({ "/", "?", "n", "N", "*", "#" }) do
       vim.o.hlsearch = false
-      on_key(nil, key)
+      on_key(key, key)
       assert_equal(vim.o.hlsearch, true, ("search key %s must enable hlsearch"):format(vim.inspect(key)))
     end
   end
@@ -84,14 +84,14 @@ local ok, err = pcall(function()
     -- "c" and never reaches the handler, so a <CR> enable entry could only
     -- ever paint stale shada matches onto freshly opened buffers)
     vim.o.hlsearch = true
-    on_key(nil, cr)
+    on_key(cr, cr)
     assert_equal(vim.o.hlsearch, false, "normal-mode <CR> must clear hlsearch")
   end
 
   do -- any other typed key turns hlsearch off
     for _, key in ipairs({ "j", "x", "G", "a" }) do
       vim.o.hlsearch = true
-      on_key(nil, key)
+      on_key(key, key)
       assert_equal(vim.o.hlsearch, false, ("non-search key %s must clear hlsearch"):format(vim.inspect(key)))
     end
   end
@@ -154,10 +154,10 @@ local ok, err = pcall(function()
 
   do -- no redundant option writes: value already matching stays untouched
     vim.o.hlsearch = true
-    on_key(nil, "/")
+    on_key("/", "/")
     assert_equal(vim.o.hlsearch, true, "search key with hlsearch already on must keep it on")
     vim.o.hlsearch = false
-    on_key(nil, "j")
+    on_key("j", "j")
     assert_equal(vim.o.hlsearch, false, "non-search key with hlsearch already off must keep it off")
   end
 
@@ -166,10 +166,10 @@ local ok, err = pcall(function()
     in_insert_mode(function()
       assert_equal(vim.api.nvim_get_mode().mode:sub(1, 1), "i", "spec precondition: the body runs in insert mode")
       vim.o.hlsearch = false
-      on_key(nil, "/")
+      on_key("/", "/")
       assert_equal(vim.o.hlsearch, false, "insert-mode '/' must not enable hlsearch")
       vim.o.hlsearch = true
-      on_key(nil, "j")
+      on_key("j", "j")
       assert_equal(vim.o.hlsearch, true, "insert-mode 'j' must not clear hlsearch")
       insert_ran = true
     end)

@@ -111,6 +111,7 @@ do
     end
   end
   local exepath = vim.fn.exepath
+  ---@diagnostic disable-next-line: duplicate-set-field
   vim.fn.exepath = function(binary)
     local info = debug.getinfo(2, "Sl")
     lookups[#lookups + 1] = ("vim.fn.exepath(%q) at %s:%d"):format(binary, info.short_src, info.currentline)

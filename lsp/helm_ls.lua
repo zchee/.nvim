@@ -55,7 +55,7 @@ return {
   -- this same table, so helm-ls pulls the path with the rest.
   ---@param config vim.lsp.ClientConfig
   before_init = function(_, config)
-    config.settings["helm-ls"].yamlls.path =
-      { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" }
+    local helm_ls = config.settings["helm-ls"] --[[@as table]]
+    helm_ls.yamlls.path = { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" }
   end,
 }

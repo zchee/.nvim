@@ -208,7 +208,9 @@ vim.api.nvim_create_autocmd({ "WinClosed" }, {
       end
       -- :quit refuses when a hidden buffer is modified (E37/E162); say so
       -- in one line instead of a Lua traceback.
-      local ok, err = pcall(vim.cmd, "quit")
+      local ok, err = pcall(function()
+        vim.cmd("quit")
+      end)
       if not ok then
         local msg = tostring(err):match("E%d+:.*") or tostring(err)
         vim.api.nvim_echo({ { msg, "ErrorMsg" } }, true, {})

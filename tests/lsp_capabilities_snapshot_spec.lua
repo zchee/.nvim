@@ -12,9 +12,10 @@
 -- checks that init.lua's own completion overrides never switch on a feature
 -- blink reports as unimplemented.
 --
--- Run: nvim --headless -u NONE -l tests/lsp_capabilities_snapshot_spec.lua
--- (under -u NONE the ~/.config/nvim symlink puts this repo on the rtp; run
--- with --clean from a copy of the tree to test that copy's lua/lsp/init.lua)
+-- Run: nvim --headless -u NONE -i NONE -l tests/lsp_capabilities_snapshot_spec.lua
+-- (under -u NONE the ~/.config/nvim symlink puts this repo on the rtp; to
+-- test a copy's lua/lsp/init.lua, run it from the copy with XDG_CONFIG_HOME
+-- pointed at an empty dir, as tests/AGENTS.md describes)
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",

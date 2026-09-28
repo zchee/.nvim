@@ -74,10 +74,14 @@ every session, whether or not that server ever starts.
   through `textDocument/documentLink`.
 - `<LocalLeader>f` (manual format) does not pass a literal `lsp_format`:
   conform only consults a `formatters_by_ft` entry's own `lsp_format` for
-  keys the caller leaves nil, so a literal would discard a pinned `"never"`.
-  It reads that pin back instead, mirroring `format_on_save` in
-  `lua/plugins/conform.lua`. `json5` pins it because `jsonls` has no JSON5
-  mode and rewrites such a buffer as strict JSON.
+  keys the caller leaves nil, so a literal would discard whatever a filetype
+  pins. It hands any pinned value back instead (`"fallback"` when there is
+  none), mirroring `format_on_save` in `lua/plugins/conform.lua`. `json5`
+  and `hujson` pin `"never"` because `jsonls` has no JSON5 mode and rewrites
+  such a buffer as strict JSON, so an unavailable CLI formatter must format
+  nothing; `go` and `goasm` pin `"first"`, so the LSP formats before their
+  CLI chain (for go, gopls with `gofumpt = true` ahead of
+  `goimports-rereviser`).
 - Per-server diagnostic filters live in that server's `lsp/<name>.lua` as a
   client-local `handlers` entry, never by assigning `vim.lsp.handlers`, which
   every server would inherit: `vtsls.lua` drops TypeScript 80001 from

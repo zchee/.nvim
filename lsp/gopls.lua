@@ -12,14 +12,6 @@ local is_goos_linux = function(cwd)
     or string.find(cwd, "buildkit")
 end
 
-local function organize_imports()
-  local params = {
-    command = "source.organizeImports",
-    arguments = { vim.uri_from_bufnr(0) },
-  }
-  vim.lsp.buf.exec_cmd(params)
-end
-
 local mod_cache = nil
 local std_lib = nil
 
@@ -162,13 +154,6 @@ return {
     exit_timeout = false,
   },
 
-  commands = {
-    ---@type fun(command: lsp.Command, ctx: table)
-    GoOrganizeImports = function(_, _)
-      organize_imports()
-    end,
-  },
-
   -- handlers = {
   --   -- for tiny_inline_diagnostic
   --   -- ["textDocument/publishDiagnostics"] = function() end,
@@ -228,13 +213,13 @@ return {
         bools = true,
         buildtag = true,
         cgocall = true,
-        composite = true,
-        copylock = true,
+        composites = true,
+        copylocks = true,
         deepequalerrors = true,
         defers = true,
         deprecated = false,
         directive = true,
-        embeddirective = true,
+        embed = true,
         errorsas = true,
         fieldalignment = false,
         fillreturns = true,
@@ -245,7 +230,37 @@ return {
         infertypeargs = true,
         loopclosure = true,
         lostcancel = true,
-        modernize = true,
+        -- modernize is no longer one analyzer: gopls runs each check as its own
+        -- (the modernize#hdr-Analyzer_<name> anchors in `gopls api-json`). All
+        -- default on except appendclipped and slicesdelete, enabled below.
+        any = true,
+        atomictypes = true,
+        bloop = true,
+        embedlit = true,
+        errorsastype = true,
+        fmtappendf = true,
+        forvar = true,
+        importcomment = true,
+        mapsloop = true,
+        minmax = true,
+        newexpr = true,
+        omitzero = true,
+        plusbuild = true,
+        rangeint = true,
+        reflecttypeassert = true,
+        reflecttypefor = true,
+        slicesbackward = true,
+        slicesclip = true,
+        slicescontains = true,
+        slicessort = true,
+        stditerators = true,
+        stringsbuilder = true,
+        stringscut = true,
+        stringscutprefix = true,
+        stringsseq = true,
+        testingcontext = true,
+        unsafefuncs = true,
+        waitgroupgo = true,
         nilfunc = true,
         nilness = true,
         nonewvars = true,

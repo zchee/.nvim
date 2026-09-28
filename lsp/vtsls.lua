@@ -1,3 +1,4 @@
+local lsp_cmd = require("lsp.cmd")
 local util = require("util")
 
 -- Codes: https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
@@ -58,15 +59,11 @@ local inlay_hints = {
 return {
   -- Interpreter spelled out for the same reason as lsp/jsonls.lua: the bin is
   -- a `#!/usr/bin/env node` script, and through the nodenv shim its node
-  -- version follows the root it is spawned in -- see util.nodenv_prefix. A
-  -- function for the same reason as there: the lookups run at server start.
-  cmd = function(dispatchers, config)
-    return vim.lsp.rpc.start(
-      { util.nodenv_prefix("node"), util.bun_prefix("vtsls"), "--stdio" },
-      dispatchers,
-      { cwd = config.cmd_cwd or config.root_dir, env = config.cmd_env, detached = config.detached }
-    )
-  end,
+  -- version follows the root it is spawned in -- see util.nodenv_prefix.
+  -- lsp.cmd.lazy for the same reason as there: the lookups run at server start.
+  cmd = lsp_cmd.lazy(function()
+    return { util.nodenv_prefix("node"), util.bun_prefix("vtsls"), "--stdio" }
+  end),
   handlers = {
     ["textDocument/publishDiagnostics"] = filter_ignored_diagnostics,
   },

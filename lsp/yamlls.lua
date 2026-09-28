@@ -1,3 +1,4 @@
+local lsp_cmd = require("lsp.cmd")
 local util = require("util")
 
 --- https://github.com/redhat-developer/yaml-language-server#language-server-settings
@@ -6,15 +7,11 @@ local util = require("util")
 return {
   -- Interpreter spelled out for the same reason as lsp/jsonls.lua: the bin is
   -- a `#!/usr/bin/env node` script, and through the nodenv shim its node
-  -- version follows the cwd it is spawned in -- see util.nodenv_prefix. A
-  -- function for the same reason as there: the lookups run at server start.
-  cmd = function(dispatchers, config)
-    return vim.lsp.rpc.start(
-      { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" },
-      dispatchers,
-      { cwd = config.cmd_cwd or config.root_dir, env = config.cmd_env, detached = config.detached }
-    )
-  end,
+  -- version follows the cwd it is spawned in -- see util.nodenv_prefix.
+  -- lsp.cmd.lazy for the same reason as there: the lookups run at server start.
+  cmd = lsp_cmd.lazy(function()
+    return { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" }
+  end),
   -- yaml.docker-compose and yaml.gitlab were nvim-lspconfig's names; no
   -- filetype rule here produces them, so only :checkhealth ever saw them.
   filetypes = { "yaml", "yaml.helm-values" },

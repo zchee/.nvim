@@ -28,9 +28,11 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function(args)
     vim.opt_local.colorcolumn = ""
 
-    -- Paging on u/d only where nothing can be edited: a help file opened to
-    -- write docs is modifiable, and there u has to stay undo and d delete.
-    if not vim.bo[args.buf].modifiable then
+    -- Paging on u/d, except in a help file opened to write docs: it is
+    -- modifiable, and there u has to stay undo and d delete. Only help is
+    -- gated: a qf buffer is still modifiable when its FileType fires (Nvim
+    -- clears the flag afterwards), so a modifiable check would drop its maps.
+    if args.match ~= "help" or not vim.bo[args.buf].modifiable then
       vim.keymap.set("n", "u", "<C-u>", { buffer = args.buf, silent = true })
       vim.keymap.set("n", "d", "<C-d>", { buffer = args.buf, silent = true })
     end

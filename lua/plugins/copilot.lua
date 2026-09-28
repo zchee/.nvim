@@ -1,3 +1,5 @@
+local util = require("util")
+
 local copilot = require("copilot")
 
 -- npm platform names (process.platform / process.arch) for os_uname() fields.
@@ -17,12 +19,14 @@ local function native_server_path()
   if not os_name or not arch then
     return nil, string.format("no copilot-language-server build for %s/%s", uname.sysname, uname.machine)
   end
-  local bun_install = os.getenv("BUN_INSTALL")
-  if not bun_install or bun_install == "" then
-    return nil, "BUN_INSTALL is not set"
-  end
+  -- bun links a global package's bins into <install root>/bin, so the
+  -- copilot-language-server link util.bun_prefix finds ($BUN_INSTALL, else
+  -- bun's default ~/.bun, else $PATH; always absolute) names the root the
+  -- platform package sits under, with or without $BUN_INSTALL set. The link
+  -- is used unresolved: its target lies inside node_modules.
+  local root = vim.fs.dirname(vim.fs.dirname(util.bun_prefix("copilot-language-server")))
   local path = vim.fs.joinpath(
-    bun_install,
+    root,
     "install/global/node_modules/@github",
     string.format("copilot-language-server-%s-%s", os_name, arch),
     os_name == "win32" and "copilot-language-server.exe" or "copilot-language-server"

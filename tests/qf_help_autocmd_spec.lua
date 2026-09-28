@@ -1,7 +1,8 @@
 -- lua/config/autocmd.lua -- the pager-window autocmds: u/d page in quickfix
 -- and read-only help, but stay undo/delete in a help file opened for editing;
 -- closing the last file window quits a tab left holding only quickfix, but
--- <C-w>T on quickfix keeps its new tab, and a refused :quit is one message.
+-- <C-w>T on quickfix keeps its new tab, closing a focused float in a qf-only
+-- tab keeps that tab, and a refused :quit is one message.
 --
 -- Run: nvim --headless -u NONE -i NONE -l tests/qf_help_autocmd_spec.lua
 -- Exits 0 only after printing "ALL PASS": the last case ends Nvim through
@@ -109,6 +110,44 @@ local ok, err = pcall(function()
     drain()
     assert_equal(#vim.api.nvim_list_tabpages(), 2, "<C-w>T keeps the new tab")
     assert_equal(vim.bo.filetype, "qf", "the new tab shows quickfix")
+    vim.cmd("tabclose")
+    drain()
+    assert_equal(#vim.api.nvim_list_tabpages(), 1, "cleanup leaves one tab")
+    assert_equal(#vim.api.nvim_list_wins(), 1, "cleanup leaves one window")
+  end
+
+  do -- a focused float closed in the <C-w>T tab is not a file window
+    -- closing: the hover preview's own q keeps the qf tab
+    vim.cmd("copen")
+    vim.cmd("wincmd T")
+    drain()
+    local _, float = vim.lsp.util.open_floating_preview({ "hover" }, "markdown", { focus_id = "qf_help_spec" })
+    vim.api.nvim_set_current_win(float)
+    vim.api.nvim_feedkeys("q", "x", false)
+    drain()
+    assert_equal(vim.api.nvim_win_is_valid(float), false, "the preview's q closes the float")
+    assert_equal(#vim.api.nvim_list_tabpages(), 2, "closing a focused float keeps the qf tab")
+    assert_equal(vim.bo.filetype, "qf", "the qf tab still shows quickfix")
+    vim.cmd("tabclose")
+    drain()
+    assert_equal(#vim.api.nvim_list_tabpages(), 1, "cleanup leaves one tab")
+  end
+
+  do -- the same for an entered float in a tab holding only quickfix (:only)
+    vim.cmd("tabnew")
+    vim.cmd("copen")
+    vim.cmd("only")
+    local float = vim.api.nvim_open_win(vim.api.nvim_create_buf(false, true), true, {
+      relative = "editor",
+      row = 1,
+      col = 1,
+      width = 10,
+      height = 2,
+    })
+    vim.api.nvim_win_close(float, true)
+    drain()
+    assert_equal(#vim.api.nvim_list_tabpages(), 2, "closing an entered float keeps the qf-only tab")
+    assert_equal(vim.bo.filetype, "qf", "the qf-only tab still shows quickfix")
     vim.cmd("tabclose")
     drain()
     assert_equal(#vim.api.nvim_list_tabpages(), 1, "cleanup leaves one tab")

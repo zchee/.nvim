@@ -14,48 +14,54 @@ committed to git (as symlinks, not copied headers).
 ## Key Files
 | File | Description |
 |------|-------------|
-| `symlink.bash` | Regenerates `Frameworks/*` symlinks by scanning an Xcode install for `*/Headers` directories and linking `Frameworks/<FrameworkName> -> <path>/<Framework>.framework/Headers` (or platform `Headers` dirs directly) |
+| `symlink.bash` | Regenerates `Frameworks/*` symlinks by scanning an Xcode install for `*/Headers` directories and linking `Frameworks/<Name> -> <path>/<Name>.framework/.../Headers`; `--dry-run` lists the links it would create and changes nothing |
 
 ## Subdirectories
 | Directory | Purpose |
 |-----------|---------|
-| `Frameworks/` | ~280 symlinks (one per framework, e.g. `AppKit`, `CoreFoundation`, `AVFoundation`, `DriverKit`, `HealthKit`) pointing into `/Applications/Xcode.app/Contents/Developer/.../<Name>.framework/Headers` (or DriverKit `System/Library/Frameworks/<Name>.framework/Headers/`). Tracked in git as symlinks; regenerated in place by `symlink.bash`, not hand-maintained. No separate AGENTS.md — documented here. |
+| `Frameworks/` | ~290 symlinks (one per framework, e.g. `AppKit`, `CoreFoundation`, `AVFoundation`, `DriverKit`, `HealthKit`) pointing into `/Applications/Xcode-beta.app/Contents/Developer/.../<Name>.framework/Headers` (DriverKit ones with a trailing `/`, from an older `fd`). Tracked in git as symlinks; regenerated in place by `symlink.bash`, not hand-maintained. No separate AGENTS.md — documented here. |
 
 ## For AI Agents
 
 ### Working In This Directory
-- `symlink.bash` takes an optional `$1` Xcode path argument; if omitted it
-  probes `/Applications/Xcode-beta.app`, then `/Applications/Xcode.app`,
-  then falls back to `xcode-select --print-path`.
-- It requires `fd` (`fd -j $(nproc) -t d -t l 'Headers$' ...`) on `$PATH` —
-  not plain `find`. The `find_framework_header` search explicitly excludes
-  AppleTVOS/AppleTVSimulator/WatchOS/WatchSimulator/iPhoneOS/
-  iPhoneSimulator/XROS/XRSimulator platforms, `iOSSupport`, `Python[3]
-  .framework`, and `Colloqui` to avoid duplicate or irrelevant framework
-  names.
-- Every run calls `clean_symlink()` first (unlinks every existing symlink
-  under `./Frameworks`) before re-scanning and re-linking — it is meant to
-  be re-run whenever Xcode updates, not run incrementally.
+- `symlink.bash [--dry-run] [xcode_path]`: the Xcode path is optional; if
+  omitted it probes `/Applications/Xcode-beta.app`, then
+  `/Applications/Xcode.app`, then falls back to `xcode-select --print-path`.
+- A real run REPLACES the tracked links: every symlink under `Frameworks/`
+  is unlinked before the new set is linked. Run `--dry-run` first and never
+  run it for real as a check — it rewrites tracked files. It collects the
+  whole new set before unlinking anything and aborts (tree untouched) when
+  the set is empty, e.g. for a wrong Xcode path.
+- It requires `fd` (`fd -0 -j <cpus> -t d -t l 'Headers$' ...`, the CPU
+  count from `sysctl -n hw.ncpu` or `getconf _NPROCESSORS_ONLN`) on
+  `$PATH`. The search excludes AppleTVOS/AppleTVSimulator/WatchOS/
+  WatchSimulator/iPhoneOS/iPhoneSimulator/XROS/XRSimulator platforms,
+  `iOSSupport`, `Python[3].framework`, and `Colloqui` to avoid duplicate or
+  irrelevant framework names.
+- `<Name>` is the path component before the last `.framework`; a `Headers`
+  dir outside any framework is skipped, and the first `Headers` dir `fd`
+  reports for a name wins (`fd`'s order is not stable, so a name with two
+  candidates, e.g. `Kernel`, can flip between runs).
+- `Frameworks/` is resolved next to the script, so it can be run from any
+  cwd.
 - The bottom ~40 lines are a commented-out earlier implementation
-  (`_find_framework_header`, per-SDK/per-platform explicit `find_framework_header`
-  calls) kept as reference/history — dead code, not wired up. Don't assume
-  it runs; the active path is `clean_symlink` + the single
-  `find_framework_header "$xcode_path"` call near the top.
-- Must be run with `cwd` inside `path/` (it writes to the relative
-  `./Frameworks` directory).
+  (`_find_framework_header`, per-SDK/per-platform explicit calls) kept as
+  reference/history — dead code, not wired up.
 
 ### Testing Requirements
-No automated specs. To verify after editing the script:
-`cd path && bash symlink.bash` (or `bash symlink.bash /Applications/Xcode.app`),
-then `git status --short Frameworks/` to confirm only expected
-additions/removals of symlinks, and spot-check a few links resolve
-(`readlink Frameworks/AppKit`, `test -e Frameworks/AppKit`).
+No automated specs. To verify after editing the script: `bash -n` and
+`shellcheck path/symlink.bash`, then `bash path/symlink.bash --dry-run`
+(changes nothing) and compare its `<Name> -> <target>` lines with
+`readlink path/Frameworks/<Name>`. A dangling tracked link is found with
+`git ls-files -z path/Frameworks | while IFS= read -r -d '' f; do test -e "$f" || echo "$f"; done`.
+Only when the user asks for a regeneration, run it for real and review
+`git status --short path/Frameworks/`.
 
 ### Common Patterns
-Discover-then-symlink: `fd` locates `*Headers` directories under the Xcode
-bundle, the trailing path component before `.framework` is extracted via a
-`rev | cut | awk | rev` pipeline, and `ln -fs` creates the symlink,
-skipping frameworks that already have an entry in `Frameworks/`.
+Collect-then-replace: `fd` locates `*Headers` directories under the Xcode
+bundle into a temp list, the component before the last `.framework` becomes
+the link name (parameter expansion), and only a non-empty set replaces the
+old links, via `ln -fs` (an entry that is not a symlink is left alone).
 
 ## Dependencies
 
@@ -63,8 +69,8 @@ skipping frameworks that already have an entry in `Frameworks/`.
 None.
 
 ### External
-- `fd` (required by `find_framework_header`)
+- `fd`
 - A local Xcode.app / Xcode-beta.app install, or `xcode-select` configured
-- `nproc` (for `fd -j $(nproc)` parallelism)
+- `sysctl` (macOS) or `getconf` for the `fd -j` CPU count
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->

@@ -1,5 +1,5 @@
-" after/, with no did_ftplugin guard: $VIMRUNTIME/ftplugin/help.vim sets the
-" guard and must run first for conceallevel, keywordprg and omnifunc.
+" $VIMRUNTIME/ftplugin/help.vim must run first for conceallevel, keywordprg
+" and omnifunc.
 
 " Adjusts the click position of the mouse on lines with concealed characters
 function! s:cursor_adjust() abort

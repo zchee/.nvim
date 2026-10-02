@@ -24,8 +24,7 @@
 ;   (#set! injection.language "sql"))
 
 ; The *_string_literal_content nodes already exclude the quotes, so no
-; #offset! here: the old "0 1 0 -1" cut the first and last character of
-; the statement ("ELECT ... = ") and every injected SQL tree was an ERROR.
+; #offset! here.
 ([
   (interpreted_string_literal_content)
   (raw_string_literal_content)
@@ -36,7 +35,6 @@
 ; ----------------------------------------------------------------
 ; fallback keyword and comment based injection
 
-; nvim 0.10
 ([
   (interpreted_string_literal_content)
   (raw_string_literal_content)
@@ -52,8 +50,6 @@
 ;  "ADD" "ADD CONSTRAINT" "ALL" "ALTER" "AND" "ASC" "COLUMN" "CONSTRAINT" "CREATE" "DATABASE" "DELETE" "DESC" "DISTINCT" "DROP" "EXISTS" "FOREIGN KEY" "FROM" "JOIN" "GROUP BY" "HAVING" "IN" "INDEX" "INSERT INTO" "LIKE" "LIMIT" "NOT" "NOT NULL" "OR" "ORDER BY" "PRIMARY KEY" "SELECT" "SET" "TABLE" "TRUNCATE TABLE" "UNION" "UNIQUE" "UPDATE" "VALUES" "WHERE"
 
 ; json
-
-; nvim 0.10
 
 (const_spec
   name: (identifier)

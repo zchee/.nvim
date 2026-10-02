@@ -109,8 +109,8 @@ copilot.setup({
         -- temperature = ["advanced", "temperature"],
         -- topP = ["advanced", "top_p"],
         indentationMode = false,
-        inlineSuggestCount = 3, -- #completions for getCompletions
-        listCount = 3, -- #completions for panel
+        inlineSuggestCount = 3,
+        listCount = 3,
         -- debugOverrideProxyUrl = ["advanced", "debug.overrideProxyUrl"],
         -- debugTestOverrideProxyUrl = ["advanced", "debug.testOverrideProxyUrl"],
         -- debugEnableGitHubTelemetry = ["advanced", "debug.githubCTSIntegrationEnabled"],

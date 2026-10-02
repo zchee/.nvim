@@ -131,11 +131,11 @@ assert(
 )
 assert(
   type(advanced.inlineSuggestCount) == "number" and advanced.inlineSuggestCount > 0,
-  "inlineSuggestCount must be positive: it is the completion count the server is asked for, and blink-copilot lists what comes back"
+  "advanced.inlineSuggestCount must be a positive number in the settings.advanced copilot.lua forwards to the server"
 )
 assert(
   type(advanced.listCount) == "number" and advanced.listCount > 0,
-  "listCount should remain positive for list/panel completion compatibility"
+  "advanced.listCount must be a positive number in the settings.advanced copilot.lua forwards to the server"
 )
 
 vim.fn.delete(bun_install, "rf")

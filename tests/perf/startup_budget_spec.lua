@@ -88,7 +88,6 @@ local function collect_and_quit()
     },
     lsp_clients = clients,
     warmup_loaded = vim.g.warmup_loaded or {},
-    messages = vim.fn.execute("messages"),
   }
   local f = assert(io.open(out, "w"))
   f:write(vim.json.encode(report))
@@ -97,7 +96,6 @@ local function collect_and_quit()
 end
 
 local conditions = {
-  idle = nil, -- plain 3 s idle, no condition
   gopls = function()
     return #vim.lsp.get_clients({ name = "gopls" }) > 0
   end,
@@ -107,11 +105,11 @@ local conditions = {
 }
 
 local condition = conditions[mode]
-if condition == nil then
+if condition == nil then -- "idle": a plain 3 s wait
   vim.defer_fn(collect_and_quit, 3000)
 else
   local waited = 0
-  local timeout = vim.g.perf_probe_timeout or 20000
+  local timeout = 20000
   vim.fn.timer_start(250, function()
     waited = waited + 250
     if condition() or waited >= timeout then

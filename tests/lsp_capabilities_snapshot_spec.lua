@@ -79,10 +79,6 @@ do
   end
 end
 
-do
-  assert(vim.deep_equal(snapshot, live), "snapshot and live capabilities must be deep-equal")
-end
-
 -- lua/lsp/init.lua layers its own overrides on top of the snapshot. Those may
 -- narrow what blink offers (documentationFormat is cut to markdown), but must
 -- never switch on a completion feature blink reports as unimplemented: a

@@ -7,7 +7,6 @@
 # --dry-run prints the links it would create and changes nothing.
 set -euo pipefail
 
-warn() { printf "\x1b[1;33m[WARN]\x1b[0m %s\\n" "$1" >&2; }
 error() {
   printf "\\x1b[1;31m[ERROR]\\x1b[0m %s\\n" "$1" >&2
   exit 1

@@ -27,16 +27,26 @@
 ; import path or a sentence that merely mentions SQL stays plain: the
 ; content opens with an upper-case statement keyword followed by more
 ; text, with a lower-case select/insert/update/delete that later reaches
-; from/into/set/values, or with a "-- sql" marker. #match? compiles a
-; vim regex and matches the whole text as one string, where \s, \_s and
-; \n never match a newline character; [[:space:]] and . do, which lets a
-; raw string start with a line break. The *_string_literal_content nodes
-; already exclude the quotes, so no #offset! here.
+; from/into/set/values, or with a "-- sql" marker. Any leading SQL
+; comments are skipped first, whole "--" lines and /* */ blocks with
+; whitespace between them, since sqlc writes "-- name: GetUser :one"
+; above every query; a string holding only comments stays plain. A "--"
+; comment runs to a line break and a block ends at its first */, so a
+; text splits into comments one way only and a string that is not SQL
+; fails fast even on the backtracking engine. #match? compiles a vim
+; regex and matches the whole text as one string, where \s, \_s and \n
+; never match a newline character and [^\n] does not exclude one;
+; [[:space:]], . and [\d10] match it and [^\d10] excludes it. An
+; interpreted string has one content node per run between escape
+; sequences and each run is matched on its own, so a "--" comment there
+; never ends but "-- c\nSELECT 1" still injects its "SELECT 1" run. The
+; *_string_literal_content nodes already exclude the quotes, so no
+; #offset! here.
 ([
   (interpreted_string_literal_content)
   (raw_string_literal_content)
   ] @injection.content
- (#match? @injection.content "\\v^[[:space:]]*(--[[:space:]]*sql>|(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|WITH|TRUNCATE|REPLACE|MERGE|GRANT|REVOKE|EXPLAIN|BEGIN|COMMIT|ROLLBACK)[[:space:]]+\\S|(select|insert|update|delete)[[:space:]].{-}<(from|into|set|values)>)")
+ (#match? @injection.content "\\v^%([[:space:]]*%(--[^\\d10]*[\\d10]|/\\*%([^*]|\\*+[^*/])*\\*+/))*[[:space:]]*(--[[:space:]]*sql>|(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|WITH|TRUNCATE|REPLACE|MERGE|GRANT|REVOKE|EXPLAIN|BEGIN|COMMIT|ROLLBACK)[[:space:]]+\\S|(select|insert|update|delete)[[:space:]].{-}<(from|into|set|values)>)")
  (#set! injection.language "sql"))
 
 ; should I use a more exhaustive list of keywords?

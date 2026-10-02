@@ -5,11 +5,13 @@
 -- The SQL pattern is one #match? anchored at the start of a string's
 -- content: an upper-case statement keyword followed by more text, a
 -- lower-case select/insert/update/delete that later reaches
--- from/into/set/values, or a "-- sql" marker. Import paths and sentences
--- that merely contain an SQL word must stay plain, and a literal must never
--- be injected twice. The JSON patterns once captured raw_string_literal,
--- whose raw_string_literal_content child an injection leaves out of the
--- region, and injected nothing.
+-- from/into/set/values, or a "-- sql" marker, after any number of leading
+-- "--" lines and /* */ blocks, so sqlc's "-- name: X :one" queries inject.
+-- Import paths, sentences that merely contain an SQL word and strings that
+-- hold only comments must stay plain, and a literal must never be injected
+-- twice. The JSON patterns once captured raw_string_literal, whose
+-- raw_string_literal_content child an injection leaves out of the region,
+-- and injected nothing.
 -- This parses an inline Go source against the installed go/sql/json parsers
 -- with only $VIMRUNTIME, the parser dir and this checkout's after/ on the rtp,
 -- and compares the number of regions per injected text with the expected
@@ -65,6 +67,38 @@ local source = {
   "\tSELECT id, name",
   "\tFROM users",
   "\tWHERE id = $1`",
+  "const approveTask = `-- name: ApproveTask :one",
+  "UPDATE tasks",
+  "SET approved_at = $3,",
+  "    updated_at  = $3",
+  "WHERE workflow_id = $1",
+  "  AND name = $2",
+  "RETURNING workflow_id, name",
+  "`",
+  "const workflows = `-- name: Workflows :many",
+  "",
+  "SELECT id, params, name",
+  "FROM workflows",
+  "ORDER BY created_at DESC",
+  "`",
+  "const deleteSchedule = `-- name: DeleteSchedule :one",
+  "DELETE",
+  "FROM schedules",
+  "WHERE id = $1",
+  "`",
+  "const blockLed = `/* name: GetTask :one */ SELECT * FROM tasks WHERE id = $1`",
+  "const mixed = `/*",
+  " * Generated.",
+  " */",
+  "-- name: CountTasks :one",
+  "select count(*) from tasks`",
+  "const noteOnly = `-- just a note",
+  "`",
+  "const dashes = `--- test: x",
+  "--- src:",
+  "`",
+  "const lowerWith = `-- name: X :one",
+  "with t as (select 1) select * from t`",
   "",
   "func f(db interface{ Query(string) }) {",
   '\tshort := `{"foo": "bar"}`',
@@ -81,9 +115,11 @@ local source = {
   '\tn4 := "please select an option from the menu"',
   '\tn5 := "create %q: %s"',
   '\tn6 := "can\'t delete from empty map"',
+  '\tn7 := "-- just a note"',
+  '\tp1 := "-- name: GetUser :one\\nSELECT 1"',
   '\tprintln(`{"f": 5}`)',
   '\tq := "{\\"g\\": 6}"',
-  "\t_ = []any{short, a, b, c, n1, n2, n3, n4, n5, n6, q}",
+  "\t_ = []any{short, a, b, c, n1, n2, n3, n4, n5, n6, n7, p1, q}",
   "}",
 }
 
@@ -133,8 +169,9 @@ local function assert_in_source(texts)
   end
 end
 
--- No SQL for an import path, for sentences that hold an SQL word, or for Go
--- error strings that start with a lower-case verb.
+-- No SQL for an import path, for sentences that hold an SQL word, for Go
+-- error strings that start with a lower-case verb, for strings that hold
+-- only SQL comments, or for lower-case "with" after a comment.
 assert_in_source({
   "database/sql/driver",
   "unknown database name %q",
@@ -143,6 +180,10 @@ assert_in_source({
   "please select an option from the menu",
   "create %q: %s",
   "can't delete from empty map",
+  "`-- just a note\n`",
+  "`--- test: x\n--- src:\n`",
+  "`-- name: X :one\nwith t as (select 1) select * from t`",
+  '"-- just a note"',
 })
 
 assert_once_each("sql", {
@@ -153,6 +194,15 @@ assert_once_each("sql", {
   "ALTER TABLE users ADD COLUMN age int",
   "-- sql\nDROP TABLE users",
   "CREATE INDEX idx ON users (name)",
+  "-- name: ApproveTask :one\nUPDATE tasks\nSET approved_at = $3,\n    updated_at  = $3\n"
+    .. "WHERE workflow_id = $1\n  AND name = $2\nRETURNING workflow_id, name\n",
+  "-- name: Workflows :many\n\nSELECT id, params, name\nFROM workflows\nORDER BY created_at DESC\n",
+  "-- name: DeleteSchedule :one\nDELETE\nFROM schedules\nWHERE id = $1\n",
+  "/* name: GetTask :one */ SELECT * FROM tasks WHERE id = $1",
+  "/*\n * Generated.\n */\n-- name: CountTasks :one\nselect count(*) from tasks",
+  -- An interpreted literal has one content node per run between escapes,
+  -- so only the run after \n is SQL and its "--" run stays plain.
+  "SELECT 1",
 })
 
 -- Only raw strings bound by const, var or := whose content is one object;

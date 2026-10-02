@@ -315,9 +315,7 @@ neotree.setup({
   filesystem = {
     window = {
       mappings = {
-        ["<C-v>"] = "open_vsplit",
         ["<C-x>"] = "open_split",
-        ["<CR>"] = "open", -- { "open", config = { expand_nested_files = true } }, -- expand nested file takes precedence
         ["<Tab>"] = {
           "toggle_preview",
           config = {
@@ -328,29 +326,12 @@ neotree.setup({
           },
         },
         ["-"] = "navigate_up",
-        ["a"] = {
-          "add",
-          -- some commands may take optional config options, see `:h neo-tree-mappings` for details
-          config = {
-            show_path = "none", -- "none", "relative", "absolute"
-          },
-        },
-        ["c"] = "copy", -- takes text input for destination, also accepts the config.show_path and config.insert_as options
-        ["d"] = "delete",
         ["E"] = "expand_all_nodes",
         ["e"] = "rename_basename",
-        ["?"] = "show_help",
-        ["o"] = "open",
-        ["p"] = "paste_from_clipboard",
         ["P"] = "navigate_up",
-        ["q"] = "close_window",
-        ["r"] = "rename",
-        ["R"] = "refresh",
         ["/"] = "fuzzy_finder",
         --["/"] = {"fuzzy_finder", config = { keep_filter_on_submit = true }},
         ["W"] = "close_all_nodes",
-        ["x"] = "cut_to_clipboard",
-        ["y"] = "copy_to_clipboard",
       },
       fuzzy_finder_mappings = { -- define keymaps for filter popup window in fuzzy_finder_mode
         ["<down>"] = "move_cursor_down",

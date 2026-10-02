@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Perf report (round-2 plan R0.1): the timing half of the startup budget.
+# Perf report: the timing half of the startup budget.
 #
 # Prints, on the current machine:
 #   - same-session floor: median-of-3 `nvim --clean` --startuptime totals,
@@ -8,7 +8,7 @@
 #   - stall probe: between UIEnter+100 ms and +5.1 s, the loop busy fraction
 #     from uv metrics (loop_configure("metrics_idle_time")) and the max
 #     single loop-turn stall from a prepare/check handle pair -- no timer
-#     grid, so there is no 8 ms detection floor and no probe-timer noise
+#     grid, so there is no detection floor and no probe-timer noise
 #   - embed UI latency: attach->first-flush and input->flush from a direct
 #     msgpack-RPC UI client (script/ui-latency.lua), clean vs full config
 #   - perfetto trace export: one full-config startup merged into a Chrome
@@ -57,14 +57,11 @@ trap 'rm -rf "$tmp"' EXIT
 # Exported, so the nested `nvim -l` harnesses below hand it to their children.
 export NVIM_UI_MODE=chrome
 
-# Measurement sessions must never write the user's real ShaDa. A round runs
-# dozens of full-config sessions, often several at once, and they all race for
-# the same main.shada.tmp.a-z namespace: any run killed mid-write (this
-# script's own pty timeout does exactly that) strands a temp file, and once
-# all 26 letters are taken EVERY later write -- the user's interactive nvim
-# included -- fails with E138. Seeding a throwaway copy keeps the ShaDa read
-# cost representative (round-2 R3.4 measured and tuned it) while the writes
-# land in $tmp. Only full-config runs need it; --clean already implies -i NONE.
+# Measurement sessions must never write the user's real ShaDa; see
+# script/lib/throwaway_shada.lua for why (bash cannot dofile it, so the copy
+# is made here). Seeding a throwaway copy keeps the ShaDa read cost
+# representative while the writes land in $tmp. Only full-config runs need
+# it; --clean already implies -i NONE.
 shada_real="${XDG_STATE_HOME:-$HOME/.local/state}/nvim/shada/main.shada"
 shada_probe="$tmp/perf.shada"
 if [ -r "$shada_real" ]; then
@@ -116,8 +113,8 @@ cat >"$probe" <<'EOF'
 -- returns and prepare handles right before the next poll blocks, so the
 -- gap from a check timestamp to the next prepare fire is one loop turn's
 -- active (non-poll) stretch -- a main-thread busy stall, measured with no
--- timer grid under it (the old 8 ms uv timer put an 8 ms floor on
--- detection and was itself loop load).
+-- timer grid under it (a timer puts its period as a floor on detection
+-- and is itself loop load).
 local stall = { ran = false, max_ms = -1, busy_fraction = -1, loop_count = -1, events = -1 }
 vim.api.nvim_create_autocmd("UIEnter", {
   once = true,
@@ -494,7 +491,7 @@ EOF
 
 nvim -u NONE --headless -l "$report" "$tmp" "$runs"
 
-# Embed UI latency (round-3.5 item 3): a direct msgpack-RPC UI client
+# Embed UI latency: a direct msgpack-RPC UI client
 # measures attach->first-flush and input->flush against `nvim --embed`,
 # clean and full config. Unlike the pty runs above these numbers carry no
 # `script -q` DSR/termresponse artifact (the pty runs stay because the
@@ -527,7 +524,7 @@ awk -F= '
   }
 ' "$ui_clean" "$ui_full"
 
-# Perfetto trace export (round-3.5 item 2): merge one full-config startup
+# Perfetto trace export: merge one full-config startup
 # into a Chrome trace-event JSON, reusing a --startuptime log this report
 # already produced. The file lands OUTSIDE $tmp so it survives this
 # script's cleanup trap; open it at ui.perfetto.dev.
@@ -536,7 +533,7 @@ echo "== perfetto trace export: script/perf-trace.lua =="
 trace_out="${TMPDIR:-/tmp}/nvim-perf-trace.json"
 trace_args=(--out "$trace_out" --startuptime "$tmp/full_headless2.log")
 # The full-config ui-latency samples ride along as their own trace track
-# when that measurement succeeded (round-4 V0.3).
+# when that measurement succeeded.
 [ -s "$tmp/ui_full.json" ] && trace_args+=(--ui-latency "$tmp/ui_full.json")
 if nvim -l script/perf-trace.lua "${trace_args[@]}" >/dev/null 2>&1; then
   echo "  trace written: $trace_out (open in ui.perfetto.dev)"

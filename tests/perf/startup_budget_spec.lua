@@ -1,13 +1,13 @@
 ---@diagnostic disable: undefined-global
--- Startup budget spec (plan Phase 4.1; acceptance criteria 2-4).
+-- Startup budget spec.
 --
 -- Boots the FULL user config inside real pty sessions (jobstart with
 -- pty = true) and asserts the lazy-loading budget invariants:
 --
 --   1. no file + 3 s idle: schemastore absent from package.loaded;
 --      blink.cmp / copilot may be present ONLY via the tagged cooperative
---      warmup (round-2 R2 loads the insert stack at UIEnter+800ms, one
---      plugin per tick, tagging each in vim.g.warmup_loaded) -- an untagged
+--      warmup (it loads the insert stack at UIEnter+800ms, one plugin
+--      per tick, tagging each in vim.g.warmup_loaded) -- an untagged
 --      load means the InsertEnter laziness broke; and nvim-lspconfig is not
 --      even a lazy spec (the plugin is uninstalled -- servers are native
 --      lsp/ configs).
@@ -24,8 +24,6 @@
 -- (-remote=unix;/tmp/gopls.sock), which exits unless a daemon serves the
 -- socket. The spec starts one when no daemon accepts a connection there, and
 -- stops (and unlinks the socket of) only a daemon it started itself.
---
--- Run from the repo root: nvim --headless -u NONE -l tests/perf/startup_budget_spec.lua
 
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
@@ -137,9 +135,7 @@ local function run_pty(mode, file, budget_ms)
   local out = vim.fn.tempname() .. "_report.json"
   local cmd = {
     "nvim",
-    -- throwaway ShaDa: these pty children write it on exit, and a suite run
-    -- plus a perf round together strand enough main.shada.tmp.* files to
-    -- exhaust the a-z namespace and break the user's own nvim with E138
+    -- throwaway ShaDa: see script/lib/throwaway_shada.lua for why
     "-i",
     throwaway_shada(),
     "--cmd",
@@ -217,8 +213,8 @@ local idle_absent = {
   "vim-operator-convert-case", -- <Plug> stub
   "vim-operator-user", -- dependency of the operator that loads first
   "edgy.nvim", -- ft snacks_terminal
-  -- round-4 V1 demotion set: the treesitter stack loads on the first
-  -- FileType event, so a no-file idle session never pays for it.
+  -- the treesitter stack loads on the first FileType event, so a no-file
+  -- idle session never pays for it
   "nvim-treesitter", -- event FileType + TS* cmds
   "nvim-ts-context-commentstring", -- dependency of nvim-treesitter
   "tree-sitter-goasm", -- dependency of nvim-treesitter
@@ -232,8 +228,8 @@ local first_file_present = {
   "satellite.nvim",
   "vim-wakatime",
   "fidget.nvim",
-  -- round-4 V1: the FileType event that fires for the Go fixture must bring
-  -- the treesitter stack in (highlight replay covers the triggering buffer).
+  -- the FileType event that fires for the Go fixture must bring the
+  -- treesitter stack in (highlight replay covers the triggering buffer)
   "nvim-treesitter",
   "nvim-ts-context-commentstring",
 }
@@ -317,7 +313,7 @@ local ok, err = pcall(function()
       not has(report.spec_names, "nvim-lspconfig"),
       "nvim-lspconfig must not exist as a lazy spec (servers are native lsp/ configs)"
     )
-    -- round-3 W3.2: statusline/tabline are the hand-rolled config/chrome.lua.
+    -- statusline/tabline are the hand-rolled config/chrome.lua.
     -- The two plugins it replaced keep a trigger-less spec so :UiMode can
     -- load them on demand (lua/config/ui_mode.lua) -- what must hold is that
     -- the default chrome mode never pulls them in.

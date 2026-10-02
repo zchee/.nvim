@@ -1,4 +1,4 @@
--- Colorscheme-parity falsifier (round-2 plan R0.2 / R3.1).
+-- Colorscheme-parity falsifier.
 --
 --   nvim --headless -l script/hl-dump.lua [outfile] [--reapply]
 --
@@ -6,18 +6,15 @@
 -- all attributes including links, cterm, blend, and default flags -- in
 -- canonical sorted order (stable group and key ordering, deterministic
 -- formatting), to stdout or the outfile argument. Two dumps of an
--- unchanged config must be byte-identical; that diff is the falsifier for
--- the R3.1 colorscheme port.
+-- unchanged config must be byte-identical.
 --
 -- `nvim -l` script mode never loads the user config ('loadplugins' is off
 -- and init.lua is skipped), so the startup paint is replayed here
--- explicitly by applying the colorscheme, which since R3.1 carries the
--- former config.highlight overrides too. Running headless with the full
+-- explicitly by applying the colorscheme. Running headless with the full
 -- config instead would drown the dump in plugin-defined groups.
 --
 -- --reapply re-issues :colorscheme after the startup paint, simulating a
--- user re-applying it mid-session; the dump must not change (round-1's
--- known gap was overrides lost on re-apply).
+-- user re-applying it mid-session; the dump must not change.
 
 -- Dump the colorscheme of the checkout this script lives in: the only
 -- config dir on a `-l` rtp is ~/.config/nvim, which may point at another

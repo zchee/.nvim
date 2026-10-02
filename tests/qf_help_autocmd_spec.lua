@@ -4,7 +4,6 @@
 -- <C-w>T on quickfix keeps its new tab, closing a focused float in a qf-only
 -- tab keeps that tab, and a refused :quit is one message.
 --
--- Run: nvim --headless -u NONE -i NONE -l tests/qf_help_autocmd_spec.lua
 -- Exits 0 only after printing "ALL PASS": the last case ends Nvim through
 -- the auto-quit itself, and a VimLeavePre guard turns any other exit into
 -- exit 1.
@@ -56,7 +55,7 @@ end
 
 local ok, err = pcall(function()
   do -- quickfix pages on u/d: its buffer is still modifiable when FileType
-    -- fires, so a modifiable gate dropped these maps (a0c9cc1)
+    -- fires, so a modifiable gate would drop these maps
     vim.fn.setqflist({ { filename = "x", lnum = 1, text = "t" } })
     vim.cmd("copen")
     assert_equal(vim.bo.filetype, "qf", "copen opens the quickfix window")

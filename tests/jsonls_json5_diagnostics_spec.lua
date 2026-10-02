@@ -13,19 +13,16 @@ vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
   vim.fn.getcwd() .. "/lua/?/init.lua",
-  -- The server config migrated to the native runtimepath form at the repo
-  -- root (lsp/jsonls.lua), so require("lsp.jsonls") resolves through this
-  -- entry rather than lua/.
+  -- lsp/jsonls.lua lives in the native runtimepath form at the repo root.
   vim.fn.getcwd() .. "/?.lua",
   package.path,
 }, ";")
 
 local config = require("lsp.jsonls")
 
--- The SchemaStore catalog moved from module scope into before_init so a
--- non-JSON session never materializes it: config files under lsp/ are read on
--- the first FileType event of any filetype. Loading the module must therefore
--- leave schemastore untouched.
+-- Config files under lsp/ are read on the first FileType event of any
+-- filetype, so loading the module must leave schemastore untouched: a
+-- non-JSON session never materializes the catalog.
 assert(package.loaded["schemastore"] == nil, "requiring lsp.jsonls must not load the SchemaStore catalog")
 assert(type(config.before_init) == "function", "the schema catalog must be filled in by before_init")
 local handler = config.handlers["textDocument/diagnostic"]

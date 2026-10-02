@@ -1,4 +1,4 @@
--- Perfetto/Chrome trace-event exporter (round-3.5 plan item 2).
+-- Perfetto/Chrome trace-event exporter.
 --
 --   nvim -l script/perf-trace.lua [--out <trace.json>] [--startuptime <log>]
 --                                 [--ui-latency <json>]
@@ -59,7 +59,7 @@
 --     embed spawn, not this startup's origin); the track name says so.
 --   * ph="M" process_name/thread_name metadata label every track.
 --
--- Nesting repair (round-4 V0.2): reconstructed starts can partially
+-- Nesting repair: reconstructed starts can partially
 -- overlap on a tid -- the log's phase windows overlap by 1 µs at ms
 -- precision, and end-to-end chains can overshoot their container slice --
 -- which trace_processor reports as slice_spill_overlapping_complete_event
@@ -69,9 +69,9 @@
 -- recorded in args.ts_shift_us), so every pair of slices is nested or
 -- disjoint and the import stat stays 0.
 --
--- Every event carries args.source ("startuptime" | "lazy" | "warmup") so
--- consumers can filter by origin; tests/perf/trace_export_spec.lua pins
--- the whole contract.
+-- Every event carries args.source ("startuptime" | "lazy" | "warmup" |
+-- "ui_latency") so consumers can filter by origin;
+-- tests/perf/trace_export_spec.lua pins the whole contract.
 
 local CHILD_DEADLINE_MS = 25000
 local CHILD_SETTLE_MS = 500

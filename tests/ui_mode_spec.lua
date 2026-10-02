@@ -1,7 +1,7 @@
 ---@diagnostic disable: undefined-global
 -- Regression spec for lua/config/ui_mode.lua, the switch between the
 -- hand-rolled lua/config/chrome.lua and the lualine+bufferline pair it
--- replaced. Runs under `nvim --headless -u NONE -l tests/ui_mode_spec.lua`.
+-- replaced.
 --
 -- Two properties carry the whole design and are easy to break by accident:
 -- the module must resolve a mode without requiring anything from config.*

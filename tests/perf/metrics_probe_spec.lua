@@ -1,5 +1,4 @@
--- uv-metrics stall probe spec (round-3.5 plan item 1, acceptance
--- criterion 2).
+-- uv-metrics stall probe spec.
 --
 -- script/perf-report.sh embeds a stall probe built on
 -- vim.uv.loop_configure("metrics_idle_time") (busy fraction from the idle
@@ -10,9 +9,6 @@
 -- poll blocks, so check -> next prepare brackets one loop turn's active
 -- (non-poll) stretch. If a nightly bump breaks any of these guarantees,
 -- the probe's numbers are garbage and this spec is what says so.
---
--- Run from the repo root:
---   nvim --headless -u NONE -l tests/perf/metrics_probe_spec.lua
 
 local function assert_truthy(got, message)
   if not got then

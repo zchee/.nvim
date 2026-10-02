@@ -1,16 +1,12 @@
 ---@diagnostic disable: undefined-global
--- Colorscheme-parity spec (round-2 plan R3.1, acceptance criterion 4).
+-- Colorscheme-parity spec.
 --
--- tests/perf/fixtures/hl_baseline.txt froze the effective highlight state
--- of the pre-port pipeline (VimL colors/equinusocio_material.vim + the 97
--- lua/config/highlight.lua overrides). The Lua colorscheme that replaced
--- them must reproduce that state byte-for-byte, both on first paint and
--- when :colorscheme is re-applied mid-session (round 1 lost the overrides
--- on re-apply). The fixture pins nvim's default-derived values too (Spell*
+-- tests/perf/fixtures/hl_baseline.txt holds the effective highlight state
+-- of colors/equinusocio_material.lua. The colorscheme must reproduce it
+-- byte-for-byte, both on first paint and when :colorscheme is re-applied
+-- mid-session. The fixture pins nvim's default-derived values too (Spell*
 -- guisp), so a nightly bump that changes defaults means regenerating the
 -- fixture with: nvim --headless -l script/hl-dump.lua <fixture>
---
--- Run from the repo root: nvim --headless -u NONE -l tests/perf/hl_dump_spec.lua
 
 local function fail(message)
   io.stderr:write(message .. "\n")

@@ -1,4 +1,4 @@
--- Embed UI latency client (round-3.5 plan item 3).
+-- Embed UI latency client.
 --
 -- Spawns `nvim --embed` as a child process, attaches a msgpack-RPC UI over
 -- the child's stdio pipes (vim.uv.spawn + vim.mpack), and measures:
@@ -36,7 +36,7 @@
 --                  --pre-keys-lua can only change state after startup.
 --   --pre-keys-lua / --post-keys-lua
 --                  Lua run in the CHILD via nvim_exec_lua right before /
---                  after the key phase: the round-4 V4 attribution hooks
+--                  after the key phase: attribution hooks
 --                  (jit.p start/stop, runtime A/B toggles, an in-child
 --                  stall probe). The post code's return value lands in
 --                  the output as post_keys_result (JSON-encoded line and

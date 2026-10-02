@@ -1,5 +1,5 @@
 ---@diagnostic disable: undefined-global
--- Regression spec for lua/lsp/markdown_oxide.lua.
+-- Regression spec for lsp/markdown_oxide.lua.
 --
 -- markdown_oxide is the markdown server this config runs, and three properties
 -- of that choice are easy to undo by accident:
@@ -17,15 +17,12 @@
 --   * It indexes files that git ignores. That is the whole reason marksman was
 --     rejected: the agent memory trees live under a git-ignored
 --     claude/projects/, invisible to a server that honours .gitignore.
---
--- Run: nvim --headless -u NONE -l tests/markdown_oxide_spec.lua
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
   vim.fn.getcwd() .. "/lua/?/init.lua",
-  -- The server config migrated to the native runtimepath form at the repo
-  -- root (lsp/markdown_oxide.lua), so require("lsp.markdown_oxide") resolves
-  -- through this entry rather than lua/.
+  -- lsp/markdown_oxide.lua lives in the native runtimepath form at the repo
+  -- root.
   vim.fn.getcwd() .. "/?.lua",
   package.path,
 }, ";")

@@ -1,16 +1,13 @@
 ---@diagnostic disable: undefined-global
--- Regression spec for lua/config/chrome.lua (round-3 W3.2), the hand-rolled
--- statusline + tabline that stands in for lualine.nvim + bufferline.nvim.
--- Runs under `nvim --headless -u NONE -i NONE -l tests/chrome_spec.lua`: no
--- plugin manager, rtp extended to the repo. Asserts the parity surface:
--- component presence, buffer-id numbers, modified marker, diagnostics
--- strings, insert-after-current ordering, and the click handler's button
+-- Regression spec for lua/config/chrome.lua, the hand-rolled statusline +
+-- tabline that stands in for lualine.nvim + bufferline.nvim. No plugin
+-- manager, rtp extended to the repo. Asserts the parity surface: component
+-- presence, buffer-id numbers, modified marker, diagnostics strings,
+-- insert-after-current ordering, and the click handler's button
 -- discrimination.
 --
 -- Exits 0 only after its last assertion: a VimLeavePre guard turns any
--- earlier exit into exit 1. An -l script that fed "i" with feedkeys "x!"
--- used to end right there with exit 0 -- Insert mode had nothing more to
--- read -- and everything after it never ran.
+-- earlier exit into exit 1.
 
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({

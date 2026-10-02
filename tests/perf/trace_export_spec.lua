@@ -1,5 +1,4 @@
--- script/perf-trace.lua -- the Perfetto/Chrome trace-event exporter
--- (round-3.5 plan item 2, acceptance criterion 3). Runs the exporter
+-- script/perf-trace.lua -- the Perfetto/Chrome trace-event exporter. Runs it
 -- end-to-end (it spawns its own full-config child, so this spec's -u NONE
 -- session stays clean) and pins the output contract: the file round-trips
 -- through vim.json.decode, carries the trace-event top level, every event
@@ -14,8 +13,6 @@
 -- "trace_processor_shell") exists the trace must also import with zero
 -- spilled complete events. The lazy.nvim anchors must be on the log's
 -- wall-clock axis (args.clock = "wall"), not lazy.stats()'s CPU time.
---
--- Run from the repo root: nvim --headless -u NONE -l tests/perf/trace_export_spec.lua
 
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
@@ -102,7 +99,7 @@ end
 local out_path = vim.fn.tempname() .. "-trace.json"
 local ui_json_path = vim.fn.tempname() .. "-ui-latency.json"
 
--- Real ui-latency measurement first (round-4 V0.3): the embed client's
+-- Real ui-latency measurement first: the embed client's
 -- --json output feeds the exporter's --ui-latency track below.
 do
   local cmd = { vim.v.progpath, "-l", "script/ui-latency.lua", "--clean", "--socket-free", "--json", ui_json_path }
@@ -239,7 +236,7 @@ do
   )
 end
 
--- Import health (round-4 V0.2): when native Perfetto tooling is installed,
+-- Import health: when native Perfetto tooling is installed,
 -- the trace must import with zero spilled (partially overlapping) complete
 -- events -- the exporter's nesting repair guarantees it. Guarded on the
 -- binary so the spec stays portable; the skip prints so it is visible.

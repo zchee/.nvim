@@ -5,10 +5,8 @@
 -- ("*p, f*, ...), and the typed=="" (mapping expansion) and non-normal-mode
 -- early returns.
 --
--- Run: nvim --headless -u NONE -i NONE -l tests/auto_hlsearch_on_key_spec.lua
 -- Exits 0 only after printing "ALL PASS": a VimLeavePre guard turns any
--- earlier exit into exit 1. Entering Insert mode with feedkeys "nx!" used to
--- end the process right there with exit 0, before the Insert-mode checks.
+-- earlier exit into exit 1.
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",

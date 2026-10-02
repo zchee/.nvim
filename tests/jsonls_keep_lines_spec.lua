@@ -11,8 +11,6 @@
 -- the old shape and must still expand it, so this spec fails if the server
 -- ever starts reading that key and the comment in jsonls.lua goes stale, and
 -- it proves the fixture is one the formatter would otherwise rewrite.
---
--- Run: nvim --headless -u NONE -l tests/jsonls_keep_lines_spec.lua
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",

@@ -1,5 +1,4 @@
--- Embed UI latency client smoke spec (round-3.5 plan item 3, acceptance
--- criterion 4).
+-- Embed UI latency client smoke spec.
 --
 -- Runs script/ui-latency.lua against `nvim --embed -u NONE -i NONE`
 -- (--clean) end to end: the child spawns, the msgpack-RPC UI attaches,
@@ -9,9 +8,6 @@
 -- RPC framing and the deadline plumbing, never a timing assertion.
 -- Timing numbers are reported by script/perf-report.sh, not asserted
 -- here.
---
--- Run from the repo root:
---   nvim --headless -u NONE -l tests/perf/ui_latency_spec.lua
 
 local function assert_truthy(got, message)
   if not got then

@@ -12,8 +12,6 @@
 -- The live half runs the real server with the config's own get_language_id and
 -- handler, so the languageId semantics and the diagnostic codes are the
 -- server's, not a restatement of them. Needs no network: no schema is set.
---
--- Run: nvim --headless -u NONE -l tests/jsonls_hujson_spec.lua
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",

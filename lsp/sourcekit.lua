@@ -26,12 +26,6 @@ return {
         dynamicRegistration = true,
       },
     },
-    textDocument = {
-      diagnostic = {
-        dynamicRegistration = true,
-        relatedDocumentSupport = true,
-      },
-    },
   },
   -- get_language_id = function(_, ftype)
   --   local t = { objc = "objective-c", objcpp = "objective-cpp" }

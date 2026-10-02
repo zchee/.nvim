@@ -46,7 +46,7 @@ return {
   -- ),
   -- terraform-ls takes its options as initializationOptions, unwrapped
   -- (docs/SETTINGS.md "How to pass settings"); it never requests
-  -- workspace/configuration, so a `settings` table reached nothing.
+  -- workspace/configuration, so a `settings` table would reach nothing.
   init_options = {
     indexing = {
       ignoreDirectoryNames = {

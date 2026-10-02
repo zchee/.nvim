@@ -1,6 +1,3 @@
--- :LspClangdSwitchSourceHeader and :LspClangdShowSymbolInfo are created in
--- lua/lsp/on_attach.lua.
-
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = {
@@ -33,21 +30,16 @@ return {
     "--input-style=standard",
     "--offset-encoding=utf-16",
   },
-  -- No "metal", even though filetype.lua detects it now. This clangd is
-  -- upstream LLVM, which has no Metal language mode, so it compiles a shader
-  -- as C: 21 errors on a real one, starting at `'metal_stdlib' file not
-  -- found` and cascading through every `using namespace metal` after it.
-  -- Pointing it at the headers would not help either -- they live inside a
-  -- versioned cryptex mount that xcrun resolves at runtime
-  -- (.../MobileAsset.MetalToolchain-v27.1.5252.6.../usr/metal/32023/...) and
-  -- the Metal-only qualifiers would still not parse. Keeping metal its own
-  -- filetype rather than aliasing it to cpp is what holds clangd off these
-  -- buffers; Tree-sitter's cpp parser covers the highlighting.
+  -- No "metal": this clangd is upstream LLVM, which has no Metal language
+  -- mode, so it compiles a shader as C (21 errors on a real one, starting at
+  -- `'metal_stdlib' file not found`). Keeping metal its own filetype rather
+  -- than aliasing it to cpp is what holds clangd off these buffers;
+  -- Tree-sitter's cpp parser covers the highlighting.
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
-  -- .clang-format and .clang-tidy apply per directory, so a subdirectory
-  -- carrying its own used to become the root and split the tree into
-  -- separate clangd instances. The compilation database and .clangd name the
-  -- project; the repository comes next; the style files only root loose
+  -- .clang-format and .clang-tidy apply per directory, so listed first, a
+  -- subdirectory carrying its own would become the root and split the tree
+  -- into separate clangd instances. The compilation database and .clangd name
+  -- the project; the repository comes next; the style files only root loose
   -- trees outside git.
   root_markers = {
     { "compile_commands.json", "compile_flags.txt", ".clangd" },

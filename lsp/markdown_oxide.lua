@@ -6,26 +6,20 @@ local util = require("util")
 -- inlay_hints, excluded_folders, ...) live in `~/.config/moxide/settings.toml`
 -- or a per-vault `.moxide.toml`; `markdown-oxide config` opens the former.
 --
--- Not in lua/lsp/init.lua's vim.lsp.enable list: 467cac4 stopped starting it
--- on markdown buffers. vim.lsp.enable("markdown_oxide") turns it back on.
+-- Not in lua/lsp/init.lua's vim.lsp.enable list;
+-- vim.lsp.enable("markdown_oxide") turns it back on.
 --
--- The root markers and the daily-note commands used to come from
--- nvim-lspconfig's own `lsp/markdown_oxide.lua`; they are inlined here since
--- nvim-lspconfig was removed. vim.lsp tries root_markers in list order, not
--- nearest-first, so a vault's own `.moxide.toml` or `.obsidian` (equal
--- priority, nearest wins between them) is listed ahead of `.git`; in a flat
--- list the repository .git would win over a nearer vault marker. Without
--- one, the wide .git root is deliberate: measured on the agent notes tree --
--- 1604 markdown files under a single .git -- the server finishes indexing in
--- 1.8s and answers textDocument/definition 90ms later, so narrowing the root
--- buys nothing.
+-- vim.lsp tries root_markers in list order, not nearest-first, so a vault's
+-- own `.moxide.toml` or `.obsidian` (equal priority, nearest wins between
+-- them) is listed ahead of `.git`; in a flat list the repository .git would
+-- win over a nearer vault marker. Without one, the wide .git root is
+-- deliberate: measured on the agent notes tree -- 1604 markdown files under a
+-- single .git -- the server finishes indexing in 1.8s and answers
+-- textDocument/definition 90ms later, so narrowing the root buys nothing.
 --
 -- Unlike marksman, this server indexes files that git ignores, which is what
 -- makes it work on the agent memory trees (`claude/.gitignore` excludes
 -- `projects/`, where those notes live).
---
--- The daily-note commands (:LspToday, :LspTomorrow, :LspYesterday) are created
--- in lua/lsp/on_attach.lua, the on_attach every server shares.
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {

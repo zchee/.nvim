@@ -5,15 +5,10 @@ local util = require("util")
 --- https://github.com/redhat-developer/yaml-language-server/blob/main/src/languageserver/handlers/settingsHandlers.ts
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  -- Interpreter spelled out for the same reason as lsp/jsonls.lua: the bin is
-  -- a `#!/usr/bin/env node` script, and through the nodenv shim its node
-  -- version follows the cwd it is spawned in -- see util.nodenv_prefix.
-  -- lsp.cmd.lazy for the same reason as there: the lookups run at server start.
+  -- node named explicitly and lsp.cmd.lazy, both as in lsp/jsonls.lua.
   cmd = lsp_cmd.lazy(function()
     return { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" }
   end),
-  -- yaml.docker-compose and yaml.gitlab were nvim-lspconfig's names; no
-  -- filetype rule here produces them, so only :checkhealth ever saw them.
   filetypes = { "yaml", "yaml.helm-values" },
   root_markers = { ".git" },
   -- yaml-language-server reports no documentFormattingProvider until settings

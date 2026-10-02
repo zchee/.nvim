@@ -15,12 +15,9 @@ return {
   settings = {
     pkl = {
       cli = {
-        -- The server shells out to the CLI to resolve projects and packages,
-        -- and without a path it reports "Pkl CLI is not configured and not
-        -- found in PATH". It would find this one on $PATH; naming it keeps
-        -- the server off whatever pkl a project's environment happens to
-        -- put there, the same reason most binaries here are named by
-        -- absolute path rather than looked up on $PATH.
+        -- The server shells out to the CLI to resolve projects and packages.
+        -- It would find this one on $PATH; naming it keeps the server off
+        -- whatever pkl a project's environment happens to put there.
         path = util.homebrew_binary("pkl", "pkl"),
       },
     },

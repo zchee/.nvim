@@ -15,7 +15,6 @@ return {
     -- The one key that decides whether cmake buffers are formatted on save:
     -- conform has no cmake formatter, so format_on_save falls back to the
     -- LSP, and with this false neocmakelsp registers no formatter at all.
-    -- Set it to true to have neocmakelsp format cmake files again.
     format = {
       enable = false,
     },

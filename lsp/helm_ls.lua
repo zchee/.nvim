@@ -3,12 +3,8 @@ local util = require("util")
 
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  -- Built through lsp.cmd.lazy, not a table: vim.fn.exepath walks $PATH, so a
-  -- table literal would pay that walk whenever the config resolves --
-  -- vim.lsp.enable() in lua/lsp/init.lua, then the first FileType of any
-  -- filetype -- rather than when a helm buffer actually starts the server.
-  -- lsp.cmd.lazy also spawns it in the chart root (root_dir), as a table cmd
-  -- would, instead of Nvim's cwd.
+  -- lsp.cmd.lazy, not a table: vim.fn.exepath walks $PATH, and a table would
+  -- pay that walk whenever the config resolves (see lua/lsp/cmd.lua).
   cmd = lsp_cmd.lazy(function()
     return { vim.fn.exepath("helm_ls"), "serve" }
   end),
@@ -50,12 +46,10 @@ return {
     },
   },
   -- yamlls.path is an argv, not a name: helm-ls (YamllsPath) takes the
-  -- executable plus its arguments, so the node that runs the
-  -- #!/usr/bin/env node bin is pinned the way lsp/yamlls.lua pins it, instead
-  -- of a chart's .node-version choosing it through the nodenv shim. Set here,
-  -- not in the table above, so the lookups run when a helm buffer starts the
-  -- server; vim.lsp deepcopies the config per start, and client.settings is
-  -- this same table, so helm-ls pulls the path with the rest.
+  -- executable plus its arguments, so node is named explicitly as in
+  -- lsp/yamlls.lua. Set here, not in the table above, so the lookups run when
+  -- a helm buffer starts the server; client.settings is this same table, so
+  -- helm-ls pulls the path with the rest.
   ---@param config vim.lsp.ClientConfig
   before_init = function(_, config)
     local helm_ls = config.settings["helm-ls"] --[[@as table]]

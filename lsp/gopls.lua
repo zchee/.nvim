@@ -264,7 +264,7 @@ return {
         loopclosure = true,
         lostcancel = true,
         maprange = true,
-        -- modernize is no longer one analyzer: gopls runs each check as its own
+        -- modernize is not one analyzer: gopls runs each check as its own
         -- (the modernize#hdr-Analyzer_<name> anchors in `gopls api-json`). All
         -- default on except appendclipped and slicesdelete, enabled below.
         any = true,
@@ -457,10 +457,8 @@ return {
     },
   },
 
-  -- before_init fires just before the initialize request, with
-  -- config.root_dir resolved, and vim.lsp deepcopies the config per client
-  -- start, so these mutations stay scoped to this root instead of leaking into
-  -- the next Go project opened in the same session.
+  -- The per-root overrides: before_init fires just before the initialize
+  -- request, when config.root_dir is already resolved.
   --
   -- gopls types `env` as map[string]string, so each value is a plain string.
   -- An empty Lua table encodes as a JSON array, which gopls rejects for `env`,
@@ -490,7 +488,7 @@ return {
       -- buildFlags reaches `go list` verbatim, so the tags have to arrive as
       -- one -tags= flag. Listing them bare made go list read each name as a
       -- package pattern, and the load failed silently: every completion in
-      -- go/src came back empty. Only visible once before_init actually ran.
+      -- go/src came back empty.
       gopls.buildFlags = {
         "-tags=goexperiment.simd,goexperiment.runtimesecret",
       }

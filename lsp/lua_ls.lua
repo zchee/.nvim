@@ -143,8 +143,7 @@ return {
         progressBar = true,
       },
       -- A string map under `config` (template.lua types it
-      -- Hash(String, String)); the keys directly under typeFormat were never
-      -- read.
+      -- Hash(String, String)); keys directly under typeFormat are not read.
       typeFormat = {
         config = {
           auto_complete_end = "true",
@@ -164,7 +163,6 @@ return {
           vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luassert/module/library"),
           vim.fs.joinpath(util.src_path("github.com/LuaLS/LLS-Addons"), "addons/luvit/module/library"),
         },
-        -- Both were 100x the upstream defaults, which left no cap at all.
         -- Measured on this workspace: 1099 files preloaded, and the largest
         -- Lua file anywhere in scope is nvim's generated vim/_meta/vimfn.gen.lua
         -- at 431KB -- too close to the 500KB default to keep it, since losing

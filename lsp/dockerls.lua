@@ -16,9 +16,8 @@ return {
   --     end
   --   end
   -- end,
-  -- root_markers are file names, never globs: vim.fs.root compared
-  -- "*.dockerfile" and "Dockerfile*" literally, so an app.dockerfile beside
-  -- no plain Dockerfile got no root at all.
+  -- root_markers are literal file names, never globs: vim.fs.root would
+  -- compare "*.dockerfile" or "Dockerfile*" literally.
   root_markers = { "Dockerfile", ".git" },
   -- The server pulls "docker.languageserver.formatter" and
   -- "docker.languageserver.diagnostics" through workspace/configuration and

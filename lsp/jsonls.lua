@@ -18,7 +18,7 @@ local util = require("util")
 -- still yields Property keys must be doublequoted / Value expected / Expected
 -- comma under jsonc, because the parser behind both is the same one and has no
 -- JSON5 mode. It would also silently retarget the server's json-vs-jsonc
--- formatter registration and folding/color limits, which the ask does not cover.
+-- formatter registration and folding/color limits.
 --
 -- So drop the grammar complaints on json5 buffers and keep the schema ones,
 -- which are the reason jsonls attaches to these files at all. ErrorCode in
@@ -83,9 +83,6 @@ local function filter_dialect_diagnostics(err, result, ctx)
   -- Looked up at call time, not captured, so the real handler stays swappable.
   return vim.lsp.diagnostic.on_diagnostic(err, result, ctx)
 end
-
--- <C-]> on a `$ref` (jump through textDocument/documentLink, since this server
--- answers no textDocument/definition) is bound in lua/lsp/on_attach.lua.
 
 -- Schemas that own the files their `fileMatch` names outright.
 --
@@ -196,11 +193,9 @@ return {
       --   },
       -- },
       -- schemas: filled in by before_init below, so the SchemaStore catalog
-      -- (~1000 entries) only materializes when a JSON buffer actually starts
-      -- the server. Every config file under lsp/ is read when
-      -- vim.lsp.enable() runs in lua/lsp/init.lua (and again on the first
-      -- FileType of any filetype), so even a module-scope require here would
-      -- load the catalog for a Go-only session.
+      -- (~1000 entries) only materializes when a JSON buffer starts the
+      -- server; a module-scope require would load it in every session (see
+      -- lua/lsp/cmd.lua).
       validate = {
         enable = true,
       },
@@ -224,8 +219,6 @@ return {
       -- its client extension, which the server never sees.
     },
   },
-  -- vim.lsp deepcopies the config per client start, so this mutation stays
-  -- scoped to the starting client (same seam lsp/gopls.lua uses).
   ---@param config vim.lsp.ClientConfig
   before_init = function(_, config)
     local schemas = require("schemastore").json.schemas({

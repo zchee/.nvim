@@ -20,9 +20,6 @@ local function detect_extra_paths()
   return paths
 end
 
--- :LspPyrightOrganizeImports and :LspPyrightSetPythonPath are created in
--- lua/lsp/on_attach.lua.
-
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   cmd = { util.homebrew_binary("basedpyright-head", "basedpyright-langserver"), "--stdio" },
@@ -48,9 +45,8 @@ return {
         autoFormatStrings = true,
         diagnosticSeverityOverrides = {},
         exclude = {},
-        -- extraPaths: filled in by before_init below, which runs when a
-        -- python buffer starts the server; the lookup stats the disk, and
-        -- vim.lsp.enable() in lua/lsp/init.lua loads every config file.
+        -- extraPaths: filled in by before_init below, since the lookup stats
+        -- the disk.
         ignore = {},
         include = {},
         typeCheckingMode = "off", -- "off", "basic", "standard", "strict", "recommended", "all"
@@ -60,8 +56,6 @@ return {
     --   venvPath = vim.fs.joinpath(vim.fn.getcwd(), ".venv"),
     -- },
   },
-  -- vim.lsp deepcopies the config per client start, so the assignment stays
-  -- scoped to the starting client.
   ---@param config vim.lsp.ClientConfig
   before_init = function(_, config)
     config.settings.basedpyright.analysis.extraPaths = detect_extra_paths()

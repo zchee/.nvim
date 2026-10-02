@@ -3,9 +3,8 @@ local lsp_cmd = require("lsp.cmd")
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
   -- $PATH picks the toolchain (here Xcode's ahead of swiftly's), and exepath
-  -- only turns that choice into an absolute path. Built through lsp.cmd.lazy,
-  -- so the $PATH walk happens when a swift buffer starts the server rather
-  -- than whenever configs resolve.
+  -- only turns that choice into an absolute path. lsp.cmd.lazy keeps the
+  -- $PATH walk out of config resolution (see lua/lsp/cmd.lua).
   cmd = lsp_cmd.lazy(function()
     return {
       vim.fn.exepath("sourcekit-lsp"),

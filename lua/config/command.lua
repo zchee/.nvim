@@ -61,8 +61,8 @@ vim.api.nvim_create_user_command("TrimSpace", function()
   local ft = vim.api.nvim_get_option_value("filetype", { buf = 0 })
   local is_binary = vim.api.nvim_get_option_value("binary", { buf = 0 })
   if not is_binary and not (ft == "diff" or ft == "markdown") then
-    -- winsaveview/keeppatterns instead of the marks y/z and the search
-    -- register the old :normal sequence overwrote.
+    -- winsaveview keeps the cursor and view without using a mark;
+    -- keeppatterns keeps the search register.
     local view = vim.fn.winsaveview()
     vim.cmd([[silent keeppatterns keepjumps %s/\s\+$//e]])
     vim.fn.winrestview(view)

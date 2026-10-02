@@ -7,8 +7,8 @@
 Core, plugin-independent editor configuration: `vim.opt` settings, global
 keymaps, autocommands, user commands, the statusline/tabline renderer, the
 insert-stack warmup, and the `lazy.nvim` bootstrap config itself.
-Highlight-group overrides live inside `colors/equinusocio_material.lua`
-since the R3.1 colorscheme port. The repo root `init.lua` bootstraps
+Highlight-group overrides live inside `colors/equinusocio_material.lua`.
+The repo root `init.lua` bootstraps
 `lazy.nvim`, then runs `require("config.lazy")` and `require("config")`;
 `init.lua` in this directory is the aggregator that `require`s the other
 modules in a fixed order.
@@ -18,7 +18,7 @@ modules in a fixed order.
 |------|--------------|
 | `init.lua` | Aggregator: toggles clipboard around setup, requires nvim, ui_mode (+ `setup()`), keymap, autocmd and command synchronously, then arms `config.warmup` |
 | `ui_mode.lua` | Picks the statusline/tabline renderer: `chrome` (default) or `plugins` (lualine+bufferline). Resolves `$NVIM_UI_MODE` -> `vim.g.ui_mode` -> `stdpath("state")/ui-mode` -> `chrome`; `set()` switches live and persists, `:UiMode` drives it. A switch back to the plugins only shows them again once they have run `setup()` (bufferline's is not re-entrant), asking lazy which have. Consulted by `plugins/init.lua` while lazy evaluates specs, so it requires nothing from `config.*` at load time. Spec `tests/ui_mode_spec.lua` |
-| `chrome.lua` | Hand-rolled statusline + tabline standing in for lualine.nvim/bufferline.nvim (round-3 W3.2); equinusocio_material palette, gitsigns/diagnostic-fed, `%@` click handler published as `_G.Chrome_click` while it owns the tabline; `setup()` is re-enterable and `teardown()` hands the options back for `ui_mode`. Spec `tests/chrome_spec.lua` |
+| `chrome.lua` | Hand-rolled statusline + tabline standing in for lualine.nvim/bufferline.nvim; equinusocio_material palette, gitsigns/diagnostic-fed, `%@` click handler published as `_G.Chrome_click` while it owns the tabline; `setup()` is re-enterable and `teardown()` hands the options back for `ui_mode`. Spec `tests/chrome_spec.lua` |
 | `warmup.lua` | Cooperative insert-stack warmup: from UIEnter + a delay it loads the completion/snippet/pairs stack one unit per event-loop tick, and aborts when a real InsertEnter wins the race. Never runs headless (no UIEnter). Spec `tests/perf/warmup_spec.lua` |
 | `lazy.lua` | `lazy.nvim` bootstrap `LazyConfig` (paths, git, ui, performance, disabled rtp plugins) + `require("lazy").setup(require("plugins"), lazy_config)` |
 | `nvim.lua` | Large `vim.opt`/`vim.g` block: editor options (each assigned once), `vim.hl.priorities`, the colorscheme, legacy syntax globals for runtime/`syntax/` files; commented-out built-in plugin/provider toggles kept for reference |

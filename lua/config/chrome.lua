@@ -1,5 +1,5 @@
 -- Hand-rolled statusline + tabline standing in for lualine.nvim and
--- bufferline.nvim (round-3 W3.2); both plugins stay switchable through
+-- bufferline.nvim; both plugins stay switchable through
 -- config.ui_mode, and this module renders what they render with this
 -- config's options. Palette copied verbatim from the lualine theme table in
 -- lua/lualine/themes/equinusocio_material.lua.
@@ -376,8 +376,7 @@ end
 --- lua/plugins/bufferline.lua: bufferline passes ONE count, the total over
 --- every severity, and the highest severity present, and the indicator
 --- draws U+F05C and a space for an error, U+F071 otherwise. Escapes, not
---- literal glyphs: the literals this file started with were lost to plain
---- spaces.
+--- literal glyphs: a glyph lost in an edit reads as a plain space.
 local TAB_DIAG_ERROR, TAB_DIAG_OTHER = "\u{f05c} ", "\u{f071}"
 local function tab_diag(buf)
   local dc = diag_counts[buf]

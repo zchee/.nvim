@@ -1,27 +1,20 @@
--- Cooperative insert-stack warmup (round-2 plan R2).
+-- Cooperative insert-stack warmup.
 --
--- Round 1 moved blink.cmp and its whole dependency stack onto a single
--- synchronous first-InsertEnter load, which the r0 baseline measured as a
--- 40-50 ms stall. This module retires that stall off the interactive path:
--- starting at UIEnter + delay_ms it works through M.units one unit per
--- event-loop tick (spaced by a 1 ms timer so the loop breathes between
--- units), so no single main-thread stall exceeds one frame, and
--- aborts the moment a real InsertEnter fires -- the normal lazy path then
--- owns the load, and lazy.load on an already-loaded plugin is a no-op, so
--- nothing double-configures in either race direction. UIEnter never fires
--- in --headless sessions, so specs and scripts see no behavior change
--- unless they run a UI (pty) session on purpose.
+-- Loading blink.cmp and its whole dependency stack on the first InsertEnter
+-- is one synchronous 40-50 ms stall. This module takes that load off the
+-- interactive path: starting at UIEnter + delay_ms it works through M.units
+-- one unit per event-loop tick, so no single main-thread stall exceeds one
+-- frame, and aborts the moment a real InsertEnter fires -- the normal lazy
+-- path then owns the load, and lazy.load on an already-loaded plugin is a
+-- no-op, so nothing double-configures in either race direction. UIEnter
+-- never fires in --headless sessions, so specs and scripts see no behavior
+-- change unless they run a UI (pty) session on purpose.
 --
--- blink.cmp (~19-21 ms, measured on the r0 machine) is too heavy for one
--- frame on its own, so it is sub-chunked: its cost is mostly require()s of
--- blink.cmp modules inside plugins/blink.lua, plus -- before round-3 W1
--- split them into the LuaSnip/nvim-autopairs ticks via their specs' own
--- configs -- the luasnip/autopairs setup code. Prewarm units pull each
--- plugin's module graph in the tick before its config runs, leaving each
--- plugin tick only its own setup() work. copilot.lua was sub-chunked too
--- while its nodejs server type made copilot.setup() wait on a synchronous
--- `node --version` (~30-68 ms); plugins/copilot.lua now runs the native
--- server binary, whose setup spawns nothing, so that probe unit is gone.
+-- blink.cmp (~19-21 ms) is too heavy for one frame on its own, so it is
+-- sub-chunked: its cost is mostly require()s of blink.cmp modules inside
+-- plugins/blink.lua. Prewarm units pull each plugin's module graph in the
+-- tick before its config runs, leaving each plugin tick only its own
+-- setup() work.
 
 local M = {}
 
@@ -202,8 +195,8 @@ M.units = {
       -- The driver snippet sets plugins/luasnip.lua deferred to these
       -- ticks because the warmup was mid-flight during its config; go.lua
       -- alone costs as much as every other snippet file combined, so it is
-      -- its own tick. Non-driver filetypes are not warmed at all (round-4
-      -- V3.1): they register on their first InsertEnter via the autocmd
+      -- its own tick. Non-driver filetypes are not warmed at all: they
+      -- register on their first InsertEnter via the autocmd
       -- plugins/luasnip.lua installs. An abort before either tick is
       -- covered by plugins/blink.lua calling the same idempotent loader
       -- from either chain's end.

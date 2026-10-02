@@ -158,8 +158,8 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 })
 
 -- BufWinEnter: jump to the last cursor position (the `"` mark) when it still
--- fits inside the buffer, like the old `g`\"zt` normal-mode dance but through
--- the API (no jumplist entry, mark read directly).
+-- fits inside the buffer, through the API (no jumplist entry, mark read
+-- directly).
 vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
   group = autocmd_user,
   pattern = "*",
@@ -471,30 +471,16 @@ vim.api.nvim_create_autocmd("LspTokenUpdate", {
 --   end,
 -- })
 
--- Write-time formatting lives entirely in conform.nvim (lua/plugins/conform.lua),
--- whose BufWritePre autocmd runs last on every buffer. Two hand-rolled
--- BufWritePre groups used to sit in front of it and were removed:
---
---   LspFormat            filtered on client.name == "null-ls", so it stopped
---                        doing anything the moment none-ls was retired.
---   LspCodeActionFormat  ran gopls source.organizeImports plus a second
---                        vim.lsp.buf.format() for *.go/*.toml -- the format
---                        pass duplicated conform's go lsp_format = "first",
---                        and its formatting_options (tabSize = 1,
---                        insertSpaces = false) contradicted the tombi indent
---                        settings for TOML.
---
--- Trade-off accepted with the removal: goimports-rereviser does not add
--- imports for unresolved identifiers (verified), so saving no longer pulls in
--- a missing import the way gopls organizeImports did. Use the LSP code action
--- on demand for that.
+-- Write-time formatting lives entirely in conform.nvim (lua/plugins/conform.lua).
+-- Trade-off: goimports-rereviser does not add imports for unresolved
+-- identifiers, so saving does not pull in a missing import. Use the LSP code
+-- action on demand for that.
 
 -- FocusGained
 -- github.com/zchee/imectl
 --
--- vim.fn.executable() returns 0/1 and 0 is truthy in Lua, so the guard used
--- to pass with imectl absent and spawned a failing process on every focus
--- gain. Probe once (lazily, on the first FocusGained) and cache the verdict.
+-- vim.fn.executable() returns 0/1 and 0 is truthy in Lua, so the verdict is
+-- compared with 1. Probe once (lazily, on the first FocusGained) and cache it.
 -- The binary is resolved through util.prefix and run as an argv list, so no
 -- shell parses the command and no $PATH lookup happens per focus gain.
 -- The deps are injected so specs can drive the truth table without a real
@@ -598,18 +584,16 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
 --   end,
 -- })
 
--- Auto :nohlsearch, replacing the abandoned nvimdev/hlsearch.nvim: search
--- highlighting turns on only for search-related keys and clears as soon as
--- any other normal-mode key is pressed. <C-q> (keymap.lua) still force-clears.
+-- Auto :nohlsearch: search highlighting turns on only for search-related
+-- keys and clears as soon as any other normal-mode key is pressed. <C-q>
+-- (keymap.lua) still force-clears.
 -- Only PHYSICALLY typed keys may toggle (`typed` is empty for keys produced
--- by mapping expansion) -- reacting to mapped keys turned the highlight off
+-- by mapping expansion) -- reacting to mapped keys turns the highlight off
 -- mid-expansion of vim-asterisk's <Plug>(asterisk-gz*) and friends.
--- The handler runs on EVERY physical keystroke: the key set is hoisted to a
--- module-scope hash keyed by the raw typed bytes (vim.keycode precomputes the
--- <CR> byte, replacing the per-key vim.fn.keytrans call), the mode check is
+-- The handler runs on EVERY physical keystroke: the key set is a
+-- module-scope hash keyed by the raw typed bytes, the mode check is
 -- nvim_get_mode (API, not the vim.fn VimL bridge) compared by first byte
--- (0x6e == "n"; vim.fn.mode() without an arg also reported only the first
--- letter, so "no"/"niI" keep counting as normal mode), and no table is
+-- (0x6e == "n", so "no"/"niI" count as normal mode), and no table is
 -- allocated per call.
 -- NOTE: <CR> must NOT be in this set. A cmdline search confirm arrives in
 -- mode "c" (the guard below returns early), so a <CR> entry only ever

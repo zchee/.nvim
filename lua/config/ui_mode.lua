@@ -1,6 +1,6 @@
 -- Which module draws the statusline and tabline: the hand-rolled
 -- lua/config/chrome.lua (default), or the lualine.nvim + bufferline.nvim
--- pair it replaced in round-3 W3.2. "plugins" exists to compare the two by
+-- pair it replaced. "plugins" exists to compare the two by
 -- eye and to fall back whole if a parity gap turns up.
 --
 -- Resolution order, cheapest first, so the default case reads no file:

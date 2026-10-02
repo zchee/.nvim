@@ -4,7 +4,6 @@ vim.opt.runtimepath:append(root)
 package.path = root .. "/lua/?.lua;" .. root .. "/lua/?/init.lua;" .. package.path
 
 local captured_config
-package.loaded["copilot"] = nil
 
 package.preload["copilot"] = function()
   return {
@@ -113,8 +112,14 @@ do
   vim.bo[nofile].buftype = "nofile"
   assert(should_attach(nofile, vim.api.nvim_buf_get_name(nofile)) == false, "a nofile buffer must not attach")
 end
-assert(captured_config.panel.enabled == false, "copilot panel should stay disabled for cmp-owned UI")
-assert(captured_config.suggestion.enabled == false, "inline suggestion UI should stay disabled for cmp-owned UI")
+assert(
+  captured_config.panel.enabled == false,
+  "copilot.lua's panel must stay disabled: blink-copilot owns the completion UI"
+)
+assert(
+  captured_config.suggestion.enabled == false,
+  "copilot.lua's inline suggestion UI must stay disabled: blink-copilot owns the completion UI"
+)
 
 local settings = captured_config.server_opts_overrides and captured_config.server_opts_overrides.settings
 local advanced = settings and settings.advanced
@@ -126,7 +131,7 @@ assert(
 )
 assert(
   type(advanced.inlineSuggestCount) == "number" and advanced.inlineSuggestCount > 0,
-  "inlineSuggestCount must be positive because copilot-cmp triggers getCompletions"
+  "inlineSuggestCount must be positive: it is the completion count the server is asked for, and blink-copilot lists what comes back"
 )
 assert(
   type(advanced.listCount) == "number" and advanced.listCount > 0,

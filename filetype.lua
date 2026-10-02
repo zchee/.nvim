@@ -159,9 +159,6 @@ vim.filetype.add({
     end,
     [".*/google%-cloud%-sdk/properties"] = "cfg",
     [".*/kitty/.*%.conf"] = "kitty",
-    -- ftdetect/kitty.lua port: its vim.b.filetype assignment was a no-op
-    -- (buffer variable, not vim.bo), so this rule is what makes the mapping
-    -- real for the first time
     [".*/kitty/.*%.session"] = "kitty-session",
     [".*/makedefs/.*"] = "make",
     [".*/share/zsh/(site-)?functions/.*"] = "zsh",
@@ -180,24 +177,20 @@ vim.filetype.add({
     -- files (.env, .env.<stage>) are left to the runtime's env filetype.
     ["%.envrc.*"] = { "bash", { priority = 1 } },
     ["/private/etc/sudoers.d/.*"] = "sudoers",
-    -- Dockerfile.<stage> and the lowercase spelling the runtime lacks. The
-    -- old "[^.vim|^.lua]" was a one-character class, not an exclusion list,
-    -- and caught dockerfile_test.go; priority -1 lets any real extension
-    -- (go, vim, lua) decide first.
+    -- Dockerfile.<stage> and the lowercase spelling the runtime lacks.
+    -- Priority -1 lets any real extension (go, vim, lua) decide first, so
+    -- dockerfile_test.go stays Go.
     ["[Dd]ockerfile[%._-].*"] = { "dockerfile", { priority = -1 } },
     -- "~" is expanded (and escaped) by vim.filetype.add; the rest is a Lua
     -- pattern, so "-" and "." need escaping.
     ["~/Library/Application Support/Code %- Insiders/User/keybindings%.json"] = "json5",
-    -- vim.filetype.add matches `pattern` keys as Lua patterns, not globs, and
-    -- an unescaped one here matched nothing: `-` is the lazy quantifier, so
-    -- "go-build" stood for "gbuild"/"gobuild" and never the real directory,
-    -- while `**` is not a wildcard at all. vim.pesc escapes the whole prefix,
-    -- the `.` of .cache included; the match is unanchored, so `/.*` is what
-    -- carries the "everything under here" the `**` was reaching for.
+    -- vim.filetype.add matches `pattern` keys as Lua patterns, not globs:
+    -- unescaped, the `-` of "go-build" is the lazy quantifier and matches
+    -- "gbuild"/"gobuild", never the real directory. vim.pesc escapes the
+    -- whole prefix, the `.` of .cache included, and `/.*` matches everything
+    -- under it.
     [vim.pesc(joinpath(cache_home, "go", "go-build")) .. "/.*"] = "go",
-    -- ftdetect/gotmpl.vim replacement: that autocmd ran an unanchored
-    -- whole-buffer VimL search() on EVERY BufNewFile/BufRead and clobbered
-    -- filetypes other rules had already set. Negative priority makes this a
+    -- Go template content detection. Negative priority makes this a
     -- fallback consulted only when no filename/extension/pattern rule (here
     -- or in the runtime) decided anything, and the scan is bounded to the
     -- first 20 lines. Matches Go template actions such as `{{.Name}}`,

@@ -55,8 +55,8 @@ function M.detect(path, bufnr)
   --   2) the filename is <arch>.s or *_<arch>.s for a known Go arch
   --   3) the file lives next to a *.go file
   -- vim.filetype.match({ filename = ... }) has no buffer and passes -1 (a
-  -- direct caller may pass nil); nvim_buf_get_lines then raised, and match()
-  -- swallowed that into "no filetype" for every .s, the name rules included.
+  -- direct caller may pass nil), so the header scan runs only for a valid
+  -- buffer.
   local has_buffer = bufnr ~= nil and vim.api.nvim_buf_is_valid(bufnr)
   if (has_buffer and has_go_assembly_header(bufnr)) or has_go_assembly_name(path) or has_neighbor_go_file(path) then
     return "goasm"

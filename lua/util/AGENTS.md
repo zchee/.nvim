@@ -7,7 +7,7 @@
 Shared helper module (`require("util")`) used throughout the config to resolve
 binary/prefix paths for macOS package managers (Homebrew, arm64 `/opt/local`),
 XDG directories with symlink resolution, and a couple of general-purpose Lua
-utilities (`switch`, `fast_switch`, `is_exists`, the global `dump`).
+utilities (`switch`, `is_exists`, the global `dump`).
 
 ## Key Files
 | File | Description |
@@ -40,8 +40,6 @@ utilities (`switch`, `fast_switch`, `is_exists`, the global `dump`).
   they fall back to `vim.fn.exepath(binary)` and warn once per binary; when
   `$PATH` has no such binary either, they return the derived absolute path so
   the spawn error names where it was expected.
-- `M.fast_switch` compiles a generated Lua chunk via `loadstring`; treat it as
-  hot-path-only tooling, not a place to add branching business logic.
 - New helpers should be added to `init.lua`'s `M` table with a LuaCATS
   `---@param`/`---@return` doc comment, matching the existing style.
 

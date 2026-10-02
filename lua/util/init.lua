@@ -10,67 +10,6 @@ function _G.dump(...)
   vim.print(table.concat(inspected, "\n"))
 end
 
---- Dynamically builds an ultra-fast if-elseif dispatch function.
----
---- @param default_code string Lua code snippet for the default (fallback) case.
---- @param cases_config table A table mapping keys to their target Lua code snippets.
---- @return function The generated optimized function.
----
----```lua
----local my_fast_switch = util.fast_switch(
----  "return 0", -- default case
----  {
----    ["add"] = "local a, b = ...; return a + b",
----    ["sub"] = "local a, b = ...; return a - b",
----    ["mul"] = "local a, b = ...; return a * b"
----  }
----)
----
----local function calculate(operation, x, y)
----  return my_fast_switch(operation, x, y)
----end
----
----print(calculate("add", 100, 50)) -- 150
----print(calculate("sub", 100, 50)) -- 50
----```
-function M.fast_switch(default_code, cases_config)
-  -- Initialize the function signature (accepts varargs ...)
-  local code_lines = { "return function(key, ...)" }
-  local is_first = true
-
-  -- pairs, not ipairs: the cases are keyed by name, and ipairs saw none of
-  -- them, so every call fell through to an empty function body.
-  for k, v in pairs(cases_config) do
-    -- Handle quotes based on the key's type
-    local condition = type(k) == "string" and string.format("%q", k) or tostring(k)
-
-    if is_first then
-      table.insert(code_lines, "  if key == " .. condition .. " then")
-      is_first = false
-    else
-      table.insert(code_lines, "  elseif key == " .. condition .. " then")
-    end
-    -- Inline the execution block
-    table.insert(code_lines, "    " .. v)
-  end
-
-  if not is_first then
-    table.insert(code_lines, "  else")
-    table.insert(code_lines, "    " .. default_code)
-    table.insert(code_lines, "  end")
-  else
-    table.insert(code_lines, "  " .. default_code)
-  end
-  table.insert(code_lines, "end")
-
-  -- Concatenate the lines into a single Lua code string
-  local final_code = table.concat(code_lines, "\n")
-
-  -- Compile into bytecode using loadstring and return the generated function
-  local chunk = assert(loadstring(final_code), "Failed to compile switch")
-  return chunk()
-end
-
 --- [Switch returns function instead of table](https://lua-users.org/wiki/SwitchStatement)
 --- Usage:
 --- ```lua
@@ -136,11 +75,8 @@ local xdg_home_cache = {}
 --- Return the XDG base directory `varname` names, symbolic links resolved.
 ---
 --- fs_realpath, not fs_readlink: readlink answers only for a path that is
---- itself a symlink and nil for anything else, so on a machine where only
---- ~/.config is a link -- ~/.cache real, ~/.local/{share,state} reached
---- through a linked ~/.local -- three of the four callers below collapsed to
---- "". vim.fs.joinpath drops that empty leading segment, which turned every
---- built path relative: the go-build filetype pattern never matched again.
+--- itself a symlink and nil for anything else, and vim.fs.joinpath drops an
+--- empty leading segment, which makes every path built on it relative.
 ---
 --- Falls back to the XDG default under $HOME when the variable is unset, and
 --- to the unresolved path when it does not exist yet, so the answer is always
@@ -176,20 +112,6 @@ end
 ---@return string
 function M.xdg_config_home()
   return xdg_home("XDG_CONFIG_HOME", ".config")
-end
-
---- Return XDG_DATA_HOME env path with symbolic links resolved.
----
----@return string
-function M.xdg_data_home()
-  return xdg_home("XDG_DATA_HOME", ".local/share")
-end
-
---- Return XDG_STATE_HOME env path with symbolic links resolved.
----
----@return string
-function M.xdg_state_home()
-  return xdg_home("XDG_STATE_HOME", ".local/state")
 end
 
 ---@param ... string

@@ -642,21 +642,4 @@ neotree.setup({
       TypeParameter = { icon = "󰊄", hl = "Type" },
     },
   },
-  example = {
-    renderers = {
-      custom = {
-        { "indent" },
-        { "icon", default = "C" },
-        { "custom" },
-        { "name" },
-      },
-    },
-    window = {
-      mappings = {
-        ["<CR>"] = "toggle_node",
-        ["<C-e>"] = "example_command",
-        ["d"] = "show_debug_info",
-      },
-    },
-  },
 })

@@ -98,6 +98,40 @@ do
   assert_equal(1, #catalog.fileMatch, "before_init must not mutate the catalog module's own table")
 end
 
+-- A catalog that carries no Chrome Extension entry at all: before_init adds
+-- one, and the competitors are negated all the same.
+do
+  local json = require("schemastore").json
+  local catalog_schemas = json.schemas
+  json.schemas = function(opts)
+    return vim.tbl_filter(function(schema)
+      return schema.name ~= "Chrome Extension"
+    end, catalog_schemas(opts))
+  end
+  local without = vim.deepcopy(config)
+  local ok, err = pcall(without.before_init, nil, without)
+  json.schemas = catalog_schemas
+  assert_true(ok, "before_init failed on a catalog without the Chrome Extension entry: " .. tostring(err))
+
+  local added = vim.tbl_filter(function(schema)
+    return schema.name == "Chrome Extension"
+  end, without.settings.json.schemas)
+  assert_equal(1, #added, "a catalog without the Chrome Extension entry gets exactly one added")
+  assert_equal(CHROME, added[1].url, "the added entry points at chrome-manifest.json")
+  assert_equal(1, #added[1].fileMatch, "the added entry carries exactly one pattern")
+  assert_equal(PATTERN, added[1].fileMatch[1], "the added entry claims chrome-extension* manifests")
+  assert_equal("string", type(added[1].description), "the added entry carries a description like a catalog entry")
+
+  local web_extensions = vim.iter(without.settings.json.schemas):find(function(schema)
+    return schema.name == "WebExtensions"
+  end)
+  assert_equal(
+    NEGATION,
+    web_extensions.fileMatch[#web_extensions.fileMatch],
+    "the competitors are negated when the entry is added too"
+  )
+end
+
 -- The live half.
 -- cmd is a function (the lookups run at server start), so ask util here.
 local server_bin = require("util").bun_prefix("vscode-json-language-server")

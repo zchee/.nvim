@@ -3,8 +3,11 @@ local util = require("util")
 -- https://docs.basedpyright.com/latest/configuration/language-server-settings
 -- https://docs.basedpyright.com/latest/configuration/language-server-settings/#neovim
 
+---Entries of extra_paths that exist under `root`. They stay relative:
+---basedpyright resolves extraPaths against its workspace root.
+---@param root string
 ---@return string[]
-local function detect_extra_paths()
+local function detect_extra_paths(root)
   local extra_paths = {
     -- "lib",
     "lib/third_party",
@@ -12,7 +15,7 @@ local function detect_extra_paths()
 
   local paths = {}
   for _, dir in ipairs(extra_paths) do
-    if util.is_exists(vim.fs.joinpath(vim.fn.getcwd(), dir)) then
+    if util.is_exists(vim.fs.joinpath(root, dir)) then
       table.insert(paths, dir)
     end
   end
@@ -58,6 +61,7 @@ return {
   },
   ---@param config vim.lsp.ClientConfig
   before_init = function(_, config)
-    config.settings.basedpyright.analysis.extraPaths = detect_extra_paths()
+    -- root_dir is nil for a buffer no root marker was found for.
+    config.settings.basedpyright.analysis.extraPaths = detect_extra_paths(config.root_dir or vim.fn.getcwd())
   end,
 }

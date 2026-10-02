@@ -32,10 +32,12 @@
 #
 # Exception (kept on purpose, 2026-09-29): two specs do assert a wall-clock
 # budget, each far above the normal cost so only a real regression trips
-# it -- tests/chrome_spec.lua (config.chrome module load under 1.5 ms) and
-# tests/perf/warmup_spec.lua (every warmup tick under 8 ms, taking the
-# per-tick minimum of up to three children). Judge those two on a quiet
-# machine as well; a miss under concurrent load is not a regression.
+# it -- tests/chrome_spec.lua (config.chrome module load under 1.5 ms: its
+# own first require, and when that is over, the minimum with one require in
+# each of up to five fresh processes) and tests/perf/warmup_spec.lua (every
+# warmup tick under 8 ms, taking the per-tick minimum of up to three
+# children). Judge those two on a quiet machine as well; a miss under
+# concurrent load is not a regression.
 #
 # Runs from anywhere: it cds to the repo root, since the nvim -l harnesses
 # below are addressed as script/<name>.lua.

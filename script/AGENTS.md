@@ -73,9 +73,8 @@ highlight dump) with the helpers they share under `lib/`. The specs under
   set it for their child): `:UiMode` persists its choice, and a measurement
   must not follow the developer's last toggle.
 - Timing is reported here, never asserted in specs — except the two budgets
-  kept on purpose, `tests/chrome_spec.lua` (module load under 1.5 ms) and
-  `tests/perf/warmup_spec.lua` (8 ms per warmup tick); see the comment at the
-  top of `perf-report.sh`.
+  kept on purpose in `tests/chrome_spec.lua` and
+  `tests/perf/warmup_spec.lua`; `tests/AGENTS.md` states both rules.
 - `lib/` holds modules for `dofile`, not scripts to run, and is not on the
   runtime path.
 

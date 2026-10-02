@@ -44,11 +44,6 @@ local in_fn = {
   condition = in_func,
 }
 
-local not_in_fn = {
-  show_condition = not in_func,
-  condition = not in_func,
-}
-
 local in_test_fn = {
   show_condition = is_in_test_function,
   condition = is_in_test_function,

@@ -1,8 +1,8 @@
 ---@diagnostic disable: undefined-global
 -- Regression spec for lsp/markdown_oxide.lua.
 --
--- markdown_oxide is the markdown server this config runs, and three properties
--- of that choice are easy to undo by accident:
+-- markdown_oxide is configured but not enabled (lua/lsp/init.lua), and three
+-- properties of its config are easy to undo by accident:
 --
 --   * It never sends workspace/configuration. Measured against the real binary:
 --     the server registers workspace/didChangeWatchedFiles and then asks for no

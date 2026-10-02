@@ -17,8 +17,6 @@
 -- reports the schema URIs chosen for a document without downloading any of
 -- them, so the glob semantics are the server's own and the spec needs no
 -- network.
---
--- Run: nvim --headless -u NONE -l tests/jsonls_chrome_manifest_spec.lua
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",

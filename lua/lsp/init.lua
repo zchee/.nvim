@@ -119,6 +119,10 @@ local default_capabilities_config = function()
   -- snapshot against blink's live output.
   capabilities = vim.tbl_deep_extend("force", capabilities, require("lsp.capabilities"))
 
+  -- workspace.didChangeWatchedFiles is left at Neovim's default, which offers
+  -- dynamicRegistration on macOS and Windows only. The one server that needs
+  -- it, markdown_oxide (its vault watcher), is configured but not enabled.
+
   -- commitCharactersSupport and preselectSupport stay at blink's false: blink
   -- implements neither (both are TODOs in its get_lsp_capabilities), so
   -- advertising them only makes servers send commit characters and preselect

@@ -21,7 +21,8 @@ Former residents now handled by root `filetype.lua` (or the runtime):
 `goasm.lua` (`.s` delegation to `require("filetypes.goasm").detect`),
 `gotmpl.vim` (the old compound `go.gotmpl` content sniff is now a bounded
 20-line `gotmpl` fallback pattern), `kitty.lua` (kitty rules in
-`filetype.lua`; `comments`/`commentstring` in `after/ftplugin/kitty.lua`),
+`filetype.lua`; `comments` in `after/ftplugin/kitty.lua`, `commentstring`
+from `$VIMRUNTIME/ftplugin/kitty.vim`),
 `tigrc.lua` and `ispc.vim` (plain name/extension entries), `buf.lua` (it
 named `buf.gen`/`buf.mod`/`buf.work`, which Buf never writes; the runtime
 maps `buf.lock` to yaml), and `npmrc.lua` (it forced a syntax-less `npmrc`

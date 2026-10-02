@@ -60,12 +60,9 @@ return {
     return t[ftype] or ftype
   end,
   capabilities = {
-    -- The standard negotiation, which vim.lsp reads back from the server's
-    -- positionEncoding; it has to agree with --offset-encoding=utf-16 above,
-    -- which makes clangd ignore whatever the client offers.
-    general = {
-      positionEncodings = { "utf-16" },
-    },
+    -- general.positionEncodings is the "*" value in lua/lsp/init.lua; it has
+    -- to stay utf-16 to agree with --offset-encoding=utf-16 above, which makes
+    -- clangd ignore whatever the client offers.
     textDocument = {
       completion = {
         editsNearCursor = true,

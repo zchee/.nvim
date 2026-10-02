@@ -26,7 +26,7 @@ local function assert_equal(want, got, message)
   end
 end
 
-local function assert_deep_equal(got, want, message)
+local function assert_deep_equal(want, got, message)
   if not vim.deep_equal(got, want) then
     error(string.format("%s: got %s, want %s", message, vim.inspect(got), vim.inspect(want)))
   end
@@ -77,8 +77,8 @@ end
 -- terminal; every unit does exactly one kind of work
 do
   assert_deep_equal(
-    warmup.order,
     { "mini.icons", "blink.lib", "copilot.lua", "blink-copilot", "nvim-autopairs", "LuaSnip", "blink.cmp" },
+    warmup.order,
     "warmup.order must be the insert stack, leaves first, blink.cmp last"
   )
   for _, unit in ipairs(warmup.units) do
@@ -99,8 +99,8 @@ do
   local rec = fake_deps({})
   local state = warmup.run(rec.deps, { aborted = false, index = 1 })
   drain(rec)
-  assert_deep_equal(rec.loads, warmup.order, "plugin loads must follow warmup.order exactly")
-  assert_deep_equal(rec.tags, warmup.order, "every warmup-loaded plugin must be tagged")
+  assert_deep_equal(warmup.order, rec.loads, "plugin loads must follow warmup.order exactly")
+  assert_deep_equal(warmup.order, rec.tags, "every warmup-loaded plugin must be tagged")
   assert_equal(true, state.done, "a completed run must mark itself done")
 end
 
@@ -127,8 +127,8 @@ do
   drain(rec)
   assert_equal(3, #rec.loads, "an abort between ticks must stop further loads")
   assert_deep_equal(
-    rec.loads,
     { warmup.order[1], warmup.order[2], warmup.order[3] },
+    rec.loads,
     "the pre-abort loads must be the leading slice of the order"
   )
 end
@@ -140,11 +140,11 @@ do
   warmup.run(rec.deps, { aborted = false, index = 1 })
   drain(rec)
   assert_deep_equal(
-    rec.loads,
     { "blink.lib", "copilot.lua", "blink-copilot", "nvim-autopairs", "blink.cmp" },
+    rec.loads,
     "already-loaded plugins must be skipped"
   )
-  assert_deep_equal(rec.tags, rec.loads, "skipped plugins must not be tagged as warmup loads")
+  assert_deep_equal(rec.loads, rec.tags, "skipped plugins must not be tagged as warmup loads")
 end
 
 -- terminal short-circuit: blink.cmp already in means the lazy path won; stop
@@ -170,7 +170,7 @@ do
   }
   local state = warmup.run(rec.deps, { aborted = false, index = 1 }, units)
   drain(rec)
-  assert_deep_equal(rec.loads, { "a", "b" }, "a throwing prewarm must not stop the run")
+  assert_deep_equal({ "a", "b" }, rec.loads, "a throwing prewarm must not stop the run")
   assert_equal(true, state.done, "the run must complete past a throwing prewarm")
 end
 
@@ -193,7 +193,7 @@ do
   vim.notify = saved_notify
   assert_equal(true, state.aborted, "a failing load must abort the warmup")
   assert(state.error and state.error:find("boom", 1, true), "the abort must keep the load error")
-  assert_deep_equal(rec.loads, { "mini.icons" }, "nothing after the failing plugin may load")
+  assert_deep_equal({ "mini.icons" }, rec.loads, "nothing after the failing plugin may load")
 end
 
 -- tag shape: appends whole-list re-assignments into vim.g.warmup_loaded
@@ -201,7 +201,7 @@ do
   vim.g.warmup_loaded = nil
   warmup.tag("mini.icons")
   warmup.tag("LuaSnip")
-  assert_deep_equal(vim.g.warmup_loaded, { "mini.icons", "LuaSnip" }, "tag must append to the vim.g list")
+  assert_deep_equal({ "mini.icons", "LuaSnip" }, vim.g.warmup_loaded, "tag must append to the vim.g list")
   vim.g.warmup_loaded = nil
 end
 
@@ -416,6 +416,6 @@ do
     return warmup.state ~= nil and warmup.state.done == true
   end)
   assert_equal(true, warmup.state.done, "an undisturbed armed warmup must finish")
-  assert_deep_equal(rec2.loads, warmup.order, "the armed run must load the whole stack in order")
+  assert_deep_equal(warmup.order, rec2.loads, "the armed run must load the whole stack in order")
   warmup.delay_ms = saved_delay
 end

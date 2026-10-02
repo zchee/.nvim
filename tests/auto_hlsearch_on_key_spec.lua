@@ -104,14 +104,19 @@ local ok, err = pcall(function()
 
   do -- the key after an argument-taking prefix is that argument, not a
     -- search: "*p pastes register *, f* jumps to a '*', m/ sets mark /
-    for _, seq in ipairs({ { '"', "*", "p" }, { "f", "*" }, { "t", "/" }, { "F", "#" }, { "T", "?" } }) do
-      vim.o.hlsearch = false
-      for _, key in ipairs(seq) do
-        on_key(key, key)
-      end
-      assert_equal(vim.o.hlsearch, false, ("%s must leave hlsearch off"):format(table.concat(seq)))
-    end
-    for _, seq in ipairs({ { "r", "*" }, { "q", "/" }, { "m", "n" }, { "'", "N" }, { "`", "*" }, { "@", "/" } }) do
+    for _, seq in ipairs({
+      { '"', "*", "p" },
+      { "f", "*" },
+      { "t", "/" },
+      { "F", "#" },
+      { "T", "?" },
+      { "r", "*" },
+      { "q", "/" },
+      { "m", "n" },
+      { "'", "N" },
+      { "`", "*" },
+      { "@", "/" },
+    }) do
       vim.o.hlsearch = false
       for _, key in ipairs(seq) do
         on_key(key, key)

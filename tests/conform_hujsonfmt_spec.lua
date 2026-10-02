@@ -38,14 +38,16 @@ do
   assert_equal("never", hujson.lsp_format, "an unavailable hujsonfmt must not fall through to jsonls")
 end
 
+local command = require("util").go_path("bin", "hujsonfmt")
+
 do
   -- hujsonfmt exits 1 on input with no value, so a blank buffer is routed
   -- through cat instead; anything else, a comment-only buffer included, gets
   -- the real binary from the Go bin dir, where `go install` puts it.
   local cases = {
-    { lines = { '{"a": 1}' }, expect = require("util").go_path("bin", "hujsonfmt"), what = "a document" },
-    { lines = { "", "  ", '{"a": 1}' }, expect = require("util").go_path("bin", "hujsonfmt"), what = "leading blanks" },
-    { lines = { "// only a comment" }, expect = require("util").go_path("bin", "hujsonfmt"), what = "a comment" },
+    { lines = { '{"a": 1}' }, expect = command, what = "a document" },
+    { lines = { "", "  ", '{"a": 1}' }, expect = command, what = "leading blanks" },
+    { lines = { "// only a comment" }, expect = command, what = "a comment" },
     { lines = { "" }, expect = "cat", what = "an empty buffer" },
     { lines = { "", " \t", "" }, expect = "cat", what = "whitespace-only lines" },
   }
@@ -70,7 +72,6 @@ do
 end
 
 -- The live half.
-local command = require("util").go_path("bin", "hujsonfmt")
 if vim.fn.executable(command) ~= 1 then
   print(
     "SKIP: hujsonfmt is not installed at "

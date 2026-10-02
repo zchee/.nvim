@@ -197,8 +197,9 @@ Tests directly `require()`:
 the repo-root `filetype.lua`, which pulls in `lua/util/init.lua` and
 `lua/filetypes/goasm.lua`; `luasnippets_parse_spec.lua` `dofile`s every
 `lua/luasnippets/*.lua`. The perf specs `dofile`
-`script/lib/throwaway_shada.lua` (`startup_budget`, `warmup`) and `script/lib/trace_nesting.lua`
-(`trace_export`), and run `script/hl-dump.lua`, `script/perf-trace.lua` and
+`script/lib/throwaway_shada.lua` (`startup_budget`, `warmup`),
+`script/lib/trace_nesting.lua` (`trace_export`) and
+`script/lib/stall_probe.lua` (`metrics_probe`), and run `script/hl-dump.lua`, `script/perf-trace.lua` and
 `script/ui-latency.lua` as child processes. `go_injections_spec.lua` puts
 the repo's `after/` on the rtp and reads `after/queries/go/injections.scm`
 through `vim.treesitter.query`.

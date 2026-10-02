@@ -22,7 +22,7 @@ end
 -- https://clangd.llvm.org/extensions.html#switch-between-sourceheader
 local function switch_source_header(bufnr, client)
   local method_name = "textDocument/switchSourceHeader"
-  if not client or not client:supports_method(method_name) then
+  if not client:supports_method(method_name) then
     return vim.notify(("method %s is not supported by any servers active on the current buffer"):format(method_name))
   end
   local params = vim.lsp.util.make_text_document_params(bufnr)
@@ -40,7 +40,7 @@ end
 
 local function symbol_info(bufnr, client)
   local method_name = "textDocument/symbolInfo"
-  if not client or not client:supports_method(method_name) then
+  if not client:supports_method(method_name) then
     return vim.notify("Clangd client not found", vim.log.levels.ERROR)
   end
   local win = vim.api.nvim_get_current_win()
@@ -81,11 +81,7 @@ local function set_python_path(command)
     name = "basedpyright",
   })
   for _, client in ipairs(clients) do
-    if client.settings then
-      client.settings.python = vim.tbl_deep_extend("force", client.settings.python or {}, { pythonPath = path })
-    else
-      client.config.settings = vim.tbl_deep_extend("force", client.config.settings, { python = { pythonPath = path } })
-    end
+    client.settings.python = vim.tbl_deep_extend("force", client.settings.python or {}, { pythonPath = path })
     client:notify("workspace/didChangeConfiguration", { settings = nil })
   end
 end

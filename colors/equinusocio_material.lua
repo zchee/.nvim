@@ -356,7 +356,7 @@ ovr("pythonSelf", { link = "pythonOperator" })
 ovr("pythonSpaceError", { fg = "#787f86", bg = "#787f86" })
 
 -- YAML
-ovr("@property.yaml", { fg = "#81a2be", bg = "NONE", bold = false })
+ovr("@property.yaml", { fg = "#81a2be", bg = hi_none, bold = false })
 
 -- GraphQL
 ovr("@spell.graphql", { link = "Comment" })
@@ -371,17 +371,17 @@ ovr("@label.c", { link = "@lsp.type.label.c" })
 ovr("@lsp.type.label.c", { fg = "#7EE787", bg = hi_none })
 
 -- CPP
-ovr("doxygenBrief", { fg = "#81a2be", bg = "NONE" })
-ovr("doxygenSpecialMultilineDesc", { fg = "#81a2be", bg = "NONE" })
-ovr("doxygenSpecialOnelineDesc", { fg = "#81a2be", bg = "NONE" })
+ovr("doxygenBrief", { fg = "#81a2be", bg = hi_none })
+ovr("doxygenSpecialMultilineDesc", { fg = "#81a2be", bg = hi_none })
+ovr("doxygenSpecialOnelineDesc", { fg = "#81a2be", bg = hi_none })
 
 --- third-party
 ovr("LspSignatureActiveParameter", { fg = hi_none, bg = "#343941", blend = 10 })
 ovr("LspInlayHint", { fg = "#787f86", bg = hi_none, bold = false, italic = true, blend = 50 })
 
 --- VimIlluminate:
-ovr("illuminatedWord", { fg = "NONE", bg = "NONE", underline = true })
+ovr("illuminatedWord", { fg = hi_none, bg = hi_none, underline = true })
 
 --- MatchUp
-ovr("MatchParen", { fg = "NONE", bg = "#343941" })
-ovr("MatchWord", { fg = "NONE", bg = "#343941" })
+ovr("MatchParen", { fg = hi_none, bg = "#343941" })
+ovr("MatchWord", { fg = hi_none, bg = "#343941" })

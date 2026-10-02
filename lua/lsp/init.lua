@@ -220,8 +220,8 @@ local function is_noop_edit(bufnr, edit, encoding)
   local end_row = math.min(e.line, line_count - 1)
   local start_line = vim.api.nvim_buf_get_lines(bufnr, s.line, s.line + 1, true)[1]
   local end_line = end_row == s.line and start_line or vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, true)[1]
-  local start_col = math.min(byte_col(start_line, s.character, encoding), #start_line)
-  local end_col = e.line > end_row and #end_line or math.min(byte_col(end_line, e.character, encoding), #end_line)
+  local start_col = byte_col(start_line, s.character, encoding)
+  local end_col = e.line > end_row and #end_line or byte_col(end_line, e.character, encoding)
   if end_row < s.line or (end_row == s.line and end_col < start_col) then
     return edit.newText == ""
   end

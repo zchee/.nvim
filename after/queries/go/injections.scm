@@ -30,7 +30,8 @@
 ; from/into/set/values, or with a "-- sql" marker. Any leading SQL
 ; comments are skipped first, whole "--" lines and /* */ blocks with
 ; whitespace between them, since sqlc writes "-- name: GetUser :one"
-; above every query; a string holding only comments stays plain. A "--"
+; above every query; a string holding only comments stays plain unless
+; one of them is the "-- sql" marker. A "--"
 ; comment runs to a line break and a block ends at its first */, so a
 ; text splits into comments one way only and a string that is not SQL
 ; fails fast even on the backtracking engine. #match? compiles a vim

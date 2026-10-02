@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-10-02 -->
 
 # lua/plugins
 
@@ -11,16 +11,14 @@
 `lua/plugins/<name>.lua` module, either as a setup module
 (`config = function() require("plugins.<name>") end`) or as an options
 table handed over in function form
-(`opts = function() return require("plugins.<name>") end`). Specs that are
-switched off stay in `init.lua` commented out (commented code is kept by
-convention); their config modules were deleted in the optimize-branch
-cleanup, so every module below is live.
+(`opts = function() return require("plugins.<name>") end`). `init.lua`
+holds no switched-off specs, so every module below is live.
 
 ## Key Files
 | File | Description |
 |------|-------------|
-| `init.lua` | Full `LazySpec` table; dispatches to `require("plugins.<name>")`; switched-off specs stay commented out |
-| `actions_preview.lua` | aznhe21/actions-preview.nvim: code-action preview with delta/diff-so-fancy/diff-highlight diffs, snacks picker backend (nui fallback); loads on `LspAttach` |
+| `init.lua` | Full `LazySpec` table; dispatches to `require("plugins.<name>")` |
+| `actions_preview.lua` | aznhe21/actions-preview.nvim: code-action preview with delta/diff-so-fancy/diff-highlight diffs, snacks picker backend; loads on `LspAttach` |
 | `aerial.lua` | stevearc/aerial.nvim: symbol outline; lsp/treesitter/markdown/asciidoc/man backends, `prefer_left` placement; `lazy_load = false` so `on_attach` maps `{`/`}` (AerialPrev/Next) from the first opened file |
 | `autopairs.lua` | windwp/nvim-autopairs setup, run from the spec config (its own warmup tick): `check_ts` with the Go string node names tree-sitter-go actually has, a Go-only `[` rule, and the buffer-local Go quote swap (`"` pairs `''` inside a Go string and vice versa) registered after `setup()` so it wins over the plugin's own maps |
 | `blink.lua` | saghen/blink.cmp (v2, main branch + blink.lib): LuaSnip preset, blink-copilot source, rust fuzzy built from source |
@@ -39,7 +37,7 @@ cleanup, so every module below is live.
 | `gitsigns.lua` | lewis6991/gitsigns.nvim; sign texts only (its highlight groups live in `colors/equinusocio_material.lua`), blame/preview options, buffer-local hunk keymaps |
 | `hover.lua` | lewis6991/hover.nvim: diagnostic/lsp/dap/man/dictionary providers, rounded border, lsp-only mouse hover; loads on `LspAttach` |
 | `image.lua` | 3rd/image.nvim `opts` table (kitty backend); integration toggles nested under `integrations`, sizing keys top-level |
-| `lint.lua` | mfussenegger/nvim-lint setup; none-ls diagnostics successor: ruff for python; golangci-lint's `cmd` stays pinned to `~/go/bin` (past the mise shim) but its `go` entry is commented out until its runs pass (13cd8e9); `FileType`/`BufWritePost` lint immediately, `InsertLeave` is debounced 500 ms per buffer; tested by `tests/lint_debounce_spec.lua` |
+| `lint.lua` | mfussenegger/nvim-lint setup: ruff for python; golangci-lint's `cmd` stays pinned to `~/go/bin` (past the mise shim) but its `go` entry is commented out until its runs pass; `FileType`/`BufWritePost` lint immediately, `InsertLeave` is debounced 500 ms per buffer; tested by `tests/lint_debounce_spec.lua` |
 | `lsp_endhints.lua` | chrisgrieser/nvim-lsp-endhints: end-of-line inlay hints for `*.lua`/`*.py`; `setup()` runs once on the first matching `LspAttach`, from an augroup so lazy.nvim replays the attach that loaded it |
 | `lualine.lua` | nvim-lualine/lualine.nvim; `equinusocio_material` theme, disables statusline/winbar for the snacks picker input filetype. Only loaded in the `plugins` ui mode (`lua/config/ui_mode.lua`); `lua/config/chrome.lua` draws the statusline by default |
 | `luasnip.lua` | L3MON4D3/LuaSnip setup and snippet loader: `from_lua` over `stdpath("config")/lua/luasnippets` one filetype at a time (`load_snippets_ft`); the driver sets (`go`, `all`) load eagerly (by `config.warmup` ticks when a warmup runs), every other filetype on its first `InsertEnter` (`luasnip_ft_snippets` augroup); returns the loader module that `plugins/blink.lua` and `config.warmup` call |
@@ -89,8 +87,7 @@ cleanup, so every module below is live.
   for. `require("plugins.rustaceanvim")` sets `vim.g.rustaceanvim` and a
   Rust-only `LspAttach` keymap group.
 - Every config module here should be reachable from a spec in `init.lua`
-  (or a compat shim consumed by `tests/`); orphaned modules were deleted in
-  the optimize-branch cleanup rounds. Before relying on a file, grep
+  (or a compat shim consumed by `tests/`). Before relying on a file, grep
   `init.lua` for `require("plugins.<name>")` outside a `--` comment.
 
 ### Testing Requirements
@@ -150,11 +147,12 @@ cleanup, so every module below is live.
   `dir =` entries, `util.go_path()` for Go-installed tools (`dap.lua`'s delve,
   `lint.lua`'s golangci-lint, `telescope.lua`'s ghq), and
   `util.xdg_config_home()` for `rustaceanvim.lua`'s cargo dev config and
-  `conform.lua`'s config paths (it is `fs_realpath`-based with a
-  `$HOME/.config` fallback, so the answer is always absolute).
+  `conform.lua`'s clang-format style file (it is `fs_realpath`-based with a
+  `$HOME/.config` fallback, so the answer is always absolute); `conform.lua`'s
+  taplo and oxfmt config paths read `$XDG_CONFIG_HOME` themselves.
   `copilot.lua` reads `$BUN_INSTALL` itself to find the native server.
 - `lua/lsp` interplay: `rustaceanvim.lua` deliberately owns the
-  `rust-analyzer` client instead of `lua/lsp/rust_analyzer.lua` (per the
+  `rust-analyzer` client, so there is no `lsp/rust_analyzer.lua` (per the
   repo's LSP conventions);
   `garbage-day.nvim`'s `excluded_lsp_clients` in `init.lua` references the
   `rust-analyzer` client name rustaceanvim registers.

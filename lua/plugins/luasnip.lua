@@ -19,7 +19,7 @@ local snippet_root = vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "lua", 
 -- every other filetype to its own first InsertEnter via the autocmd this
 -- config installs. include filters on the ft name, so a snippet file added
 -- later needs no registration here -- its first InsertEnter picks it up.
-M.driver_fts = { "go", "all" }
+local driver_fts = { "go", "all" }
 
 local loaded_fts = {}
 
@@ -45,7 +45,7 @@ end
 --- Registers the snippet sets of one buffer's filetype; compound "a.b"
 --- filetypes register each component.
 ---@param buf integer
-function M.load_buf_snippets(buf)
+local function load_buf_snippets(buf)
   local ft = vim.bo[buf].filetype
   if ft == "" then
     return
@@ -60,10 +60,10 @@ end
 --- inside the very InsertEnter that loaded the plugin, which fired before
 --- the autocmd below existed, so the current buffer must be covered inline.
 function M.load_snippets()
-  for _, ft in ipairs(M.driver_fts) do
+  for _, ft in ipairs(driver_fts) do
     M.load_snippets_ft(ft)
   end
-  M.load_buf_snippets(vim.api.nvim_get_current_buf())
+  load_buf_snippets(vim.api.nvim_get_current_buf())
 end
 
 ls.setup({
@@ -81,7 +81,7 @@ ls.setup({
 vim.api.nvim_create_autocmd("InsertEnter", {
   group = vim.api.nvim_create_augroup("luasnip_ft_snippets", { clear = true }),
   callback = function(ev)
-    M.load_buf_snippets(ev.buf)
+    load_buf_snippets(ev.buf)
   end,
 })
 

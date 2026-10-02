@@ -58,8 +58,6 @@ return {
     end,
   },
 
-  -- AI
-
   -- LSP
   {
     {

@@ -111,9 +111,9 @@ snacks.setup({
       float = true,
       max_width = 80,
       max_height = 40,
-      ---@param lang string tree-sitter language
+      ---@param _ string tree-sitter language
       ---@param type snacks.image.Type image type
-      conceal = function(lang, type)
+      conceal = function(_, type)
         return type == "math"
       end,
     },

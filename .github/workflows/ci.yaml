@@ -95,32 +95,20 @@ jobs:
           echo "BUN_INSTALL=$HOME/.bun" >> "$GITHUB_ENV"
           BUN_INSTALL="$HOME/.bun" bun install --global vscode-langservers-extracted
 
-      # chrome_spec.lua and perf/warmup_spec.lua assert a time budget, and a
-      # shared runner misses one now and then. A spec that fails is run again,
-      # up to three attempts; one that passes only on a retry is reported as a
-      # warning, so a spec that is flaky for another reason stays visible.
       - name: Run the specs
         run: |
           nvim --version | head -n 1
           failed=()
           for spec in tests/*_spec.lua; do
             echo "::group::$spec"
-            passed_on=0
-            for attempt in 1 2 3; do
-              if nvim --headless -u NONE -i NONE -l "$spec"; then
-                passed_on=$attempt
-                break
-              fi
-              echo "attempt $attempt failed: $spec"
-            done
+            status=0
+            nvim --headless -u NONE -i NONE -l "$spec" || status=$?
             echo "::endgroup::"
-            if (( passed_on == 0 )); then
-              echo "::error file=$spec::spec failed in all 3 attempts"
-              failed+=("$spec")
-            elif (( passed_on > 1 )); then
-              echo "::warning file=$spec::spec passed only on attempt $passed_on"
-            else
+            if (( status == 0 )); then
               echo "PASS: $spec"
+            else
+              echo "::error file=$spec::spec failed"
+              failed+=("$spec")
             fi
           done
           if (( ${#failed[@]} > 0 )); then

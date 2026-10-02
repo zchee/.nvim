@@ -82,7 +82,7 @@ local cases = {
     ft = "sh",
     why = "a #!/bin/sh script containing {{ .X }} is still sh",
   },
-  -- D4 additions
+  -- ragel, Doxygen and Clang module maps
   { path = "lexer.rl", ft = "ragel", why = "Ragel state machines" },
   { path = "Doxyfile", ft = "doxyfile", why = "Doxygen config" },
   { path = "module.modulemap", ft = "modulemap", why = "Clang module map" },

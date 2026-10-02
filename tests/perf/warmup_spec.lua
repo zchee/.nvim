@@ -1,15 +1,15 @@
--- Warmup chunker spec (round-2 plan R2.3d).
+-- Warmup chunker spec.
 --
 -- lua/config/warmup.lua -- the cooperative insert-stack warmup: unit/plugin
 -- order, one-load-per-scheduled-tick discipline, the InsertEnter abort flag,
 -- the already-loaded skip/stop paths (idempotency), non-fatal prewarm
 -- units, tagging into vim.g.warmup_loaded, and
 -- the UIEnter arming. Those blocks inject recorder deps (lazy.load,
--- is_loaded, the scheduler, the tagger) and load no real plugin; the W1.5
+-- is_loaded, the scheduler, the tagger) and load no real plugin; the
 -- parity block below boots full-config child sessions, each on a throwaway
 -- ShaDa copy, so the real plugins load there.
 --
--- Run from the repo root: nvim --headless -u NONE -l tests/perf/warmup_spec.lua
+-- Run: XDG_STATE_HOME=<scratch> nvim --headless -u NONE -i NONE -l tests/perf/warmup_spec.lua
 
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
@@ -196,7 +196,7 @@ do
   assert_deep_equal(rec.loads, { "mini.icons" }, "nothing after the failing plugin may load")
 end
 
--- R2.2 tag shape: appends whole-list re-assignments into vim.g.warmup_loaded
+-- tag shape: appends whole-list re-assignments into vim.g.warmup_loaded
 do
   vim.g.warmup_loaded = nil
   warmup.tag("mini.icons")
@@ -205,12 +205,12 @@ do
   vim.g.warmup_loaded = nil
 end
 
--- W1.5 both-paths parity + per-tick budget (round-3 plan, acceptance
--- criteria 1 and 4). Two full-config headless child sessions load the
--- insert stack -- one by driving warmup.run with real deps, one via
--- lazy.load exactly as the InsertEnter chain would -- and must end in the
--- same state: identical Go quote-swap maps, autopairs BS/CR maps, snippet
--- counts, and a loaded blink.cmp. The warmup child also reports M.tick_ms;
+-- Both-paths parity + per-tick budget. Two full-config headless child
+-- sessions load the insert stack -- one by driving warmup.run with real
+-- deps, one via lazy.load exactly as the InsertEnter chain would -- and
+-- must end in the same state: identical Go quote-swap maps, autopairs
+-- BS/CR maps, snippet counts, and a loaded blink.cmp.
+-- The warmup child also reports M.tick_ms;
 -- every tick must fit the 8 ms budget. Wall-clock is machine-load
 -- dependent, so the budget takes the per-tick MINIMUM over up to three
 -- child runs (config execution cost is deterministic; load spikes are
@@ -260,7 +260,7 @@ local run_ok, run_err = pcall(function()
   report.snips_go = #ls.get_snippets("go")
   report.snips_all = #ls.get_snippets("all")
   report.blink_loaded = package.loaded["blink.cmp"] ~= nil
-  -- V3.1 non-warmed filetype: yaml snippets must be absent until a yaml
+  -- Non-warmed filetype: yaml snippets must be absent until a yaml
   -- buffer's first InsertEnter, then identical on both load paths. The
   -- autocmd group is executed directly so unrelated InsertEnter handlers
   -- (copilot, lazy events) stay out of this headless child; a missing
@@ -347,7 +347,7 @@ do
   assert_equal(warmup_report.blink_loaded, true, "blink.cmp must be loaded on both paths")
   assert(warmup_report.snips_go > 0, "go snippets must be registered on both paths")
   assert(warmup_report.snips_all > 0, "all-filetype snippets must be registered on both paths")
-  -- V3.1: the non-driver set must NOT ride along with the warmup (or the
+  -- The non-driver set must NOT ride along with the warmup (or the
   -- lazy driver scan) -- it appears only after its own ft's InsertEnter
   assert_equal(warmup_report.snips_yaml_pre, 0, "yaml snippets must not be loaded before a yaml InsertEnter")
   assert(warmup_report.snips_yaml > 0, "yaml snippets must be registered by the yaml buffer's first InsertEnter")

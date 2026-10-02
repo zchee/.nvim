@@ -16,7 +16,7 @@ package.path = table.concat({
 
 require("config.autocmd")
 
-local function assert_equal(got, want, msg)
+local function assert_equal(want, got, msg)
   if got ~= want then
     error(("%s: got %s, want %s"):format(msg, vim.inspect(got), vim.inspect(want)), 2)
   end
@@ -58,29 +58,29 @@ local ok, err = pcall(function()
     -- fires, so a modifiable gate would drop these maps
     vim.fn.setqflist({ { filename = "x", lnum = 1, text = "t" } })
     vim.cmd("copen")
-    assert_equal(vim.bo.filetype, "qf", "copen opens the quickfix window")
-    assert_equal(buf_map("u"), "<C-u>", "qf u pages up")
-    assert_equal(buf_map("d"), "<C-d>", "qf d pages down")
-    assert_equal(buf_map("q"), "<Cmd>q<CR>", "qf q closes")
+    assert_equal("qf", vim.bo.filetype, "copen opens the quickfix window")
+    assert_equal("<C-u>", buf_map("u"), "qf u pages up")
+    assert_equal("<C-d>", buf_map("d"), "qf d pages down")
+    assert_equal("<Cmd>q<CR>", buf_map("q"), "qf q closes")
     vim.cmd("cclose")
   end
 
   do -- a help file being written keeps u = undo and d = delete
     vim.cmd("enew")
     vim.bo.filetype = "help"
-    assert_equal(vim.bo.modifiable, true, "spec precondition: the help buffer is modifiable")
-    assert_equal(buf_map("u"), "", "writable help keeps u unmapped")
-    assert_equal(buf_map("d"), "", "writable help keeps d unmapped")
-    assert_equal(buf_map("q"), "<Cmd>q<CR>", "writable help still closes on q")
+    assert_equal(true, vim.bo.modifiable, "spec precondition: the help buffer is modifiable")
+    assert_equal("", buf_map("u"), "writable help keeps u unmapped")
+    assert_equal("", buf_map("d"), "writable help keeps d unmapped")
+    assert_equal("<Cmd>q<CR>", buf_map("q"), "writable help still closes on q")
     vim.cmd("bwipeout!")
   end
 
   do -- :help (read-only) pages on u/d
     vim.cmd("help help")
-    assert_equal(vim.bo.filetype, "help", ":help opens a help buffer")
-    assert_equal(vim.bo.modifiable, false, "spec precondition: :help is read-only")
-    assert_equal(buf_map("u"), "<C-u>", "read-only help u pages up")
-    assert_equal(buf_map("d"), "<C-d>", "read-only help d pages down")
+    assert_equal("help", vim.bo.filetype, ":help opens a help buffer")
+    assert_equal(false, vim.bo.modifiable, "spec precondition: :help is read-only")
+    assert_equal("<C-u>", buf_map("u"), "read-only help u pages up")
+    assert_equal("<C-d>", buf_map("d"), "read-only help d pages down")
     vim.cmd("helpclose")
   end
 
@@ -94,12 +94,12 @@ local ok, err = pcall(function()
     vim.v.errmsg = ""
     vim.cmd("quit")
     drain()
-    assert_equal(vim.v.errmsg:find("stack traceback", 1, true), nil, "no Lua traceback in v:errmsg")
+    assert_equal(nil, vim.v.errmsg:find("stack traceback", 1, true), "no Lua traceback in v:errmsg")
     local messages = vim.api.nvim_exec2("messages", { output = true }).output
-    assert_equal(messages:find("E37: No write since last change", 1, true) ~= nil, true, "the refusal is reported")
-    assert_equal(messages:find("stack traceback", 1, true), nil, "no Lua traceback in :messages")
+    assert_equal(true, messages:find("E37: No write since last change", 1, true) ~= nil, "the refusal is reported")
+    assert_equal(nil, messages:find("stack traceback", 1, true), "no Lua traceback in :messages")
     vim.cmd("silent! %bwipeout!")
-    assert_equal(#vim.api.nvim_list_wins(), 1, "cleanup leaves one window")
+    assert_equal(1, #vim.api.nvim_list_wins(), "cleanup leaves one window")
   end
 
   do -- <C-w>T moves quickfix into a new tab holding one qf window; that tab
@@ -107,12 +107,12 @@ local ok, err = pcall(function()
     vim.cmd("copen")
     vim.cmd("wincmd T")
     drain()
-    assert_equal(#vim.api.nvim_list_tabpages(), 2, "<C-w>T keeps the new tab")
-    assert_equal(vim.bo.filetype, "qf", "the new tab shows quickfix")
+    assert_equal(2, #vim.api.nvim_list_tabpages(), "<C-w>T keeps the new tab")
+    assert_equal("qf", vim.bo.filetype, "the new tab shows quickfix")
     vim.cmd("tabclose")
     drain()
-    assert_equal(#vim.api.nvim_list_tabpages(), 1, "cleanup leaves one tab")
-    assert_equal(#vim.api.nvim_list_wins(), 1, "cleanup leaves one window")
+    assert_equal(1, #vim.api.nvim_list_tabpages(), "cleanup leaves one tab")
+    assert_equal(1, #vim.api.nvim_list_wins(), "cleanup leaves one window")
   end
 
   do -- a focused float closed in the <C-w>T tab is not a file window
@@ -124,12 +124,12 @@ local ok, err = pcall(function()
     vim.api.nvim_set_current_win(float)
     vim.api.nvim_feedkeys("q", "x", false)
     drain()
-    assert_equal(vim.api.nvim_win_is_valid(float), false, "the preview's q closes the float")
-    assert_equal(#vim.api.nvim_list_tabpages(), 2, "closing a focused float keeps the qf tab")
-    assert_equal(vim.bo.filetype, "qf", "the qf tab still shows quickfix")
+    assert_equal(false, vim.api.nvim_win_is_valid(float), "the preview's q closes the float")
+    assert_equal(2, #vim.api.nvim_list_tabpages(), "closing a focused float keeps the qf tab")
+    assert_equal("qf", vim.bo.filetype, "the qf tab still shows quickfix")
     vim.cmd("tabclose")
     drain()
-    assert_equal(#vim.api.nvim_list_tabpages(), 1, "cleanup leaves one tab")
+    assert_equal(1, #vim.api.nvim_list_tabpages(), "cleanup leaves one tab")
   end
 
   do -- the same for an entered float in a tab holding only quickfix (:only)
@@ -145,12 +145,12 @@ local ok, err = pcall(function()
     })
     vim.api.nvim_win_close(float, true)
     drain()
-    assert_equal(#vim.api.nvim_list_tabpages(), 2, "closing an entered float keeps the qf-only tab")
-    assert_equal(vim.bo.filetype, "qf", "the qf-only tab still shows quickfix")
+    assert_equal(2, #vim.api.nvim_list_tabpages(), "closing an entered float keeps the qf-only tab")
+    assert_equal("qf", vim.bo.filetype, "the qf-only tab still shows quickfix")
     vim.cmd("tabclose")
     drain()
-    assert_equal(#vim.api.nvim_list_tabpages(), 1, "cleanup leaves one tab")
-    assert_equal(#vim.api.nvim_list_wins(), 1, "cleanup leaves one window")
+    assert_equal(1, #vim.api.nvim_list_tabpages(), "cleanup leaves one tab")
+    assert_equal(1, #vim.api.nvim_list_wins(), "cleanup leaves one window")
   end
 end)
 

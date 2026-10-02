@@ -16,7 +16,7 @@ package.path = table.concat({
 local autocmd = require("config.autocmd")
 local imectl = require("util").prefix("bin", "imectl")
 
-local function assert_equal(got, want, msg)
+local function assert_equal(want, got, msg)
   if got ~= want then
     error(("%s: got %s, want %s"):format(msg, vim.inspect(got), vim.inspect(want)), 2)
   end
@@ -26,7 +26,7 @@ do -- executable() == 0: no jobstart, ever, and only one probe
   local probe_count, job_count = 0, 0
   local cb = autocmd.make_imectl_callback(function(name)
     probe_count = probe_count + 1
-    assert_equal(name, imectl, "probe must ask for the util.prefix imectl binary")
+    assert_equal(imectl, name, "probe must ask for the util.prefix imectl binary")
     return 0
   end, function()
     job_count = job_count + 1
@@ -37,8 +37,8 @@ do -- executable() == 0: no jobstart, ever, and only one probe
     cb()
   end
 
-  assert_equal(job_count, 0, "executable()==0 must never reach jobstart")
-  assert_equal(probe_count, 1, "executable() must be probed exactly once across repeated FocusGained")
+  assert_equal(0, job_count, "executable()==0 must never reach jobstart")
+  assert_equal(1, probe_count, "executable() must be probed exactly once across repeated FocusGained")
 end
 
 do -- executable() == 1: jobstart on every focus gain, still one probe
@@ -57,17 +57,17 @@ do -- executable() == 1: jobstart on every focus gain, still one probe
     cb()
   end
 
-  assert_equal(job_count, 3, "executable()==1 must jobstart on every FocusGained")
-  assert_equal(probe_count, 1, "cached verdict must not re-probe executable()")
+  assert_equal(3, job_count, "executable()==1 must jobstart on every FocusGained")
+  assert_equal(1, probe_count, "cached verdict must not re-probe executable()")
   assert_equal(
-    vim.deep_equal(seen_cmd, { imectl, "set", "com.apple.keylayout.ABC" }),
     true,
+    vim.deep_equal(seen_cmd, { imectl, "set", "com.apple.keylayout.ABC" }),
     "jobstart must get an argv list: " .. vim.inspect(seen_cmd)
   )
-  assert_equal(seen_opts.detach, true, "imectl job must stay detached")
+  assert_equal(true, seen_opts.detach, "imectl job must stay detached")
 end
 
 do -- the registered FocusGained autocmd exists in the AutocmdUser group
   local aus = vim.api.nvim_get_autocmds({ group = "AutocmdUser", event = "FocusGained" })
-  assert_equal(#aus, 1, "exactly one FocusGained autocmd must be registered in AutocmdUser")
+  assert_equal(1, #aus, "exactly one FocusGained autocmd must be registered in AutocmdUser")
 end

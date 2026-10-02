@@ -20,7 +20,7 @@ package.path = table.concat({
 
 local warmup = require("config.warmup")
 
-local function assert_equal(got, want, message)
+local function assert_equal(want, got, message)
   if got ~= want then
     error(string.format("%s: got %s, want %s", message, vim.inspect(got), vim.inspect(want)))
   end
@@ -65,7 +65,7 @@ local function drain(rec, limit)
     end
     local before = #rec.loads
     local tick = table.remove(rec.queue, 1)
-    assert_equal(#rec.queue, 0, "warmup must queue at most one pending tick")
+    assert_equal(0, #rec.queue, "warmup must queue at most one pending tick")
     tick()
     assert(#rec.loads - before <= 1, "a single tick must perform at most one plugin load")
     steps = steps + 1
@@ -101,7 +101,7 @@ do
   drain(rec)
   assert_deep_equal(rec.loads, warmup.order, "plugin loads must follow warmup.order exactly")
   assert_deep_equal(rec.tags, warmup.order, "every warmup-loaded plugin must be tagged")
-  assert_equal(state.done, true, "a completed run must mark itself done")
+  assert_equal(true, state.done, "a completed run must mark itself done")
 end
 
 -- pre-aborted (InsertEnter beat the timer): zero loads
@@ -109,8 +109,8 @@ do
   local rec = fake_deps({})
   local state = warmup.run(rec.deps, { aborted = true, index = 1 })
   drain(rec)
-  assert_equal(#rec.loads, 0, "an aborted warmup must not load anything")
-  assert_equal(state.done, true, "an aborted warmup must still settle as done")
+  assert_equal(0, #rec.loads, "an aborted warmup must not load anything")
+  assert_equal(true, state.done, "an aborted warmup must still settle as done")
 end
 
 -- mid-flight abort: InsertEnter between ticks stops the remaining loads
@@ -125,7 +125,7 @@ do
   drain(rec, 2) -- first tick inline + 2 drained ticks = 3 plugins loaded
   state.aborted = true
   drain(rec)
-  assert_equal(#rec.loads, 3, "an abort between ticks must stop further loads")
+  assert_equal(3, #rec.loads, "an abort between ticks must stop further loads")
   assert_deep_equal(
     rec.loads,
     { warmup.order[1], warmup.order[2], warmup.order[3] },
@@ -151,8 +151,8 @@ end
 do
   local rec = fake_deps({ ["blink.cmp"] = true })
   local state = warmup.run(rec.deps, { aborted = false, index = 1 })
-  assert_equal(#rec.loads, 0, "a loaded blink.cmp must stop the warmup before any load")
-  assert_equal(state.done, true, "the short-circuit must settle as done")
+  assert_equal(0, #rec.loads, "a loaded blink.cmp must stop the warmup before any load")
+  assert_equal(true, state.done, "the short-circuit must settle as done")
 end
 
 -- prewarm failure is non-fatal: the run continues to the remaining units
@@ -171,7 +171,7 @@ do
   local state = warmup.run(rec.deps, { aborted = false, index = 1 }, units)
   drain(rec)
   assert_deep_equal(rec.loads, { "a", "b" }, "a throwing prewarm must not stop the run")
-  assert_equal(state.done, true, "the run must complete past a throwing prewarm")
+  assert_equal(true, state.done, "the run must complete past a throwing prewarm")
 end
 
 -- plugin load failure: abort, keep the error, load nothing further
@@ -191,7 +191,7 @@ do
   warmup.run(failing, state)
   drain(rec)
   vim.notify = saved_notify
-  assert_equal(state.aborted, true, "a failing load must abort the warmup")
+  assert_equal(true, state.aborted, "a failing load must abort the warmup")
   assert(state.error and state.error:find("boom", 1, true), "the abort must keep the load error")
   assert_deep_equal(rec.loads, { "mini.icons" }, "nothing after the failing plugin may load")
 end
@@ -338,18 +338,18 @@ do
   }
   for _, field in ipairs(parity_fields) do
     assert_equal(
-      warmup_report[field],
       lazy_report[field],
+      warmup_report[field],
       "both-paths parity: " .. field .. " must match between the warmup and lazy load paths"
     )
   end
-  assert_equal(warmup_report.quote_desc, "Pair '' inside Go strings", "the Go quote-swap map must exist")
-  assert_equal(warmup_report.blink_loaded, true, "blink.cmp must be loaded on both paths")
+  assert_equal("Pair '' inside Go strings", warmup_report.quote_desc, "the Go quote-swap map must exist")
+  assert_equal(true, warmup_report.blink_loaded, "blink.cmp must be loaded on both paths")
   assert(warmup_report.snips_go > 0, "go snippets must be registered on both paths")
   assert(warmup_report.snips_all > 0, "all-filetype snippets must be registered on both paths")
   -- The non-driver set must NOT ride along with the warmup (or the
   -- lazy driver scan) -- it appears only after its own ft's InsertEnter
-  assert_equal(warmup_report.snips_yaml_pre, 0, "yaml snippets must not be loaded before a yaml InsertEnter")
+  assert_equal(0, warmup_report.snips_yaml_pre, "yaml snippets must not be loaded before a yaml InsertEnter")
   assert(warmup_report.snips_yaml > 0, "yaml snippets must be registered by the yaml buffer's first InsertEnter")
 
   -- per-tick budget: min over up to 3 warmup children; extra children run
@@ -404,8 +404,8 @@ do
   vim.wait(200, function()
     return warmup.state ~= nil and warmup.state.done == true
   end)
-  assert_equal(warmup.state.aborted, true, "InsertEnter before the timer must abort")
-  assert_equal(#rec.loads, 0, "an aborted armed warmup must not load anything")
+  assert_equal(true, warmup.state.aborted, "InsertEnter before the timer must abort")
+  assert_equal(0, #rec.loads, "an aborted armed warmup must not load anything")
 
   -- and the undisturbed path runs to completion on the real scheduler
   local rec2 = fake_deps({})
@@ -415,7 +415,7 @@ do
   vim.wait(2000, function()
     return warmup.state ~= nil and warmup.state.done == true
   end)
-  assert_equal(warmup.state.done, true, "an undisturbed armed warmup must finish")
+  assert_equal(true, warmup.state.done, "an undisturbed armed warmup must finish")
   assert_deep_equal(rec2.loads, warmup.order, "the armed run must load the whole stack in order")
   warmup.delay_ms = saved_delay
 end

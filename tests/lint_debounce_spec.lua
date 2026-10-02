@@ -24,7 +24,7 @@ package.preload["lint"] = function()
   return fake_lint
 end
 
-local function assert_equal(got, want, msg)
+local function assert_equal(want, got, msg)
   if got ~= want then
     error(("%s: got %s, want %s"):format(msg, vim.inspect(got), vim.inspect(want)), 2)
   end
@@ -36,8 +36,8 @@ local configured = vim.tbl_keys(fake_lint.linters_by_ft)
 table.sort(configured)
 local ft = configured[1]
 assert(ft ~= nil, "plugins.lint must configure at least one filetype in linters_by_ft")
-assert_equal(fake_lint.linters_by_ft.text, nil, "the unconfigured control filetype (text) must stay unconfigured")
-assert_equal(try_lint_count, 0, "load in an empty no-filetype buffer must not lint")
+assert_equal(nil, fake_lint.linters_by_ft.text, "the unconfigured control filetype (text) must stay unconfigured")
+assert_equal(0, try_lint_count, "load in an empty no-filetype buffer must not lint")
 
 local function fire_insert_leave(buf, times)
   for _ = 1, times do
@@ -51,7 +51,7 @@ do -- filetypes without a configured linter never reach try_lint
   vim.api.nvim_exec_autocmds("BufWritePost", { buffer = buf })
   fire_insert_leave(buf, 5)
   vim.wait(700)
-  assert_equal(try_lint_count, 0, "unconfigured filetype (text) must never call try_lint")
+  assert_equal(0, try_lint_count, "unconfigured filetype (text) must never call try_lint")
   vim.api.nvim_buf_delete(buf, { force = true })
 end
 
@@ -60,18 +60,18 @@ vim.api.nvim_win_set_buf(0, buf)
 
 do -- FileType fires immediately for a configured filetype
   vim.api.nvim_set_option_value("filetype", ft, { buf = buf })
-  assert_equal(try_lint_count, 1, ("FileType %s must lint immediately (no debounce)"):format(ft))
+  assert_equal(1, try_lint_count, ("FileType %s must lint immediately (no debounce)"):format(ft))
 end
 
 do -- InsertLeave burst collapses to exactly one debounced run
   local base = try_lint_count
   fire_insert_leave(buf, 10)
-  assert_equal(try_lint_count, base, "InsertLeave must not lint synchronously (debounced)")
+  assert_equal(base, try_lint_count, "InsertLeave must not lint synchronously (debounced)")
   vim.wait(2000, function()
     return try_lint_count > base
   end, 10)
   vim.wait(600) -- past a second full window: no straggler runs may arrive
-  assert_equal(try_lint_count, base + 1, "an InsertLeave burst must produce exactly one try_lint")
+  assert_equal(base + 1, try_lint_count, "an InsertLeave burst must produce exactly one try_lint")
 end
 
 do -- the timer re-arms: a later InsertLeave lints again
@@ -80,13 +80,13 @@ do -- the timer re-arms: a later InsertLeave lints again
   vim.wait(2000, function()
     return try_lint_count > base
   end, 10)
-  assert_equal(try_lint_count, base + 1, "a fresh InsertLeave after the window must lint once more")
+  assert_equal(base + 1, try_lint_count, "a fresh InsertLeave after the window must lint once more")
 end
 
 do -- BufWritePost stays immediate
   local base = try_lint_count
   vim.api.nvim_exec_autocmds("BufWritePost", { buffer = buf })
-  assert_equal(try_lint_count, base + 1, "BufWritePost must lint immediately (no debounce)")
+  assert_equal(base + 1, try_lint_count, "BufWritePost must lint immediately (no debounce)")
 end
 
 do -- deleting the buffer cancels its pending debounce timer
@@ -96,5 +96,5 @@ do -- deleting the buffer cancels its pending debounce timer
   fire_insert_leave(scratch, 3)
   vim.api.nvim_buf_delete(scratch, { force = true })
   vim.wait(800)
-  assert_equal(try_lint_count, base, "a deleted buffer's pending debounce must never fire")
+  assert_equal(base, try_lint_count, "a deleted buffer's pending debounce must never fire")
 end

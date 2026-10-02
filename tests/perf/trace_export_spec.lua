@@ -27,7 +27,7 @@ local function assert_truthy(value, message)
   end
 end
 
-local function assert_equal(actual, expected, message)
+local function assert_equal(expected, actual, message)
   if actual ~= expected then
     error(("%s: expected %s, got %s"):format(message, vim.inspect(expected), vim.inspect(actual)), 2)
   end
@@ -88,12 +88,12 @@ do
   for _, event in ipairs(events) do
     by_name[event.name] = event
   end
-  assert_equal(by_name.B.dur, 150, "synthetic B keeps its duration")
-  assert_equal(by_name.C.dur, 90, "synthetic C keeps its duration")
-  assert_equal(by_name.B.ts, 100, "synthetic B moves to A's end")
-  assert_equal(by_name.B.args.ts_shift_us, 50, "synthetic B records its shift")
-  assert_equal(by_name.D.ts, 10, "a slice alone on its tid is untouched")
-  assert_equal(by_name.i.ts, 70, "instant events are untouched")
+  assert_equal(150, by_name.B.dur, "synthetic B keeps its duration")
+  assert_equal(90, by_name.C.dur, "synthetic C keeps its duration")
+  assert_equal(100, by_name.B.ts, "synthetic B moves to A's end")
+  assert_equal(50, by_name.B.args.ts_shift_us, "synthetic B records its shift")
+  assert_equal(10, by_name.D.ts, "a slice alone on its tid is untouched")
+  assert_equal(70, by_name.i.ts, "instant events are untouched")
 end
 
 local out_path = vim.fn.tempname() .. "-trace.json"
@@ -105,8 +105,8 @@ do
   local cmd = { vim.v.progpath, "-l", "script/ui-latency.lua", "--clean", "--socket-free", "--json", ui_json_path }
   local ui = vim.system(cmd, { text = true }):wait(60000)
   assert_equal(
-    ui.code,
     0,
+    ui.code,
     "ui-latency exit code (stdout: " .. tostring(ui.stdout) .. ", stderr: " .. tostring(ui.stderr) .. ")"
   )
 end
@@ -127,8 +127,8 @@ do
   }
   result = vim.system(cmd, { text = true }):wait(60000)
   assert_equal(
-    result.code,
     0,
+    result.code,
     "exporter exit code (stdout: " .. tostring(result.stdout) .. ", stderr: " .. tostring(result.stderr) .. ")"
   )
 end
@@ -146,8 +146,8 @@ end
 
 -- Top-level trace-event contract.
 do
-  assert_equal(type(decoded), "table", "decoded top level")
-  assert_equal(decoded.displayTimeUnit, "ms", "displayTimeUnit")
+  assert_equal("table", type(decoded), "decoded top level")
+  assert_equal("ms", decoded.displayTimeUnit, "displayTimeUnit")
   assert_truthy(vim.islist(decoded.traceEvents), "traceEvents must be an array")
   assert_truthy(#decoded.traceEvents > 0, "traceEvents must not be empty")
 end
@@ -159,16 +159,16 @@ do
   local ui_latency_tids = {}
   for i, event in ipairs(decoded.traceEvents) do
     local where = "event #" .. i .. " (" .. tostring(event.name) .. ")"
-    assert_equal(type(event.name), "string", where .. " name")
-    assert_equal(type(event.ph), "string", where .. " ph")
-    assert_equal(type(event.ts), "number", where .. " ts")
-    assert_equal(type(event.pid), "number", where .. " pid")
-    assert_equal(type(event.tid), "number", where .. " tid")
+    assert_equal("string", type(event.name), where .. " name")
+    assert_equal("string", type(event.ph), where .. " ph")
+    assert_equal("number", type(event.ts), where .. " ts")
+    assert_equal("number", type(event.pid), where .. " pid")
+    assert_equal("number", type(event.tid), where .. " tid")
     -- µs sanity: 0 <= ts < 10^9 (a run under ~17 minutes; this one runs
     -- for seconds).
     assert_truthy(event.ts >= 0 and event.ts < 1e9, where .. " ts out of µs range: " .. event.ts)
     if event.ph == "X" then
-      assert_equal(type(event.dur), "number", where .. " dur (X events must have one)")
+      assert_equal("number", type(event.dur), where .. " dur (X events must have one)")
       assert_truthy(event.dur >= 0, where .. " dur must be non-negative")
     end
     local last = last_ts_per_tid[event.tid]
@@ -183,7 +183,7 @@ do
     end
     if source == "ui_latency" then
       ui_latency_tids[event.tid] = true
-      assert_equal(event.ph, "X", where .. " ui_latency events must be complete slices")
+      assert_equal("X", event.ph, where .. " ui_latency events must be complete slices")
     end
   end
   for source, count in pairs(sources) do
@@ -192,7 +192,7 @@ do
   -- ui-latency contract: attach + insert + 10 keystrokes, all on one
   -- dedicated track (the embed client's own timeline).
   assert_truthy(sources.ui_latency >= 12, "expected >=12 ui_latency events, got " .. sources.ui_latency)
-  assert_equal(vim.tbl_count(ui_latency_tids), 1, "ui_latency events must share one tid")
+  assert_equal(1, vim.tbl_count(ui_latency_tids), "ui_latency events must share one tid")
   assert_nested_or_disjoint(decoded.traceEvents, "exported trace")
   print(
     ("trace_export_spec: OK %s (%d events: %d startuptime, %d lazy, %d warmup, %d ui-latency)"):format(
@@ -223,8 +223,8 @@ do
     end
   end
   assert_truthy(lazy_slice and uienter and started, "trace lacks the lazy slice, UIEnter or NVIM STARTED")
-  assert_equal(lazy_slice.args.clock, "wall", "lazy slice clock (the child's anchors were not found)")
-  assert_equal(uienter.args.clock, "wall", "UIEnter clock")
+  assert_equal("wall", lazy_slice.args.clock, "lazy slice clock (the child's anchors were not found)")
+  assert_equal("wall", uienter.args.clock, "UIEnter clock")
   local started_end = started.ts + started.dur
   assert_truthy(
     lazy_slice.ts + lazy_slice.dur <= started_end + 1000,
@@ -249,10 +249,10 @@ do
     sql:close()
     local tp = vim.system({ shell, "-q", sql_path, out_path }, { text = true }):wait(60000)
     os.remove(sql_path)
-    assert_equal(tp.code, 0, "trace_processor_shell exit code (stderr: " .. tostring(tp.stderr) .. ")")
+    assert_equal(0, tp.code, "trace_processor_shell exit code (stderr: " .. tostring(tp.stderr) .. ")")
     local value = tostring(tp.stdout):match("(%d+)%s*$")
     assert_truthy(value, "stats query output unparsable: " .. tostring(tp.stdout))
-    assert_equal(tonumber(value), 0, "slice_spill_overlapping_complete_event")
+    assert_equal(0, tonumber(value), "slice_spill_overlapping_complete_event")
     print("trace_export_spec: import health OK (0 overlapping complete events)")
   else
     print("trace_export_spec: NOTE " .. shell .. " not installed; import-health assertion skipped")

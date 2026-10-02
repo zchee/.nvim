@@ -16,7 +16,7 @@ package.path = table.concat({
 
 local util = require("util")
 
-local function assert_equal(got, want, message)
+local function assert_equal(want, got, message)
   if got ~= want then
     error(string.format("%s: got %s, want %s", message, vim.inspect(got), vim.inspect(want)))
   end
@@ -75,13 +75,13 @@ local ok, err = pcall(function()
 
   -- the derived file is executable: returned as is, and nothing is said
   do
-    assert_equal(util.bun_prefix("spec-bun-direct"), bun_direct, "bun_prefix must return $BUN_INSTALL/bin/<binary>")
+    assert_equal(bun_direct, util.bun_prefix("spec-bun-direct"), "bun_prefix must return $BUN_INSTALL/bin/<binary>")
     assert_equal(
-      util.nodenv_prefix("spec-nodenv-direct"),
       nodenv_direct,
+      util.nodenv_prefix("spec-nodenv-direct"),
       "nodenv_prefix must return the binary of the version $NODENV_ROOT/version names"
     )
-    assert_equal(#warnings, 0, "an executable derived path must not warn")
+    assert_equal(0, #warnings, "an executable derived path must not warn")
   end
 
   -- the derived file is missing: $PATH answers, with one warning however
@@ -89,13 +89,13 @@ local ok, err = pcall(function()
   do
     for _ = 1, 3 do
       assert_equal(
-        util.bun_prefix("spec-bun-on-path"),
         on_path["spec-bun-on-path"],
+        util.bun_prefix("spec-bun-on-path"),
         "bun_prefix must fall back to $PATH"
       )
     end
-    assert_equal(#warnings, 1, "bun_prefix must warn once per binary")
-    assert_equal(warnings[1].level, vim.log.levels.WARN, "the fallback notice must be a WARN")
+    assert_equal(1, #warnings, "bun_prefix must warn once per binary")
+    assert_equal(vim.log.levels.WARN, warnings[1].level, "the fallback notice must be a WARN")
     assert_contains(warnings[1].msg, "util.bun_prefix: ", "the warning must name the helper")
     assert_contains(
       warnings[1].msg,
@@ -110,12 +110,12 @@ local ok, err = pcall(function()
 
     for _ = 1, 3 do
       assert_equal(
-        util.nodenv_prefix("spec-nodenv-on-path"),
         on_path["spec-nodenv-on-path"],
+        util.nodenv_prefix("spec-nodenv-on-path"),
         "nodenv_prefix must fall back to $PATH"
       )
     end
-    assert_equal(#warnings, 2, "nodenv_prefix must warn once per binary")
+    assert_equal(2, #warnings, "nodenv_prefix must warn once per binary")
     assert_contains(warnings[2].msg, "util.nodenv_prefix: ", "the warning must name the helper")
     assert_contains(
       warnings[2].msg,
@@ -130,12 +130,12 @@ local ok, err = pcall(function()
     warnings = {}
     for _ = 1, 2 do
       assert_equal(
-        util.bun_prefix("spec-bun-nowhere"),
         vim.fs.joinpath(bun_root, "bin", "spec-bun-nowhere"),
+        util.bun_prefix("spec-bun-nowhere"),
         "bun_prefix must hand back the derived path when $PATH has no such binary"
       )
     end
-    assert_equal(#warnings, 1, "the nothing-found case must warn once as well")
+    assert_equal(1, #warnings, "the nothing-found case must warn once as well")
     assert_contains(warnings[1].msg, "spec-bun-nowhere is not on $PATH either", "the warning must say $PATH failed too")
   end
 
@@ -144,7 +144,7 @@ local ok, err = pcall(function()
   do
     warnings = {}
     util.nodenv_prefix("spec-bun-nowhere")
-    assert_equal(#warnings, 1, "a binary bun_prefix warned about must still warn for nodenv_prefix")
+    assert_equal(1, #warnings, "a binary bun_prefix warned about must still warn for nodenv_prefix")
     assert_contains(warnings[1].msg, "util.nodenv_prefix: ", "that warning must name nodenv_prefix")
   end
 
@@ -155,15 +155,15 @@ local ok, err = pcall(function()
     vim.env.NODENV_ROOT = nodenv_unversioned_root
     local version_file = vim.fs.joinpath(nodenv_unversioned_root, "version")
     assert_equal(
-      util.nodenv_prefix("spec-nodenv-unversioned"),
       on_path["spec-nodenv-unversioned"],
+      util.nodenv_prefix("spec-nodenv-unversioned"),
       "nodenv_prefix must fall back to $PATH without a version file"
     )
-    assert_equal(#warnings, 1, "an unreadable version file must warn")
+    assert_equal(1, #warnings, "an unreadable version file must warn")
     assert_contains(warnings[1].msg, "cannot read " .. version_file, "the warning must name the version file")
     assert_equal(
-      util.nodenv_prefix("spec-nodenv-shim-only"),
       vim.fs.joinpath(nodenv_unversioned_root, "shims", "spec-nodenv-shim-only"),
+      util.nodenv_prefix("spec-nodenv-shim-only"),
       "without a version file and off $PATH the shim path must come back"
     )
 
@@ -171,8 +171,8 @@ local ok, err = pcall(function()
     -- version from the cwd, so the unreadable version file still decides
     warnings = {}
     local shim = executable("nodenv-unversioned", "shims", "spec-nodenv-shim-present")
-    assert_equal(util.nodenv_prefix("spec-nodenv-shim-present"), shim, "the shim path must come back")
-    assert_equal(#warnings, 1, "an executable shim must still warn about the version file")
+    assert_equal(shim, util.nodenv_prefix("spec-nodenv-shim-present"), "the shim path must come back")
+    assert_equal(1, #warnings, "an executable shim must still warn about the version file")
     assert_contains(warnings[1].msg, "cannot read " .. version_file, "that warning must name the version file")
   end
 end)

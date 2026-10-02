@@ -23,7 +23,7 @@ None directly in this directory (plus an untracked `.DS_Store`) — every
 |-----------|-------------------|---------|
 | `diff/` | `injections.scm` (extends) | Captures `@injection.filename` / `@injection.content` (with `#set! injection.include-children`) per diff hunk, for filename-driven language routing |
 | `go/` | `highlights.scm` (extends) | `case`/`default`/`defer` keywords, `err`/`error`/`any` identifiers, raw string literals, builtin-type call highlighting, package import namespacing, `//go:` pragma and `//nolint:` comment highlighting, const-string spell-checking |
-| `go/` | `injections.scm` (extends) | SQL injection into string literals (a `#match?` on a SELECT/INSERT/UPDATE/DELETE ... FROM/INTO/VALUES/SET shape, and an `#any-contains?` keyword list that fires on any one listed keyword, single words such as `database` and `having` included; a literal both match is injected twice; the captured `*_string_literal_content` nodes already exclude the quotes, so these carry no `#offset!`), JSON injection into const/var/`:=` raw string literals holding one `{...}` object (they capture the `raw_string_literal_content` child, since an injection leaves a captured node's children out of the region), and `printf`-grammar injection for raw string literals passed to `Printf`/`Sprintf`/`Fprintf`/etc. — the last one exists specifically because upstream nvim-treesitter only injects `printf` into `interpreted_string_literal`, not raw strings |
+| `go/` | `injections.scm` (extends) | SQL injection into string literals through one `#match?` anchored at the start of the content: an upper-case statement keyword (`SELECT`, `INSERT`, `CREATE`, `WITH`, `BEGIN`, ...) followed by more text, a lower-case `select`/`insert`/`update`/`delete` that later reaches `from`/`into`/`set`/`values`, or a `-- sql` marker, after optional leading whitespace including a line break. Import paths, prose and Go error strings that start with a lower-case verb stay plain; known false positives are HTTP mux patterns such as `"DELETE example.com/..."` and upper-case-led messages such as `"SELECT on table %q ..."`. The captured `*_string_literal_content` nodes already exclude the quotes, so the pattern carries no `#offset!`), JSON injection into const/var/`:=` raw string literals holding one `{...}` object (they capture the `raw_string_literal_content` child, since an injection leaves a captured node's children out of the region), and `printf`-grammar injection for raw string literals passed to `Printf`/`Sprintf`/`Fprintf`/etc. — the last one exists specifically because upstream nvim-treesitter only injects `printf` into `interpreted_string_literal`, not raw strings |
 | `go/` | `locals.scm` (extends) | `var_spec` as `local.scope`, struct field declarations, interface method elements, struct/interface `type_declaration` as `local.name`/`local.type` |
 | `goasm/` | `highlights.scm`, `injections.scm`, `tags.scm` (symlinks — full base queries, not extends) | Comments incl. `//go:*`/`//line` pragma detection, C-style preprocessor directives, labels, and (in `tags.scm`) ctags-style function/data/label/macro definitions plus call/jump-target references across many architectures (amd64/arm64/riscv64/etc.) |
 | `json/` | `injections.scm` (extends) | Injects `bash` into the string value of nested pairs under a `"scripts"` key (npm `package.json` convention) |
@@ -77,17 +77,19 @@ None directly in this directory (plus an untracked `.DS_Store`) — every
 - `; extends` (single semicolon) and `;; extends` (double) are both used in
   this repo interchangeably — Neovim accepts either. Both must still be on
   line 1.
-- `#lua-match?`, `#match?`, `#any-of?`, `#contains?`, `#any-contains?`,
-  `#eq?`, `#offset!`, and `#set! injection.language "<x>"` are the
-  predicate/directive vocabulary used throughout. `#contains?` with several
-  strings needs every one of them in the node's text; `#any-contains?` needs
-  one. `#offset! @x 0 1 0 -1` strips a node's first and last
-  character: right on a whole `raw_string_literal` (backticks included),
-  wrong on a `*_string_literal_content` node, which has no quotes to strip.
-  `go/injections.scm` is the densest example, layering
-  multiple heuristics (a `#match?` regex, an `#any-contains?` keyword list) for
-  the same SQL-injection goal to cover different tree-sitter/grammar
-  versions.
+- `#lua-match?`, `#match?`, `#any-of?`, `#contains?`, `#eq?`, `#offset!`, and
+  `#set! injection.language "<x>"` are the predicate/directive vocabulary
+  used throughout. `#contains?` with several strings needs every one of them
+  in the node's text (`#any-contains?` needs one). `#match?` compiles a vim
+  regex, very magic unless the pattern starts with its own `\v`/`\m`/`\M`/`\V`,
+  and matches the node text as one string, in which `\s`, `\_s` and `\n` never
+  match a newline character; `[[:space:]]` and `.` do. `#offset! @x 0 1 0 -1`
+  strips a node's first and last character: right on a whole
+  `raw_string_literal` (backticks included), wrong on a
+  `*_string_literal_content` node, which has no quotes to strip.
+  `go/injections.scm` is the densest example: one SQL `#match?`, three JSON
+  patterns and two printf patterns, with its older SQL patterns kept as
+  commented-out reference.
 - Several files carry inline provenance comments crediting an upstream
   source (`go/injections.scm` and `go/locals.scm` both credit
   `ray-x/go.nvim`'s `after/queries/go/*.scm`) — preserve this convention

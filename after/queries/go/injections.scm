@@ -23,31 +23,21 @@
 ;   (#offset! @injection.content 0 1 0 -1)
 ;   (#set! injection.language "sql"))
 
-; The *_string_literal_content nodes already exclude the quotes, so no
-; #offset! here.
+; One pattern, anchored at the start of the string's content, so an
+; import path or a sentence that merely mentions SQL stays plain: the
+; content opens with an upper-case statement keyword followed by more
+; text, with a lower-case select/insert/update/delete that later reaches
+; from/into/set/values, or with a "-- sql" marker. #match? compiles a
+; vim regex and matches the whole text as one string, where \s, \_s and
+; \n never match a newline character; [[:space:]] and . do, which lets a
+; raw string start with a line break. The *_string_literal_content nodes
+; already exclude the quotes, so no #offset! here.
 ([
   (interpreted_string_literal_content)
   (raw_string_literal_content)
   ] @injection.content
- (#match? @injection.content "(SELECT|select|INSERT|insert|UPDATE|update|DELETE|delete).+(FROM|from|INTO|into|VALUES|values|SET|set).*(WHERE|where|GROUP BY|group by)?")
+ (#match? @injection.content "\\v^[[:space:]]*(--[[:space:]]*sql>|(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|WITH|TRUNCATE|REPLACE|MERGE|GRANT|REVOKE|EXPLAIN|BEGIN|COMMIT|ROLLBACK)[[:space:]]+\\S|(select|insert|update|delete)[[:space:]].{-}<(from|into|set|values)>)")
  (#set! injection.language "sql"))
-
-; ----------------------------------------------------------------
-; fallback keyword and comment based injection
-;
-; #any-contains? fires when any one listed string occurs; #contains?
-; requires every one of them.
-
-([
-  (interpreted_string_literal_content)
-  (raw_string_literal_content)
- ] @injection.content
- (#any-contains? @injection.content "-- sql" "--sql" "ADD CONSTRAINT" "ALTER TABLE" "ALTER COLUMN"
-                  "DATABASE" "FOREIGN KEY" "GROUP BY" "HAVING" "CREATE INDEX" "INSERT INTO"
-                  "NOT NULL" "PRIMARY KEY" "UPDATE SET" "TRUNCATE TABLE" "LEFT JOIN" "add constraint" "alter table" "alter column" "database" "foreign key" "group by" "having" "create index" "insert into"
-                  "not null" "primary key" "update set" "truncate table" "left join")
- (#set! injection.language "sql"))
-
 
 ; should I use a more exhaustive list of keywords?
 ;  "ADD" "ADD CONSTRAINT" "ALL" "ALTER" "AND" "ASC" "COLUMN" "CONSTRAINT" "CREATE" "DATABASE" "DELETE" "DESC" "DISTINCT" "DROP" "EXISTS" "FOREIGN KEY" "FROM" "JOIN" "GROUP BY" "HAVING" "IN" "INDEX" "INSERT INTO" "LIKE" "LIMIT" "NOT" "NOT NULL" "OR" "ORDER BY" "PRIMARY KEY" "SELECT" "SET" "TABLE" "TRUNCATE TABLE" "UNION" "UNIQUE" "UPDATE" "VALUES" "WHERE"

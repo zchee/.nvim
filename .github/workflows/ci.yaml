@@ -43,7 +43,6 @@ jobs:
       SPEC_PLUGINS: >-
         stevearc/conform.nvim
         b0o/schemastore.nvim
-        neovim/nvim-lspconfig
         saghen/blink.cmp
         saghen/blink.lib
         nvim-treesitter/nvim-treesitter

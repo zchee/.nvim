@@ -1,11 +1,9 @@
 -- based by https://github.com/yunlingz/equinusocio-material.vim
 --
--- Lua port of colors/equinusocio_material.vim (round-2 plan R3.1) with the
--- former lua/config/highlight.lua overrides folded in after the base paint,
--- so a runtime :colorscheme re-apply repaints everything in one pass
--- (round 1 lost the overrides on re-apply). Parity with the VimL + override
--- pipeline is pinned byte-for-byte by tests/perf/fixtures/hl_baseline.txt
--- via script/hl-dump.lua.
+-- The base paint comes first and the overrides section after it, in this
+-- one file, so a runtime :colorscheme re-apply repaints everything in one
+-- pass. The result is pinned byte-for-byte by
+-- tests/perf/fixtures/hl_baseline.txt via script/hl-dump.lua.
 
 vim.cmd("highlight clear")
 if vim.fn.exists("syntax_on") == 1 then
@@ -34,9 +32,8 @@ local function hl(name, val)
   api.nvim_set_hl(0, name, val)
 end
 
--- Overrides (the former config.highlight repaint) replace the whole group
--- definition like the old helper did: force, no implicit blend, mirrored
--- cterm left as nvim_set_hl produces it.
+-- Overrides replace the whole group definition: force, no implicit blend,
+-- mirrored cterm left as nvim_set_hl produces it.
 --- @param name string
 --- @param val table highlight definition map (:help nvim_set_hl)
 local function ovr(name, val)
@@ -208,8 +205,7 @@ hl("DiagnosticInfo", { fg = orange })
 hl("DiagnosticHint", { fg = "#a6dbff" })
 
 -- ------------------------------------------------------------------------------
--- Overrides (former lua/config/highlight.lua, applied last so they replace
--- the base definitions above exactly as the VeryLazy repaint used to).
+-- Overrides, applied last so they replace the base definitions above.
 
 local hi_none = "None"
 
@@ -236,7 +232,7 @@ ovr("BlinkCmpLabelDescription", { link = hi_none })
 ovr("BlinkCmpLabelDeprecated", { link = hi_none })
 ovr("BlinkCmpKind", { link = hi_none })
 ovr("@comment.note.comment", { link = "comment" })
--- gitsigns (moved from lua/plugins/gitsigns.lua)
+-- gitsigns
 ovr("GitSignsChange", { fg = "#bbbb00", bg = "#010101" })
 ovr("GitSignsDelete", { fg = "#ff2222", bg = "#010101" })
 ovr("GitSignsAdd", { fg = "#009900", bg = "#010101" })
@@ -303,8 +299,7 @@ ovr("@variable.err.go", { fg = "#ff005f", bg = hi_none, bold = true })
 ovr("@variable.go", { blend = 10 })
 ovr("goImportedPkg", { fg = "#769ae7", bg = hi_none, italic = true, blend = 10 })
 
---- syntax/go.vim groups (moved from lua/config/nvim.lua, which set them once
---- after the scheme, so any later :colorscheme left them empty)
+--- syntax/go.vim groups
 ovr("goImportString", { link = "Comment" })
 ovr("goPredefinedIdentifiers", { link = "Keyword" })
 ovr("goReceiverType", { link = "Keyword" })

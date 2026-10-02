@@ -4,9 +4,9 @@
 -- (prebuilt download stays off). The pre-2025-10 migration failed because a
 -- broken RUSTFLAGS build line left no Rust matcher and "prefer_rust" fell
 -- back to the Lua matcher SILENTLY -- whose weak filterText handling drops
--- exactly the gopls deep/unimported candidates. Hence
--- "prefer_rust_with_warning": if the source build ever breaks again, it must
--- be loud, not a quiet completion downgrade.
+-- exactly the gopls deep/unimported candidates. Hence implementation = "rust",
+-- with which setup() raises when the matcher is missing: a broken source build
+-- must be loud, not a quiet completion downgrade.
 local blink = require("blink.cmp")
 
 -- Safety net for the warmup-abort race: plugins/luasnip.lua defers its
@@ -301,13 +301,6 @@ blink.setup({
             end,
             highlight = "BlinkCmpSource",
           },
-          source_id = {
-            width = { max = 30 },
-            text = function(ctx)
-              return ctx.source_id
-            end,
-            highlight = "BlinkCmpSource",
-          },
         },
       },
     },
@@ -316,10 +309,6 @@ blink.setup({
       auto_show_delay_ms = 500, -- Delay before showing the documentation window
       update_delay_ms = 50, -- Delay before updating the documentation window when selecting a new item, while an existing item is still visible
       treesitter_highlighting = true, -- Whether to use treesitter highlighting, disable if you run into performance issues
-      -- Draws the item in the documentation window, by default using an internal treesitter based implementation
-      draw = function(opts)
-        opts.default_implementation()
-      end,
       window = {
         min_width = 10,
         max_width = 80,

@@ -109,12 +109,9 @@ cat >"$probe" <<'EOF'
 -- time blocked in the kernel poll; busy = (wall - idle delta) / wall over
 -- the window (metrics_idle_time is nanoseconds on this build).
 --
--- Max loop-turn stall: libuv fires check handles right after the poll
--- returns and prepare handles right before the next poll blocks, so the
--- gap from a check timestamp to the next prepare fire is one loop turn's
--- active (non-poll) stretch -- a main-thread busy stall, measured with no
--- timer grid under it (a timer puts its period as a floor on detection
--- and is itself loop load).
+-- Max loop-turn stall: script/lib/stall_probe.lua (prepare/check pair, no
+-- timer grid). luafile runs with the cwd perf-report.sh cd'd to: the repo root.
+local stall_probe = dofile(vim.fs.joinpath(vim.fn.getcwd(), "script", "lib", "stall_probe.lua"))
 local stall = { ran = false, max_ms = -1, busy_fraction = -1, loop_count = -1, events = -1 }
 vim.api.nvim_create_autocmd("UIEnter", {
   once = true,
@@ -125,27 +122,10 @@ vim.api.nvim_create_autocmd("UIEnter", {
       local wall0 = vim.uv.hrtime()
       local idle0 = metrics_ok and vim.uv.metrics_idle_time() or 0
       local info0 = vim.uv.metrics_info()
-      local prep = assert(vim.uv.new_prepare())
-      local check = assert(vim.uv.new_check())
-      local t_active -- hrtime when the current loop turn's active phase began
-      prep:start(function()
-        if t_active then
-          local gap = (vim.uv.hrtime() - t_active) / 1e6
-          if gap > stall.max_ms then
-            stall.max_ms = gap
-          end
-          t_active = nil
-        end
-      end)
-      check:start(function()
-        t_active = vim.uv.hrtime()
-      end)
+      local stop_probe = stall_probe(stall)
       local stop_timer = assert(vim.uv.new_timer())
       stop_timer:start(5000, 0, function()
-        prep:stop()
-        prep:close()
-        check:stop()
-        check:close()
+        stop_probe()
         stop_timer:stop()
         stop_timer:close()
         local wall = vim.uv.hrtime() - wall0

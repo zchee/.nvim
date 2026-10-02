@@ -1,7 +1,7 @@
 local M = {}
 
 --- Print every argument through vim.inspect, one per line, nils included.
---- vim.inspect(...) alone read the second argument as its options table.
+--- vim.inspect(...) alone takes the second argument as its options table.
 function _G.dump(...)
   local inspected = {}
   for i = 1, select("#", ...) do
@@ -23,8 +23,7 @@ function M.is_exists(path)
 end
 
 --- Returns the value of the process environment variable `varname`, or nil
---- when it is unset or empty. Not tostring()'d: the string "nil" is truthy,
---- so a caller could not fall back, and it joined into a relative path.
+--- when it is unset or empty, so a caller can fall back with `or`.
 ---
 ---@param varname string
 ---@return string?

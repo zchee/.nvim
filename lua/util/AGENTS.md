@@ -44,8 +44,9 @@ utilities (`is_exists`, the global `dump`).
   `---@param`/`---@return` doc comment, matching the existing style.
 
 ### Testing Requirements
-No dedicated spec file exists under `tests/` for this directory's modules.
-Verify changes by loading the module headlessly, e.g.:
+`tests/util_prefix_spec.lua` covers `bun_prefix` and `nodenv_prefix`
+(`nvim --headless -u NONE -i NONE -l tests/util_prefix_spec.lua`). Verify
+changes to the other helpers by loading the module headlessly, e.g.:
 `nvim --headless -u NONE -i NONE -c 'set rtp+=.' -c 'lua vim.print(require("util").prefix())' -c 'qa'`
 
 ### Common Patterns

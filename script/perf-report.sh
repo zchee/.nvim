@@ -262,8 +262,10 @@ run_pty -i "$shada_probe" --cmd "lua vim.g.perf_insert_out='$tmp/insert.json'" \
 
 report="$tmp/report.lua"
 cat >"$report" <<'EOF'
--- Aggregates the raw run files from the tmp dir (arg[1]) into the report.
+-- Aggregates the raw run files from the tmp dir (arg[1]) into the report;
+-- arg[2] is how many runs each loop above made.
 local tmp = arg[1]
+local runs = assert(tonumber(arg[2]))
 
 --- Parses the total from a --startuptime log ("NVIM STARTED" / embedded).
 local function startuptime_total(path)
@@ -285,7 +287,7 @@ end
 
 local function collect_totals(prefix)
   local totals = {}
-  for i = 1, 3 do
+  for i = 1, runs do
     local t = startuptime_total(string.format("%s/%s%d.log", tmp, prefix, i))
     if t then
       totals[#totals + 1] = t
@@ -341,7 +343,7 @@ print("  pty:      " .. fmt_median(full_pty) .. " | " .. delta(full_pty, clean_p
 
 -- lazy probe runs (full-config pty): stats, jitter, burst/warmup split
 local probe_runs = {}
-for i = 1, 3 do
+for i = 1, runs do
   local f = io.open(string.format("%s/run%d.json", tmp, i), "r")
   if f then
     local body = f:read("*a")
@@ -490,7 +492,7 @@ for i = 1, math.min(15, #burst) do
 end
 EOF
 
-nvim -u NONE --headless -l "$report" "$tmp"
+nvim -u NONE --headless -l "$report" "$tmp" "$runs"
 
 # Embed UI latency (round-3.5 item 3): a direct msgpack-RPC UI client
 # measures attach->first-flush and input->flush against `nvim --embed`,

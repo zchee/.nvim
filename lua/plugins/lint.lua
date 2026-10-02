@@ -1,9 +1,8 @@
--- nvim-lint: successor of the none-ls diagnostic sources. ruff carries over
--- directly. golangci-lint is held off Go buffers (the `go` entry below is
--- commented out, 13cd8e9) until its runs on the real projects pass; the cmd
--- override stays so re-enabling it keeps the absolute binary, which keeps
--- the mise shim (it prints errors to stdout and used to crash the JSON
--- decode) out of the loop.
+-- nvim-lint: ruff lints Python. golangci-lint is held off Go buffers (the
+-- `go` entry below is commented out) until its runs on the real projects
+-- pass; the cmd override stays so re-enabling it keeps the absolute
+-- binary, which keeps the mise shim (it prints errors to stdout, which
+-- breaks the JSON decode) out of the loop.
 local util = require("util")
 
 local lint = require("lint")

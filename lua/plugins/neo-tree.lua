@@ -489,8 +489,6 @@ neotree.setup({
       nowait = true,
     },
     -- Shared by every source; a source's own window.mappings wins per key.
-    -- This block used to sit at filesystem.mappings, a key neo-tree never
-    -- reads, so none of it applied.
     mappings = {
       ["<Space>"] = {
         "toggle_node",

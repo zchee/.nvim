@@ -71,8 +71,7 @@ local function start_treesitter(buf, ft)
   if highlight_skip[lang] then
     return
   end
-  -- *.dockerfile files kept tree-sitter highlighting off under master
-  -- (TSBufDisable autocmd); preserve that behavior.
+  -- *.dockerfile files keep tree-sitter highlighting off.
   if lang == "dockerfile" and vim.api.nvim_buf_get_name(buf):match("%.dockerfile$") then
     return
   end
@@ -93,7 +92,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- The spec defers this module to the first FileType event (round-4 V1), and
+-- The spec defers this module to the first FileType event, and
 -- autocmds created while an event is running do not fire for that occurrence
 -- -- without a replay the triggering buffer would silently keep legacy
 -- syntax. vim.treesitter.start is idempotent, so replaying a buffer the

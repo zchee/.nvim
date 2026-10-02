@@ -73,8 +73,8 @@ local opts = {
 }
 
 -- todo-comments' setup probes `pcall(require, "snacks.picker")` to
--- register its picker source, re-loading the ~3.4 ms picker tree
--- that round-3 W2.1 removed from startup. An erroring preload stub
+-- register its picker source, which loads the ~3.4 ms picker tree
+-- that startup otherwise leaves out. An erroring preload stub
 -- makes that probe fail fast while it is armed; a picker some other
 -- caller already loaded short-circuits through package.loaded, so
 -- only todo-as-loader is blocked and the registration still happens

@@ -166,8 +166,8 @@ and add its row to the table above.
 - Tests are structured as a sequence of independent `do ... end` blocks
   within a single file (no `describe`/`it` nesting), each covering one
   behavior with an inline descriptive failure message as the last argument
-  to the assert helper. Equality helpers take the expected value first and
-  the actual one second, in every spec.
+  to the assert helper. `assert_equal`/`assert_eq` take the expected value
+  first and the actual one second, in every spec.
 - Modules under test expose small, pure, dependency-injected functions
   (e.g. `make_imectl_callback(executable, jobstart)`,
   `patch_quickfile_module(quickfile, deps)`) specifically so specs can pass

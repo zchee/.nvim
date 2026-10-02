@@ -27,6 +27,9 @@
 --   --settle-ms    idle gap between first flush and typing (default 300;
 --                  raise it so warmup/LSP attach finish first)
 --   --keys <n>     keystroke sample count (default 10)
+--   --key <seq>    the key fed for every sample, in nvim_input notation
+--                  (default "x"); the child is in Insert mode by then,
+--                  since "i" is fed before the key phase
 --   --child-arg    extra argument passed to the child nvim command line,
 --                  repeatable and kept in order, inserted before the --edit
 --                  file. The only way to vary the child's STARTUP state (an
@@ -41,6 +44,12 @@
 --                  stall probe). The post code's return value lands in
 --                  the output as post_keys_result (JSON-encoded line and
 --                  --json field); errors in either fail the run.
+--   --pre-wait <lua expr>
+--                  Lua expression polled in the CHILD (every 200 ms, up to
+--                  15 s) after the "i" flush; the key phase starts once it
+--                  is true, so an arrangement that opens through queued
+--                  input (completion menu + docs window) is in place before
+--                  the first sample. Never becoming true fails the run.
 --
 -- Output (machine-parseable, one per line):
 --   mode=<clean|full>

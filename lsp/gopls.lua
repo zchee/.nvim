@@ -194,11 +194,19 @@ return {
   --   -- end,
   -- },
 
+  -- Process-wide options. gopls applies them from the initialize request's
+  -- initializationOptions; read from settings they take effect only when a
+  -- folder's options later change. On the shared /tmp/gopls.sock daemon each
+  -- session's initialize sets them again, always to these values.
+  init_options = {
+    maxFileCacheBytes = 1e9,
+    -- runtime/debug.SetMemoryLimit of gopls itself; settings.gopls.env
+    -- reaches only the go commands gopls runs.
+    memoryLimit = 2 * 1024 * 1024 * 1024,
+  },
+
   settings = {
     gopls = {
-      env = {
-        GOMEMLIMIT = "2GiB",
-      },
       -- buildFlags = {},
       directoryFilters = {
         "-**/asm", -- mmcloughlin/avo
@@ -244,6 +252,7 @@ return {
         directive = true,
         embed = true,
         errorsas = true,
+        errorsastypeshadow = true,
         fieldalignment = false,
         fillreturns = true,
         framepointer = true,
@@ -251,8 +260,10 @@ return {
         httpresponse = true,
         ifaceassert = true,
         infertypeargs = true,
+        inline = true,
         loopclosure = true,
         lostcancel = true,
+        maprange = true,
         -- modernize is no longer one analyzer: gopls runs each check as its own
         -- (the modernize#hdr-Analyzer_<name> anchors in `gopls api-json`). All
         -- default on except appendclipped and slicesdelete, enabled below.
@@ -289,6 +300,9 @@ return {
         nonewvars = true,
         noresultvalues = true,
         printf = true,
+        ptrtoerror = true,
+        recursiveiter = true,
+        scannererr = true,
         shadow = false,
         shift = true,
         sigchanyzer = true,
@@ -297,6 +311,7 @@ return {
         simplifyslice = true,
         slog = true,
         sortslice = true,
+        sqlrowserr = true,
         stdmethods = true,
         stdversion = true,
         stringintconv = true,
@@ -313,13 +328,15 @@ return {
         unusedvariable = true,
         unusedwrite = true,
         waitgroup = true,
+        writestring = true,
         yield = true,
         -- NOTE(zchee): those analyzer is not safe to enable by default
         appendclipped = true,
         slicesdelete = true,
         -- staticcheck: https://staticcheck.dev/docs/checks
+        -- `staticcheck = true` turns on every staticcheck analyzer not named
+        -- here, so with it only the `false` entries change anything.
         QF1008 = false, -- Omit embedded fields from selector expression
-        --- non-default
         SA9003 = false, -- Empty body in an if or else branch
         ST1000 = false, -- Incorrect or missing package comment
         ST1003 = true, -- Poorly chosen identifier
@@ -359,8 +376,7 @@ return {
         vendor = true,
       },
       staticcheck = true,
-      ["local"] = "", -- NOTE(zchee): set dinamically
-      maxFileCacheBytes = 1e9,
+      ["local"] = "",
       verboseOutput = false,
       verboseWorkDoneProgress = false,
       showBugReports = false,
@@ -368,6 +384,9 @@ return {
       completeFunctionCalls = true,
       semanticTokens = true,
       -- golang.org/x/tools/gopls/internal/protocol/semtok.Type
+      -- gopls emits a type or modifier only when the client capabilities list
+      -- it, so these maps can only switch one off. Neovim's capabilities lack
+      -- label and the non-standard modifiers, so those entries do nothing.
       semanticTokenTypes = {
         comment = true,
         ["function"] = true,
@@ -432,22 +451,20 @@ return {
       fileWatcher = "fsnotify", -- "off", "fsnotify", "poll"
       moveType = true,
       moveDeclaration = true,
+      -- Only the gopls-test-tmpl branch of ~/go/src/golang.org/x/tools reads
+      -- this; upstream gopls answers it with "Invalid settings: unexpected setting".
       testTemplatePath = vim.fs.joinpath(util.xdg_config_home(), "/go/gopls/template/base.go"),
     },
   },
 
-  -- Port of what used to be on_new_config: that hook is an lspconfig concept
-  -- and native vim.lsp.config never calls it, so the per-root overrides below
-  -- had stopped running. before_init is the equivalent seam -- it fires just
-  -- before the initialize request, config.root_dir is already resolved by
-  -- then, and vim.lsp deepcopies the config per client start, so these
-  -- mutations stay scoped to this root instead of leaking into the next Go
-  -- project opened in the same session.
+  -- before_init fires just before the initialize request, with
+  -- config.root_dir resolved, and vim.lsp deepcopies the config per client
+  -- start, so these mutations stay scoped to this root instead of leaking into
+  -- the next Go project opened in the same session.
   --
-  -- gopls types `env` as map[string]string, so each value is a plain string,
-  -- not the single-element list the old hook passed. Assigning into the
-  -- existing table also keeps GOMEMLIMIT, which the old whole-table
-  -- replacement dropped.
+  -- gopls types `env` as map[string]string, so each value is a plain string.
+  -- An empty Lua table encodes as a JSON array, which gopls rejects for `env`,
+  -- so the table exists only once a value goes into it.
   ---@param config vim.lsp.ClientConfig
   before_init = function(_, config)
     local root = config.root_dir
@@ -461,12 +478,14 @@ return {
     local gopls = config.settings.gopls
 
     if is_goos_linux(root) then
+      gopls.env = gopls.env or {}
       gopls.env.GOOS = "linux"
     end
 
     -- The experiments gate standard-library packages (simd/archsimd,
     -- runtime/secret), so only the Go source tree itself needs them.
     if is_go_source_tree(root) then
+      gopls.env = gopls.env or {}
       gopls.env.GOEXPERIMENT = "simd,runtimesecret"
       -- buildFlags reaches `go list` verbatim, so the tags have to arrive as
       -- one -tags= flag. Listing them bare made go list read each name as a

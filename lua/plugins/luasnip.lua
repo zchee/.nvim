@@ -1,9 +1,4 @@
 -- Loaded from the LuaSnip spec's config in lua/plugins/init.lua.
---
--- Split out of plugins/blink.lua (round-3 plan W1.2) so the warmup's LuaSnip
--- tick pays for setup instead of the terminal blink.cmp tick. Attached to
--- the plugin's own spec config, the pure-lazy InsertEnter dependency chain
--- runs the exact same code, so both load paths stay identical.
 local ls = require("luasnip")
 local ls_loader_lua = require("luasnip.loaders.from_lua")
 
@@ -13,12 +8,12 @@ local snippet_root = vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "lua", 
 
 -- Registering the whole collection costs ~6-8 ms -- the 8 ms warmup tick
 -- budget with nothing else in the tick -- and go.lua alone (28 snippets)
--- costs as much as every other snippet file combined. Round-3 split the
--- scan into two half-collections; round-4 V3.1 narrows the eager set to
--- the daily drivers (go + the "all" set, one warmup tick each) and leaves
--- every other filetype to its own first InsertEnter via the autocmd this
--- config installs. include filters on the ft name, so a snippet file added
--- later needs no registration here -- its first InsertEnter picks it up.
+-- costs as much as every other snippet file combined. So the eager set is
+-- the daily drivers (go + the "all" set, one warmup tick each), and every
+-- other filetype registers on its own first InsertEnter via the autocmd
+-- this config installs. include filters on the ft name, so a snippet file
+-- added later needs no registration here -- its first InsertEnter picks it
+-- up.
 local driver_fts = { "go", "all" }
 
 local loaded_fts = {}
@@ -73,11 +68,8 @@ ls.setup({
   store_selection_keys = "<Tab>",
 })
 
--- Non-driver filetypes register on their first InsertEnter. The autocmd is
--- installed at config time on both load paths; the one InsertEnter it can
--- miss -- the event that pulled this very config in on the pure-lazy chain
--- -- is covered by load_snippets scanning the current buffer inline from
--- plugins/blink.lua at that chain's end.
+-- Non-driver filetypes register on their first InsertEnter; load_snippets
+-- covers the one InsertEnter this autocmd cannot see.
 vim.api.nvim_create_autocmd("InsertEnter", {
   group = vim.api.nvim_create_augroup("luasnip_ft_snippets", { clear = true }),
   callback = function(ev)

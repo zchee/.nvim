@@ -46,7 +46,7 @@ return {
   {
     dir = util.src_path("github.com/zchee/codecov.nvim"),
     -- coverage.autostart is false, so the user commands are the only entry
-    -- points; loading at VeryLazy only paid the setup cost up front.
+    -- points.
     cmd = {
       "CodecovRefresh",
       "CodecovToggle",
@@ -76,10 +76,9 @@ return {
     },
     {
       {
-        -- The LSP entry point. nvim-lspconfig is gone -- every server config
-        -- is a self-sufficient native vim.lsp.config table -- so the stack
-        -- boots from lspkind, the one plugin lua/lsp/init.lua genuinely
-        -- require()s at load time.
+        -- The LSP entry point. Every server config is a self-sufficient
+        -- native vim.lsp.config table, so the stack boots from lspkind, the
+        -- one plugin lua/lsp/init.lua require()s at load time.
         "onsails/lspkind-nvim",
         event = {
           "BufReadPre",
@@ -164,7 +163,7 @@ return {
       },
       {
         "stevearc/conform.nvim",
-        -- Real entry points only (round-3 W2.3): write-time formatting via
+        -- Real entry points only: write-time formatting via
         -- its own format_on_save BufWritePre autocmd (lazy re-fires the
         -- event after loading, so the first :w still formats), the
         -- <LocalLeader>f keymap in lua/lsp/init.lua (requires conform on
@@ -185,10 +184,8 @@ return {
       {
         "stevearc/aerial.nvim",
         -- Symbols only exist for real file buffers, and aerial's own
-        -- on_attach remaps {/} per attached buffer, so first-file load
-        -- (round-3 W2.3) keeps that behavior identical while an idle
-        -- no-file session never pays for it. VeryLazy loaded it in every
-        -- session's startup burst.
+        -- on_attach remaps {/} per attached buffer, so it loads with the
+        -- first file; an idle no-file session never pays for it.
         event = { "BufReadPost", "BufNewFile" },
         dependencies = {
           "folke/snacks.nvim",
@@ -236,9 +233,10 @@ return {
       {
         "L3MON4D3/LuaSnip",
         build = "make install_jsregexp",
-        -- Own config (round-3 W1.2): the warmup's LuaSnip tick and the
-        -- pure-lazy InsertEnter chain both run it, keeping the terminal
-        -- blink.cmp tick free of snippet setup/registration cost.
+        -- LuaSnip and nvim-autopairs each carry their own config: the
+        -- warmup loads one plugin per tick and the pure-lazy InsertEnter
+        -- chain runs the same configs, so each tick pays only for its own
+        -- plugin and both load paths stay identical.
         config = function()
           require("plugins.luasnip")
         end,
@@ -247,9 +245,6 @@ return {
       {
         "windwp/nvim-autopairs",
         event = { "InsertEnter" },
-        -- Own config (round-3 W1.1): the warmup's nvim-autopairs tick and the
-        -- pure-lazy InsertEnter chain both run it, keeping the terminal
-        -- blink.cmp tick free of autopairs setup cost.
         config = function()
           require("plugins.autopairs")
         end,
@@ -357,7 +352,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
     -- Upstream's "does not support lazy-loading" is a support policy, not a
-    -- mechanism (round-4 V1.1): everything the plugin needs at load time --
+    -- mechanism: everything the plugin needs at load time --
     -- filetype registrations, query predicates, the setup() rtp prepend for
     -- parsers/queries -- is consumed no earlier than the first treesitter
     -- use in a file buffer, and this config starts highlighting exclusively
@@ -419,7 +414,7 @@ return {
       -- fallback explorer: when any startup argument is a directory, load
       -- neo-tree eagerly so its hijack_netrw_behavior = "open_default"
       -- takes the buffer. The check is argv+fs_stat only -- no requires on
-      -- the clean-start path. (Inherited from the retired oil spec.)
+      -- the clean-start path.
       init = function()
         for i = 0, vim.fn.argc() - 1 do
           local stat = vim.uv.fs_stat(vim.fn.argv(i) --[[@as string]])
@@ -513,8 +508,7 @@ return {
       -- (edgy's own defaults manage nothing), so the terminal filetype is
       -- the earliest moment edgy can have any effect. Snacks terminals
       -- default to position=float in lua/plugins/snacks.lua, which these
-      -- edge panels never match anyway; pty parity vs the VeryLazy trigger
-      -- was verified for an explicit position=bottom terminal.
+      -- edge panels never match anyway.
       ft = "snacks_terminal",
       ---@module 'edgy'
       ---@param opts Edgy.Config
@@ -536,8 +530,8 @@ return {
       end,
     },
     {
-      -- Retired as the default by lua/config/chrome.lua (round-3 W3.2) and
-      -- kept switchable: no trigger in chrome mode, VeryLazy in plugins mode.
+      -- lua/config/chrome.lua draws the statusline by default; this stays
+      -- switchable: no trigger in chrome mode, VeryLazy in plugins mode.
       "nvim-lualine/lualine.nvim",
       event = chrome_plugins and "VeryLazy" or nil,
       dependencies = {
@@ -665,7 +659,7 @@ return {
       end,
     },
     {
-      -- satellite.nvim: scrollbar with diagnostics/gitsigns/search marks
+      -- satellite.nvim: scrollbar with diagnostic and gitsigns marks
       -- (successor of the dormant petertriho/nvim-scrollbar)
       "lewis6991/satellite.nvim",
       -- scrollbar marks only make sense once a real buffer is displayed.
@@ -728,9 +722,8 @@ return {
     {
       "AndrewRadev/switch.vim",
       -- the only live entry is the manual `gs` -> `:Switch` map in
-      -- lua/config/keymap.lua; the command stub covers it. The globals moved
-      -- here from the (unrelated) convert-case spec: `init` runs at startup,
-      -- so g:switch_mapping is cleared before the plugin ever loads.
+      -- lua/config/keymap.lua; the command stub covers it. `init` runs at
+      -- startup, so g:switch_mapping is cleared before the plugin ever loads.
       cmd = { "Switch", "SwitchReverse" },
       init = function()
         vim.g.switch_mapping = ""
@@ -749,8 +742,7 @@ return {
       cmd = {
         "EasyAlign",
       },
-      -- Visual mode only, as the former lua/config/keymap.lua map was: normal
-      -- ga is text-case.nvim's prefix.
+      -- Visual mode only: normal ga is text-case.nvim's prefix.
       keys = {
         { "ga", "<Plug>(LiveEasyAlign)", mode = "v", silent = true, desc = "LiveEasyAlign" },
       },
@@ -833,7 +825,7 @@ return {
       {
         -- Loaded by :DiagramToggle (lua/config/command.lua), which runs
         -- `Lazy load diagram.nvim`; the plugin defines no such command, so a
-        -- lazy cmd stub under that name only raced the real one.
+        -- lazy cmd stub under that name would race the real one.
         "3rd/diagram.nvim",
         lazy = true,
         dependencies = {
@@ -855,7 +847,7 @@ return {
         "wallpants/github-preview.nvim",
         lazy = true,
         build = "bun i && git reset --hard",
-        -- setup() creates these commands; a markdown ft trigger only started
+        -- setup() creates these commands; a markdown ft trigger would start
         -- the plugin in every markdown buffer.
         cmd = {
           "GithubPreviewToggle",
@@ -1013,9 +1005,8 @@ return {
       -- (lazy re-emits the event after loading, so that yank is captured).
       event = "TextYankPost",
       -- Ring only: yanky's defaults also paint YankyYanked/YankyPut (linked
-      -- to Search, 500ms) over the region on every yank and put. This config
-      -- never had a yank flash -- setup() simply never ran until the ring fix
-      -- -- so the paint is off and the visible behavior stays as it was.
+      -- to Search, 500ms) over the region on every yank and put, so the
+      -- paint is off.
       opts = {
         highlight = {
           on_put = false,

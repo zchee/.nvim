@@ -7,10 +7,6 @@
 -- exactly the gopls deep/unimported candidates. Hence
 -- "prefer_rust_with_warning": if the source build ever breaks again, it must
 -- be loud, not a quiet completion downgrade.
--- The autopairs and LuaSnip configs that used to live here run from their own
--- specs' configs (plugins/autopairs.lua, plugins/luasnip.lua, round-3 W1) so
--- each warmup tick — and each lazy dependency load — pays only for its own
--- plugin. This file owns nothing but blink.setup().
 local blink = require("blink.cmp")
 
 -- Safety net for the warmup-abort race: plugins/luasnip.lua defers its

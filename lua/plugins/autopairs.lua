@@ -1,10 +1,4 @@
 -- Loaded from the nvim-autopairs spec's config in lua/plugins/init.lua.
---
--- Split out of plugins/blink.lua (round-3 plan W1.1) so the warmup's
--- nvim-autopairs tick pays for this setup instead of piling it onto the
--- terminal blink.cmp tick. Attached to the plugin's own spec config, the
--- pure-lazy InsertEnter dependency chain runs the exact same code, so both
--- load paths stay identical.
 local np = require("nvim-autopairs")
 local np_rule = require("nvim-autopairs.rule")
 local np_ts_conds = require("nvim-autopairs.ts-conds")

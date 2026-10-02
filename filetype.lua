@@ -13,6 +13,10 @@ local function helm_chart_template(path)
   end
 end
 
+-- README.<ext>: the extensions that decide the filetype; any other falls
+-- through to the remaining rules.
+local readme_filetypes = { md = "markdown", rst = "rst" }
+
 vim.filetype.add({
   extension = {
     s = require("filetypes.goasm").detect,
@@ -225,14 +229,7 @@ vim.filetype.add({
       { priority = -math.huge },
     },
     [".*README.(%a+)"] = function(_, _, ext)
-      return util.switch(ext)({
-        ["md"] = function()
-          return "markdown"
-        end,
-        ["rst"] = function()
-          return "rst"
-        end,
-      })
+      return readme_filetypes[ext]
     end,
   },
 })

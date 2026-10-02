@@ -7,12 +7,12 @@
 Shared helper module (`require("util")`) used throughout the config to resolve
 binary/prefix paths for macOS package managers (Homebrew, arm64 `/opt/local`),
 XDG directories with symlink resolution, and a couple of general-purpose Lua
-utilities (`switch`, `is_exists`, the global `dump`).
+utilities (`is_exists`, the global `dump`).
 
 ## Key Files
 | File | Description |
 |------|--------------|
-| `init.lua` | Main `M` module: path/prefix resolvers, `switch` helpers |
+| `init.lua` | Main `M` module: path/prefix resolvers, `getenv`, `is_exists`, the global `dump` |
 | `types.lua` | LuaCATS-only file declaring the `go_dir_custom_args` class annotation |
 
 ## For AI Agents

@@ -10,33 +10,6 @@ function _G.dump(...)
   vim.print(table.concat(inspected, "\n"))
 end
 
---- [Switch returns function instead of table](https://lua-users.org/wiki/SwitchStatement)
---- Usage:
---- ```lua
---- for case = 1,4 do
----   switch(case) {
----     [1] = function() print("one") end,
----     [2] = print,
----     default = function(x) print("default",x) end,
----   }
---- end
---- ```
----
----@param case any
----@return function
-function M.switch(case)
-  return function(codetbl)
-    local f = codetbl[case] or codetbl.default
-    if f then
-      if type(f) == "function" then
-        return f(case)
-      else
-        error("case " .. tostring(case) .. " not a function")
-      end
-    end
-  end
-end
-
 ---@param path string
 ---@return boolean
 function M.is_exists(path)

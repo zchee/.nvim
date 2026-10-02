@@ -214,7 +214,7 @@ hl("DiagnosticHint", { fg = "#a6dbff" })
 local hi_none = "None"
 
 -- nvim default
-ovr("WinBar", { fg = "None", bg = hi_none })
+ovr("WinBar", { fg = hi_none, bg = hi_none })
 ovr("diffRemoved", { fg = "red", bg = hi_none })
 ovr("LspReferenceText", { fg = hi_none, bg = hi_none, underline = true })
 
@@ -229,7 +229,7 @@ ovr("BlinkCmpSource", { link = "Normal" })
 ovr("BlinkCmpMenuBorder", { link = "Normal" })
 ovr("BlinkCmpMenuSelection", { link = "WildMenu" })
 -- The item-level groups blink draws inside the menu still resolve to Pmenu's
--- #202122 background. A bare bg = "None" collapses to an empty definition,
+-- #202122 background. A bare bg = hi_none collapses to an empty definition,
 -- which blink's default=true links then win over, so blank them with a link.
 ovr("BlinkCmpLabelDetail", { link = hi_none })
 ovr("BlinkCmpLabelDescription", { link = hi_none })
@@ -282,26 +282,26 @@ ovr("@module.go", { fg = "#769ae7", bg = hi_none, italic = true })
 --- Type decl
 ovr("@type.definition.go", { link = "Normal" })
 ovr("@field.go", { link = "Normal" })
-ovr("@property.go", { fg = "#ffbf6b", bg = "None" })
+ovr("@property.go", { fg = "#ffbf6b", bg = hi_none })
 ovr("@variable.member.go", { link = "Normal" })
 ovr("@function.call.builtin_type.go", { link = "Type" })
 ovr("@function.call.builtin_type.any.go", { link = "Keyword" })
-ovr("@function.method.call.go", { link = "None" })
+ovr("@function.method.call.go", { link = hi_none })
 
 --- Constant decl
-ovr("@constant.go", { fg = "#c7c8c8", bg = "None" })
+ovr("@constant.go", { fg = "#c7c8c8", bg = hi_none })
 
 --- Function decl
-ovr("@constructor.go", { fg = "#ffbf6b", bg = "None" })
-ovr("@method.go", { fg = "#82aaff", bg = "None" })
-ovr("@method.call.go", { fg = "#ffbf6b", bg = "None", bold = false })
-ovr("@parameter.go", { link = "None" })
+ovr("@constructor.go", { fg = "#ffbf6b", bg = hi_none })
+ovr("@method.go", { fg = "#82aaff", bg = hi_none })
+ovr("@method.call.go", { fg = "#ffbf6b", bg = hi_none, bold = false })
+ovr("@parameter.go", { link = hi_none })
 
 --- Variable
 ovr("@variable.parameter.go", { link = "Normal" })
-ovr("@variable.err.go", { fg = "#ff005f", bg = "None", bold = true, force = true })
+ovr("@variable.err.go", { fg = "#ff005f", bg = hi_none, bold = true })
 ovr("@variable.go", { blend = 10 })
-ovr("goImportedPkg", { fg = "#769ae7", bg = "None", italic = true, blend = 10 })
+ovr("goImportedPkg", { fg = "#769ae7", bg = hi_none, italic = true, blend = 10 })
 
 --- syntax/go.vim groups (moved from lua/config/nvim.lua, which set them once
 --- after the scheme, so any later :colorscheme left them empty)
@@ -313,14 +313,14 @@ ovr("goReceiverType", { link = "Keyword" })
 ovr("@format_verb.go", { link = "PreProc" })
 
 ovr("@lsp.type.function.go", { link = "Type" })
-ovr("@lsp.type.namespace.go", { fg = "#769ae7", bg = "None", italic = true })
+ovr("@lsp.type.namespace.go", { fg = "#769ae7", bg = hi_none, italic = true })
 ovr("@lsp.type.number.go", { link = "Number" })
-ovr("@lsp.type.parameter.go", { link = "None" })
-ovr("@lsp.type.property.go", { link = "None" })
+ovr("@lsp.type.parameter.go", { link = hi_none })
+ovr("@lsp.type.property.go", { link = hi_none })
 ovr("@lsp.type.string.go", { fg = "#f2f3f3", bg = hi_none, blend = 50 })
 ovr("@lsp.type.type.go", { link = "Normal" })
 ovr("@lsp.type.typeParameter.go", { link = "Typedef" })
-ovr("@lsp.type.variable.go", { link = "None" })
+ovr("@lsp.type.variable.go", { link = hi_none })
 ovr("@lsp.typemod.type.definition.go", { link = "Normal" })
 
 ovr("@keyword.directive.goasm", { link = "Macro" })
@@ -339,17 +339,17 @@ ovr("@namespace.builtin.lua", { link = "@type.builtin" })
 ovr("@string.regexp.lua", { link = "String" })
 
 -- TypeScript
-ovr("@keyword.modifier.typescript", { fg = "#c792ea", bg = "None", bold = true })
+ovr("@keyword.modifier.typescript", { fg = "#c792ea", bg = hi_none, bold = true })
 ovr("@variable.member.typescript", { link = "NonText" })
 
 -- Python
-ovr("@comment.python", { fg = "#9ba3a8", bg = "None", bold = false, italic = true })
-ovr("@constant.python", { fg = "#f2f3f3", bg = "None", blend = 50 })
-ovr("@lsp.type.namespace.python", { fg = "#769ae7", bg = "None", italic = true })
-ovr("@lsp.type.variable.python", { link = "None" })
+ovr("@comment.python", { fg = "#9ba3a8", bg = hi_none, bold = false, italic = true })
+ovr("@constant.python", { fg = "#f2f3f3", bg = hi_none, blend = 50 })
+ovr("@lsp.type.namespace.python", { fg = "#769ae7", bg = hi_none, italic = true })
+ovr("@lsp.type.variable.python", { link = hi_none })
 ovr("@spell.python", { link = "Commment" })
 ovr("@string.documentation.python", { link = "String" })
-ovr("@variable.python", { link = "None" })
+ovr("@variable.python", { link = hi_none })
 ovr("pythonDelimiter", { link = "Special" })
 ovr("pythonNONE", { link = "pythonFunction" })
 ovr("pythonSelf", { link = "pythonOperator" })
@@ -363,12 +363,12 @@ ovr("@spell.graphql", { link = "Comment" })
 ovr("@attribute.graphql", { link = "Macro" })
 
 -- Diff
-ovr("@diff.plus", { fg = "#bae57d", bg = "None" })
-ovr("@diff.minus", { fg = "#ff5370", bg = "None" })
+ovr("@diff.plus", { fg = "#bae57d", bg = hi_none })
+ovr("@diff.minus", { fg = "#ff5370", bg = hi_none })
 
 -- C
 ovr("@label.c", { link = "@lsp.type.label.c" })
-ovr("@lsp.type.label.c", { fg = "#7EE787", bg = "None" })
+ovr("@lsp.type.label.c", { fg = "#7EE787", bg = hi_none })
 
 -- CPP
 ovr("doxygenBrief", { fg = "#81a2be", bg = "NONE" })
@@ -376,8 +376,8 @@ ovr("doxygenSpecialMultilineDesc", { fg = "#81a2be", bg = "NONE" })
 ovr("doxygenSpecialOnelineDesc", { fg = "#81a2be", bg = "NONE" })
 
 --- third-party
-ovr("LspSignatureActiveParameter", { fg = "None", bg = "#343941", blend = 10 })
-ovr("LspInlayHint", { fg = "#787f86", bg = "None", bold = false, italic = true, blend = 50 })
+ovr("LspSignatureActiveParameter", { fg = hi_none, bg = "#343941", blend = 10 })
+ovr("LspInlayHint", { fg = "#787f86", bg = hi_none, bold = false, italic = true, blend = 50 })
 
 --- VimIlluminate:
 ovr("illuminatedWord", { fg = "NONE", bg = "NONE", underline = true })

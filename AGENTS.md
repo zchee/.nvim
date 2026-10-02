@@ -22,6 +22,7 @@ through native `vim.lsp.config()` / `vim.lsp.enable()` — not
 | `README.md` | One-line repo description |
 | `.stylua.toml` | StyLua formatter profile (2-space indent) |
 | `.gitignore` / `.gitleaksignore` | VCS and secret-scan exclusions |
+| `.github/workflows/ci.yaml` | GitHub Actions for pushes and pull requests to `main`: `stylua --check .`, and every `tests/*_spec.lua` on Neovim nightly with the plugins named in its `SPEC_PLUGINS` cloned into `stdpath("data")/lazy` |
 
 ## Subdirectories
 | Directory | Purpose |

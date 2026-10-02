@@ -1,0 +1,115 @@
+local lsp_cmd = require("lsp.cmd")
+local util = require("util")
+
+-- local function add_ruby_deps_command(client, bufnr)
+--   vim.api.nvim_buf_create_user_command(bufnr, "ShowRubyDeps", function(opts)
+--     local params = vim.lsp.util.make_text_document_params()
+--     local showAll = opts.args == "all"
+--
+--     client.request("rubyLsp/workspace/dependencies", params, function(error, result)
+--       if error then
+--         print("Error showing deps: " .. error)
+--         return
+--       end
+--
+--       local qf_list = {}
+--       for _, item in ipairs(result) do
+--         if showAll or item.dependency then
+--           table.insert(qf_list, {
+--             text = string.format("%s (%s) - %s", item.name, item.version, item.dependency),
+--             filename = item.path,
+--           })
+--         end
+--       end
+--
+--       vim.fn.setqflist(qf_list)
+--       vim.cmd("copen")
+--     end, bufnr)
+--   end, {
+--     nargs = "?",
+--     complete = function()
+--       return { "all" }
+--     end,
+--   })
+-- end
+
+-- --- @class vim.lsp.Config : vim.lsp.ClientConfig
+-- return {
+--   cmd = {
+--     vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/vendor/portable-ruby/current/bin/ruby-lsp"),
+--     "--use-launcher",
+--   },
+--   filetypes = { "ruby", "eruby" },
+--   root_markers = { ".git", "Gemfile" },
+--   init_options = {
+--     enabledFeatures = {
+--       codeActions = true,
+--       codeLens = true,
+--       completion = true,
+--       definition = true,
+--       diagnostics = true,
+--       documentHighlights = true,
+--       documentLink = true,
+--       documentSymbols = true,
+--       foldingRanges = true,
+--       formatting = true,
+--       hover = true,
+--       inlayHint = true,
+--       onTypeFormatting = true,
+--       selectionRanges = true,
+--       semanticHighlighting = true,
+--       signatureHelp = true,
+--       typeHierarchy = true,
+--       workspaceSymbol = true
+--     },
+--     featuresConfiguration = {
+--       inlayHint = {
+--         enableAll = true,
+--       },
+--     },
+--     -- indexing = {
+--     --   includedPatterns = { util.homebrew_prefix() .. "Library/Homebrew/**" },
+--     --   -- excludedGems = {"gem1", "gem2", "etc."},
+--     --   -- excludedMagicComments = {"compiled:true"},
+--     -- },
+--     formatter = "auto",
+--     experimentalFeaturesEnabled = true,
+--     -- bundleGemfile = vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/Gemfile"),
+--     -- rubyExecutablePath = vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/vendor/portable-ruby/current/bin/ruby"),
+--   },
+--   on_attach = function(client, buffer)
+--     add_ruby_deps_command(client, buffer)
+--   end,
+-- }
+
+---@type vim.lsp.Config
+return {
+  cmd = lsp_cmd.lazy(function()
+    return { util.homebrew_binary("ruby-lsp", "ruby-lsp"), "--beta", "--use-launcher" }
+  end),
+  filetypes = { "ruby" },
+  root_markers = { ".git" },
+  -- ruby-lsp reads its options from initializationOptions alone (GlobalState
+  -- apply_options); it never requests workspace/configuration, so there is
+  -- no settings table to keep in step with this one.
+  init_options = {
+    rubyVersionManager = {
+      identifier = "rbenv",
+    },
+    formatter = "rubyfmt",
+    bundleGemfile = vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/Gemfile"),
+    indexing = {
+      includedPatterns = {
+        vim.fs.joinpath(util.homebrew_prefix(), "Library/Homebrew/**"),
+      },
+      -- excludedPatterns = { "**/test/**/*.rb" },
+      -- excludedGems = { "rubocop", "rubocop-performance" },
+      -- excludedMagicComments = { "compiled:true" },
+    },
+    experimentalFeaturesEnabled = true,
+  },
+  -- reuse_client = function(client, config)
+  --   config.cmd_cwd = config.root_dir
+  --   return client.config.cmd_cwd == config.cmd_cwd
+  -- end,
+}

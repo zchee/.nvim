@@ -1,68 +1,62 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-07-31 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
 
 # ftdetect
 
 ## Purpose
-Filetype detection scripts Neovim autoloads on startup (runtimepath
-`ftdetect/*` convention). Used for cases the simpler declarative
-`vim.filetype.add()` table in root `filetype.lua` cannot express cleanly —
-buffer content sniffing, multi-pattern filename matching, or setting
-buffer-local options alongside the filetype. Mixes modern Lua
-(`nvim_create_autocmd`) and legacy Vimscript `autocmd`/`au` one-liners.
+Filetype detection scripts Neovim sources when filetype detection starts
+(runtimepath `ftdetect/*` convention). Only detection that has to read a
+buffer's content lives here; every name, extension or path rule is a
+`vim.filetype.add()` entry in root `filetype.lua`, where
+`vim.filetype.match()` sees it too (an autocmd here is invisible to it).
+Both scripts are legacy Vimscript `autocmd`s.
 
 ## Key Files
 | File | Description |
 |------|-------------|
-| `buf.lua` | `buf.gen`/`buf.lock`/`buf.mod`/`buf.work` (Buf CLI config files) → `yaml` |
-| `goasm.lua` | Registers `vim.filetype.add({ extension = { s = ... } })`, delegating `.s` files to `require("filetypes.goasm").detect` (see `lua/filetypes/AGENTS.md`) |
-| `gotestlog.vim` | `.log` files whose first line matches `^=== .+` → `gotestlog` |
-| `gotmpl.vim` | Any new/read buffer containing `{{...}}` → `go.gotmpl` (content sniff, not extension-based) |
-| `ispc.vim` | `*.ispc` → `ispc` |
-| `jinja.vim` | `.html`/`.htm` scanned (first 50 lines) for Jinja/Django tag syntax → `jinja.html`; `.jinja2`/`.j2`/`.jinja`/`.nunjucks`/`.nunjs`/`.njk` → `jinja` |
-| `kitty.lua` | Appends `#`/`#:` comment leaders; `kitty.conf` / `*/kitty/*.conf` → `kitty`; `*/kitty/*.session` → `kitty-session` |
-| `npmrc.lua` | `npmrc` / `.npmrc` → `npmrc` |
-| `tigrc.lua` | `.tigrc` / `tigrc` → `tigrc` |
+| `gotestlog.vim` | `*.log` whose first line matches `^=== .+` (`go test -v` output) -> `gotestlog` |
+| `jinja.vim` | `.html`/`.htm` scanned (first 50 lines) for Jinja/Django tag syntax -> `jinja.html`; `.jinja2`/`.j2`/`.jinja`/`.nunjucks`/`.nunjs`/`.njk` -> `jinja` |
+
+Former residents now handled by root `filetype.lua` (or the runtime):
+`goasm.lua` (`.s` delegation to `require("filetypes.goasm").detect`),
+`gotmpl.vim` (the old compound `go.gotmpl` content sniff is now a bounded
+20-line `gotmpl` fallback pattern), `kitty.lua` (kitty rules in
+`filetype.lua`; `comments` in `after/ftplugin/kitty.lua`, `commentstring`
+from `$VIMRUNTIME/ftplugin/kitty.vim`),
+`tigrc.lua` and `ispc.vim` (plain name/extension entries), `buf.lua` (it
+named `buf.gen`/`buf.mod`/`buf.work`, which Buf never writes; the runtime
+maps `buf.lock` to yaml), and `npmrc.lua` (it forced a syntax-less `npmrc`
+filetype over the runtime's `dosini`).
 
 ## For AI Agents
 
 ### Working In This Directory
-- Prefer root `filetype.lua`'s `vim.filetype.add()` tables (`extension` /
-  `filename` / `pattern` keys) for simple string-to-filetype mappings; only
-  add a file here when detection needs buffer content inspection (see
-  `gotestlog.vim`, `gotmpl.vim`, `jinja.vim`) or side effects beyond setting
-  `filetype` (see `kitty.lua`'s `comments` option).
-- New scripts may be Lua (`nvim_create_autocmd({"BufNewFile","BufReadPost"|"BufRead"}, ...)`)
-  or legacy Vimscript `autocmd`/`au BufRead,BufNewFile` — both load
-  automatically from this directory; match the style of the nearest similar
-  file rather than mixing conventions within one file.
-- `gotmpl.vim` sets filetype `go.gotmpl` (compound, content-triggered on any
-  buffer), while extension-based routing elsewhere (`tmpl`/`tpl` in root
-  `filetype.lua`, `ftplugin/gotmpl.lua`, `queries/gotmpl/`) targets plain
-  `gotmpl`. These are two different filetypes by Neovim's rules (a
-  compound filetype `go.gotmpl` is not the same as `gotmpl`) — verify which
-  one a change actually needs before assuming they are interchangeable.
+- Add a file here only when detection must read buffer content beyond what
+  a `vim.filetype.add()` pattern function expresses (see `gotestlog.vim`,
+  `jinja.vim`). Name, extension and path rules go in root `filetype.lua`,
+  and `tests/filetype_rules_spec.lua` gets a case for each.
+- An autocmd here runs after `vim.filetype.match()` has set a filetype and
+  overwrites it unconditionally; prefer `setfiletype` (as `gotestlog.vim`
+  does), which only sets a filetype when none is set yet.
+- Go templates use the single filetype `gotmpl` (`filetype.lua` routing and
+  its bounded content fallback, `ftplugin/gotmpl.lua`). The old compound
+  `go.gotmpl` and the `gotexttmpl`/`gohtmltmpl` filetypes are gone -- do
+  not reintroduce them.
 
 ### Testing Requirements
-No automated specs cover this directory. Verify manually per file:
-`nvim --headless -u NONE -c 'set rtp+=.' -c 'edit <sample-file>' -c 'echo &filetype' -c 'qa'`
-against a real sample of the target file (or a scratch buffer with matching
-content, for the content-sniffing scripts).
+`nvim --headless -u NONE -i NONE -l tests/filetype_rules_spec.lua` opens a
+real file per case with this directory's scripts sourced (includes the
+`gotestlog` case).
 
 ### Common Patterns
-- Lua scripts guard with `nvim_create_autocmd({"BufNewFile","BufReadPost"|"BufRead"}, { pattern = {...}, callback = function() vim.bo.filetype = "..." end })`.
-- Legacy Vimscript scripts use a single `au BufRead,BufNewFile <pattern> ...`
-  line, occasionally delegating to a `s:`-scoped function for multi-line
-  content checks (`gotestlog.vim`, `jinja.vim`).
+- A single `au BufRead,BufNewFile <pattern> ...` line, delegating to an
+  `s:`-scoped function for multi-line content checks.
 
 ## Dependencies
 
 ### Internal
-- `goasm.lua` → `lua/filetypes/goasm.lua` (`M.detect(path, bufnr)`)
-- Filetypes set here are consumed by matching `ftplugin/*.lua` and
-  `syntax/*.vim`/`indent/*.vim` files (e.g. `kitty` → `ftplugin/kitty.lua` +
-  `syntax/kitty.vim`; `jinja` → `indent/jinja.vim` + `syntax/jinja.vim`;
-  `tigrc` → `ftplugin/tigrc.lua` + `syntax/tigrc.vim`).
+- `jinja` -> `indent/jinja.vim` + `syntax/jinja.vim`; `gotestlog` ->
+  `syntax/gotestlog.vim`.
 
 ### External
 None.

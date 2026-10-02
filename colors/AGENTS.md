@@ -1,54 +1,66 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-07-31 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
 
 # colors
 
 ## Purpose
-Holds a single colorscheme, `equinusocio_material.vim`, a dark Material-style
-theme adapted from `yunlingz/equinusocio-material.vim`. It defines a palette
-table (`s:p.material.*`) plus attribute constants, then applies every
-highlight group through a local `s:hl(group, fg, bg, attrs, blend)` helper
-that wraps `execute "highlight! ..."`.
+Holds a single colorscheme, `equinusocio_material.lua`, a dark Material-style
+theme adapted from `yunlingz/equinusocio-material.vim`. It is a Lua port of
+the former `equinusocio_material.vim` with the former
+`lua/config/highlight.lua` overrides folded in after the base paint, so a
+runtime `:colorscheme equinusocio_material` repaints everything in one pass.
+`lua/config/nvim.lua` applies it at startup.
 
 ## Key Files
 | File | Description |
 |------|-------------|
-| `equinusocio_material.vim` | Dark Material colorscheme: palette table, `s:hl()` helper, highlight group definitions (editor groups, syntax groups, `nvim-lspconfig`/Diagnostic groups) |
+| `equinusocio_material.lua` | Dark Material colorscheme: palette locals, `hl()` base paint (editor, syntax, nvim-lspconfig/Diagnostic groups), then `ovr()` overrides (blink.cmp menu, gitsigns, Go/Rust/Lua/TypeScript/Python/YAML/GraphQL/Diff/C/C++ Tree-sitter and LSP groups, the `syntax/go.vim` `go*` groups, third-party plugin groups) |
 
 ## For AI Agents
 
 ### Working In This Directory
-- Standard Vim colorscheme skeleton: guards on `g:colors_name`, `highlight
-  clear`, `syntax reset`, sets `g:colors_name = "equinusocio_material"` and
-  `background=dark` before defining any groups.
-- All colors flow through the `s:p.material.*` dict (e.g. `s:p.material.blue`,
-  `s:p.material.cursor_guide`) — add new named colors there rather than
-  hard-coding hex values in `s:hl()` calls.
-- Every highlight group is set via `call s:hl("GroupName", fg, bg, attrs,
-  blend)`, one call per group, grouped by area with `" ----` comment
-  dividers (editor UI, diagnostics, syntax, `nvim-lspconfig`/Diagnostic).
-  Follow this call shape for new groups instead of raw `highlight` commands.
-- `s:hl()`'s list-typed `attrs` branch references `a:attr` (undefined —
-  should be `a:attrs`); no existing call site passes a list, so this path is
-  dead/broken. Combined attributes are currently passed as a comma-joined
-  string instead (e.g. `s:p.bold.",".s:p.underline` for `Error`).
+- The file starts like any colorscheme: `highlight clear`, `syntax reset`
+  when syntax is on, `background=dark`, `vim.g.colors_name`.
+- Colors come from the palette locals at the top (`foreground`,
+  `background`, `comment`, `red`, `blue`, `cursor_guide`, ...); add a named
+  local there rather than repeating a hex value.
+- Two helpers, two semantics:
+  - `hl(name, val)` is the base paint. It mirrors the VimL `s:hl()` shape:
+    every group gets an explicit `blend` (0 unless given) and cleared cterm
+    attributes.
+  - `ovr(name, val)` is an override applied after the base paint. It sets
+    `force = true` and leaves blend and cterm as `nvim_set_hl` produces
+    them, as the former `config.highlight` repaint did.
+  Put a new editor/syntax group in the base section with `hl()`; put a
+  plugin- or language-specific group in the overrides section with `ovr()`,
+  under its heading (`-- plugins`, `-- Go`, `--- third-party`, ...).
+- Plugin highlight groups belong here, not in the plugin's config module:
+  a group set from `lua/plugins/<name>.lua` is lost on the next
+  `:colorscheme` (gitsigns' groups moved here for that reason). Plugins that
+  define their groups with `default = true` never override these.
 
 ### Testing Requirements
-`nvim --headless -u NONE -c 'set rtp+=.' -c 'colorscheme equinusocio_material' -c 'qa'`
-should exit cleanly with no errors on stderr; that is the only practical
-smoke test for a colorscheme file.
+- `tests/perf/hl_dump_spec.lua` compares every highlight group after
+  startup with `tests/perf/fixtures/hl_baseline.txt`. After an intentional
+  change regenerate the fixture with
+  `nvim --headless -l script/hl-dump.lua tests/perf/fixtures/hl_baseline.txt`
+  and check that the diff contains only the groups you meant to change.
+- Smoke test:
+  `nvim --headless -u NONE -i NONE -c 'set rtp+=.' -c 'colorscheme equinusocio_material' -c 'qa'`
+  must exit cleanly with nothing on stderr.
 
 ### Common Patterns
-- Palette-first, then apply: define colors in `s:p`, then a flat sequence of
-  `s:hl()` calls — no per-group conditionals or filetype checks.
+- Palette first, then a flat sequence of `hl()` calls, then a flat sequence
+  of `ovr()` calls grouped by `--` headings — no per-group conditionals or
+  filetype checks.
 
 ## Dependencies
 
 ### Internal
-None — self-contained; activated via `:colorscheme equinusocio_material` from
-elsewhere in the config (e.g. `lua/config/`).
+Applied by `lua/config/nvim.lua`; `lua/lualine/themes/equinusocio_material.lua`
+and `lua/config/chrome.lua` use the same palette values for the statusline.
 
 ### External
-None; pure Vimscript, no plugin dependency.
+None; plain `vim.api.nvim_set_hl`.
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->

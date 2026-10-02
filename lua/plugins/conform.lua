@@ -130,8 +130,20 @@ local function taplo_invocation(dirname)
   -- No project config: point at the personal one explicitly, since taplo would
   -- otherwise find nothing and fall back to its defaults (column_width = 80,
   -- array_auto_expand = true). Its globs are absolute for the same CWD reason.
-  local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
-  return nil, { "--config", vim.fs.joinpath(config_home, "taplo", "taplo.toml") }
+  return nil, { "--config", vim.fs.joinpath(util.xdg_config_home(), "taplo", "taplo.toml") }
+end
+
+---Whether `bufnr` holds nothing but whitespace. Reads line by line and stops
+---at the first non-blank one, so a real document costs a single line read.
+---@param bufnr integer
+---@return boolean
+local function is_blank(bufnr)
+  for row = 0, vim.api.nvim_buf_line_count(bufnr) - 1 do
+    if vim.api.nvim_buf_get_lines(bufnr, row, row + 1, true)[1]:find("%S") then
+      return false
+    end
+  end
+  return true
 end
 
 -- oxfmt owns filetype json5 because vscode-json-language-server cannot: it has
@@ -163,8 +175,7 @@ local function oxfmt_config(dirname)
   if project then
     return project
   end
-  local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
-  return vim.fs.joinpath(config_home, "oxfmt", ".oxfmtrc.jsonc")
+  return vim.fs.joinpath(util.xdg_config_home(), "oxfmt", ".oxfmtrc.jsonc")
 end
 
 ---oxfmt picks its parser from the name handed to --stdin-filepath and nothing
@@ -192,6 +203,11 @@ return {
     -- LSP when no formatter here is available". Drop this and an oxfmt that
     -- fails to resolve silently restores the mangling it was added to stop.
     json5 = { "oxfmt", lsp_format = "never" },
+    -- jsonls would format hujson without damage, but to a different layout
+    -- (no value alignment, one element per line, spaces unless noexpandtab),
+    -- so an unavailable hujsonfmt falling through to it would rewrite the whole
+    -- file on the next save. Formatting nothing is the smaller surprise.
+    hujson = { "hujsonfmt", lsp_format = "never" },
     lua = { "stylua", lsp_format = "never" },
     python = function(bufnr)
       if require("conform").get_formatter_info("ruff_format", bufnr).available then
@@ -220,26 +236,24 @@ return {
     -- Per-filetype toggle: set an entry to true to skip write-time
     -- formatting for that filetype and keep only the manual <LocalLeader>f path
     -- (e.g. when goimports-rereviser's import rewriting or stylua feel too
-    -- intrusive per write). Everything currently formats on save.
+    -- intrusive per write). A filetype left out formats on save.
     local manual_only = {
       objc = true,
-      go = false,
-      lua = false,
     }
     if manual_only[vim.bo[bufnr].filetype] then
       return
     end
     -- conform fills in a formatters_by_ft entry's own lsp_format only for the
     -- keys the caller leaves nil, and this function supplies one -- so a
-    -- pinned "never" is silently discarded unless it is read back here.
-    -- Only "never" is honoured, because it can only ever stop the server from
-    -- formatting: json5 needs exactly that (jsonls has no JSON5 mode and
-    -- rewrites the file as strict JSON, injecting a space inside
-    -- 'https://...'), and every other filetype keeps the fallback it has now.
+    -- pinned value is silently discarded unless it is read back here. json5
+    -- and hujson pin "never" (jsonls has no JSON5 mode and rewrites the file
+    -- as strict JSON, injecting a space inside 'https://...'; see the hujson
+    -- entry), go and goasm pin "first" (gopls formats before the CLI chain);
+    -- filetypes without a pin keep the fallback.
     local ft_opts = require("conform").formatters_by_ft[vim.bo[bufnr].filetype]
     local pinned = type(ft_opts) == "table" and ft_opts.lsp_format or nil
     return {
-      lsp_format = pinned == "never" and "never" or "fallback",
+      lsp_format = pinned or "fallback",
       timeout_ms = format_timeout_ms[vim.bo[bufnr].filetype] or 500,
     }
   end,
@@ -310,6 +324,22 @@ return {
       end,
       stdin = false,
     },
+    hujsonfmt = {
+      meta = {
+        url = "https://github.com/tailscale/hujson",
+        description = "Formatter for HuJSON (JWCC), JSON with commas and comments.",
+      },
+      -- Given no path it reads stdin and writes stdout, and exits 1 with the
+      -- buffer untouched on a parse error. It exits 1 as well on input holding
+      -- no value at all ("unexpected EOF"), so the first :w of a new, empty
+      -- file raised "Formatter failed"; a blank buffer goes through cat
+      -- unchanged instead. A `condition` would not do: conform then reports
+      -- "Formatters unavailable for hujson file", which reads as a missing
+      -- binary.
+      command = function(_, ctx)
+        return is_blank(ctx.buf) and "cat" or util.go_path("bin", "hujsonfmt")
+      end,
+    },
     oxfmt = {
       command = util.bun_prefix("oxfmt"),
       -- conform's builtin passes only `--stdin-filepath $FILENAME`; both args
@@ -324,6 +354,21 @@ return {
           oxfmt_stdin_path(ctx.filename),
         }
       end,
+    },
+    shfmt = {
+      command = util.homebrew_binary("shfmt", "shfmt"),
+      args = {
+        "--filename",
+        "$FILENAME",
+        "--language-dialect",
+        "bash",
+        "--indent",
+        "2",
+        "--binary-next-line",
+        "--case-indent",
+        "--space-redirects",
+        "--keep-padding",
+      },
     },
     stylua = {
       command = util.homebrew_binary("stylua", "stylua"),

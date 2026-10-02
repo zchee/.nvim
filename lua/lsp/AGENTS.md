@@ -1,174 +1,185 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-07-31 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
 
 # lua/lsp
 
 ## Purpose
-Central LSP wiring for the config. `init.lua` uses Neovim's native
-`vim.lsp.config()` / `vim.lsp.enable()` API exclusively — there is no
-`lspconfig.setup()` call anywhere in this directory. `nvim-lspconfig` is
-only pulled in for its `lspconfig.configs` registry (via `register_lsp()`,
-for servers not shipped in lspconfig, e.g. `tsgo`) and for stray
-`lspconfig.util`/`require("lspconfig")` references left in a few
-now-unused server files. Every other file in this directory is a plain Lua
-module that returns a `vim.lsp.Config` table (`cmd`, `filetypes`,
-`root_markers`/`root_dir`, `settings`, `init_options`, `on_attach`, ...);
-`init.lua` `require()`s the ones it wants active into a `servers` table and
-calls `vim.lsp.config(name, cfg)` + `vim.lsp.enable(name, true)` in a loop.
-Not every `<server>.lua` file here is wired in — several are kept as
-disabled/experimental references (see the "NOT registered" notes in the
-table below).
+Central LSP wiring for the config. It uses Neovim's native
+`vim.lsp.config()` / `vim.lsp.enable()` API exclusively — `nvim-lspconfig`
+is uninstalled. Per-server configs do not live in this directory: each
+server is a plain `vim.lsp.Config` table in the repo-root `lsp/` runtime
+directory (`lsp/<server>.lua`). This directory owns everything
+cross-cutting: diagnostics UI, the shared capabilities, the shared
+`on_attach`, the `vim.lsp.enable()` list, and the global LSP keymaps. The
+stack itself loads lazily: the `onsails/lspkind-nvim` spec in
+`lua/plugins/init.lua` (`BufReadPre`/`BufNewFile`) runs `require("lsp")`,
+since lspkind is the one plugin `init.lua` requires at load time.
+
+The server configs are **not** lazy. `vim.lsp.enable()` loads every named
+`lsp/<name>.lua` to validate it (runtime `lsp.lua`, `_ = lsp.config[nm]`),
+and the first `FileType` event of any filetype loads them all again to cache
+the resolved configs. Module-scope code in a server file therefore runs in
+every session, whether or not that server ever starts.
 
 ## Key Files
 | File | Description |
 |------|-------------|
-| `init.lua` | Orchestrates LSP: semantic-tokens crash guard, UI setup, capabilities/on_attach, servers table, keymaps |
-| `asm_lsp.lua` | asm-lsp via util.homebrew_binary("asm-lsp"); ft asm/vmasm/goasm; root .asm-lsp.toml/.git. Registered. |
-| `basedpyright.lua` | basedpyright-langserver (basedpyright-head) via util.homebrew_binary; typeCheckingMode=off. Registered. |
-| `bashls.lua` | bash-language-server via util.homebrew_binary; hardcoded /opt/local shellcheck path + shfmt. Registered. |
-| `buf_ls.lua` | buf lsp serve via util.homebrew_binary("buf"); proto ft. NOT registered (commented in init.lua). |
-| `clangd.lua` | cmd hardcoded /opt/local/llvm/clangd/bin/clangd (no util helper); heavy flags, utf-16, -j=16. Registered. |
-| `cmake-language-server.lua` | cmake-language-server via util.homebrew_binary. NOT registered; neocmake.lua is the active cmake server. |
-| `denols.lua` | deno lsp via util.homebrew_binary("deno"). NOT registered; ts/js handled by vtsls instead. |
-| `docker_language_server.lua` | MS docker-language-server via util.homebrew_binary; newer file, but NOT registered; dockerls.lua is active. |
-| `dockerls.lua` | dockerfile-language-server-nodejs via util.homebrew_binary(dockerfile-language-server). Registered. |
-| `emmylua_ls.lua` | emmylua_ls via util.homebrew_binary; sets EMMYLUALS_CONFIG env. NOT registered, so that line never runs. |
-| `emmylua_ls.json` | Raw EmmyLua analyzer JSON config, read via $EMMYLUALS_CONFIG; not a vim.lsp.Config table. |
-| `golangci_lint_ls.lua` | golangci-lint-langserver via util.go_path + mason-core.path; autostart=false. NOT registered. |
-| `gopls.lua` | gopls via util.go_path; unix-socket -remote serve; custom root_dir; GOEXPERIMENT for go/src. Registered. |
-| `grammarly_lsp.lua` | No cmd field; markdown ft; hardcoded personal clientId. NOT registered. |
-| `graphql.lua` | graphql-lsp via mason-core.path (not util helper). NOT registered. |
-| `helm_ls.lua` | cmd = vim.fn.exepath("helm_ls") (bare, deviates from util convention); autostart=false. Registered. |
-| `jsonls.lua` | vscode-json-language-server via util.bun_prefix; schemastore.nvim + trustedDomains allowlist; a `textDocument/diagnostic` handler drops the JSON-grammar diagnostics on `json5` buffers (the server relaxes its validation only for the literal languageId `jsonc`, so json5 is validated as strict JSON) while keeping the schema ones; `<C-]>` on a `$ref` is bound buffer-locally on `LspAttach` and resolves the JSON Pointer through `textDocument/documentLink` (the server exposes no `definitionProvider` at all), parsing the VS Code `#line,column` target fragment back into a position and falling back to the global definition picker anywhere else. Registered. |
-| `lua_ls.lua` | lua-language-server via util.homebrew_binary; workspace.library via util.src_path(LLS-Addons). Registered. |
-| `markdown_oxide.lua` | markdown-oxide via util.homebrew_binary; markdown ft only. Carries no `settings` (the server never asks workspace/configuration -- its knobs live in `~/.config/moxide/settings.toml` or a per-vault `.moxide.toml`), no `on_attach` and no `root_markers`, so nvim-lspconfig's own lsp/markdown_oxide.lua keeps supplying the `.git`/`.obsidian`/`.moxide.toml` markers and the :LspToday/:LspTomorrow/:LspYesterday commands. Chosen over marksman because it indexes git-ignored files, which is what the agent memory trees under a git-ignored `claude/projects/` need. Registered. |
-| `metals.lua` | metals via util.homebrew_binary; hardcodes Java 8 temurin javaHome, sbt/gradle/maven. NOT registered. |
-| `neocmake.lua` | neocmakelsp via util.homebrew_binary; cmake ft; typo `rotoot_markers` vs `root_markers`. Registered. |
-| `pls.lua` | proto lsp "pls" at ~/go/bin/pls, hand-built path. NOT registered; protols.lua is active instead. |
-| `protols.lua` | protols-head via util.homebrew_binary; --include-paths via util.src_path(googleapis/...). Registered. |
-| `pyright.lua` | pyright-langserver via util.homebrew_binary. NOT registered; basedpyright.lua is active instead. |
-| `ruby_lsp.lua` | ruby-lsp via util.homebrew_binary, vim.lsp.rpc.start + custom cwd dispatcher; rbenv manager. Registered. |
-| `ruff_lsp.lua` | No cmd field; disables hover in favor of Pyright; autostart=false in init_options. NOT registered. |
-| `rust_analyzer.lua` | Execs `rustup run <toolchain> rust-analyzer`; NOT registered (rustaceanvim owns it); has a test spec. |
-| `sourcekit.lua` | Bare `sourcekit-lsp` on PATH (no util helper); swift ft; repeats --experimental-feature. Registered. |
-| `terraformls.lua` | terraform-ls via util.homebrew_binary(terraform-ls-head); -req-concurrency=16. Registered. |
-| `tilt_ls.lua` | tilt lsp start via util.homebrew_binary(tilt-head). NOT registered. |
-| `tombi.lua` | tombi lsp via util.homebrew_binary; sole TOML server (taplo retired); diagnostics on, formatting via conform. Registered. |
-| `ts_ls.lua` | typescript-language-server via util.homebrew_binary. NOT registered. |
-| `tsgo.lua` | cmd hardcodes personal go/src/microsoft/typescript-go path. Dead; init.lua registers tsgo inline instead. |
-| `vtsls.lua` | Bare `vtsls --stdio` on PATH (no util helper); move-to-file action, reference code lenses. Registered. |
-| `xor.lua` | cmd runs cargo run against a hardcoded personal xor-lsp checkout; hardcoded root_dir. NOT registered; WIP. |
-| `yamlls.lua` | yaml-language-server via util.bun_prefix; large per-repo schema map (gjc etc); helm dirs stopped. Registered. |
-| `zizmor.lua` | zizmor --lsp via util.homebrew_binary; root_dir scoped to GH/Forgejo/Gitea workflow dirs. NOT registered. |
-| `zls.lua` | zls at $ZVM_PATH/bin/zls (not a util helper); zig/zon ft. Registered. |
-
-## Subdirectories
-| Directory | Purpose |
-|-----------|---------|
-| `protocol/` | LSP 3.17 constants module (`init.lua`, `M.constants`: DiagnosticSeverity, MessageType, CompletionItemKind, MarkupKind, CodeActionKind, CodeActionTriggerKind, InlineCompletionTriggerKind, FileChangeType, ...), required as `require("lsp.protocol")` in `init.lua` and used to build `capabilities.textDocument.completion.completionItem.documentationFormat` (documented here — no separate AGENTS.md) |
+| `init.lua` | Semantic-tokens `reset_timer` crash guard, diagnostics config, `default_capabilities_config()` (Neovim's capabilities + the blink snapshot + overrides), the `tsgo` registration (configured, not enabled), the no-op formatting-edit filter for every client, `vim.lsp.config("*")`, the `vim.lsp.enable()` list with the deliberately absent servers (marksman, markdown_oxide, rust_analyzer), and the global LSP keymaps |
+| `on_attach.lua` | The `on_attach` every server shares, as a table keyed by server name: dockerls capability stripping, clangd and basedpyright user commands, terraformls and vtsls code lenses / inlay hints, markdown_oxide daily notes, the jsonls `$ref` `<C-]>` |
+| `cmd.lua` | `require("lsp.cmd").lazy(argv)`: a function `cmd` that builds its argv when the server starts and spawns it with the options vim.lsp passes for a table `cmd` (`cwd = cmd_cwd or root_dir`, `env = cmd_env`, `detached`, as runtime `lua/vim/lsp/client.lua` `Client.create`). Used by jsonls, yamlls, vtsls, helm_ls, ruby_lsp, sourcekit and tsgo. Required as `lsp.cmd`, never via `require("lsp")`, whose `vim.lsp.enable()` loads the `lsp/` files |
+| `capabilities.lua` | Static snapshot of `require("blink.cmp").get_lsp_capabilities({}, false)`, merged into every server so blink stays unloaded until InsertEnter. Drift-guarded by `tests/lsp_capabilities_snapshot_spec.lua`; regeneration recipe in its header |
 
 ## For AI Agents
 
 ### Working In This Directory
-- To add a server: create `lua/lsp/<server_name>.lua` returning a
-  `--- @class vim.lsp.Config : vim.lsp.ClientConfig` table (`cmd`,
-  `filetypes`, `root_markers`, `settings`, ...), resolving the binary via
-  `util.homebrew_binary()`, `util.prefix()`, `util.bun_prefix()`,
-  `util.go_path()`, or `util.pnpm_prefix()` — never a bare command name.
-- Register it in `init.lua`'s `servers` table:
-  `["<server_name>"] = require("lsp.<server_name>")`. If the server is not
-  known to `nvim-lspconfig`, call `register_lsp("<name>", { ... })` before
-  the table instead (see the `tsgo` example already in `init.lua`).
-- `vim.lsp.config("*", { capabilities = ..., on_attach = ..., root_markers
-  = { ".git" } })` sets defaults for every server; per-server files only
-  need to override what differs.
-- LSP keymaps (`K`, `<C-]>`, `<LocalLeader>gr`, `<Leader>e`, etc.) are defined once,
-  globally, at the bottom of `init.lua` — do not add per-server keymaps in
-  a `<server>.lua` file. `jsonls.lua` is the single exception, and only
-  because the difference is in the protocol rather than in taste: the server
-  answers no `textDocument/definition`, so on a JSON buffer `<C-]>` can be
-  served only by `textDocument/documentLink`. It is bound on `LspAttach`
-  rather than in an `on_attach`, since configs resolve through
-  `vim.tbl_deep_extend("force", config["*"], ...)`, which replaces a function
-  instead of merging it and would drop the shared `on_attach` — the same
-  reason `lua/plugins/rustaceanvim.lua` binds its Rust keymaps that way.
+- To add a server, follow `.claude/skills/add-lsp/SKILL.md`: create
+  `lsp/<server_name>.lua` returning a `--- @class vim.lsp.Config :
+  vim.lsp.ClientConfig` table, then add the name to the `vim.lsp.enable()`
+  list in `init.lua`. The `lsp/` file is the whole registration; nothing
+  else lists servers. `tsgo` is the one config registered inline instead,
+  with `vim.lsp.config("tsgo", ...)` in `init.lua`, because it is kept off
+  (vtsls owns TypeScript buffers).
+- Resolve every binary to an absolute path through `lua/util` — never a bare
+  command name, which the environment (or a project's version file) would
+  choose. See Common Patterns for which helper fits which server.
+- Options go where the server reads them, verified in its source:
+  - `settings` for servers that pull `workspace/configuration`, nested under
+    the exact section they request (`gopls`, `helm-ls`, `json`, `yaml`,
+    `Lua`, `docker.languageserver`, ...). A flat table answers that
+    request with `null`, and the server silently keeps its defaults.
+  - `init_options` for servers that read only `initializationOptions`:
+    neocmakelsp, terraform-ls, ruby-lsp.
+  - Neither for markdown-oxide, which takes its options from TOML files.
+- `vim.lsp.config("*", { capabilities = ..., on_attach = ..., root_markers =
+  { ".git" } })` sets defaults for every server; server files override only
+  what differs. Lists are replaced, not merged.
+- Per-server attach work (buffer commands, keymaps, codelens/inlay-hint
+  enables) goes in `on_attach.lua` as an `attach.<server_name>` entry.
+  Never define `on_attach` in `lsp/<name>.lua`: configs resolve through
+  `vim.tbl_deep_extend("force", config["*"], ...)`, which replaces a
+  function instead of merging it, so it would drop the shared one. Never
+  create an autocmd at module scope in `lsp/<name>.lua` either: the file
+  loads in every session (see Purpose).
+- Anything a server needs only when it starts (disk lookups, `$PATH` walks,
+  catalogs) goes in `before_init` or a function `cmd`, not at module scope.
+  `before_init` sees the resolved `root_dir`, and vim.lsp deepcopies the
+  config per start, so its mutations stay scoped to that client
+  (`lsp/gopls.lua`, `lsp/jsonls.lua`, `lsp/basedpyright.lua`).
+- nvim-lspconfig-only keys (`autostart`, `single_file_support`,
+  `offsetEncoding`, `on_new_config`) do nothing under native `vim.lsp`.
+  Encoding goes in `capabilities.general.positionEncodings`.
+- LSP keymaps (`K`, `<C-]>`, `<LocalLeader>gr`, `<Leader>e`, etc.) are
+  defined once, globally, at the bottom of `init.lua`. The one exception is
+  jsonls's buffer-local `<C-]>` in `on_attach.lua`, which exists because the
+  server answers no `textDocument/definition`: a `$ref` can be followed only
+  through `textDocument/documentLink`.
 - `<LocalLeader>f` (manual format) does not pass a literal `lsp_format`:
   conform only consults a `formatters_by_ft` entry's own `lsp_format` for
-  keys the caller leaves nil, so a literal would discard a pinned `"never"`.
-  It reads that pin back instead, mirroring `format_on_save` in
-  `lua/plugins/conform.lua`. `json5` pins it because `jsonls` has no JSON5
-  mode and rewrites such a buffer as strict JSON.
-- Cross-cutting `on_attach` quirks (bashls/lua_ls early return, dockerls
-  capability stripping, tsserver diagnostic filtering, yamlls stopping
-  itself inside Helm template directories) live in `init.lua`'s shared
-  `on_attach`, not in the individual server files.
-- A repo-local skill, `.claude/skills/add-lsp`, documents this exact
-  workflow — invoke it when adding a new server.
-- Many `<server>.lua` files exist but are not wired into the `servers`
-  table (see "NOT registered" notes above); before reusing one, check
-  whether it is current or superseded by the active alternative.
+  keys the caller leaves nil, so a literal would discard whatever a filetype
+  pins. It hands any pinned value back instead (`"fallback"` when there is
+  none), mirroring `format_on_save` in `lua/plugins/conform.lua`. `json5`
+  and `hujson` pin `"never"`, so an unavailable CLI formatter (`oxfmt` for
+  json5, `hujsonfmt` for hujson) formats nothing: `jsonls` has no JSON5 mode
+  and rewrites a json5 buffer as strict JSON, and it would reflow a hujson
+  file into its own layout. `go` and `goasm` pin `"first"`, so the LSP
+  formats before their CLI chain (for go, gopls with `gofumpt = true` ahead of
+  `goimports-rereviser`).
+- Per-server diagnostic filters live in that server's `lsp/<name>.lua` as a
+  client-local `handlers` entry, never by assigning `vim.lsp.handlers`, which
+  every server would inherit: `vtsls.lua` drops TypeScript 80001 from
+  pushed `textDocument/publishDiagnostics`, `jsonls.lua` drops JSON syntax
+  errors on JSON5 buffers and TrailingComma (519) on HuJSON buffers from
+  pulled `textDocument/diagnostic`. HuJSON is also sent to the server as
+  languageId `jsonc` (`get_language_id`), the only id it relaxes comments
+  for; JSON5 deliberately is not, since its syntax goes beyond JSONC.
+  Client-side commands a server sends back work the same way, through the
+  config's `commands` table (`lsp/terraformls.lua`'s `client.showReferences`).
+- A JSON schema that must own a file outright goes in `EXCLUSIVE_SCHEMAS` in
+  `lsp/jsonls.lua`, not in a bare `fileMatch`: the server merges every
+  matching association under `allOf`, so each competing catalog entry needs a
+  trailing `!` negation, which `before_init` appends. Chrome extension
+  manifests (`chrome-extension*/**/manifest.json`) are routed this way.
 
 ### Testing Requirements
-- `nvim --clean --headless -l <file>` (per repo root `AGENTS.md`) is the
-  quick syntax check for an edited `lua/lsp/<server>.lua` module.
+- `echo 'assert(loadfile("lsp/<server>.lua"))' | nvim --clean --headless -i
+  NONE -l -` is the quick syntax check for an edited server file. `loadfile`
+  compiles without running it; `-l lsp/<server>.lua` would run it, and its
+  `require("util")` cannot resolve under `--clean`.
 - `nvim --headless -u NONE -l tests/<name>_spec.lua` runs a headless
-  regression spec. `tests/rust_analyzer_spec.lua` is the one that targets
-  this directory: it fakes a `rustup` binary on `PATH`, `require()`s
-  `lsp.rust_analyzer` fresh each time (via `package.loaded[...] = nil`),
-  and asserts the resulting `config.cmd` for the "toolchain found",
-  "rustup default fails", and "rustup default prints nothing" cases. Run
-  it with `nvim --headless -u NONE -l tests/rust_analyzer_spec.lua`.
-- No other server file has a dedicated spec; changes to them are verified
-  by opening a buffer of the matching filetype and checking `:LspInfo` /
-  `:checkhealth vim.lsp`.
+  regression spec. Specs that target this stack:
+  - `lsp_capabilities_snapshot_spec.lua`: the snapshot equals blink's live
+    output, and `init.lua`'s overrides switch on no completion feature blink
+    reports as unimplemented.
+  - `jsonls_json5_diagnostics_spec.lua`, `jsonls_hujson_spec.lua`,
+    `jsonls_keep_lines_spec.lua`, `jsonls_chrome_manifest_spec.lua`
+    (`lsp/jsonls.lua`) and `jsonls_ref_definition_spec.lua` (the `$ref`
+    jump in `on_attach.lua`).
+  - `markdown_oxide_spec.lua`: config shape, vault-marker precedence over
+    `.git`, the daily-note commands from `on_attach.lua`, and a live
+    definition inside a git-ignored folder.
+  - `tests/perf/startup_budget_spec.lua`: gopls attaches from a pty session
+    while blink stays unloaded; needs the gopls daemon.
+- Under `-u NONE` the `~/.config/nvim` symlink keeps this repo on the rtp,
+  so `require("lsp")` loads the repo's files even from a copy of the tree;
+  run such a copy with `XDG_CONFIG_HOME` pointed at an empty directory
+  (the exact command is in `tests/AGENTS.md`).
+- gopls runs in forwarder mode (`-remote=unix;/tmp/gopls.sock`) and exits
+  without a daemon — start `gopls -listen="unix;/tmp/gopls.sock" serve`
+  before attach checks.
+- Other server files are verified by opening a buffer of the matching
+  filetype and checking `:checkhealth vim.lsp` (which also flags unknown
+  filetypes and non-executable commands).
 
 ### Common Patterns
-- Every file returns a single table typed `--- @class vim.lsp.Config :
-  vim.lsp.ClientConfig` — no `setup()` call, no side effects beyond
-  occasional module-load-time helpers (e.g. `basedpyright.lua`'s
-  `detect_extra_paths()`).
-- Binary resolution order in practice: `util.homebrew_binary(formula,
-  binary)` is the norm; `util.go_path()` for Go-toolchain binaries,
-  `util.bun_prefix()` for JS/TS-ecosystem servers,
-  `util.src_path()` for auxiliary include/library paths. A handful of
-  files deviate with a bare command name (`sourcekit.lua`, `vtsls.lua`,
-  `helm_ls.lua` via `vim.fn.exepath`) or a fully hardcoded absolute path
-  (`clangd.lua`, `tsgo.lua`, `xor.lua`) — flagged per-row above.
-- `settings` nests the server's native JSON configuration schema verbatim
-  (e.g. `gopls.lua`'s `settings.*` mirrors `golang.org/x/tools/gopls`
-  settings; `yamlls.lua`'s mirrors `redhat-developer/yaml-language-server`).
-- `on_attach` is used sparingly per-file for buffer-local capability
-  overrides (`ruff_lsp.lua` disabling hover
-  for `pyproject.toml`), while global behavior lives in `init.lua`.
-- `root_markers` is preferred over the legacy `root_dir` function; a few
-  files (`gopls.lua`, `zizmor.lua`, `xor.lua`) still use a `root_dir`
-  function/string for logic `root_markers` cannot express.
+- Every `lsp/<server>.lua` returns a single table typed
+  `--- @class vim.lsp.Config : vim.lsp.ClientConfig` — no `setup()` call,
+  no side effects at module load.
+- Binary resolution:
+  - `util.homebrew_binary(formula, binary)` is the norm.
+  - `util.go_path("bin", ...)` for Go-installed servers (gopls).
+  - `util.prefix(...)` for the `/opt/local` (arm64) or `/usr/local`
+    toolchain: gopls's `go`, bashls's `shellcheck`.
+  - Node servers name their interpreter and script separately, so the
+    nodenv shim cannot pick node from the project's version file:
+    `{ util.nodenv_prefix("node"), util.bun_prefix("<bin>"), "--stdio" }`,
+    built inside `require("lsp.cmd").lazy(function() ... end)` so both
+    lookups run when the server starts — jsonls, yamlls, vtsls, tsgo (in
+    `init.lua`) — and, for helm-ls's yamlls child, in `before_init`
+    (`settings["helm-ls"].yamlls.path`). `tests/lsp_capabilities_snapshot_spec.lua`
+    fails when any config looks a binary up at load time.
+  - `vim.fn.exepath()` inside a function `cmd` where `$PATH` is meant to
+    choose (helm_ls, sourcekit's toolchain), both through `lsp.cmd.lazy`, so
+    the walk happens only when the server starts.
+  - `$ZVM_PATH` for zls, with one ERROR and no `cmd` when it is unset;
+    clangd keeps its absolute `/opt/local/llvm/clangd` path.
+  - `util.src_path()` for auxiliary include/library paths (protols).
+- `root_markers` are tried in list order, not nearest-first; a nested list is
+  one equal-priority group (nearest wins within it). Markers are literal
+  file or directory names — `vim.fs.root` does not glob. A root-defining
+  marker must come before `.git` (markdown_oxide's vault markers, neocmake's
+  `CMakePresets.json`); a per-directory file such as `.clang-format` or a
+  subproject's `CMakeLists.txt` must come after it. `root_dir` functions are
+  for logic markers cannot express (`lsp/gopls.lua`).
 
 ## Dependencies
 
 ### Internal
 - `lua/util/init.lua` — `homebrew_binary()`, `prefix()`, `homebrew_prefix()`,
-  `bun_prefix()`, `pnpm_prefix()`, `go_path()`, `src_path()`,
-  `xdg_config_home()`, `is_exists()`; used throughout for binary/path
-  resolution.
-- `lua/lsp/protocol/init.lua` — LSP spec constants consumed by `init.lua`'s
-  `default_capabilities_config()` (e.g. `protocol.constants.MarkupKind`).
-- `lua/plugins/` — `rustaceanvim` (configured under `lua/plugins/`) owns
-  the active `rust-analyzer` client instead of `lsp/rust_analyzer.lua`;
-  see the comment next to the commented-out `rust_analyzer` line in
-  `init.lua`'s `servers` block.
+  `bun_prefix()`, `nodenv_prefix()`, `go_path()`, `src_path()`,
+  `xdg_config_home()`, `is_exists()`.
+- `lua/plugins/` — the lspkind spec that loads this stack; `rustaceanvim`
+  owns the active `rust-analyzer` client, so there is deliberately no
+  `lsp/rust_analyzer.lua`.
 
 ### External
-- The language server binaries themselves (gopls, rust-analyzer, clangd,
-  basedpyright, lua-language-server, yaml-language-server, tombi,
-  zls, sourcekit-lsp, etc.), installed via Homebrew/mise/bun/go and
-  resolved through the `util` helpers above.
-- `nvim-lspconfig` — only for `lspconfig.configs` (used by `register_lsp()`
-  to register non-lspconfig servers such as `tsgo`), never for
-  `lspconfig.setup()`.
-- UI/capability plugins configured centrally in `init.lua`: `hover.nvim`,
-  `lspkind.nvim`, `lsp-endhints.nvim`,
-  `tiny-inline-diagnostic.nvim`, `actions-preview.nvim`, `blink.cmp` (capabilities),
-  `SchemaStore.nvim` (`jsonls.lua`).
+- The language server binaries themselves (gopls, clangd, basedpyright,
+  lua-language-server, yaml-language-server, vscode-json-language-server,
+  vtsls, tombi, zls, sourcekit-lsp, etc.), installed via Homebrew, bun, go,
+  zvm and Xcode, and resolved through the helpers above.
+- UI/capability plugins configured via `lua/plugins/`: `hover.nvim`,
+  `lspkind.nvim`, `lsp-endhints.nvim`, `tiny-inline-diagnostic.nvim`,
+  `actions-preview.nvim` (all `LspAttach`-triggered), `blink.cmp`
+  (capabilities snapshot only), `SchemaStore.nvim` (required in
+  `lsp/jsonls.lua`'s `before_init`, when a JSON buffer starts the server).
 
 <!-- MANUAL: Any manually added notes below this line are preserved on regeneration -->

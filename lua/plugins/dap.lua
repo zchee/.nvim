@@ -21,17 +21,6 @@ mason_dap.setup({
     function(config)
       mason_dap.default_setup(config)
     end,
-    -- python = function(config)
-    --   config.adapters = {
-    --     type = "executable",
-    --     command = "/usr/bin/python3",
-    --     args = {
-    --       "-m",
-    --       "debugpy.adapter",
-    --     },
-    --   }
-    --   mason_dap.default_setup(config)
-    -- end,
   },
 })
 
@@ -79,11 +68,32 @@ dap.configurations.docker = {
   },
 }
 
+--- Resolves an adapter (or adapter helper) binary on PATH (Mason's bin dir
+--- included once mason-nvim-dap has set Mason up), keeping the bare name when
+--- it is not installed so the launch error names what is missing.
+---@param name string
+---@return string
+local function adapter_command(name)
+  local path = vim.fn.exepath(name)
+  return path ~= "" and path or name
+end
+
 dap.adapters.lldb = {
   type = "executable",
-  command = "/opt/homebrew/opt/llvm/bin/lldb-dap",
+  command = adapter_command("lldb-dap"),
   name = "lldb",
 }
+
+-- bash-debug-adapter (vscode-bash-debug), under the adapter name and with
+-- the launch fields mason-nvim-dap uses when the Mason package is installed.
+if not dap.adapters.bash then
+  dap.adapters.bash = {
+    type = "executable",
+    command = adapter_command("bash-debug-adapter"),
+    name = "bash",
+  }
+end
+local bashdb_dir = vim.fs.joinpath(vim.env.MASON or vim.fs.joinpath(vim.fn.stdpath("data"), "mason"), "opt", "bashdb")
 
 dap.adapters.nlua = function(callback, config)
   callback({ type = "server", host = config.host, port = config.port })
@@ -159,11 +169,21 @@ dap.configurations.rust = {
 }
 dap.configurations.sh = {
   {
-    type = "executable",
-    command = vim.fn.exepath("bash-debug-adapter"),
+    type = "bash",
     request = "launch",
     name = "Bash-Debug (simplest configuration)",
     program = "${file}",
+    cwd = "${fileDirname}",
+    pathBashdb = vim.fs.joinpath(bashdb_dir, "bashdb"),
+    pathBashdbLib = bashdb_dir,
+    -- Absolute, as the adapter commands above: the adapter spawns these.
+    pathBash = adapter_command("bash"),
+    pathCat = adapter_command("cat"),
+    pathMkfifo = adapter_command("mkfifo"),
+    pathPkill = adapter_command("pkill"),
+    env = {},
+    args = {},
+    terminalKind = "integrated",
   },
 }
 
@@ -366,10 +386,3 @@ end
 dap.listeners.before.event_exited["dapui_config"] = function()
   dapui.close({ layout = 1 })
 end
-
-vim.keymap.set("n", "<LocalLeader>dp", function()
-  require("dap").toggle_breakpoint()
-end, { silent = true, desc = "DAP: toggle breakpoint" })
-vim.keymap.set("n", "<LocalLeader>dc", function()
-  require("dap").continue()
-end, { silent = true, desc = "DAP: continue" })

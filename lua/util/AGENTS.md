@@ -1,19 +1,18 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-08-26 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
 
 # lua/util
 
 ## Purpose
 Shared helper module (`require("util")`) used throughout the config to resolve
 binary/prefix paths for macOS package managers (Homebrew, arm64 `/opt/local`),
-XDG directories with symlink resolution, LSP `on_attach`/lazy-load
-scaffolding, and a couple of general-purpose Lua utilities (`switch`,
-`fast_switch`, `contains`, `dump`).
+XDG directories with symlink resolution, and a couple of general-purpose Lua
+utilities (`is_exists`, the global `dump`).
 
 ## Key Files
 | File | Description |
 |------|--------------|
-| `init.lua` | Main `M` module: path/prefix resolvers, `on_attach`, `lazy_load`, `switch` helpers |
+| `init.lua` | Main `M` module: path/prefix resolvers, `getenv`, `is_exists`, the global `dump` |
 | `types.lua` | LuaCATS-only file declaring the `go_dir_custom_args` class annotation |
 
 ## For AI Agents
@@ -28,27 +27,37 @@ scaffolding, and a couple of general-purpose Lua utilities (`switch`,
   MacPorts-style convention specific to this config, not the real Homebrew
   prefix.
 - `M.homebrew_binary(formula, binary)` joins
-  `homebrew_prefix()/opt/<formula>/bin/<binary>`; `M.bun_prefix`,
-  `M.pnpm_prefix`, `M.rbenv_prefix` follow the equivalent
-  `$ENV_VAR/.../binary` pattern for their respective toolchains.
-- `M.fast_switch` compiles a generated Lua chunk via `loadstring`; treat it as
-  hot-path-only tooling, not a place to add branching business logic.
+  `homebrew_prefix()/opt/<formula>/bin/<binary>`; `M.bun_prefix(binary)`
+  resolves `$BUN_INSTALL/bin/<binary>` (`~/.bun` when unset).
+- `M.nodenv_prefix(binary)` resolves
+  `$NODENV_ROOT/versions/<global>/bin/<binary>` by reading
+  `$NODENV_ROOT/version` (`~/.nodenv` when unset), deliberately skipping the
+  shim. A shim picks its node version from the process cwd, so a
+  `#!/usr/bin/env node` language server spawned in a project root dies
+  whenever that project pins a version the machine has not installed.
+- `bun_prefix` and `nodenv_prefix` always return an absolute path: when the
+  derived file is not executable (or the nodenv version file is unreadable)
+  they fall back to `vim.fn.exepath(binary)` and warn once per binary; when
+  `$PATH` has no such binary either, they return the derived absolute path so
+  the spawn error names where it was expected.
 - New helpers should be added to `init.lua`'s `M` table with a LuaCATS
   `---@param`/`---@return` doc comment, matching the existing style.
 
 ### Testing Requirements
-No dedicated spec file exists under `tests/` for this directory's modules.
-Verify changes by loading the module headlessly, e.g.:
-`nvim --headless -u NONE -c 'set rtp+=.' -c 'lua vim.print(require("util").prefix())' -c 'qa'`
+`tests/util_prefix_spec.lua` covers `bun_prefix` and `nodenv_prefix`
+(`nvim --headless -u NONE -i NONE -l tests/util_prefix_spec.lua`). Verify
+changes to the other helpers by loading the module headlessly, e.g.:
+`nvim --headless -u NONE -i NONE -c 'set rtp+=.' -c 'lua vim.print(require("util").prefix())' -c 'qa'`
 
 ### Common Patterns
 - Every public function is documented with LuaCATS `---@param`/`---@return`
   annotations immediately above the definition.
 - Path joins consistently use `vim.fs.joinpath(...)` over string
   concatenation.
-- Environment lookups go through `os.getenv`/`M.getenv` and are always
-  wrapped in `tostring(...)` before being returned, since `os.getenv` can
-  return `nil`.
+- Environment lookups go through `os.getenv`/`M.getenv`. `M.getenv` returns
+  nil for an unset or empty variable -- never the string `"nil"`, which
+  `vim.fs.joinpath` would keep as a relative path segment -- so callers
+  fall back with `or`.
 
 ## Dependencies
 

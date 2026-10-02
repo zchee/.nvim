@@ -23,90 +23,64 @@
 ;   (#offset! @injection.content 0 1 0 -1)
 ;   (#set! injection.language "sql"))
 
-; neovim nightly 0.10
+; One pattern, anchored at the start of the string's content, so an
+; import path or a sentence that merely mentions SQL stays plain: the
+; content opens with an upper-case statement keyword followed by more
+; text, with a lower-case select/insert/update/delete that later reaches
+; from/into/set/values, or with a "-- sql" marker. Any leading SQL
+; comments are skipped first, whole "--" lines and /* */ blocks with
+; whitespace between them, since sqlc writes "-- name: GetUser :one"
+; above every query; a string holding only comments stays plain unless
+; one of them is the "-- sql" marker. A "--"
+; comment runs to a line break and a block ends at its first */, so a
+; text splits into comments one way only and a string that is not SQL
+; fails fast even on the backtracking engine. #match? compiles a vim
+; regex and matches the whole text as one string, where \s, \_s and \n
+; never match a newline character and [^\n] does not exclude one;
+; [[:space:]], . and [\d10] match it and [^\d10] excludes it. An
+; interpreted string has one content node per run between escape
+; sequences and each run is matched on its own, so a "--" comment there
+; never ends but "-- c\nSELECT 1" still injects its "SELECT 1" run. The
+; *_string_literal_content nodes already exclude the quotes, so no
+; #offset! here.
 ([
   (interpreted_string_literal_content)
   (raw_string_literal_content)
   ] @injection.content
- (#match? @injection.content "(SELECT|select|INSERT|insert|UPDATE|update|DELETE|delete).+(FROM|from|INTO|into|VALUES|values|SET|set).*(WHERE|where|GROUP BY|group by)?")
- (#offset! @injection.content 0 1 0 -1)
-(#set! injection.language "sql"))
-
-; a general query injection
-([
-   (interpreted_string_literal_content)
-   (raw_string_literal_content)
- ] @sql
- (#match? @sql "(SELECT|select|INSERT|insert|UPDATE|update|DELETE|delete).+(FROM|from|INTO|into|VALUES|values|SET|set).*(WHERE|where|GROUP BY|group by)?")
- (#offset! @sql 0 1 0 -1))
-
-; ----------------------------------------------------------------
-; fallback keyword and comment based injection
-
-([
-  (interpreted_string_literal_content)
-  (raw_string_literal_content)
- ] @sql
- (#contains? @sql "-- sql" "--sql" "ADD CONSTRAINT" "ALTER TABLE" "ALTER COLUMN"
-                  "DATABASE" "FOREIGN KEY" "GROUP BY" "HAVING" "CREATE INDEX" "INSERT INTO"
-                  "NOT NULL" "PRIMARY KEY" "UPDATE SET" "TRUNCATE TABLE" "LEFT JOIN" "add constraint" "alter table" "alter column" "database" "foreign key" "group by" "having" "create index" "insert into"
-                  "not null" "primary key" "update set" "truncate table" "left join")
- (#offset! @sql 0 1 0 -1))
-
-; nvim 0.10
-([
-  (interpreted_string_literal_content)
-  (raw_string_literal_content)
- ] @injection.content
- (#contains? @injection.content "-- sql" "--sql" "ADD CONSTRAINT" "ALTER TABLE" "ALTER COLUMN"
-                  "DATABASE" "FOREIGN KEY" "GROUP BY" "HAVING" "CREATE INDEX" "INSERT INTO"
-                  "NOT NULL" "PRIMARY KEY" "UPDATE SET" "TRUNCATE TABLE" "LEFT JOIN" "add constraint" "alter table" "alter column" "database" "foreign key" "group by" "having" "create index" "insert into"
-                  "not null" "primary key" "update set" "truncate table" "left join")
- (#offset! @injection.content 0 1 0 -1)
+ (#match? @injection.content "\\v^%([[:space:]]*%(--[^\\d10]*[\\d10]|/\\*%([^*]|\\*+[^*/])*\\*+/))*[[:space:]]*(--[[:space:]]*sql>|(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|WITH|TRUNCATE|REPLACE|MERGE|GRANT|REVOKE|EXPLAIN|BEGIN|COMMIT|ROLLBACK)[[:space:]]+\\S|(select|insert|update|delete)[[:space:]].{-}<(from|into|set|values)>)")
  (#set! injection.language "sql"))
-
 
 ; should I use a more exhaustive list of keywords?
 ;  "ADD" "ADD CONSTRAINT" "ALL" "ALTER" "AND" "ASC" "COLUMN" "CONSTRAINT" "CREATE" "DATABASE" "DELETE" "DESC" "DISTINCT" "DROP" "EXISTS" "FOREIGN KEY" "FROM" "JOIN" "GROUP BY" "HAVING" "IN" "INDEX" "INSERT INTO" "LIKE" "LIMIT" "NOT" "NOT NULL" "OR" "ORDER BY" "PRIMARY KEY" "SELECT" "SET" "TABLE" "TRUNCATE TABLE" "UNION" "UNIQUE" "UPDATE" "VALUES" "WHERE"
 
 ; json
-
-((const_spec
-  name: (identifier) @_const
-  value: (expression_list (raw_string_literal) @json))
- (#lua-match? @_const ".*[J|j]son.*"))
-
-; jsonStr := `{"foo": "bar"}`
-
-((short_var_declaration
-    left: (expression_list
-            (identifier) @_var)
-    right: (expression_list
-             (raw_string_literal) @json))
-  (#lua-match? @_var ".*[J|j]son.*")
-  (#offset! @json 0 1 0 -1))
-
-; nvim 0.10
+;
+; Capture the content child: an injection drops the ranges of the
+; captured node's children, so capturing raw_string_literal itself
+; leaves nothing to inject.
 
 (const_spec
   name: (identifier)
-  value: (expression_list (raw_string_literal) @injection.content
-   (#lua-match? @injection.content "^`[\n|\t| ]*\{.*\}[\n|\t| ]*`$")
-   (#offset! @injection.content 0 1 0 -1)
+  value: (expression_list
+    (raw_string_literal
+      (raw_string_literal_content) @injection.content)
+   (#lua-match? @injection.content "^[\n|\t| ]*\{.*\}[\n|\t| ]*$")
    (#set! injection.language "json")))
 
 (short_var_declaration
     left: (expression_list (identifier))
-    right: (expression_list (raw_string_literal) @injection.content)
-  (#lua-match? @injection.content "^`[\n|\t| ]*\{.*\}[\n|\t| ]*`$")
-  (#offset! @injection.content 0 1 0 -1)
+    right: (expression_list
+      (raw_string_literal
+        (raw_string_literal_content) @injection.content))
+  (#lua-match? @injection.content "^[\n|\t| ]*\{.*\}[\n|\t| ]*$")
   (#set! injection.language "json"))
 
 (var_spec
   name: (identifier)
-  value: (expression_list (raw_string_literal) @injection.content
-   (#lua-match? @injection.content "^`[\n|\t| ]*\{.*\}[\n|\t| ]*`$")
-   (#offset! @injection.content 0 1 0 -1)
+  value: (expression_list
+    (raw_string_literal
+      (raw_string_literal_content) @injection.content)
+   (#lua-match? @injection.content "^[\n|\t| ]*\{.*\}[\n|\t| ]*$")
    (#set! injection.language "json")))
 
 ; ----------------------------------------------------------------

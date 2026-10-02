@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
+  # No base-branch filter: a pull request stacked on another branch is checked
+  # as well as one that targets main.
   pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -43,7 +43,14 @@ jobs:
       SPEC_PLUGINS: >-
         stevearc/conform.nvim
         b0o/schemastore.nvim
-        neovim/nvim-lspconfig
+        saghen/blink.cmp
+        saghen/blink.lib
+        nvim-treesitter/nvim-treesitter
+        L3MON4D3/LuaSnip
+        nvim-tree/nvim-web-devicons
+        folke/lazy.nvim
+        nvim-lualine/lualine.nvim
+        akinsho/bufferline.nvim
     steps:
       - uses: actions/checkout@v7
 
@@ -78,19 +85,30 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: "1"
         run: brew install markdown-oxide
 
+      - uses: oven-sh/setup-bun@v2
+
+      # The jsonls specs start the real server, which lua/util resolves under
+      # $BUN_INSTALL/bin.
+      - name: Install the language servers the specs start
+        run: |
+          echo "BUN_INSTALL=$HOME/.bun" >> "$GITHUB_ENV"
+          BUN_INSTALL="$HOME/.bun" bun install --global vscode-langservers-extracted
+
       - name: Run the specs
         run: |
           nvim --version | head -n 1
           failed=()
           for spec in tests/*_spec.lua; do
             echo "::group::$spec"
-            if nvim --headless -u NONE -i NONE -l "$spec"; then
+            status=0
+            nvim --headless -u NONE -i NONE -l "$spec" || status=$?
+            echo "::endgroup::"
+            if (( status == 0 )); then
               echo "PASS: $spec"
             else
               echo "::error file=$spec::spec failed"
               failed+=("$spec")
             fi
-            echo "::endgroup::"
           done
           if (( ${#failed[@]} > 0 )); then
             printf 'FAIL: %s\n' "${failed[@]}"

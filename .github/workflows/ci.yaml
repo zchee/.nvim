@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stylua:
+    name: StyLua
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: JohnnyMorganz/stylua-action@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --check .
+
+  specs:
+    name: Headless specs
+    # The configuration targets arm64 macOS: lua/util resolves binaries under
+    # /opt/homebrew and /opt/local, and the specs assert those paths.
+    runs-on: xcode-27
+    timeout-minutes: 15
+    env:
+      # Plugins the specs read from stdpath("data")/lazy/<name>. The specs run
+      # with -u NONE, so lazy.nvim never installs anything; a spec that starts
+      # needing another plugin gets its repository added here.
+      SPEC_PLUGINS: >-
+        stevearc/conform.nvim
+        b0o/schemastore.nvim
+        neovim/nvim-lspconfig
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
+
+      # Without these a spec would read the runner's own ~/.config/nvim and
+      # ~/.local/share/nvim instead of the checkout.
+      - name: Isolate the XDG directories
+        run: |
+          for name in config data state cache; do
+            dir="$RUNNER_TEMP/xdg/$name"
+            mkdir -p "$dir"
+            echo "XDG_$(echo "$name" | tr '[:lower:]' '[:upper:]')_HOME=$dir" >> "$GITHUB_ENV"
+          done
+
+      - name: Install the plugins the specs load
+        run: |
+          lazy_root="$XDG_DATA_HOME/nvim/lazy"
+          mkdir -p "$lazy_root"
+          for repo in $SPEC_PLUGINS; do
+            git clone --quiet --depth 1 "https://github.com/$repo.git" "$lazy_root/${repo##*/}"
+          done
+
+      # tests/markdown_oxide_spec.lua asserts that the server binary exists at
+      # the Homebrew path lsp/markdown_oxide.lua resolves.
+      - name: Install the binaries the specs stat
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: brew install markdown-oxide
+
+      - name: Run the specs
+        run: |
+          nvim --version | head -n 1
+          failed=()
+          for spec in tests/*_spec.lua; do
+            echo "::group::$spec"
+            if nvim --headless -u NONE -i NONE -l "$spec"; then
+              echo "PASS: $spec"
+            else
+              echo "::error file=$spec::spec failed"
+              failed+=("$spec")
+            fi
+            echo "::endgroup::"
+          done
+          if (( ${#failed[@]} > 0 )); then
+            printf 'FAIL: %s\n' "${failed[@]}"
+            exit 1
+          fi

@@ -99,8 +99,9 @@ vim.api.nvim_create_autocmd("FileType", {
   group = autocmd_user,
   pattern = { "c", "cpp", "objc", "objcpp", "go" },
   callback = function()
-    if vim.fn.isdirectory(vim.fs.joinpath(util.homebrew_prefix(), "Frameworks/Python.framework/Headers")) == 1 then
-      append_path_once(vim.fs.joinpath(util.homebrew_prefix(), "Frameworks/Python.framework/Headers"))
+    local python_headers = vim.fs.joinpath(util.homebrew_prefix(), "Frameworks/Python.framework/Headers")
+    if vim.fn.isdirectory(python_headers) == 1 then
+      append_path_once(python_headers)
     end
   end,
 })

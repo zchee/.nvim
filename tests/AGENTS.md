@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-10-02 -->
 
 # tests
 
@@ -133,8 +133,8 @@ the full config in child sessions.
   `markdown_oxide` live halves) and child processes (the `perf/` specs).
   Temp paths come from `vim.fn.tempname()`, inside Neovim's per-process
   temp dir, which Neovim removes on exit (after `os.exit()` too); a spec
-  that uses `vim.uv.os_tmpdir()` directly (`chrome_spec`) deletes its dir
-  itself. `rustaceanvim_cargo_config`, `go_build_cache_filetype`,
+  that uses `vim.uv.os_tmpdir()` directly (`chrome_spec`, `ui_mode_spec`)
+  deletes its dir itself. `rustaceanvim_cargo_config`, `go_build_cache_filetype`,
   `conform_oxfmt_json5` and `copilot_config` restore the variables they
   change, and `goasm_filetype`, `rustaceanvim_cargo_config` and
   `go_build_cache_filetype` clean up even on failure via `pcall`.

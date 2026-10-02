@@ -1,11 +1,28 @@
 local gitsigns = require("gitsigns")
-local gitsigns_config = require("gitsigns.config").config
+
+local on_attach = function(bufnr)
+  local gs = package.loaded.gitsigns
+  local function map(mode, l, r, mopts)
+    mopts = mopts or {}
+    mopts.buffer = bufnr
+    vim.keymap.set(mode, l, r, mopts)
+  end
+  map("n", "<Leader>gp", gs.preview_hunk, { desc = "Preview Hunk" })
+  map("n", "<Leader>gb", function()
+    gs.blame_line({ full = true })
+  end, { desc = "Blame Line" })
+  map("n", "<Leader>gB", gs.toggle_current_line_blame, { desc = "Toggle Blame" })
+  map("n", "<Leader>hr", gs.reset_hunk, { desc = "Reset Hunk" })
+  map("n", "<Leader>hs", gs.stage_hunk, { desc = "Stage Hunk" })
+  map("n", "<Leader>hu", gs.undo_stage_hunk, { desc = "Undo Stage Hunk" })
+end
 
 -- The GitSigns* highlight groups live in colors/equinusocio_material.lua, so
 -- a :colorscheme re-apply keeps them. Per-sign hl/numhl/linehl keys are gone
 -- from gitsigns (SignConfig is text + show_count); it derives GitSigns<Type>,
 -- <Type>Nr and <Type>Ln from the sign type itself.
 gitsigns.setup({
+  on_attach = on_attach,
   signs = {
     add = { text = "+" },
     change = { text = "~" },
@@ -43,28 +60,3 @@ gitsigns.setup({
     col = 1,
   },
 })
-
-local on_attach = function(bufnr)
-  local gs = package.loaded.gitsigns
-  local function map(mode, l, r, mopts)
-    mopts = mopts or {}
-    mopts.buffer = bufnr
-    vim.keymap.set(mode, l, r, mopts)
-  end
-  map("n", "<Leader>gp", gs.preview_hunk, { desc = "Preview Hunk" })
-  map("n", "<Leader>gb", function()
-    gs.blame_line({ full = true })
-  end, { desc = "Blame Line" })
-  map("n", "<Leader>gB", gs.toggle_current_line_blame, { desc = "Toggle Blame" })
-  map("n", "<Leader>hr", gs.reset_hunk, { desc = "Reset Hunk" })
-  map("n", "<Leader>hs", gs.stage_hunk, { desc = "Stage Hunk" })
-  map("n", "<Leader>hu", gs.undo_stage_hunk, { desc = "Undo Stage Hunk" })
-end
-
-local prev_on_attach = gitsigns_config.on_attach
-gitsigns_config.on_attach = function(bufnr)
-  if prev_on_attach then
-    prev_on_attach(bufnr)
-  end
-  on_attach(bufnr)
-end

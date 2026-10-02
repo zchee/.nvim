@@ -70,11 +70,7 @@ local function get_pickers(actions)
   }
 end
 
-local ok, actions = pcall(require, "telescope.actions")
-if not ok then
-  vim.notify("plugins.telescope: setup skipped, telescope.actions failed to load: " .. actions, vim.log.levels.ERROR)
-  return
-end
+local actions = require("telescope.actions")
 
 telescope.setup({
   defaults = {

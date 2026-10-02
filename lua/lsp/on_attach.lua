@@ -17,8 +17,8 @@ attach.dockerls = function(client)
   -- client.server_capabilities.semanticTokensProvider.full.delta = true
 end
 
--- Inlined from nvim-lspconfig's lsp/clangd.lua (removed from the dep tree):
--- the switch-source/header and symbol-info user commands.
+-- From nvim-lspconfig's lsp/clangd.lua: the switch-source/header and
+-- symbol-info user commands.
 -- https://clangd.llvm.org/extensions.html#switch-between-sourceheader
 local function switch_source_header(bufnr, client)
   local method_name = "textDocument/switchSourceHeader"
@@ -72,8 +72,8 @@ attach.clangd = function(client, bufnr)
   end, { desc = "Show symbol info" })
 end
 
--- Inlined from nvim-lspconfig's lsp/basedpyright.lua (removed from the dep
--- tree): reconfigure the running client's python.pythonPath in place.
+-- From nvim-lspconfig's lsp/basedpyright.lua: reconfigure the running
+-- client's python.pythonPath in place.
 local function set_python_path(command)
   local path = command.args
   local clients = vim.lsp.get_clients({
@@ -111,8 +111,8 @@ attach.terraformls = function(_, bufnr)
   vim.lsp.codelens.enable(true, { bufnr = bufnr })
 end
 
--- Inlined from nvim-lspconfig's lsp/markdown_oxide.lua: :LspToday,
--- :LspTomorrow and :LspYesterday open the daily note through the server.
+-- From nvim-lspconfig's lsp/markdown_oxide.lua: :LspToday, :LspTomorrow and
+-- :LspYesterday open the daily note through the server.
 ---@param client vim.lsp.Client
 ---@param bufnr integer
 ---@param cmd string

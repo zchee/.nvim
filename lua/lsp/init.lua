@@ -45,8 +45,7 @@ vim.diagnostic.config({
   virtual_lines = false,
   signs = true,
   float = nil,
-  -- true: live diagnostics while typing are worth the per-keystroke redraw
-  -- here (user ruling 2026-09-01, reverting the optimization-pass flip).
+  -- true: live diagnostics while typing are worth the per-keystroke redraw.
   update_in_insert = true,
   severity_sort = true,
   jump = nil,
@@ -120,14 +119,6 @@ local default_capabilities_config = function()
   -- snapshot against blink's live output.
   capabilities = vim.tbl_deep_extend("force", capabilities, require("lsp.capabilities"))
 
-  -- Neovim already advertises workspace.didChangeWatchedFiles with both
-  -- dynamicRegistration and relativePatternSupport, and the blink.cmp merge
-  -- above leaves them alone -- read back from a markdown_oxide client, the one
-  -- configured server whose upstream docs demand dynamic registration (it
-  -- watches the vault, and its create-unresolved-file code action depends on
-  -- the watcher). markdown_oxide is configured but not enabled (see the
-  -- absent servers below). Nothing left to force.
-
   -- commitCharactersSupport and preselectSupport stay at blink's false: blink
   -- implements neither (both are TODOs in its get_lsp_capabilities), so
   -- advertising them only makes servers send commit characters and preselect
@@ -152,12 +143,9 @@ local default_capabilities_config = function()
 end
 
 -- Registered but not enabled (vtsls owns TypeScript buffers); start it
--- explicitly with vim.lsp.enable("tsgo"). Previously registered through
--- lspconfig.configs, now a plain native config.
+-- explicitly with vim.lsp.enable("tsgo").
 vim.lsp.config("tsgo", {
-  -- node spelled out as for vtsls: bin/tsgo is a `#!/usr/bin/env node`
-  -- launcher, so the nodenv shim would pick node from the project root.
-  -- lsp.cmd.lazy as in lsp/jsonls.lua: a missing tsgo warns only when it starts.
+  -- node named explicitly and lsp.cmd.lazy, both as in lsp/jsonls.lua.
   cmd = require("lsp.cmd").lazy(function()
     return { util.nodenv_prefix("node"), util.bun_prefix("tsgo"), "--lsp", "-stdio" }
   end),
@@ -283,18 +271,16 @@ vim.lsp.config("*", {
 --   markdown_oxide covers the same links. Its edge -- broken link
 --   diagnostics plus a "Create `file.md`" code action -- only pays off on
 --   tracked documentation trees.
---   markdown_oxide: lsp/markdown_oxide.lua stays configured, but 467cac4
---   stopped starting it on markdown buffers, so no markdown server runs;
---   vim.lsp.enable("markdown_oxide") turns it back on.
+--   markdown_oxide: lsp/markdown_oxide.lua stays configured but is not
+--   started, so no markdown server runs; vim.lsp.enable("markdown_oxide")
+--   turns it back on.
 --   rust_analyzer: rustaceanvim owns the rust-analyzer client (see
 --   lua/plugins/init.lua); enabling it here as well would attach a second
 --   rust-analyzer to every Rust buffer.
 -- Every enabled server lives in the native runtimepath form, lsp/<name>.lua
--- at the repo root, and none of them is lazy: vim.lsp.enable() below loads
--- each file to validate it (runtime lsp.lua, `_ = lsp.config[nm]`), and the
--- first FileType event of any filetype loads them all again to cache the
--- resolved configs. Work a server needs only when it starts belongs in its
--- before_init or a function cmd, never at module scope.
+-- at the repo root, and none of them is lazy (see lua/lsp/cmd.lua): work a
+-- server needs only when it starts belongs in its before_init or a function
+-- cmd, never at module scope.
 vim.lsp.enable({
   "asm_lsp",
   "basedpyright",
@@ -352,16 +338,9 @@ vim.keymap.set({ "n" }, "<LocalLeader>ca", function()
 end, { silent = true, desc = "LSP code action" })
 vim.keymap.set({ "n" }, "<LocalLeader>f", function()
   local conform = require("conform")
-  -- Mirrors format_on_save in lua/plugins/conform.lua: conform only consults a
-  -- formatters_by_ft entry's own lsp_format for keys the caller leaves nil, so
-  -- passing a literal "fallback" here would discard whatever a filetype pins,
-  -- and any pinned value is handed back instead. json5 and hujson pin "never",
-  -- so an unavailable CLI formatter (oxfmt for json5, hujsonfmt for hujson)
-  -- formats nothing: vscode-json-language-server has no JSON5 mode and
-  -- rewrites a json5 buffer as strict JSON, and it would reflow a hujson file
-  -- into its own layout. go and goasm pin "first", so the LSP formats before
-  -- their CLI chain (for go, gopls with gofumpt = true ahead of
-  -- goimports-rereviser).
+  -- Mirrors format_on_save in lua/plugins/conform.lua: a literal lsp_format
+  -- here would discard whatever a filetype pins, so the pin is handed back
+  -- instead. lua/lsp/AGENTS.md lists the pins and why each exists.
   local ft_opts = conform.formatters_by_ft[vim.bo.filetype]
   local pinned = type(ft_opts) == "table" and ft_opts.lsp_format or nil
   conform.format({ async = false, lsp_format = pinned or "fallback" })

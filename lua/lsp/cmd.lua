@@ -11,9 +11,7 @@
 local M = {}
 
 ---Wrap `argv` in a function `cmd` that spawns it with the options vim.lsp
----passes for a table `cmd` (runtime lua/vim/lsp/client.lua, Client.create:
----`cwd = config.cmd_cwd or config.root_dir`, `env = config.cmd_env`,
----`detached = config.detached`).
+---passes for a table `cmd` (runtime lua/vim/lsp/client.lua, Client.create).
 ---@param argv fun(): string[] builds the command line; runs at each server start
 ---@return fun(dispatchers: vim.lsp.rpc.Dispatchers, config: vim.lsp.ClientConfig): vim.lsp.rpc.Client
 function M.lazy(argv)

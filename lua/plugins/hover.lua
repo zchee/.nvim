@@ -1,13 +1,5 @@
 local hover = require("hover")
 hover.config({
-  --- @class Hover.UserConfig : Hover.Config
-  init = function()
-    require("hover.providers.dap")
-    require("hover.providers.diagnostic")
-    require("hover.providers.dictionary")
-    require("hover.providers.lsp")
-    require("hover.providers.man")
-  end,
   providers = {
     "hover.providers.diagnostic",
     "hover.providers.lsp",

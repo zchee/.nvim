@@ -128,8 +128,20 @@ local ok, err = pcall(function()
   vim.bo[bufnr].filetype = "hujson"
   assert(vim.lsp.buf_attach_client(bufnr, client_id), "jsonls did not attach to the hujson buffer")
 
-  local response =
-    client:request_sync("textDocument/diagnostic", { textDocument = { uri = vim.uri_from_bufnr(bufnr) } }, 15000, bufnr)
+  -- Through client.rpc, not Client:request or request_sync: a request tracked
+  -- in client.requests for this buffer is cancelled by the diagnostic pull
+  -- Neovim starts on attach, and a cancelled request never calls back.
+  local response
+  local params = { textDocument = { uri = vim.uri_from_bufnr(bufnr) } }
+  assert(
+    client.rpc.request("textDocument/diagnostic", params, function(e, r)
+      response = { err = e, result = r }
+    end),
+    "textDocument/diagnostic could not be sent"
+  )
+  vim.wait(15000, function()
+    return response ~= nil
+  end, 10)
   assert(response and response.err == nil, "textDocument/diagnostic failed: " .. vim.inspect(response))
   local raw = response.result.items
   -- What the server says under the languageId the config picks: no comment

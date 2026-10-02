@@ -72,6 +72,8 @@ local cases = {
   { path = "c++/README.md", ft = "markdown", why = "documentation under c++/ keeps its extension" },
   -- README.<ext>
   { path = "README.rst", ft = "rst", why = "README.rst" },
+  { path = "README.md", ft = "markdown", why = "README.md" },
+  { path = "README.txt", ft = "text", why = "a README extension the rule does not name falls through" },
   -- Go templates: the content fallback, and a shebang beating it
   { path = "notes", lines = { "Hello {{ .Name }}" }, ft = "gotmpl", why = "Go template action in an unknown file" },
   {
@@ -115,7 +117,7 @@ for _, case in ipairs(cases) do
   if case.match_only then
     got = vim.filetype.match({ filename = path }) or ""
   else
-    assert(vim.fn.mkdir(vim.fs.dirname(path), "p") >= 0)
+    assert(vim.fn.mkdir(vim.fs.dirname(path), "p") == 1, "should create the directory of " .. path)
     assert(vim.fn.writefile(case.lines or { "" }, path) == 0, "should write " .. path)
     vim.cmd("silent! edit! " .. vim.fn.fnameescape(path))
     got = vim.bo.filetype

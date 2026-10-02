@@ -44,6 +44,7 @@
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
+repo_root="$PWD"
 
 runs=3
 run_timeout_s=90
@@ -110,8 +111,10 @@ cat >"$probe" <<'EOF'
 -- the window (metrics_idle_time is nanoseconds on this build).
 --
 -- Max loop-turn stall: script/lib/stall_probe.lua (prepare/check pair, no
--- timer grid). luafile runs with the cwd perf-report.sh cd'd to: the repo root.
-local stall_probe = dofile(vim.fs.joinpath(vim.fn.getcwd(), "script", "lib", "stall_probe.lua"))
+-- timer grid), found under $PERF_REPORT_ROOT, the repo root perf-report.sh
+-- hands this session, so a cwd change before luafile cannot misplace it.
+local repo_root = assert(vim.env.PERF_REPORT_ROOT, "PERF_REPORT_ROOT is unset")
+local stall_probe = dofile(vim.fs.joinpath(repo_root, "script", "lib", "stall_probe.lua"))
 local stall = { ran = false, max_ms = -1, busy_fraction = -1, loop_count = -1, events = -1 }
 vim.api.nvim_create_autocmd("UIEnter", {
   once = true,
@@ -228,7 +231,7 @@ done
 
 for i in $(seq 1 "$runs"); do
   out="$tmp/run$i.json"
-  run_pty -i "$shada_probe" --startuptime "$tmp/full_pty$i.log" \
+  PERF_REPORT_ROOT="$repo_root" run_pty -i "$shada_probe" --startuptime "$tmp/full_pty$i.log" \
     --cmd "lua vim.g.perf_report_out='$out'" -c "luafile $probe"
   [ -s "$out" ] || echo "warning: pty run $i wrote no report" >&2
 done

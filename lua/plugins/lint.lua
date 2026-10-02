@@ -31,7 +31,7 @@ vim.api.nvim_create_autocmd({ "FileType", "BufWritePost" }, {
     if not has_linter(args.buf) then
       return
     end
-    require("lint").try_lint()
+    lint.try_lint()
   end,
 })
 
@@ -59,7 +59,7 @@ vim.api.nvim_create_autocmd("InsertLeave", {
       vim.schedule_wrap(function()
         if vim.api.nvim_buf_is_valid(buf) then
           vim.api.nvim_buf_call(buf, function()
-            require("lint").try_lint()
+            lint.try_lint()
           end)
         end
       end)

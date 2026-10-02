@@ -1,6 +1,5 @@
--- No jit.off() here: it switches the whole JIT engine off, and the
--- jit.on(true, true) below only sets this chunk's per-function mode, so the
--- engine stayed off for the entire VSCode session.
+-- Never jit.off() here: it switches the whole JIT engine off, and the
+-- jit.on(true, true) below only sets this chunk's per-function mode.
 jit.opt.start(3)
 jit.opt.start("-fma")
 jit.opt.start("-dce")

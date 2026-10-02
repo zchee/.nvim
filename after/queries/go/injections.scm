@@ -34,12 +34,15 @@
 
 ; ----------------------------------------------------------------
 ; fallback keyword and comment based injection
+;
+; #any-contains? fires when any one listed string occurs; #contains?
+; requires every one of them.
 
 ([
   (interpreted_string_literal_content)
   (raw_string_literal_content)
  ] @injection.content
- (#contains? @injection.content "-- sql" "--sql" "ADD CONSTRAINT" "ALTER TABLE" "ALTER COLUMN"
+ (#any-contains? @injection.content "-- sql" "--sql" "ADD CONSTRAINT" "ALTER TABLE" "ALTER COLUMN"
                   "DATABASE" "FOREIGN KEY" "GROUP BY" "HAVING" "CREATE INDEX" "INSERT INTO"
                   "NOT NULL" "PRIMARY KEY" "UPDATE SET" "TRUNCATE TABLE" "LEFT JOIN" "add constraint" "alter table" "alter column" "database" "foreign key" "group by" "having" "create index" "insert into"
                   "not null" "primary key" "update set" "truncate table" "left join")
@@ -50,26 +53,33 @@
 ;  "ADD" "ADD CONSTRAINT" "ALL" "ALTER" "AND" "ASC" "COLUMN" "CONSTRAINT" "CREATE" "DATABASE" "DELETE" "DESC" "DISTINCT" "DROP" "EXISTS" "FOREIGN KEY" "FROM" "JOIN" "GROUP BY" "HAVING" "IN" "INDEX" "INSERT INTO" "LIKE" "LIMIT" "NOT" "NOT NULL" "OR" "ORDER BY" "PRIMARY KEY" "SELECT" "SET" "TABLE" "TRUNCATE TABLE" "UNION" "UNIQUE" "UPDATE" "VALUES" "WHERE"
 
 ; json
+;
+; Capture the content child: an injection drops the ranges of the
+; captured node's children, so capturing raw_string_literal itself
+; leaves nothing to inject.
 
 (const_spec
   name: (identifier)
-  value: (expression_list (raw_string_literal) @injection.content
-   (#lua-match? @injection.content "^`[\n|\t| ]*\{.*\}[\n|\t| ]*`$")
-   (#offset! @injection.content 0 1 0 -1)
+  value: (expression_list
+    (raw_string_literal
+      (raw_string_literal_content) @injection.content)
+   (#lua-match? @injection.content "^[\n|\t| ]*\{.*\}[\n|\t| ]*$")
    (#set! injection.language "json")))
 
 (short_var_declaration
     left: (expression_list (identifier))
-    right: (expression_list (raw_string_literal) @injection.content)
-  (#lua-match? @injection.content "^`[\n|\t| ]*\{.*\}[\n|\t| ]*`$")
-  (#offset! @injection.content 0 1 0 -1)
+    right: (expression_list
+      (raw_string_literal
+        (raw_string_literal_content) @injection.content))
+  (#lua-match? @injection.content "^[\n|\t| ]*\{.*\}[\n|\t| ]*$")
   (#set! injection.language "json"))
 
 (var_spec
   name: (identifier)
-  value: (expression_list (raw_string_literal) @injection.content
-   (#lua-match? @injection.content "^`[\n|\t| ]*\{.*\}[\n|\t| ]*`$")
-   (#offset! @injection.content 0 1 0 -1)
+  value: (expression_list
+    (raw_string_literal
+      (raw_string_literal_content) @injection.content)
+   (#lua-match? @injection.content "^[\n|\t| ]*\{.*\}[\n|\t| ]*$")
    (#set! injection.language "json")))
 
 ; ----------------------------------------------------------------

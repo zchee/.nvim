@@ -109,7 +109,7 @@
 @rune_literal.go {link="String"}
 @spell.go {blend=70,fg=9607583}
 @spell.graphql {link="Comment"}
-@spell.python {link="Commment"}
+@spell.python {link="Comment"}
 @string {link="String"}
 @string.documentation.python {link="String"}
 @string.escape {link="@string.special"}

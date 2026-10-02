@@ -342,7 +342,7 @@ ovr("@comment.python", { fg = "#9ba3a8", bg = hi_none, bold = false, italic = tr
 ovr("@constant.python", { fg = "#f2f3f3", bg = hi_none, blend = 50 })
 ovr("@lsp.type.namespace.python", { fg = "#769ae7", bg = hi_none, italic = true })
 ovr("@lsp.type.variable.python", { link = hi_none })
-ovr("@spell.python", { link = "Commment" })
+ovr("@spell.python", { link = "Comment" })
 ovr("@string.documentation.python", { link = "String" })
 ovr("@variable.python", { link = hi_none })
 ovr("pythonDelimiter", { link = "Special" })

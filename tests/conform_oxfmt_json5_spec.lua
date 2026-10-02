@@ -95,21 +95,21 @@ end
 
 do
   -- No project config: the personal one, so oxfmt never runs on its defaults.
-  local original = vim.env.XDG_CONFIG_HOME
+  -- conform.lua resolves it through util.xdg_config_home(), which caches the
+  -- realpath-resolved dir per process, so the expected path comes from there
+  -- rather than from a $XDG_CONFIG_HOME set here.
   local root = vim.fn.tempname()
   assert(vim.fn.mkdir(root, "p") == 1, "temp dir should be created")
-  vim.env.XDG_CONFIG_HOME = root
 
   local ok, flags = pcall(oxfmt_args, vim.fs.joinpath(root, "renovate.json5"), root)
-  vim.env.XDG_CONFIG_HOME = original
   vim.fn.delete(root, "rf")
   assert(ok, flags)
+  assert(flags["--config"] ~= nil, "--config must never be omitted")
   assert_equal(
-    vim.fs.joinpath(root, "oxfmt", ".oxfmtrc.jsonc"),
+    vim.fs.joinpath(require("util").xdg_config_home(), "oxfmt", ".oxfmtrc.jsonc"),
     flags["--config"],
     "without a project config the personal one must be passed"
   )
-  assert(flags["--config"] ~= nil, "--config must never be omitted")
 end
 
 do

@@ -147,9 +147,10 @@ holds no switched-off specs, so every module below is live.
   `dir =` entries, `util.go_path()` for Go-installed tools (`dap.lua`'s delve,
   `lint.lua`'s golangci-lint, `telescope.lua`'s ghq), and
   `util.xdg_config_home()` for `rustaceanvim.lua`'s cargo dev config and
-  `conform.lua`'s clang-format style file (it is `fs_realpath`-based with a
-  `$HOME/.config` fallback, so the answer is always absolute); `conform.lua`'s
-  taplo and oxfmt config paths read `$XDG_CONFIG_HOME` themselves.
+  `conform.lua`'s clang-format style file and personal taplo and oxfmt
+  configs (it is `fs_realpath`-based with a `$HOME/.config` fallback, so the
+  answer is always absolute, and cached for the process, so a later change to
+  `$XDG_CONFIG_HOME` is not seen).
   `copilot.lua` reads `$BUN_INSTALL` itself to find the native server.
 - `lua/lsp` interplay: `rustaceanvim.lua` deliberately owns the
   `rust-analyzer` client, so there is no `lsp/rust_analyzer.lua` (per the

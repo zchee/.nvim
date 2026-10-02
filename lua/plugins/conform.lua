@@ -130,8 +130,7 @@ local function taplo_invocation(dirname)
   -- No project config: point at the personal one explicitly, since taplo would
   -- otherwise find nothing and fall back to its defaults (column_width = 80,
   -- array_auto_expand = true). Its globs are absolute for the same CWD reason.
-  local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
-  return nil, { "--config", vim.fs.joinpath(config_home, "taplo", "taplo.toml") }
+  return nil, { "--config", vim.fs.joinpath(util.xdg_config_home(), "taplo", "taplo.toml") }
 end
 
 ---Whether `bufnr` holds nothing but whitespace. Reads line by line and stops
@@ -176,8 +175,7 @@ local function oxfmt_config(dirname)
   if project then
     return project
   end
-  local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(tostring(vim.uv.os_homedir()), ".config")
-  return vim.fs.joinpath(config_home, "oxfmt", ".oxfmtrc.jsonc")
+  return vim.fs.joinpath(util.xdg_config_home(), "oxfmt", ".oxfmtrc.jsonc")
 end
 
 ---oxfmt picks its parser from the name handed to --stdin-filepath and nothing
@@ -238,11 +236,9 @@ return {
     -- Per-filetype toggle: set an entry to true to skip write-time
     -- formatting for that filetype and keep only the manual <LocalLeader>f path
     -- (e.g. when goimports-rereviser's import rewriting or stylua feel too
-    -- intrusive per write). Everything currently formats on save.
+    -- intrusive per write). A filetype left out formats on save.
     local manual_only = {
       objc = true,
-      go = false,
-      lua = false,
     }
     if manual_only[vim.bo[bufnr].filetype] then
       return

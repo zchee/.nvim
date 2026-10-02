@@ -34,9 +34,7 @@ local taplo = opts.formatters.taplo
 assert_truthy(taplo and type(taplo.args) == "function", "taplo formatter needs a computed arg list")
 
 -- 1. no project config -> the personal one is passed, after the subcommand
-local home = tostring(vim.uv.os_homedir())
-local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(home, ".config")
-local personal = vim.fs.joinpath(config_home, "taplo", "taplo.toml")
+local personal = vim.fs.joinpath(require("util").xdg_config_home(), "taplo", "taplo.toml")
 
 local args = taplo.args(taplo, { dirname = "/", filename = "/x.toml", buf = 0 })
 assert_equal("format", args[1], "taplo requires the subcommand first")

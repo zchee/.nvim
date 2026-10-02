@@ -110,8 +110,6 @@ end
 ---@field name string tick label for tick_ms
 ---@field plugin string? lazy plugin to load (and tag) in this tick
 ---@field prewarm fun()? cache-warming work run under pcall (never fatal)
----@field gate (fun(): boolean)? tick waits (10 ms defers) until true
----@field gate_timeout_ms integer? bound on the gate wait (default 500)
 
 -- One unit per tick. Plugin units keep the stack's dependency order
 -- (leaves first) so the final blink.cmp tick pays only for its own config.
@@ -269,7 +267,6 @@ end
 ---@field load fun(name: string) loads one plugin, running its config
 ---@field is_loaded fun(name: string): boolean
 ---@field schedule fun(fn: function) queues the next tick
----@field defer fun(fn: function, ms: integer) re-checks a gated tick later
 ---@field tag fun(name: string) records a plugin this warmup loaded
 
 ---@return WarmupDeps
@@ -292,7 +289,6 @@ local function real_deps()
       -- and other timers run between ticks.
       vim.defer_fn(fn, 1)
     end,
-    defer = vim.defer_fn,
     tag = M.tag,
   }
 end
@@ -301,7 +297,7 @@ end
 --- and the terminal plugin at the top of every tick. Deps and units are
 --- injectable so specs can drive the scheduler synchronously.
 ---@param deps WarmupDeps
----@param state { aborted: boolean, index: integer, done: boolean?, error: string?, gate_deadline: integer? }
+---@param state { aborted: boolean, index: integer, done: boolean?, error: string? }
 ---@param units WarmupUnit[]?
 ---@return table state
 function M.run(deps, state, units)
@@ -318,17 +314,6 @@ function M.run(deps, state, units)
     if unit == nil then
       state.done = true
       return
-    end
-    if unit.gate then
-      local now = vim.uv.hrtime()
-      if not state.gate_deadline then
-        state.gate_deadline = now + (unit.gate_timeout_ms or 500) * 1e6
-      end
-      if not unit.gate() and now < state.gate_deadline then
-        deps.defer(tick, 10) -- idle wait, no main-thread work this tick
-        return
-      end
-      state.gate_deadline = nil
     end
     state.index = state.index + 1
     if unit.plugin then

@@ -2,8 +2,8 @@
 --
 -- lua/config/warmup.lua -- the cooperative insert-stack warmup: unit/plugin
 -- order, one-load-per-scheduled-tick discipline, the InsertEnter abort flag,
--- the already-loaded skip/stop paths (idempotency), gate deferral and
--- timeout, non-fatal prewarm units, tagging into vim.g.warmup_loaded, and
+-- the already-loaded skip/stop paths (idempotency), non-fatal prewarm
+-- units, tagging into vim.g.warmup_loaded, and
 -- the UIEnter arming. Those blocks inject recorder deps (lazy.load,
 -- is_loaded, the scheduler, the tagger) and load no real plugin; the W1.5
 -- parity block below boots full-config child sessions, each on a throwaway
@@ -32,11 +32,11 @@ local function assert_deep_equal(got, want, message)
   end
 end
 
---- Builds recorder deps around a mutable `loaded` set plus manual tick and
---- defer queues, so a spec drives the scheduler synchronously and can
---- observe how many loads each tick performed.
+--- Builds recorder deps around a mutable `loaded` set plus a manual tick
+--- queue, so a spec drives the scheduler synchronously and can observe how
+--- many loads each tick performed.
 local function fake_deps(loaded)
-  local rec = { loads = {}, tags = {}, queue = {}, defers = {} }
+  local rec = { loads = {}, tags = {}, queue = {} }
   rec.deps = {
     load = function(name)
       rec.loads[#rec.loads + 1] = name
@@ -47,9 +47,6 @@ local function fake_deps(loaded)
     end,
     schedule = function(fn)
       rec.queue[#rec.queue + 1] = fn
-    end,
-    defer = function(fn)
-      rec.defers[#rec.defers + 1] = fn
     end,
     tag = function(name)
       rec.tags[#rec.tags + 1] = name
@@ -92,7 +89,6 @@ do
     )
     -- copilot runs its native server binary: nothing to probe or wait on
     assert(not unit.name:find("node", 1, true), "no unit may probe node for copilot: " .. unit.name)
-    assert(unit.gate == nil, "no real unit waits on a gate: " .. unit.name)
   end
 end
 
@@ -157,54 +153,6 @@ do
   local state = warmup.run(rec.deps, { aborted = false, index = 1 })
   assert_equal(#rec.loads, 0, "a loaded blink.cmp must stop the warmup before any load")
   assert_equal(state.done, true, "the short-circuit must settle as done")
-end
-
--- gate: a closed gate defers the tick without work; it reopens on the flag
--- and the unit then runs in the deferred tick
-do
-  local rec = fake_deps({})
-  local open = false
-  local units = {
-    { name = "a", plugin = "a" },
-    {
-      name = "b",
-      plugin = "b",
-      gate = function()
-        return open
-      end,
-      gate_timeout_ms = 60000,
-    },
-    { name = "c", plugin = "c" },
-  }
-  warmup.run(rec.deps, { aborted = false, index = 1 }, units)
-  drain(rec)
-  assert_deep_equal(rec.loads, { "a" }, "a closed gate must hold the gated unit and everything after")
-  assert_equal(#rec.defers, 1, "a closed gate must re-check via defer")
-  open = true
-  table.remove(rec.defers, 1)()
-  drain(rec)
-  assert_deep_equal(rec.loads, { "a", "b", "c" }, "an opened gate must release the held units")
-end
-
--- gate timeout: a gate that never opens falls through once its deadline
--- passes, so the warmup always completes
-do
-  local rec = fake_deps({})
-  local units = {
-    {
-      name = "stuck",
-      plugin = "stuck",
-      gate = function()
-        return false
-      end,
-      gate_timeout_ms = 0,
-    },
-  }
-  local state = warmup.run(rec.deps, { aborted = false, index = 1 }, units)
-  drain(rec)
-  assert_deep_equal(rec.loads, { "stuck" }, "an expired gate must fall through to the unit's work")
-  assert_equal(state.done, true, "the run must complete past an expired gate")
-  assert_equal(#rec.defers, 0, "a zero-timeout gate must never defer")
 end
 
 -- prewarm failure is non-fatal: the run continues to the remaining units
@@ -288,7 +236,6 @@ local run_ok, run_err = pcall(function()
       schedule = function(fn)
         vim.defer_fn(fn, 1)
       end,
-      defer = vim.defer_fn,
       tag = warmup.tag,
     }, { aborted = false, index = 1 })
     vim.wait(30000, function()
@@ -463,7 +410,6 @@ do
   -- and the undisturbed path runs to completion on the real scheduler
   local rec2 = fake_deps({})
   rec2.deps.schedule = vim.schedule
-  rec2.deps.defer = vim.defer_fn
   warmup.setup(rec2.deps)
   vim.api.nvim_exec_autocmds("UIEnter", {})
   vim.wait(2000, function()

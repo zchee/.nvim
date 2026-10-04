@@ -28,7 +28,12 @@ local src = f:read("*a")
 f:close()
 local parsers = assert(load(src, "@" .. base, "t"))()
 
--- custom grammars (not in the upstream registry)
+-- custom grammars (not in the upstream registry). nvim-treesitter ships no
+-- queries for these, so `queries` makes install copy (url) or symlink (path)
+-- the grammar repo's own queries/ next to the parser. Without one the parser
+-- still attaches, vim.treesitter.start clears 'syntax', and the buffer has no
+-- highlighting. hujson's repo queries target Zed (see queries/hujson) and
+-- modulemap's repo has none.
 parsers.goasm = {
   -- queries ship with the local tree-sitter-goasm plugin (see after/queries)
   install_info = {
@@ -42,6 +47,7 @@ parsers.cel = {
   install_info = {
     url = "https://github.com/bufbuild/tree-sitter-cel",
     branch = "main",
+    queries = "queries",
   },
   tier = 3,
 }
@@ -71,6 +77,7 @@ parsers.mustache = {
   install_info = {
     url = "https://github.com/zchee/tree-sitter-mustache",
     branch = "dev",
+    queries = "queries",
   },
   tier = 3,
 }
@@ -78,6 +85,7 @@ parsers.x86asm = {
   install_info = {
     url = "https://github.com/bearcove/tree-sitter-x86asm",
     branch = "main",
+    queries = "queries",
   },
   tier = 3,
 }

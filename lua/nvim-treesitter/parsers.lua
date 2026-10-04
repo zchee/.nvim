@@ -35,10 +35,11 @@ local parsers = assert(load(src, "@" .. base, "t"))()
 -- highlighting. hujson's repo queries target Zed (see queries/hujson) and
 -- modulemap's repo has none.
 parsers.goasm = {
-  -- queries ship with the local tree-sitter-goasm plugin (see after/queries)
+  -- local checkout: nvim-treesitter symlinks its queries/, so query edits
+  -- there show up without a reinstall
   install_info = {
-    url = "https://github.com/zchee/tree-sitter-goasm",
-    branch = "main",
+    path = util.src_path("github.com/zchee/tree-sitter-goasm"),
+    queries = "queries",
   },
   maintainers = { "@zchee" },
   tier = 3,

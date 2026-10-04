@@ -22,13 +22,6 @@ return {
     ft = "testscript",
   },
   {
-    dir = util.src_path("github.com/zchee/tree-sitter-goasm"),
-    -- dependency of nvim-treesitter: its plugin/ file must ensure the goasm
-    -- query symlinks BEFORE plugins.tree-sitter starts any highlight, and
-    -- dependency order is the only load order lazy.nvim guarantees.
-    lazy = true,
-  },
-  {
     dir = util.src_path("github.com/zchee/metaphrast.nvim"),
     lazy = true,
     cmd = {
@@ -371,7 +364,6 @@ return {
     build = ":TSUpdate",
     dependencies = {
       "JoosepAlviste/nvim-ts-context-commentstring",
-      "tree-sitter-goasm",
     },
     config = function()
       require("plugins.tree-sitter")

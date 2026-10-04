@@ -217,7 +217,6 @@ local idle_absent = {
   -- idle session never pays for it
   "nvim-treesitter", -- event FileType + TS* cmds
   "nvim-ts-context-commentstring", -- dependency of nvim-treesitter
-  "tree-sitter-goasm", -- dependency of nvim-treesitter
 }
 
 -- Opening a real file must bring the file-shaped demotions back in

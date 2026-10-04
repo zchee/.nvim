@@ -1,18 +1,18 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-10-03 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-10-04 -->
 
 # after/queries
 
 ## Purpose
-Tree-sitter query overrides, one subdirectory per language/parser name (11
-total: `diff`, `go`, `goasm`, `json`, `lua`, `markdown`,
-`markdown_inline`, `printf`, `python`, `rust`, `yaml`). Ten of the eleven use
-Neovim/nvim-treesitter's `; extends` (or `;; extends`) modeline convention
-to *merge* additional captures into the upstream bundled query of the same
-name/kind rather than replacing it. The exception is `goasm/`, whose three
-files are symlinks into `~/src/github.com/zchee/tree-sitter-goasm/queries/`
-— the full, authoritative query set for a private grammar with no upstream
-nvim-treesitter queries to extend.
+Tree-sitter query overrides, one subdirectory per language/parser name (10
+total: `diff`, `go`, `json`, `lua`, `markdown`, `markdown_inline`, `printf`,
+`python`, `rust`, `yaml`). Every one uses Neovim/nvim-treesitter's
+`; extends` (or `;; extends`) modeline convention to *merge* additional
+captures into the installed query of the same name/kind rather than
+replacing it. The base queries of the custom grammars (`goasm` among them)
+are not kept here: their `lua/nvim-treesitter/parsers.lua` entries set
+`install_info.queries`, so install puts the grammar repo's own queries in
+the install dir.
 
 ## Key Files
 None directly in this directory (plus an untracked `.DS_Store`) — every
@@ -25,7 +25,6 @@ None directly in this directory (plus an untracked `.DS_Store`) — every
 | `go/` | `highlights.scm` (extends) | `case`/`default`/`defer` keywords, `err`/`error`/`any` identifiers, raw string literals, builtin-type call highlighting, package import namespacing, `//go:` pragma and `//nolint:` comment highlighting, const-string spell-checking |
 | `go/` | `injections.scm` (extends) | SQL injection into string literals through one `#match?` anchored at the start of the content: an upper-case statement keyword (`SELECT`, `INSERT`, `CREATE`, `WITH`, `BEGIN`, ...) followed by more text, a lower-case `select`/`insert`/`update`/`delete` that later reaches `from`/`into`/`set`/`values`, or a `-- sql` marker, after optional leading whitespace including a line break and any number of leading SQL comments (whole `--` lines and `/* */` blocks, so sqlc's `-- name: GetUser :one` queries inject; a string holding only comments stays plain unless one of them is the `-- sql` marker). Each run of an interpreted string between escape sequences is its own content node and is matched on its own. Import paths, prose and Go error strings led by a verb other than `select`/`insert`/`update`/`delete` stay plain (`"update failed: read from %s"` is injected); the `from`/`into`/`set`/`values` and `sql` word boundaries depend on 'iskeyword' (see Common Patterns); known false positives are HTTP mux patterns such as `"DELETE example.com/..."` and upper-case-led messages such as `"SELECT on table %q ..."`, plus raw strings whose first line after any leading `--` lines (a txtar `-- go.mod --` header, a `---` diff line, a prose note) opens with such a keyword, since every leading `--` line is skipped whatever it says. The captured `*_string_literal_content` nodes already exclude the quotes, so the pattern carries no `#offset!`), JSON injection into const/var/`:=` raw string literals holding one `{...}` object (they capture the `raw_string_literal_content` child, since an injection leaves a captured node's children out of the region), and `printf`-grammar injection for raw string literals passed to `Printf`/`Sprintf`/`Fprintf`/etc. — the last one exists specifically because upstream nvim-treesitter only injects `printf` into `interpreted_string_literal`, not raw strings |
 | `go/` | `locals.scm` (extends) | `var_spec` as `local.scope`, struct field declarations, interface method elements, struct/interface `type_declaration` as `local.name`/`local.type` |
-| `goasm/` | `highlights.scm`, `injections.scm`, `tags.scm` (symlinks — full base queries, not extends) | Comments incl. `//go:*`/`//line` pragma detection, C-style preprocessor directives, labels, and (in `tags.scm`) ctags-style function/data/label/macro definitions plus call/jump-target references across many architectures (amd64/arm64/riscv64/etc.) |
 | `json/` | `injections.scm` (extends) | Injects `bash` into the string value of nested pairs under a `"scripts"` key (npm `package.json` convention) |
 | `lua/` | `highlights.scm` (extends) | Highlights the identifier `vim` as `@namespace.builtin` |
 | `markdown/` | `injections.scm` (extends) | Injects `tsx` into inline nodes matching `^(import\|export)` (MDX-style import/export lines) |
@@ -46,14 +45,10 @@ None directly in this directory (plus an untracked `.DS_Store`) — every
 - To *extend* an upstream nvim-treesitter query (the normal case), start the
   file with `; extends` or `;; extends` as the literal first line — see the
   gotcha audit below for why this is strict. To *replace* an upstream query
-  outright, omit the modeline (rare in this repo — currently only justified
-  for `goasm/`, a grammar with no upstream queries at all).
-- `goasm/*.scm` are symlinks to a sibling repo
-  (`~/src/github.com/zchee/tree-sitter-goasm`), whose upstream
-  (`github.com/zchee/tree-sitter-goasm`) is the parser's install source in
-  the `lua/nvim-treesitter/parsers.lua` overlay. Edit the target repo
-  directly, not through these symlinks in isolation -- a change here without
-  a corresponding upstream commit will not survive a fresh clone of that repo.
+  outright, omit the modeline (no file here does). A file here without the
+  modeline never becomes the base query of a custom grammar either: the
+  install dir comes first on the rtp, so its copy wins. Give such a grammar
+  `install_info.queries` in `lua/nvim-treesitter/parsers.lua` instead.
 - Before adding an `injection.language "<x>"` capture, confirm a parser for
   `<x>` is installed (`~/.local/share/nvim/tree-sitter-main/parser/<x>.so`,
   nvim-treesitter's `install_dir` from `lua/plugins/tree-sitter.lua`) -- an
@@ -111,9 +106,6 @@ upstream file provided. Audited every `.scm` file's literal first line:
 | `go/highlights.scm` | `;; extends` | OK |
 | `go/injections.scm` | `;; extends` | OK |
 | `go/locals.scm` | `;; extends` | OK |
-| `goasm/highlights.scm` | `; Tree-sitter highlights for Go (Plan 9) assembly.` | N/A — intentional full replacement, no upstream query exists to extend |
-| `goasm/injections.scm` | `; Tree-sitter injections for Go (Plan 9) assembly.` | N/A — same |
-| `goasm/tags.scm` | `; Tree-sitter tags for Go (Plan 9) assembly.` | N/A — same |
 | `json/injections.scm` | `; extends` | OK |
 | `lua/highlights.scm` | `; extends` | OK |
 | `markdown/injections.scm` | `; extends` | OK |
@@ -139,9 +131,6 @@ here. One finding worth flagging:
 ## Dependencies
 
 ### Internal
-- `goasm/*` requires the `goasm` parser entry in
-  `lua/nvim-treesitter/parsers.lua` and filetype detection from
-  `lua/filetypes/goasm.lua`.
 - Injection targets (`sql`, `json`, `bash`, `twig`, `tsx`, `printf`,
   `comment`) each require the corresponding parser to be installed (`twig`
   is not, today).
@@ -149,8 +138,6 @@ here. One finding worth flagging:
 ### External
 - nvim-treesitter — supplies the base `highlights.scm`/`injections.scm`/
   `locals.scm` that the `extends`-modeline files merge into.
-- `github.com/zchee/tree-sitter-goasm` (external repo, symlinked in) —
-  authoritative source for `goasm/`'s three query files.
 - `ray-x/go.nvim` — credited as the origin of `go/injections.scm` and
   `go/locals.scm`'s base content.
 

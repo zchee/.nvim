@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-10-04 -->
 
 # after
 
@@ -9,8 +9,7 @@ rest of `runtimepath` (`$VIMRUNTIME` and plugins included), so files here get
 the final say over per-filetype buffer options and Tree-sitter query
 behavior. Three subdirectories: `ftplugin/` (per-filetype settings for 19
 filetypes, applied after the runtime's own ftplugin), `queries/` (Tree-sitter
-queries that `extends` nvim-treesitter's for 10 languages, plus the full
-query set of the private `goasm` grammar), and `syntax/` (holds only its
+queries that `extends` nvim-treesitter's for 10 languages), and `syntax/` (holds only its
 AGENTS.md; see `after/syntax/AGENTS.md`).
 
 ## Key Files
@@ -21,7 +20,7 @@ lives in the subdirectories below.
 | Directory | Purpose |
 |-----------|---------|
 | `ftplugin/` | Per-filetype settings (indent, comments, a few maps) for 19 filetypes (see `ftplugin/AGENTS.md`) |
-| `queries/` | Tree-sitter query extensions for 10 languages plus the base `goasm` query set (see `queries/AGENTS.md`) |
+| `queries/` | Tree-sitter query extensions for 10 languages (see `queries/AGENTS.md`) |
 | `syntax/` | No syntax files -- legacy Vim syntax overrides were removed in favor of Tree-sitter (see `syntax/AGENTS.md`) |
 
 ## For AI Agents
@@ -59,9 +58,6 @@ lives in the subdirectories below.
 ## Dependencies
 
 ### Internal
-- `queries/goasm/*` depends on the `goasm` parser entry in
-  `lua/nvim-treesitter/parsers.lua` and on filetype detection in
-  `lua/filetypes/goasm.lua`.
 - `ftplugin/*.lua` filenames must match a filetype produced by root
   `filetype.lua` or Neovim's own detection.
 

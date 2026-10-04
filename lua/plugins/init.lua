@@ -37,6 +37,38 @@ return {
     end,
   },
   {
+    dir = util.src_path("github.com/zchee/markdown-preview.nvim"),
+    lazy = true,
+    cmd = {
+      "MarkdownPreview",
+    },
+    opts = {
+      host = "127.0.0.1", -- Address the server binds to.
+      port = 6041, -- p(15) r(17) e(4)
+      browser = nil, -- nil: vim.ui.open. false: do not open a browser, only report the URL.
+      --              A string is a program name; a list is a program followed by its arguments.
+      --              The path of a temporary redirect file (see below) is appended as the last
+      --              argument, not the URL. No shell is involved.
+      theme = {
+        name = "system",
+        high_contrast = false,
+      },
+      details_tags_open = true,
+      cursor_line = {
+        disable = false,
+        color = "#4c4e52",
+        opacity = 0.2,
+      },
+      scroll = {
+        disable = false,
+        top_offset_pct = 35,
+      },
+      debounce_ms = 30, -- Delay between a buffer change and the update sent to the browser.
+      cdn = "https://cdn.jsdelivr.net/npm",
+      log_level = "error", -- "error", "warn", "info" or "debug"
+    },
+  },
+  {
     dir = util.src_path("github.com/zchee/codecov.nvim"),
     -- coverage.autostart is false, so the user commands are the only entry
     -- points.
@@ -835,21 +867,21 @@ return {
           require("plugins.diagram")
         end,
       },
-      {
-        "wallpants/github-preview.nvim",
-        lazy = true,
-        build = "bun i && git reset --hard",
-        -- setup() creates these commands; a markdown ft trigger would start
-        -- the plugin in every markdown buffer.
-        cmd = {
-          "GithubPreviewToggle",
-          "GithubPreviewStart",
-          "GithubPreviewStop",
-        },
-        config = function()
-          require("plugins.github-preview")
-        end,
-      },
+      -- {
+      --   "wallpants/github-preview.nvim",
+      --   lazy = true,
+      --   build = "bun i && git reset --hard",
+      --   -- setup() creates these commands; a markdown ft trigger would start
+      --   -- the plugin in every markdown buffer.
+      --   cmd = {
+      --     "GithubPreviewToggle",
+      --     "GithubPreviewStart",
+      --     "GithubPreviewStop",
+      --   },
+      --   config = function()
+      --     require("plugins.github-preview")
+      --   end,
+      -- },
     },
 
     -- Git

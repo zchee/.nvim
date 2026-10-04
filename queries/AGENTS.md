@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-10-04 -->
 
 # queries
 
@@ -24,7 +24,13 @@ and nvim-treesitter's install dir comes first on the rtp, so it wins.
 
 ### Working In This Directory
 - Only add a query file here when the grammar ships no Neovim queries at
-  all. To change a query nvim-treesitter installs, write
+  all. When the grammar repo has queries written for Neovim (nvim-treesitter
+  capture names), set `install_info.queries` on its entry in
+  `lua/nvim-treesitter/parsers.lua` instead: install then copies (url) or
+  symlinks (path) them next to the parser, so they track the parser
+  revision. `cel`, `ghostty`, `goasm`, `mustache` and `x86asm` work that
+  way (pinned by `tests/custom_parser_queries_spec.lua`); hujson stays here
+  because its repo's queries target Zed. To change a query nvim-treesitter installs, write
   `after/queries/<lang>/<kind>.scm` with `;; extends` on line 1.
 - Check where a query resolves before assuming a file here is live:
   `:lua =vim.treesitter.query.get_files("<lang>", "highlights")`. A

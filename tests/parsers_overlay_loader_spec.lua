@@ -39,10 +39,23 @@ assert(parsers.lua ~= nil, "base registry entry (lua) should survive the overlay
 -- custom grammar merged by the overlay
 assert(parsers.goasm ~= nil, "custom goasm grammar should be registered by the overlay")
 assert_equal(
-  "https://github.com/zchee/tree-sitter-goasm",
-  parsers.goasm.install_info.url,
-  "goasm entry should carry the custom grammar URL"
+  require("util").src_path("github.com/zchee/tree-sitter-goasm"),
+  parsers.goasm.install_info.path,
+  "goasm entry should build from the local grammar checkout"
 )
+
+-- nvim-treesitter ships no queries for a custom grammar, so each entry must
+-- name the grammar repo's query dir or its buffers render with no colour
+for lang, dir in pairs({
+  goasm = "queries",
+  cel = "queries",
+  ghostty = "queries/ghostty",
+  mustache = "queries",
+  x86asm = "queries",
+}) do
+  assert(parsers[lang] ~= nil, "custom " .. lang .. " grammar should be registered by the overlay")
+  assert_equal(dir, parsers[lang].install_info.queries, lang .. " entry should install the grammar repo's queries")
+end
 
 -- fork replacing an upstream entry
 assert_equal(

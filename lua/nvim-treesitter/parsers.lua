@@ -59,6 +59,14 @@ parsers.modulemap = {
   },
   tier = 3,
 }
+parsers.ghostty = {
+  install_info = {
+    url = "https://github.com/bezhermoso/tree-sitter-ghostty",
+    branch = "main",
+    queries = "queries/ghostty",
+  },
+  tier = 3,
+}
 parsers.mustache = {
   install_info = {
     url = "https://github.com/zchee/tree-sitter-mustache",

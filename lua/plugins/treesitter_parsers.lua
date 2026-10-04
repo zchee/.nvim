@@ -31,6 +31,7 @@ return {
   "elvish",
   "embedded_template",
   "func",
+  "ghostty",
   "git_rebase",
   "gitattributes",
   "gitcommit",

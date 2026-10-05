@@ -5,9 +5,11 @@ local util = require("util")
 --- https://github.com/redhat-developer/yaml-language-server/blob/main/src/languageserver/handlers/settingsHandlers.ts
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 return {
-  -- node named explicitly and lsp.cmd.lazy, both as in lsp/jsonls.lua.
+  -- The bin's `#!/usr/bin/env node` shebang picks node from $PATH. Built
+  -- through lsp.cmd.lazy, as in lsp/jsonls.lua, so the lookup runs when a
+  -- YAML buffer starts the server.
   cmd = lsp_cmd.lazy(function()
-    return { util.nodenv_prefix("node"), util.bun_prefix("yaml-language-server"), "--stdio" }
+    return { util.bun_prefix("yaml-language-server"), "--stdio" }
   end),
   filetypes = { "yaml", "yaml.helm-values" },
   root_markers = { ".git" },

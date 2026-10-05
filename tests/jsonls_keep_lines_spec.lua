@@ -1,8 +1,9 @@
 ---@diagnostic disable: undefined-global
 -- Regression spec for the keepLines setting in lsp/jsonls.lua.
 --
--- json and jsonc have no conform formatter, so every save falls back to
--- jsonls formatting. The server applies keepLines only from
+-- lsp/jsonls.lua advertises no formatter (provideFormatter = false), but the
+-- server still answers a direct textDocument/formatting request, which is
+-- what this spec sends. The server applies keepLines only from
 -- `settings.json.keepLines.enable`; the config used to send
 -- `settings.json.format.keepLines`, which the server never reads, and every
 -- single-line array was broken one element per line on save.

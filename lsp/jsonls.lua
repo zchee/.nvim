@@ -163,9 +163,10 @@ return {
     return filetype == "hujson" and "jsonc" or filetype
   end,
   init_options = {
-    -- The server registers its formatter only when asked to at initialize
-    -- time; without this every textDocument/formatting request returns null.
-    provideFormatter = true,
+    -- A boolean here also turns off the server's dynamic formatter
+    -- registration, so false advertises no formatter at all: json and jsonc
+    -- buffers are not formatted through jsonls, on save or on request.
+    provideFormatter = false,
   },
   handlers = {
     ["textDocument/diagnostic"] = filter_dialect_diagnostics,

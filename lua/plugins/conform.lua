@@ -341,7 +341,7 @@ return {
       end,
     },
     oxfmt = {
-      command = util.bun_prefix("oxfmt"),
+      command = util.homebrew_binary("oxfmt", "oxfmt"),
       -- conform's builtin passes only `--stdin-filepath $FILENAME`; both args
       -- are rebuilt so the config is explicit and the name is one oxfmt can
       -- infer a parser from. Its builtin `cwd` (root_file over the same config

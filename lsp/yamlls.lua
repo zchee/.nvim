@@ -40,6 +40,18 @@ return {
         flowMapping = "allow", -- "allow" | "forbid"
         flowSequence = "allow", -- "allow" | "forbid"
       },
+      -- The parser compares the resolved tag ("!!" expanded to
+      -- "tag:yaml.org,2002:") and the node kind; a tag without a kind is a
+      -- scalar, so tags written on a mapping such as `{kwds: ...}` need
+      -- "mapping" or they still report "Unresolved tag".
+      customTags = {
+        "tag:yaml.org,2002:python/name:pymdownx.slugs.uslugify",
+        "tag:yaml.org,2002:python/name:pymdownx.superfences.fence_code_format",
+        "tag:yaml.org,2002:python/object/apply:pymdownx.arithmatex.arithmatex_fenced_format mapping",
+        "tag:yaml.org,2002:python/object/apply:pymdownx.arithmatex.arithmatex_inline_format mapping",
+        "tag:yaml.org,2002:python/name:material.extensions.emoji.twemoji",
+        "tag:yaml.org,2002:python/name:material.extensions.emoji.to_svg",
+      },
       keyOrdering = false,
       maxItemsComputed = 5000,
       schemaStore = {

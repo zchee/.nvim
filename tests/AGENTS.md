@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-10-03 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-10-07 -->
 
 # tests
 
@@ -16,6 +16,7 @@ the full config in child sessions.
 ## Key Files
 | File | Description |
 |------|-------------|
+| `asm_lsp_root_spec.lua` | `lsp/asm_lsp.lua` — the `root_dir` function: asm-lsp exits 1 with "Unable to detect project root directory" when its config has a `[[project]]` table and the client sends no root, so the function must root every named buffer. On a real tree it asserts the order `.asm-lsp.toml` > `.git` > `go.mod` (a nested module inside a repository keeps the repository root; GOROOT and module-cache assembly, which carry `go.mod` but no `.git`, root at the `go.mod`), the file's own directory when no marker exists, and no `on_dir` call for an unnamed buffer; `root_markers` must be gone, since a `root_dir` function makes it dead config. Then the live half, with `HOME` pointed at a throwaway global config holding a `[[project]]` table: a nil root must reproduce the error through `window/showMessage` (the control), and the root the config resolves for a marker-less file must leave the server answering `textDocument/documentSymbol` with the fixture's label. Prints SKIP for the live half when asm-lsp is not installed. Prints `OK: asm_lsp roots every buffer it can name, ...` |
 | `auto_hlsearch_on_key_spec.lua` | `lua/config/autocmd.lua` — the auto-hlsearch `vim.on_key` handler: replaces `vim.fn` with a proxy that errors on any access (the handler runs per physical keystroke and must never cross the VimL bridge), then drives the search-key truth table, the argument keys that must leave hlsearch alone (`"*p`, `f*`, ...), the `q` that stops a recording (typed `qajq` then `n` must light the search, so the Recording autocmds really fire), the `typed == ""` mapping-expansion early return, the no-redundant-option-write path, and the Insert-mode gate, entered with the Insert-mode pattern below. Prints `ALL PASS: auto_hlsearch_on_key_spec` |
 | `chrome_spec.lua` | `lua/config/chrome.lua` — the hand-rolled statusline and tabline that replaced lualine+bufferline: the 1.5 ms module-load budget (a timing assert kept on purpose, judged on the minimum over fresh processes, see below), insert-after-current tabline ordering, the statusline sections, the modified/readonly markers, the gitsigns-fed branch and diff segments, diagnostic counts with lualine's icons and their Insert-mode deferral (entered with the Insert-mode pattern below), buffer ids and click regions, bufferline's dedup prefixes for same-named files, the `%@` click handler's button discrimination, the blanked `snacks_picker_input` statusline, `%` escaping in filenames, file icons surviving `:colorscheme` (that section prints SKIP without nvim-web-devicons), and `_G.Chrome_click` existing only while chrome owns the tabline. Prints `ALL PASS: chrome_spec` |
 | `conform_hujsonfmt_spec.lua` | `lua/plugins/conform.lua` — the hujson formatter wiring: `formatters_by_ft.hujson` is hujsonfmt alone with `lsp_format = "never"` (jsonls formats HuJSON to a different layout, so a missing hujsonfmt must format nothing), the command resolves to `~/go/bin/hujsonfmt` for a document (leading blank lines and a comment-only buffer included) and to `cat` for an empty or whitespace-only buffer, and `format_on_save` returns `never` for hujson. Then the live half through `conform.format` and the real binary: a fixture is tab-indented with aligned values, comments kept and single-line trailing commas dropped, a parse error comes back as hujsonfmt's own message with the buffer untouched, and an empty buffer formats with no error and no edit (the outcome is read from the callback; the return value only says a formatter was attempted). Prints SKIP when hujsonfmt is not installed. Needs `conform.nvim` installed |
@@ -134,7 +135,7 @@ the full config in child sessions.
   `go_build_cache_filetype` sets `XDG_CACHE_HOME`, `copilot_config` sets
   `BUN_INSTALL` and `PATH`, `ui_mode` sets `XDG_STATE_HOME` and
   `NVIM_UI_MODE`, `util_prefix` sets `BUN_INSTALL`, `NODENV_ROOT` and
-  `PATH`), real binaries (`conform_hujsonfmt`, the `jsonls_*` and
+  `PATH`), real binaries (`conform_hujsonfmt`, the `asm_lsp_root`, `jsonls_*` and
   `markdown_oxide` live halves) and child processes (the `perf/` specs).
   Temp paths come from `vim.fn.tempname()`, inside Neovim's per-process
   temp dir, which Neovim removes on exit (after `os.exit()` too); a spec
@@ -190,7 +191,7 @@ Tests directly `require()`:
   `lua/plugins/ts_context_commentstring_compat.lua`, and
   `lua/plugins/lualine.lua` + `lua/plugins/bufferline.lua` (`ui_mode_spec`)
 - `lua/lsp/init.lua`, `lua/lsp/capabilities.lua`, `lua/lsp/on_attach.lua`
-- `lsp/jsonls.lua`, `lsp/markdown_oxide.lua` (repo-root native lsp/ dir)
+- `lsp/asm_lsp.lua`, `lsp/jsonls.lua`, `lsp/markdown_oxide.lua` (repo-root native lsp/ dir)
 - `lua/filetypes/goasm.lua`, `lua/nvim-treesitter/parsers.lua`,
   `lua/util/init.lua`
 
@@ -214,7 +215,7 @@ through `vim.treesitter.query`.
   `lualine.nvim` + `bufferline.nvim`, `nvim-web-devicons`. Specs that print
   SKIP degrade without theirs; the others fail with an install hint.
 - Binaries for the live halves: `vscode-json-language-server`,
-  `markdown-oxide`, `hujsonfmt`.
+  `markdown-oxide`, `hujsonfmt`, `asm-lsp`.
 - `perf/startup_budget_spec.lua` additionally requires the full plugin set
   installed (it boots the real config) and a `gopls` binary for the daemon.
 

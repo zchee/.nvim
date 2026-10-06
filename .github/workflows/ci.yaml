@@ -78,12 +78,14 @@ jobs:
           done
 
       # tests/markdown_oxide_spec.lua asserts that the server binary exists at
-      # the Homebrew path lsp/markdown_oxide.lua resolves.
+      # the Homebrew path lsp/markdown_oxide.lua resolves, and
+      # tests/asm_lsp_root_spec.lua starts asm-lsp from the Homebrew path
+      # lsp/asm_lsp.lua resolves (its live half skips without it).
       - name: Install the binaries the specs stat
         env:
           HOMEBREW_NO_AUTO_UPDATE: "1"
           HOMEBREW_NO_INSTALL_CLEANUP: "1"
-        run: brew install markdown-oxide
+        run: brew install markdown-oxide asm-lsp
 
       - uses: oven-sh/setup-bun@v2
 

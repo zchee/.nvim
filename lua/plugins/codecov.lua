@@ -20,6 +20,5 @@ require("codecov").setup({
     timeout_ms = 10000,
   },
   token = os.getenv("CODECOV_NVIM_API_TOKEN"),
-  ---@type vim.log.levels
-  log_level = 2,
+  log_level = vim.log.levels.INFO,
 })

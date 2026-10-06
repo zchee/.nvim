@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-07-31 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
 
 # lua/filetypes
 
@@ -22,8 +22,11 @@ assembly (`filetype=goasm`) from generic NASM-style `.s` files
 - `goasm.lua` exports `M.detect(path, bufnr)`, called directly from
   `vim.filetype.add({ extension = { s = ... } })` in the root
   `filetype.lua` — the function signature must stay `(path, bufnr) -> string`
-  to match Neovim's `vim.filetype.add` function-value contract.
-- Detection heuristic (in priority order, first match wins): (1) buffer's
+  to match Neovim's `vim.filetype.add` function-value contract. `bufnr` is
+  not always a buffer: `vim.filetype.match({ filename = ... })` passes
+  `-1` (a direct caller may pass nil), so the header scan runs only for a
+  valid buffer and the name/neighbor rules still answer without one.
+- Detection heuristic (any one match means `goasm`): (1) buffer's
   first 64 lines include a `#include "textflag.h"` / `funcdata.h` /
   `go_asm.h` / `go_tls.h` header, (2) filename is `<arch>.s` or
   `*_<arch>.s` for one of the Go arch suffixes in the `arches` table
@@ -38,7 +41,7 @@ assembly (`filetype=goasm`) from generic NASM-style `.s` files
 
 ### Testing Requirements
 `tests/goasm_filetype_spec.lua` covers this module directly — run with:
-`nvim --headless -u NONE -l tests/goasm_filetype_spec.lua`
+`nvim --headless -u NONE -i NONE -l tests/goasm_filetype_spec.lua`
 It exercises all three detection branches (header include, arch-suffixed
 filename, sibling `.go` file) plus the `asm` fallback, using real temp files
 and buffers (no mocks).

@@ -1,3 +1,10 @@
+-- Byte-compile and cache Lua modules. Must run before any require so every
+-- module load hits the cache. The one loadfile-sensitive site,
+-- lua/nvim-treesitter/parsers.lua, reads source text directly instead of
+-- loadfile (vim.loader patches loadfile to serve bytecode, which trips
+-- "wrong mode" there) -- pinned by tests/parsers_overlay_loader_spec.lua.
+vim.loader.enable()
+
 if vim.g.vscode then
   require("code")
   return
@@ -21,7 +28,16 @@ vim.g.maplocalleader = vim.keycode("<BS>")
 -- server on a writable temp path as a fallback so RPC keeps working regardless
 -- of the runtime-dir environment.
 if vim.v.servername == nil or vim.v.servername == "" then
-  pcall(vim.fn.serverstart, vim.fn.tempname())
+  local ok, err = pcall(vim.fn.serverstart, vim.fn.tempname())
+  if not ok then
+    -- The failure mode this fallback exists for is silent, so say it failed.
+    vim.notify(
+      "init.lua: no RPC server address and the serverstart fallback failed ("
+        .. tostring(err)
+        .. "); child jobs get no $NVIM, so RPC plugins such as github-preview.nvim will not work",
+      vim.log.levels.WARN
+    )
+  end
 end
 
 -- Bootstrap lazy.nvim
@@ -49,7 +65,12 @@ if not vim.uv.fs_stat(lazypath) then
       { vim.trim(out or ""), "WarningMsg" },
       { "\nPress any key to exit...", "MoreMsg" },
     }, true, {})
-    vim.fn.getchar()
+    -- Nothing can answer getchar() without a UI: a headless bootstrap
+    -- (`nvim --headless "+Lazy! sync" +qa`) blocks on it forever, and an
+    -- `nvim -l` run exits 0 there as if the clone had worked.
+    if #vim.api.nvim_list_uis() > 0 then
+      vim.fn.getchar()
+    end
     os.exit(1)
   end
 end

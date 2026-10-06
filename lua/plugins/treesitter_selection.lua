@@ -6,6 +6,10 @@ local M = {}
 ---@type table<integer, TSNode[]>
 local stacks = {}
 
+-- True while select_node() re-enters visual mode itself, so the ModeChanged
+-- reset in setup() only sees selections the user starts.
+local selecting = false
+
 ---@return TSNode?
 local function get_node_at_cursor()
   local ok, parser = pcall(vim.treesitter.get_parser, vim.api.nvim_get_current_buf())
@@ -32,7 +36,14 @@ local function select_node(node)
   end
   vim.api.nvim_buf_set_mark(0, "<", srow + 1, scol, {})
   vim.api.nvim_buf_set_mark(0, ">", erow + 1, math.max(ecol - 1, 0), {})
-  vim.cmd("normal! gv")
+  selecting = true
+  local ok, err = pcall(function()
+    vim.cmd("normal! gv")
+  end)
+  selecting = false
+  if not ok then
+    error(err, 0)
+  end
 end
 
 ---@return TSNode[]?
@@ -125,6 +136,18 @@ function M.setup(keymaps)
   vim.keymap.set("x", keymaps.node_incremental, M.node_incremental, { silent = true, desc = "TS: expand to node" })
   vim.keymap.set("x", keymaps.node_decremental, M.node_decremental, { silent = true, desc = "TS: shrink selection" })
   vim.keymap.set("x", keymaps.scope_incremental, M.scope_incremental, { silent = true, desc = "TS: expand to scope" })
+  -- A selection the user starts (v/V/<C-v> from normal mode) must not grow
+  -- the stack an earlier selection left behind: expanding it would jump to
+  -- that old node instead of the one under the cursor.
+  vim.api.nvim_create_autocmd("ModeChanged", {
+    group = vim.api.nvim_create_augroup("plugins.treesitter_selection", { clear = true }),
+    pattern = "n:[vV\22]",
+    callback = function()
+      if not selecting then
+        stacks[vim.api.nvim_get_current_buf()] = nil
+      end
+    end,
+  })
 end
 
 return M

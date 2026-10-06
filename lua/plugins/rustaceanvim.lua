@@ -190,10 +190,11 @@ end
 -- The path has to be absolute: cargo does no tilde expansion (a literal
 -- "~/..." is parsed as a KEY=VALUE TOML fragment and dies on "key with no
 -- value"), and rust-analyzer joins a relative configPath onto the workspace
--- root. util.xdg_config_home() is readlink-based, so it answers with the
--- symlink target -- the dotfiles checkout rather than ~/.config, same file --
--- and with "" when XDG_CONFIG_HOME is unset or is a real directory. Either way
--- the stat below is what decides: a path that does not resolve leaves the
+-- root. util.xdg_config_home() is realpath-based, so it answers with the
+-- resolved directory -- the dotfiles checkout rather than ~/.config, same
+-- file -- and falls back to $HOME/.config when XDG_CONFIG_HOME is unset, so
+-- the path is always absolute. It can still name a file that is not there,
+-- so the stat below is what decides: a path that does not resolve leaves the
 -- setting unset, because cargo hard-errors on a config path it cannot read,
 -- and that kills `cargo metadata` -- the whole client -- not just the check.
 --

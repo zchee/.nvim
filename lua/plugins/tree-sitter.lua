@@ -10,8 +10,12 @@ vim.treesitter.language.register("starlark", "tiltfile")
 vim.treesitter.language.register("json", "jsonschema")
 vim.treesitter.language.register("json", "jsonl")
 vim.treesitter.language.register("gotmpl", "helm")
-vim.treesitter.language.register("docker-bake", "hcl")
-vim.treesitter.language.register("bash", "zsh")
+vim.treesitter.language.register("hcl", "docker-bake")
+-- Metal Shading Language is C++14 with added address-space and attribute
+-- syntax, and there is no metal grammar; cpp parses the bulk of a shader and
+-- leaves ERROR nodes on the Metal-only qualifiers, which still beats the
+-- "conf" guess these files used to land on.
+vim.treesitter.language.register("cpp", "metal")
 
 local nts = require("nvim-treesitter")
 
@@ -54,36 +58,53 @@ vim.api.nvim_create_user_command("TSEnsureInstalled", function()
   nts.install(require("plugins.treesitter_parsers"))
 end, { desc = "Install all configured tree-sitter parsers" })
 
+-- Keyed on the resolved parser language, not the filetype.
 local highlight_skip = {
-  metal = true,
   tmux = true,
 }
 local indent_skip = {
   yaml = true,
 }
 
+local function start_treesitter(buf, ft)
+  local lang = vim.treesitter.language.get_lang(ft) or ft
+  if highlight_skip[lang] then
+    return
+  end
+  -- *.dockerfile files keep tree-sitter highlighting off.
+  if lang == "dockerfile" and vim.api.nvim_buf_get_name(buf):match("%.dockerfile$") then
+    return
+  end
+  -- no parser (or no queries) for this language: silently keep legacy
+  -- syntax highlighting
+  if not pcall(vim.treesitter.start, buf, lang) then
+    return
+  end
+  if not indent_skip[lang] then
+    vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  end
+end
+
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
   callback = function(ev)
-    local lang = vim.treesitter.language.get_lang(ev.match) or ev.match
-    if highlight_skip[lang] then
-      return
-    end
-    -- *.dockerfile files kept tree-sitter highlighting off under master
-    -- (TSBufDisable autocmd); preserve that behavior.
-    if lang == "dockerfile" and vim.api.nvim_buf_get_name(ev.buf):match("%.dockerfile$") then
-      return
-    end
-    -- no parser (or no queries) for this language: silently keep legacy
-    -- syntax highlighting
-    if not pcall(vim.treesitter.start, ev.buf, lang) then
-      return
-    end
-    if not indent_skip[lang] then
-      vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    end
+    start_treesitter(ev.buf, ev.match)
   end,
 })
+
+-- The spec defers this module to the first FileType event, and
+-- autocmds created while an event is running do not fire for that occurrence
+-- -- without a replay the triggering buffer would silently keep legacy
+-- syntax. vim.treesitter.start is idempotent, so replaying a buffer the
+-- autocmd will also see (cmd/require-triggered loads) is harmless.
+for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+  if vim.api.nvim_buf_is_loaded(buf) then
+    local ft = vim.bo[buf].filetype
+    if ft ~= "" then
+      start_treesitter(buf, ft)
+    end
+  end
+end
 
 require("plugins.treesitter_selection").setup({
   init_selection = "gnn",

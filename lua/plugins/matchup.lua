@@ -1,5 +1,3 @@
-vim.g.matchup_no_version_check = true
-
 ---@type matchup.Config
 require("match-up").setup({
   ---@diagnostic disable-next-line

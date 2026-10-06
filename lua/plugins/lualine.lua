@@ -23,12 +23,12 @@ lualine.setup({
     },
     ignore_focus = {},
     always_divide_middle = true,
-    globalstatus = false,
+    globalstatus = true, -- laststatus = 3 (lua/config/nvim.lua): one statusline, not one per window
     refresh = {
-      statusline = 500,
-      tabline = 500,
-      winbar = 500,
-      refresh_time = 16, -- ~60fps
+      statusline = 1000,
+      tabline = 1000,
+      winbar = 1000,
+      refresh_time = 33, -- ~30fps
     },
   },
   sections = {

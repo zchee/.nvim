@@ -1,1 +1,0 @@
-/Users/zchee/src/github.com/zchee/tree-sitter-goasm/queries/highlights.scm

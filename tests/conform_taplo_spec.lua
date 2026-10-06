@@ -25,6 +25,15 @@ local function assert_truthy(value, message)
   end
 end
 
+-- $XDG_CONFIG_HOME names a symlink, set before anything resolves it, so the
+-- personal config path tells util.xdg_config_home()'s realpath-resolved dir
+-- apart from one built from the variable inline, in every environment.
+local xdg_target = vim.fn.tempname()
+assert(vim.fn.mkdir(xdg_target, "p") == 1, "the XDG_CONFIG_HOME target should be created")
+local xdg_link = vim.fn.tempname()
+assert(vim.uv.fs_symlink(xdg_target, xdg_link), "the XDG_CONFIG_HOME symlink should be created")
+vim.env.XDG_CONFIG_HOME = xdg_link
+
 local opts = require("plugins.conform")
 
 assert_truthy(vim.deep_equal(opts.formatters_by_ft.toml, { "taplo" }), "toml must be formatted by taplo")
@@ -34,9 +43,7 @@ local taplo = opts.formatters.taplo
 assert_truthy(taplo and type(taplo.args) == "function", "taplo formatter needs a computed arg list")
 
 -- 1. no project config -> the personal one is passed, after the subcommand
-local home = tostring(vim.uv.os_homedir())
-local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(home, ".config")
-local personal = vim.fs.joinpath(config_home, "taplo", "taplo.toml")
+local personal = vim.fs.joinpath(require("util").xdg_config_home(), "taplo", "taplo.toml")
 
 local args = taplo.args(taplo, { dirname = "/", filename = "/x.toml", buf = 0 })
 assert_equal("format", args[1], "taplo requires the subcommand first")
@@ -47,6 +54,13 @@ for i, a in ipairs(args) do
   end
 end
 assert_truthy(config_at and config_at > 1, "--config must come after the subcommand, not be prepended")
+local personal_home = (args[config_at + 1] or ""):match("^(.*)/taplo/taplo%.toml$")
+assert_truthy(personal_home, "the personal config must be taplo/taplo.toml under a config dir")
+assert_equal(
+  vim.uv.fs_realpath(personal_home),
+  personal_home,
+  "the personal config dir must be realpath-resolved, not $XDG_CONFIG_HOME as set"
+)
 assert_equal(personal, args[config_at + 1], "personal taplo config path")
 assert_equal("-", args[#args], "stdin marker must be the final argument")
 assert_equal("$FILENAME", args[#args - 1], "$FILENAME must precede the stdin marker")

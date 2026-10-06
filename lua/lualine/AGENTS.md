@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-07-31 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-10-02 -->
 
 # lua/lualine
 
@@ -11,6 +11,10 @@ this module through lualine's `themes/<name>.lua` runtime path convention —
 not required directly by name anywhere else in the repo). All actual
 statusline section/component configuration lives in
 `lua/plugins/lualine.lua`, not here.
+
+lualine only draws in the `plugins` ui mode: `lua/config/chrome.lua` is the
+default statusline and carries its own copy of this palette. See
+`lua/config/ui_mode.lua` for the switch.
 
 ## Key Files
 No files directly in `lua/lualine/` — see Subdirectories.

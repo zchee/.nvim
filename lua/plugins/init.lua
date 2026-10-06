@@ -1,5 +1,11 @@
 local util = require("util")
 
+-- Statusline/tabline renderer, resolved before lazy walks this table. In the
+-- default "chrome" mode the lualine and bufferline specs below carry no
+-- trigger at all, so lazy keeps them cloned and never loads them; :UiMode
+-- pulls them in on demand. See lua/config/ui_mode.lua.
+local chrome_plugins = require("config.ui_mode").uses_plugins()
+
 ---@type LazySpec
 return {
   -- Local
@@ -16,37 +22,66 @@ return {
     ft = "testscript",
   },
   {
-    dir = util.src_path("github.com/zchee/tree-sitter-goasm"),
-    lazy = false,
-  },
-  {
-    dir = util.src_path("github.com/zchee/metafrastis.nvim"),
+    dir = util.src_path("github.com/zchee/metaphrast.nvim"),
     lazy = true,
     cmd = {
-      "MetafrastisTranslate",
-      "MetafrastisCacheClear",
+      "MetaphrastTranslate",
+      "MetaphrastCacheClear",
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "folke/snacks.nvim",
     },
     config = function()
-      require("plugins.metafrastis")
+      require("plugins.metaphrast")
     end,
   },
   {
+    dir = util.src_path("github.com/zchee/markdown-preview.nvim"),
+    lazy = true,
+    cmd = {
+      "MarkdownPreview",
+    },
+    opts = {
+      host = "127.0.0.1", -- Address the server binds to.
+      port = 6041, -- p(15) r(17) e(4)
+      browser = nil, -- nil: vim.ui.open. false: do not open a browser, only report the URL.
+      --              A string is a program name; a list is a program followed by its arguments.
+      --              The path of a temporary redirect file (see below) is appended as the last
+      --              argument, not the URL. No shell is involved.
+      theme = {
+        name = "system",
+        high_contrast = false,
+      },
+      details_tags_open = true,
+      cursor_line = {
+        disable = false,
+        color = "#4c4e52",
+        opacity = 0.2,
+      },
+      scroll = {
+        disable = false,
+        top_offset_pct = 35,
+      },
+      debounce_ms = 30, -- Delay between a buffer change and the update sent to the browser.
+      cdn = "https://cdn.jsdelivr.net/npm",
+      log_level = "error", -- "error", "warn", "info" or "debug"
+    },
+  },
+  {
     dir = util.src_path("github.com/zchee/codecov.nvim"),
-    event = "VeryLazy",
-    dependencies = {
-      "neovim/nvim-lspconfig",
-      "nvim-lua/plenary.nvim",
+    -- coverage.autostart is false, so the user commands are the only entry
+    -- points.
+    cmd = {
+      "CodecovRefresh",
+      "CodecovToggle",
+      "CodecovResetApiKey",
+      "CodecovValidate",
     },
     config = function()
       require("plugins.codecov")
     end,
   },
-
-  -- AI
 
   -- LSP
   {
@@ -66,40 +101,58 @@ return {
     },
     {
       {
-        "neovim/nvim-lspconfig",
+        -- The LSP entry point. Every server config is a self-sufficient
+        -- native vim.lsp.config table, so the stack boots from lspkind, the
+        -- one plugin lua/lsp/init.lua require()s at load time.
+        "onsails/lspkind-nvim",
         event = {
           "BufReadPre",
           "BufNewFile",
         },
-        dependencies = {
-          "onsails/lspkind-nvim",
-          "williamboman/mason-lspconfig.nvim",
-          {
-            "chrisgrieser/nvim-lsp-endhints",
-            event = "LspAttach",
-          },
-          {
-            "aznhe21/actions-preview.nvim",
-            event = "LspAttach",
-          },
-          {
-            "rachartier/tiny-inline-diagnostic.nvim",
-            event = "LspAttach",
-          },
-          {
-            "lewis6991/hover.nvim",
-            event = "LspAttach",
-          },
-          {
-            "b0o/schemastore.nvim",
-          },
-          {
-            dir = util.src_path("github.com/LuaLS/LLS-Addons"), -- "LuaLS/LLS-Addons",
-            ft = "lua",
-          },
-        },
         config = function()
           require("lsp")
+        end,
+      },
+      {
+        -- lazy with no trigger: loaded by lazy.nvim's module loader when
+        -- lsp/jsonls.lua require()s it for the schema catalog, so the
+        -- catalog only materializes once a JSON buffer starts jsonls.
+        "b0o/schemastore.nvim",
+        lazy = true,
+      },
+      {
+        dir = util.src_path("github.com/LuaLS/LLS-Addons"), -- "LuaLS/LLS-Addons",
+        ft = "lua",
+      },
+      -- Standalone specs, not nvim-lspconfig dependencies: lazy.nvim loads
+      -- dependencies together with their parent, which turned these four
+      -- LspAttach triggers into BufReadPre loads.
+      {
+        "chrisgrieser/nvim-lsp-endhints",
+        event = "LspAttach",
+        config = function()
+          require("plugins.lsp_endhints")
+        end,
+      },
+      {
+        "aznhe21/actions-preview.nvim",
+        event = "LspAttach",
+        config = function()
+          require("plugins.actions_preview")
+        end,
+      },
+      {
+        "rachartier/tiny-inline-diagnostic.nvim",
+        event = "LspAttach",
+        config = function()
+          require("plugins.tiny_inline_diagnostic")
+        end,
+      },
+      {
+        "lewis6991/hover.nvim",
+        event = "LspAttach",
+        config = function()
+          require("plugins.hover")
         end,
       },
       {
@@ -115,9 +168,6 @@ return {
           grace_period = 60 * 15,
           wakeup_delay = 500,
         },
-        dependencies = {
-          "neovim/nvim-lspconfig",
-        },
       },
       {
         "amrbashir/nvim-docs-view",
@@ -130,15 +180,24 @@ return {
       },
       {
         "j-hui/fidget.nvim",
-        event = "VeryLazy",
+        -- LSP progress UI: nothing to render before a client attaches.
+        event = "LspAttach",
         config = function()
           require("plugins.fidget")
         end,
       },
       {
         "stevearc/conform.nvim",
-        event = "VeryLazy",
-        opts = require("plugins.conform"),
+        -- Real entry points only: write-time formatting via
+        -- its own format_on_save BufWritePre autocmd (lazy re-fires the
+        -- event after loading, so the first :w still formats), the
+        -- <LocalLeader>f keymap in lua/lsp/init.lua (requires conform on
+        -- demand through lazy's module loader), and :ConformInfo.
+        event = "BufWritePre",
+        cmd = "ConformInfo",
+        opts = function()
+          return require("plugins.conform")
+        end,
       },
       {
         "mfussenegger/nvim-lint",
@@ -149,7 +208,10 @@ return {
       },
       {
         "stevearc/aerial.nvim",
-        event = "VeryLazy",
+        -- Symbols only exist for real file buffers, and aerial's own
+        -- on_attach remaps {/} per attached buffer, so it loads with the
+        -- first file; an idle no-file session never pays for it.
+        event = { "BufReadPost", "BufNewFile" },
         dependencies = {
           "folke/snacks.nvim",
           "nvim-treesitter/nvim-treesitter",
@@ -163,6 +225,14 @@ return {
           end, { desc = "Symbols" })
         end,
       },
+    },
+    {
+      -- Replaces the bare vim.lsp.buf.rename() cmdline prompt with an
+      -- in-buffer float whose extmarks preview every occurrence as the new
+      -- name is typed. Deliberately trigger-less: defaults.lazy = true means
+      -- the require in lua/lsp/init.lua's <Leader>e mapping loads it, which
+      -- keeps every LSP keymap in that one file (see lua/AGENTS.md).
+      "saecki/live-rename.nvim",
     },
   },
 
@@ -188,26 +258,37 @@ return {
       {
         "L3MON4D3/LuaSnip",
         build = "make install_jsregexp",
+        -- LuaSnip and nvim-autopairs each carry their own config: the
+        -- warmup loads one plugin per tick and the pure-lazy InsertEnter
+        -- chain runs the same configs, so each tick pays only for its own
+        -- plugin and both load paths stay identical.
+        config = function()
+          require("plugins.luasnip")
+        end,
       },
-      {
-        "fang2hou/blink-copilot",
-        dependencies = {
-          {
-            "zbirenbaum/copilot.lua",
-            config = function()
-              require("plugins.copilot")
-            end,
-          },
-        },
-      },
+      "fang2hou/blink-copilot",
       {
         "windwp/nvim-autopairs",
         event = { "InsertEnter" },
+        config = function()
+          require("plugins.autopairs")
+        end,
       },
       "echasnovski/mini.icons",
     },
     config = function()
       require("plugins.blink")
+    end,
+  },
+  {
+    -- Not a blink-copilot dependency: lazy.nvim loads dependencies together
+    -- with their parent, which would configure copilot.lua during blink's
+    -- InsertEnter load. As a standalone lazy spec it loads through lazy.nvim's
+    -- module loader the moment blink-copilot first require()s it.
+    "zbirenbaum/copilot.lua",
+    lazy = true,
+    config = function()
+      require("plugins.copilot")
     end,
   },
   {
@@ -258,6 +339,24 @@ return {
       "DapVirtualTextForceRefresh",
       "DapVirtualTextToggle",
     },
+    keys = {
+      {
+        "<LocalLeader>dp",
+        function()
+          require("dap").toggle_breakpoint()
+        end,
+        silent = true,
+        desc = "DAP: toggle breakpoint",
+      },
+      {
+        "<LocalLeader>dc",
+        function()
+          require("dap").continue()
+        end,
+        silent = true,
+        desc = "DAP: continue",
+      },
+    },
     dependencies = {
       "rcarriga/nvim-dap-ui",
       "theHamsta/nvim-dap-virtual-text",
@@ -277,11 +376,26 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
-    lazy = false, -- the main branch does not support lazy-loading (upstream README)
+    -- Upstream's "does not support lazy-loading" is a support policy, not a
+    -- mechanism: everything the plugin needs at load time --
+    -- filetype registrations, query predicates, the setup() rtp prepend for
+    -- parsers/queries -- is consumed no earlier than the first treesitter
+    -- use in a file buffer, and this config starts highlighting exclusively
+    -- from its own FileType autocmd in plugins.tree-sitter (which replays
+    -- the triggering buffer, since autocmds registered during an event do
+    -- not fire for it).
+    event = "FileType",
+    cmd = {
+      "TSInstall",
+      "TSInstallFromGrammar",
+      "TSUpdate",
+      "TSUninstall",
+      "TSLog",
+      "TSEnsureInstalled",
+    },
     build = ":TSUpdate",
     dependencies = {
       "JoosepAlviste/nvim-ts-context-commentstring",
-      "yamatsum/nvim-nonicons",
     },
     config = function()
       require("plugins.tree-sitter")
@@ -295,12 +409,12 @@ return {
       cmd = "Telescope",
       dependencies = {
         "nvim-lua/plenary.nvim",
-        "nvim-lua/popup.nvim",
+        -- plugins/telescope.lua takes its prompt icon from nonicons
+        "yamatsum/nvim-nonicons",
         "nvim-telescope/telescope-dap.nvim",
         "nvim-telescope/telescope-file-browser.nvim",
         "nvim-telescope/telescope-live-grep-args.nvim",
         "nvim-telescope/telescope-project.nvim",
-        "nvim-telescope/telescope-ui-select.nvim",
         "matheusfillipe/grep_app.nvim",
         "nvim-telescope/telescope-ghq.nvim",
       },
@@ -320,6 +434,20 @@ return {
     {
       "nvim-neo-tree/neo-tree.nvim",
       cmd = "Neotree",
+      -- netrw is disabled in lazy.nvim's rtp, so `nvim <dir>` has no
+      -- fallback explorer: when any startup argument is a directory, load
+      -- neo-tree eagerly so its hijack_netrw_behavior = "open_default"
+      -- takes the buffer. The check is argv+fs_stat only -- no requires on
+      -- the clean-start path.
+      init = function()
+        for i = 0, vim.fn.argc() - 1 do
+          local stat = vim.uv.fs_stat(vim.fn.argv(i) --[[@as string]])
+          if stat and stat.type == "directory" then
+            require("lazy").load({ plugins = { "neo-tree.nvim" } })
+            return
+          end
+        end
+      end,
       dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-web-devicons",
@@ -399,20 +527,13 @@ return {
       },
     },
     {
-      "stevearc/oil.nvim",
-      lazy = false,
-      dependencies = {
-        "nvim-tree/nvim-web-devicons",
-      },
-      opts = require("plugins.oil"),
-      keys = {
-        { "-", "<Cmd>Oil<CR>", desc = "Open parent directory" },
-        { "<Leader>e", "<Cmd>Oil<CR>", desc = "File Explorer (Oil)" },
-      },
-    },
-    {
       "folke/edgy.nvim",
-      event = "VeryLazy",
+      -- Its only configured consumers are the snacks_terminal panels below
+      -- (edgy's own defaults manage nothing), so the terminal filetype is
+      -- the earliest moment edgy can have any effect. Snacks terminals
+      -- default to position=float in lua/plugins/snacks.lua, which these
+      -- edge panels never match anyway.
+      ft = "snacks_terminal",
       ---@module 'edgy'
       ---@param opts Edgy.Config
       opts = function(_, opts)
@@ -433,8 +554,10 @@ return {
       end,
     },
     {
+      -- lua/config/chrome.lua draws the statusline by default; this stays
+      -- switchable: no trigger in chrome mode, VeryLazy in plugins mode.
       "nvim-lualine/lualine.nvim",
-      event = "VeryLazy",
+      event = chrome_plugins and "VeryLazy" or nil,
       dependencies = {
         "nvim-tree/nvim-web-devicons",
       },
@@ -443,9 +566,20 @@ return {
       end,
     },
     {
+      "akinsho/bufferline.nvim",
+      event = chrome_plugins and "VeryLazy" or nil,
+      dependencies = {
+        "nvim-tree/nvim-web-devicons",
+      },
+      config = function()
+        require("plugins.bufferline")
+      end,
+    },
+    {
       -- dropbar.nvim: winbar breadcrumbs (replaces lspsaga's symbol_in_winbar)
       "Bekaboo/dropbar.nvim",
-      event = "VeryLazy",
+      -- winbar breadcrumbs need a file window; nothing to draw at idle.
+      event = "BufReadPost",
       dependencies = {
         "nvim-tree/nvim-web-devicons",
       },
@@ -462,130 +596,13 @@ return {
         require("plugins.dropbar")
       end,
     },
-    -- {
-    --   -- incline.nvim: Floating statusline (replaces lualine)
-    --   "b0o/incline.nvim",
-    --   event = "VeryLazy",
-    --   dependencies = { "nvim-tree/nvim-web-devicons" },
-    --   config = function()
-    --     local devicons = require("nvim-web-devicons")
-    --
-    --     require("incline").setup({
-    --       window = {
-    --         padding = 0,
-    --         margin = { horizontal = 0, vertical = 0 },
-    --         placement = { horizontal = "right", vertical = "bottom" },
-    --       },
-    --       hide = { cursorline = false, focused_win = false, only_win = false },
-    --       render = function(props)
-    --         local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-    --         if filename == "" then
-    --           filename = "[No Name]"
-    --         end
-    --
-    --         local ft_icon, ft_color = devicons.get_icon_color(filename)
-    --         local modified = vim.bo[props.buf].modified
-    --
-    --         -- Show parent dir for generic filenames
-    --         local generic_names = { "init.lua", "index.ts", "index.js", "mod.rs", "main.go", "main.rs", "lib.rs" }
-    --         local display_name = filename
-    --         for _, name in ipairs(generic_names) do
-    --           if filename == name then
-    --             local full_path = vim.api.nvim_buf_get_name(props.buf)
-    --             local parent = vim.fn.fnamemodify(full_path, ":h:t")
-    --             display_name = parent .. "/" .. filename
-    --             break
-    --           end
-    --         end
-    --
-    --         -- Diagnostics
-    --         local diagnostics = {}
-    --         local diag_counts = {
-    --           error = #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity.ERROR }),
-    --           warn = #vim.diagnostic.get(props.buf, { severity = vim.diagnostic.severity.WARN }),
-    --         }
-    --
-    --         local has_diagnostics = diag_counts.error > 0 or diag_counts.warn > 0
-    --         local text_hl = has_diagnostics and (diag_counts.error > 0 and "DiagnosticError" or "DiagnosticWarn")
-    --             or (props.focused and "Normal" or "Comment")
-    --
-    --         if diag_counts.error > 0 then
-    --           table.insert(diagnostics, { "  ", guifg = "#f38ba8" })
-    --           table.insert(diagnostics, { tostring(diag_counts.error), guifg = "#f38ba8" })
-    --         end
-    --         if diag_counts.warn > 0 then
-    --           table.insert(diagnostics, { "  ", guifg = "#f9e2af" })
-    --           table.insert(diagnostics, { tostring(diag_counts.warn), guifg = "#f9e2af" })
-    --         end
-    --
-    --         local res = { guibg = props.focused and "#1e1e2e" or "#11111b", { " " } }
-    --
-    --         if ft_icon then
-    --           table.insert(res, { ft_icon, guifg = ft_color })
-    --           table.insert(res, { " " })
-    --         end
-    --
-    --         table.insert(res, { display_name, gui = modified and "bold,italic" or "bold", group = text_hl })
-    --
-    --         if modified then
-    --           table.insert(res, { " ", guifg = "#fab387" })
-    --         end
-    --
-    --         for _, diag in ipairs(diagnostics) do
-    --           table.insert(res, diag)
-    --         end
-    --
-    --         table.insert(res, { " " })
-    --         return res
-    --       end,
-    --     })
-    --   end,
-    -- },
-    -- {
-    --   -- modes.nvim: Cursorline color indicates mode
-    --   "mvllow/modes.nvim",
-    --   event = "VeryLazy",
-    --   config = function()
-    --     require("modes").setup({
-    --       colors = {
-    --         bg = "",
-    --         copy = "#f5c359",
-    --         delete = "#c75c6a",
-    --         insert = "#78ccc5",
-    --         visual = "#9745be",
-    --       },
-    --       line_opacity = 0.25,
-    --       set_cursor = true,
-    --       set_cursorline = true,
-    --       set_number = true,
-    --       ignore = { "NvimTree", "TelescopePrompt", "oil", "lazy", "Avante", "AvanteInput", "snacks_dashboard" },
-    --     })
-    --   end,
-    -- },
-    {
-      "akinsho/bufferline.nvim",
-      event = "VeryLazy",
-      dependencies = {
-        "nvim-tree/nvim-web-devicons",
-      },
-      config = function()
-        require("plugins.bufferline")
-      end,
-    },
     {
       "SuperBo/fugit2.nvim",
       dependencies = {
         "MunifTanjim/nui.nvim",
         "nvim-tree/nvim-web-devicons",
         "nvim-lua/plenary.nvim",
-        {
-          "chrisgrieser/nvim-tinygit",
-          dependencies = {
-            {
-              "stevearc/dressing.nvim",
-            },
-          },
-        },
+        "chrisgrieser/nvim-tinygit",
       },
       cmd = {
         "Fugit2",
@@ -594,7 +611,7 @@ return {
         "Fugit2Graph",
       },
       keys = {
-        { "<Leader>g", mode = "n", "<cmd>Fugit2<cr>" },
+        { "<Leader>g", "<cmd>Fugit2<cr>", mode = "n", desc = "Fugit2: git status" },
       },
       ---@module 'fugit2'
       ---@type Fugit2Config
@@ -656,7 +673,8 @@ return {
     },
     {
       "lewis6991/gitsigns.nvim",
-      event = "VeryLazy",
+      -- attaches per buffer anyway; BufReadPre keeps signs on the first file.
+      event = { "BufReadPre", "BufNewFile" },
       dependencies = {
         "nvim-lua/plenary.nvim",
       },
@@ -665,10 +683,11 @@ return {
       end,
     },
     {
-      -- satellite.nvim: scrollbar with diagnostics/gitsigns/search marks
+      -- satellite.nvim: scrollbar with diagnostic and gitsigns marks
       -- (successor of the dormant petertriho/nvim-scrollbar)
       "lewis6991/satellite.nvim",
-      event = "VeryLazy",
+      -- scrollbar marks only make sense once a real buffer is displayed.
+      event = "BufReadPost",
       config = function()
         require("plugins.satellite")
       end,
@@ -687,30 +706,50 @@ return {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-web-devicons",
       },
-      opts = require("plugins.todo-comment"),
+      config = function()
+        require("plugins.todo-comment")
+      end,
     },
   },
 
   -- Operator
   {
-    {
-      "kana/vim-operator-replace",
-      event = "VeryLazy",
-      dependencies = {
-        "kana/vim-operator-user",
-      },
-    },
+    -- The two kana/vim-operator-user operators load from stubs on their
+    -- <Plug> targets (the accelerated-jk pattern): the typed maps in
+    -- lua/config/keymap.lua keep their noremap lhs, and an rhs starting with
+    -- <Plug> is always remapped, so the stub fires on first press, loads the
+    -- plugin (vim-operator-user rides along as a dependency), and re-feeds.
+    -- Stubbing <Plug> lhs adds no typed-key prefixes, so operator-pending
+    -- timeout behavior is untouched.
     {
       "rhysd/vim-operator-surround",
-      event = "VeryLazy",
+      -- td/ti/tr visual maps in lua/config/keymap.lua feed these.
+      keys = {
+        { "<Plug>(operator-surround-delete)", mode = "v" },
+        { "<Plug>(operator-surround-append)", mode = "v" },
+        { "<Plug>(operator-surround-replace)", mode = "v" },
+      },
       dependencies = {
         "kana/vim-operator-user",
       },
     },
     {
       "mopp/vim-operator-convert-case",
-      event = "VeryLazy",
-      config = function()
+      -- tu visual map in lua/config/keymap.lua feeds this.
+      keys = {
+        { "<Plug>(operator-convert-case-upper-camel)", mode = "v" },
+      },
+      dependencies = {
+        "kana/vim-operator-user",
+      },
+    },
+    {
+      "AndrewRadev/switch.vim",
+      -- the only live entry is the manual `gs` -> `:Switch` map in
+      -- lua/config/keymap.lua; the command stub covers it. `init` runs at
+      -- startup, so g:switch_mapping is cleared before the plugin ever loads.
+      cmd = { "Switch", "SwitchReverse" },
+      init = function()
         vim.g.switch_mapping = ""
         vim.g.switch_custom_definitions = {
           { 1, 0 },
@@ -721,30 +760,25 @@ return {
           { "static", "dynamic" },
         }
       end,
-      dependencies = {
-        "kana/vim-operator-user",
-      },
-    },
-    {
-      "AndrewRadev/switch.vim",
-      event = "VeryLazy",
     },
     {
       "junegunn/vim-easy-align",
       cmd = {
         "EasyAlign",
       },
+      -- Visual mode only: normal ga is text-case.nvim's prefix.
+      keys = {
+        { "ga", "<Plug>(LiveEasyAlign)", mode = "v", silent = true, desc = "LiveEasyAlign" },
+      },
     },
     {
       "tyru/open-browser.vim",
-      event = "VeryLazy",
-    },
-    {
-      "tkmpypy/chowcho.nvim",
-      event = "VeryLazy",
-      config = function()
-        require("plugins.chowcho")
-      end,
+      -- gx (n/v) in lua/config/keymap.lua feeds this <Plug>; stubbing the
+      -- <Plug> itself (accelerated-jk pattern) survives that noremap map,
+      -- because an rhs starting with <Plug> is always remapped.
+      keys = {
+        { "<Plug>(openbrowser-smart-search)", mode = { "n", "v" } },
+      },
     },
   },
 
@@ -763,17 +797,37 @@ return {
     },
     {
       "saecki/crates.nvim",
-      opts = require("plugins.crates"),
+      -- upstream-recommended trigger; without one this spec (defaults.lazy =
+      -- true) never loaded at all.
+      event = { "BufRead Cargo.toml" },
+      opts = function()
+        return require("plugins.crates")
+      end,
     },
 
-    -- marp.nvim: Markdown presentations
+    -- marp.nvim: Markdown presentations. marp_command stays the plugin's
+    -- default ("marp" on PATH); the pinned Homebrew node + marp pair is not
+    -- installed.
     {
       "nwiizo/marp.nvim",
       ft = "markdown",
+      cmd = {
+        "MarpConfig",
+        "MarpCopyPath",
+        "MarpDebug",
+        "MarpExport",
+        "MarpInfo",
+        "MarpList",
+        "MarpPreview",
+        "MarpSnippet",
+        "MarpStop",
+        "MarpStopAll",
+        "MarpTheme",
+        "MarpThumbnail",
+        "MarpWatch",
+      },
       config = function()
-        require("marp").setup({
-          marp_command = "/opt/homebrew/opt/node/bin/node /opt/homebrew/bin/marp",
-        })
+        require("marp").setup({})
       end,
     },
 
@@ -783,9 +837,6 @@ return {
         "MeanderingProgrammer/render-markdown.nvim",
         ft = {
           "markdown",
-          "Avante",
-          "codecompanion",
-          "copilot-chat",
         },
         dependencies = {
           "nvim-treesitter/nvim-treesitter",
@@ -796,36 +847,41 @@ return {
         end,
       },
       {
+        -- Loaded by :DiagramToggle (lua/config/command.lua), which runs
+        -- `Lazy load diagram.nvim`; the plugin defines no such command, so a
+        -- lazy cmd stub under that name would race the real one.
         "3rd/diagram.nvim",
         lazy = true,
-        cmd = { "DiagramToggle" },
         dependencies = {
           {
             "nvim-treesitter/nvim-treesitter",
           },
           {
             "3rd/image.nvim",
-            opts = require("plugins.image"),
+            opts = function()
+              return require("plugins.image")
+            end,
           },
         },
         config = function()
           require("plugins.diagram")
         end,
       },
-      {
-        "wallpants/github-preview.nvim",
-        lazy = true,
-        build = "bun i && git reset --hard",
-        ft = { "markdown" },
-        cmd = {
-          "GithubPreviewToggle",
-          "GithubPreviewStart",
-          "GithubPreviewStop",
-        },
-        config = function()
-          require("plugins.github-preview")
-        end,
-      },
+      -- {
+      --   "wallpants/github-preview.nvim",
+      --   lazy = true,
+      --   build = "bun i && git reset --hard",
+      --   -- setup() creates these commands; a markdown ft trigger would start
+      --   -- the plugin in every markdown buffer.
+      --   cmd = {
+      --     "GithubPreviewToggle",
+      --     "GithubPreviewStart",
+      --     "GithubPreviewStop",
+      --   },
+      --   config = function()
+      --     require("plugins.github-preview")
+      --   end,
+      -- },
     },
 
     -- Git
@@ -875,7 +931,9 @@ return {
     },
     {
       "folke/trouble.nvim",
-      event = "VeryLazy",
+      -- every entry point is `:Trouble ...` (lua/lsp/init.lua keymaps run
+      -- `<Cmd>Trouble ...<CR>`); the command stub loads it on first use.
+      cmd = "Trouble",
       opts = {
         auto_close = true,
         auto_preview = true,
@@ -888,7 +946,9 @@ return {
       dependencies = {
         "echasnovski/mini.icons",
       },
-      opts = require("plugins.which-key"),
+      opts = function()
+        return require("plugins.which-key")
+      end,
       keys = {
         {
           "<Leader>?",
@@ -903,8 +963,7 @@ return {
       "haya14busa/vim-asterisk",
       ---@type LazyKeysSpec
       keys = {
-        ---@diagnostic disable-next-line
-        { "*", "<Plug>(asterisk-gz*)", desc = "Run 'asterisk-gz*'", { "n", "v", "x", "s", "o", "i", "t" } },
+        { "*", "<Plug>(asterisk-gz*)", mode = { "n", "x" }, desc = "Run 'asterisk-gz*'" },
       },
     },
     {
@@ -932,6 +991,19 @@ return {
     {
       "andymass/vim-matchup",
       event = { "BufReadPost", "BufNewFile" },
+      init = function()
+        -- plugin/matchup.vim runs `au! matchparen` to clear pi_paren's group,
+        -- but pi_paren (plugin/matchparen.lua on this nightly) never runs --
+        -- lazy.nvim's disabled_plugins keeps it off -- so the group did not
+        -- exist and every first file left v:errmsg = "E216: No such group or
+        -- event: matchparen". An empty group lets that clear succeed;
+        -- loaded_matchparen = 1 is what match-up's own E216 fallback sets.
+        -- matchup_no_version_check is read by the same file, so it is set
+        -- here, before the plugin loads, rather than in its config.
+        vim.api.nvim_create_augroup("matchparen", { clear = true })
+        vim.g.loaded_matchparen = 1
+        vim.g.matchup_no_version_check = true
+      end,
       config = function()
         require("plugins.matchup")
       end,
@@ -939,7 +1011,11 @@ return {
     {
       -- hbac.nvim: Auto close unused buffers
       "axkirillov/hbac.nvim",
-      event = "VeryLazy",
+      -- autoclose=true is the whole point: hbac must count buffers as they
+      -- appear, so its true trigger is the first listed buffer (BufAdd never
+      -- fires for the initial startup buffer), not a key or command.
+      event = "BufAdd",
+      cmd = "Hbac",
       opts = {
         autoclose = true,
         threshold = 10,
@@ -948,7 +1024,19 @@ return {
     },
     {
       "gbprod/yanky.nvim",
-      event = "VeryLazy",
+      -- no y/p remaps exist in this config; the ring only has value if it
+      -- records every yank, so the first TextYankPost is the real trigger
+      -- (lazy re-emits the event after loading, so that yank is captured).
+      event = "TextYankPost",
+      -- Ring only: yanky's defaults also paint YankyYanked/YankyPut (linked
+      -- to Search, 500ms) over the region on every yank and put, so the
+      -- paint is off.
+      opts = {
+        highlight = {
+          on_put = false,
+          on_yank = false,
+        },
+      },
       keys = {
         { "<Leader>p", false },
         {
@@ -972,11 +1060,31 @@ return {
         -- Colorizer auto-attaches by filetype, which cannot name these files:
         -- a colorscheme is plain lua or vim, kitty/color.conf is conf, and the
         -- ganja themes are json -- filetypes shared with files that must stay
-        -- unhighlighted. So `filetypes` stays empty below and attachment is
-        -- driven from here, by path. Requiring the module is what pulls the
-        -- plugin in, so no separate lazy trigger is needed.
+        -- unhighlighted. So `filetypes` names a filetype nothing has (see
+        -- below) and attachment is driven from here, by path. Requiring the
+        -- module is what pulls the plugin in, so no separate lazy trigger is
+        -- needed.
+        --
+        -- The load has to wait for 'termguicolors' though: nvim turns it on
+        -- only once the terminal answers its capability query, which lands at
+        -- VimEnter, while a file named on the command line reaches BufReadPost
+        -- well before that. colorizer.setup() refuses to run without the
+        -- option and returns early, so an eager require would leave the plugin
+        -- on its defaults with none of the options below and put an error on
+        -- screen. Setting the option ourselves is the other way out, but then
+        -- the frames before :colorscheme paint nvim's default #14161b Normal
+        -- over the terminal background this colorscheme leaves showing.
+        local group = vim.api.nvim_create_augroup("colorizer_paths", { clear = true })
+        local waiting = {}
+
+        local function attach(buf)
+          if vim.api.nvim_buf_is_valid(buf) then
+            require("colorizer").attach_to_buffer(buf)
+          end
+        end
+
         vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-          group = vim.api.nvim_create_augroup("colorizer_paths", { clear = true }),
+          group = group,
           pattern = {
             "*/colors/*",
             "*/highlight.lua",
@@ -984,19 +1092,43 @@ return {
             vim.fs.normalize("~/.config/ganja/themes/*.json"),
           },
           callback = function(args)
-            require("colorizer").attach_to_buffer(args.buf)
+            if vim.o.termguicolors then
+              attach(args.buf)
+            else
+              waiting[args.buf] = true
+            end
+          end,
+        })
+
+        vim.api.nvim_create_autocmd("OptionSet", {
+          group = group,
+          pattern = "termguicolors",
+          callback = function()
+            if not vim.o.termguicolors then
+              return
+            end
+            local bufs = vim.tbl_keys(waiting)
+            waiting = {}
+            for _, buf in ipairs(bufs) do
+              attach(buf)
+            end
           end,
         })
       end,
       opts = {
-        filetypes = {},
+        -- an empty list is rejected (the plugin builds its filetype autocmd
+        -- from it, and nvim_create_autocmd refuses an empty pattern list) and
+        -- omitting the key defaults to "*", so name a filetype nothing has
+        filetypes = { "colorizer_off" },
         options = {
           parsers = {
             -- colorschemes and theme files carry 8-digit hex and the odd
-            -- rgb()/hsl(); names and 3/6-digit hex are on by default
+            -- rgb()/hsl(); names and 3/6-digit hex are on by default.
+            -- rgb/hsl take a table, not a boolean: config.lua reads
+            -- p.rgb.enable unconditionally and a boolean throws there.
             hex = { rrggbbaa = true },
-            rgb = true,
-            hsl = true,
+            rgb = { enable = true },
+            hsl = { enable = true },
           },
         },
       },
@@ -1010,7 +1142,18 @@ return {
     },
     {
       "wakatime/vim-wakatime",
-      event = "VeryLazy",
+      -- heartbeats only matter once editing starts; the burst's heaviest
+      -- plugin (8-10 ms) has no business in a no-file idle session.
+      event = { "BufReadPost", "BufNewFile", "InsertEnter" },
+      init = function()
+        -- plugin/wakatime.vim self-initializes with require("wakatime").setup()
+        -- (no opts) the moment lazy sources it -- BEFORE lazy can call
+        -- setup(opts) -- and setup_cli() resolves the CLI once, on that first
+        -- call. Pre-setting the plugin's own load guard skips the vimscript
+        -- auto-init entirely, so lazy's setup(opts) is the first init and
+        -- cli_path/python_binary are actually honored.
+        vim.g.loaded_wakatime = 1
+      end,
       opts = {
         cli_path = util.homebrew_binary("wakatime-cli-head", "wakatime-cli"),
         python_binary = util.homebrew_binary("python@3.14", "python3"),

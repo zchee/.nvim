@@ -1,7 +1,18 @@
 local compat = require("plugins.snacks_compat")
 local snacks = require("snacks")
 
-compat.patch_quickfile_module(require("snacks.quickfile"))
+-- Inject lazy wrappers for the patch's filetype/treesitter deps: letting the
+-- patcher resolve its defaults eagerly loads the deferred vim.filetype and
+-- vim.treesitter modules (~1.6 ms) during the startup burst, but they are not
+-- needed until the first quickfile render on BufReadPost.
+compat.patch_quickfile_module(require("snacks.quickfile"), {
+  match_filetype = function(args)
+    return vim.filetype.match(args)
+  end,
+  get_lang = function(ft)
+    return vim.treesitter.language.get_lang(ft)
+  end,
+})
 
 ---@class snacks.Config: snacks.plugins.Config
 snacks.setup({
@@ -100,10 +111,9 @@ snacks.setup({
       float = true,
       max_width = 80,
       max_height = 40,
-      ---@param lang string tree-sitter language
+      ---@param _ string tree-sitter language
       ---@param type snacks.image.Type image type
-      conceal = function(lang, type)
-        _ = lang
+      conceal = function(_, type)
         return type == "math"
       end,
     },
@@ -238,16 +248,13 @@ snacks.setup({
 
     ---@type fun(notif: snacks.notifier.Notif): boolean # filter our unwanted notifications (return false to hide)
     filter = function(notif)
+      -- "timeout" belongs under is_gopls: other timeout notices, such as
+      -- conform's "Formatter 'x' timeout", must stay visible.
       local is_gopls = string.find(notif.msg, "gopls")
       if
-        is_gopls and string.find(notif.msg, "context canceled")
-        or string.find(notif.msg, "timeout")
+        is_gopls and (string.find(notif.msg, "context canceled") or string.find(notif.msg, "timeout"))
         or string.find(notif.msg, "pull diagnostics not supported for this file kind")
       then
-        return false
-      end
-
-      if string.find(notif.msg, "vim%-illuminate: An internal error") then
         return false
       end
 
@@ -261,7 +268,11 @@ snacks.setup({
     history = true,
   },
   picker = {
-    enabled = true,
+    -- Deferred: upstream's UIEnter setup only installs the vim.ui.select
+    -- override, but requiring the picker tree for it costs ~3.4 ms on the UI
+    -- thread right as the UI opens. The override is replicated lazily below;
+    -- everything else about the picker already loads on demand.
+    enabled = false,
     formatters = {
       text = {
         ft = nil, ---@type string? filetype for highlighting
@@ -406,6 +417,12 @@ snacks.setup({
   },
   zen = { enabled = false },
 })
+
+-- parity with the picker's skipped UIEnter setup (ui_select defaults to
+-- true): install the vim.ui.select override without loading the picker tree
+vim.ui.select = function(...)
+  return require("snacks.picker").select(...)
+end
 
 -- reference navigation, parity with vim-illuminate's default <a-n>/<a-p>
 vim.keymap.set("n", "<M-n>", function()

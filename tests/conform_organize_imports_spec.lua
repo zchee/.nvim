@@ -38,6 +38,20 @@ assert_truthy(formatter and formatter.format, "lsp_organize_imports formatter is
 assert_equal("lsp_organize_imports", opts.formatters_by_ft.go[1], "organize-imports must lead the Go chain")
 assert_equal("goimports_rereviser", opts.formatters_by_ft.go[2], "rereviser must follow organize-imports")
 
+-- The Go entries pin lsp_format = "first" (gopls formats before the chain);
+-- format_on_save supplies lsp_format itself, so it must hand the pin back
+-- rather than overwrite it with "fallback". It reads the pin from conform's
+-- live table, which setup() fills.
+do
+  require("conform").setup(opts)
+  local bufnr = vim.api.nvim_create_buf(false, true)
+  for _, ft in ipairs({ "go", "goasm" }) do
+    vim.bo[bufnr].filetype = ft
+    assert_equal("first", opts.format_on_save(bufnr).lsp_format, ft .. " must format through gopls first on save")
+  end
+  vim.api.nvim_buf_delete(bufnr, { force = true })
+end
+
 local source = {
   "package main",
   "",

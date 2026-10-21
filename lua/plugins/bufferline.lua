@@ -54,7 +54,6 @@ bufferline.setup({
     --     return true
     --   end
     -- end,
-    offsets = { { filetype = "NvimTree", text = "File Explorer" } }, --  | function , text_align = "left" | "center" | "right"
     color_icons = true, -- | false, -- whether or not to add the filetype icon highlights
     -- get_element_icon = function(opts)
     --   return require('nvim-web-devicons').get_icon(vim.fn.fnamemodify(opts.path, ":t"), opts.extension,

@@ -75,4 +75,38 @@ local scope2 = marks()
 assert_equal(1, scope2[1], "second scope_incremental: reaches the function start")
 assert_equal(3, scope2[3], "second scope_incremental: reaches the function end")
 
+-- a selection the user starts afresh (v from normal mode) begins at the node
+-- under the cursor, not at the top of the stack an earlier selection left
+do
+  sel.setup({
+    init_selection = "gnn",
+    node_incremental = "grn",
+    node_decremental = "grm",
+    scope_incremental = "grc",
+  })
+  local buf2 = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_set_current_buf(buf2)
+  vim.api.nvim_buf_set_lines(buf2, 0, -1, true, {
+    "local function foo()",
+    "  local x = 1 + 2",
+    "end",
+    "local y = 3",
+  })
+  vim.bo[buf2].filetype = "lua"
+  vim.treesitter.start(buf2, "lua")
+  vim.api.nvim_win_set_cursor(0, { 2, 12 })
+  sel.init_selection()
+  sel.node_incremental()
+  sel.node_incremental()
+  -- the user leaves that selection and starts a new one on the "3" literal
+  vim.cmd("normal! \27")
+  vim.api.nvim_win_set_cursor(0, { 4, 10 })
+  vim.cmd("normal! v\27")
+  sel.node_incremental()
+  local s = vim.api.nvim_buf_get_mark(buf2, "<")
+  local e = vim.api.nvim_buf_get_mark(buf2, ">")
+  assert_equal(4, s[1], "fresh selection: expands from the cursor line, not the stale stack")
+  assert_equal(4, e[1], "fresh selection: stays on the cursor line")
+end
+
 print("OK: treesitter_selection incremental selection behaves")

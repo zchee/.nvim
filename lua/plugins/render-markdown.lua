@@ -5,7 +5,6 @@ render_markdown.setup({
   preset = "lazy",
   file_types = {
     "markdown",
-    "Avante",
   },
   restart_highlighter = true,
   completions = {

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
-# Copied and edit from: https://github.com/fladson/vim-kitty/blob/main/gen-syntax.py
+# Adapted from https://github.com/fladson/vim-kitty/blob/main/gen-syntax.py
 
-# to run the script, cd into the repo and run kitty +launch gen-syntax.py
+# Rewrites everything after the '" START GENERATED CODE' marker in
+# syntax/kitty.vim. Run it from the repo root with the installed kitty's own
+# Python, so the keywords match that kitty:
+#   kitty +launch script/gen-kitty-syntax.py
 # debugging:
 #   print actions:
 #     kitty +runpy 'from kitty.actions import get_all_actions; actions =

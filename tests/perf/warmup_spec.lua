@@ -1,0 +1,421 @@
+-- Warmup chunker spec.
+--
+-- lua/config/warmup.lua -- the cooperative insert-stack warmup: unit/plugin
+-- order, one-load-per-scheduled-tick discipline, the InsertEnter abort flag,
+-- the already-loaded skip/stop paths (idempotency), non-fatal prewarm
+-- units, tagging into vim.g.warmup_loaded, and
+-- the UIEnter arming. Those blocks inject recorder deps (lazy.load,
+-- is_loaded, the scheduler, the tagger) and load no real plugin; the
+-- parity block below boots full-config child sessions, each on a throwaway
+-- ShaDa copy, so the real plugins load there.
+--
+-- Run: XDG_STATE_HOME=<scratch> nvim --headless -u NONE -i NONE -l tests/perf/warmup_spec.lua
+
+vim.opt.runtimepath:append(vim.fn.getcwd())
+package.path = table.concat({
+  vim.fn.getcwd() .. "/lua/?.lua",
+  vim.fn.getcwd() .. "/lua/?/init.lua",
+  package.path,
+}, ";")
+
+local warmup = require("config.warmup")
+
+local function assert_equal(want, got, message)
+  if got ~= want then
+    error(string.format("%s: got %s, want %s", message, vim.inspect(got), vim.inspect(want)))
+  end
+end
+
+local function assert_deep_equal(want, got, message)
+  if not vim.deep_equal(got, want) then
+    error(string.format("%s: got %s, want %s", message, vim.inspect(got), vim.inspect(want)))
+  end
+end
+
+--- Builds recorder deps around a mutable `loaded` set plus a manual tick
+--- queue, so a spec drives the scheduler synchronously and can observe how
+--- many loads each tick performed.
+local function fake_deps(loaded)
+  local rec = { loads = {}, tags = {}, queue = {} }
+  rec.deps = {
+    load = function(name)
+      rec.loads[#rec.loads + 1] = name
+      loaded[name] = true
+    end,
+    is_loaded = function(name)
+      return loaded[name] == true
+    end,
+    schedule = function(fn)
+      rec.queue[#rec.queue + 1] = fn
+    end,
+    tag = function(name)
+      rec.tags[#rec.tags + 1] = name
+    end,
+  }
+  return rec
+end
+
+--- Runs queued ticks until the queue drains or `limit` ticks ran; asserts
+--- the one-load-per-tick budget on every step.
+local function drain(rec, limit)
+  local steps = 0
+  while #rec.queue > 0 do
+    if limit and steps >= limit then
+      return steps
+    end
+    local before = #rec.loads
+    local tick = table.remove(rec.queue, 1)
+    assert_equal(0, #rec.queue, "warmup must queue at most one pending tick")
+    tick()
+    assert(#rec.loads - before <= 1, "a single tick must perform at most one plugin load")
+    steps = steps + 1
+  end
+  return steps
+end
+
+-- unit/order shape: the 7-plugin insert stack in dependency order, blink.cmp
+-- terminal; every unit does exactly one kind of work
+do
+  assert_deep_equal(
+    { "mini.icons", "blink.lib", "copilot.lua", "blink-copilot", "nvim-autopairs", "LuaSnip", "blink.cmp" },
+    warmup.order,
+    "warmup.order must be the insert stack, leaves first, blink.cmp last"
+  )
+  for _, unit in ipairs(warmup.units) do
+    assert(unit.name, "every unit must carry a tick label")
+    assert(
+      (unit.plugin ~= nil) ~= (unit.prewarm ~= nil),
+      "a unit must be exactly one of plugin or prewarm: " .. unit.name
+    )
+    -- copilot runs its native server binary: nothing to probe or wait on
+    assert(not unit.name:find("node", 1, true), "no unit may probe node for copilot: " .. unit.name)
+  end
+end
+
+-- full run over the real units: plugins load in order, one per tick, all
+-- tagged; prewarm units run under pcall (the real prewarms touch lazy/rtp
+-- state that does not exist headless, which must not break the run)
+do
+  local rec = fake_deps({})
+  local state = warmup.run(rec.deps, { aborted = false, index = 1 })
+  drain(rec)
+  assert_deep_equal(warmup.order, rec.loads, "plugin loads must follow warmup.order exactly")
+  assert_deep_equal(warmup.order, rec.tags, "every warmup-loaded plugin must be tagged")
+  assert_equal(true, state.done, "a completed run must mark itself done")
+end
+
+-- pre-aborted (InsertEnter beat the timer): zero loads
+do
+  local rec = fake_deps({})
+  local state = warmup.run(rec.deps, { aborted = true, index = 1 })
+  drain(rec)
+  assert_equal(0, #rec.loads, "an aborted warmup must not load anything")
+  assert_equal(true, state.done, "an aborted warmup must still settle as done")
+end
+
+-- mid-flight abort: InsertEnter between ticks stops the remaining loads
+do
+  local rec = fake_deps({})
+  local state = { aborted = false, index = 1 }
+  local units = {}
+  for _, name in ipairs(warmup.order) do
+    units[#units + 1] = { name = name, plugin = name }
+  end
+  warmup.run(rec.deps, state, units)
+  drain(rec, 2) -- first tick inline + 2 drained ticks = 3 plugins loaded
+  state.aborted = true
+  drain(rec)
+  assert_equal(3, #rec.loads, "an abort between ticks must stop further loads")
+  assert_deep_equal(
+    { warmup.order[1], warmup.order[2], warmup.order[3] },
+    rec.loads,
+    "the pre-abort loads must be the leading slice of the order"
+  )
+end
+
+-- idempotency: plugins the burst already loaded are skipped, never re-loaded
+-- or claimed by the warmup tag
+do
+  local rec = fake_deps({ ["mini.icons"] = true, ["LuaSnip"] = true })
+  warmup.run(rec.deps, { aborted = false, index = 1 })
+  drain(rec)
+  assert_deep_equal(
+    { "blink.lib", "copilot.lua", "blink-copilot", "nvim-autopairs", "blink.cmp" },
+    rec.loads,
+    "already-loaded plugins must be skipped"
+  )
+  assert_deep_equal(rec.loads, rec.tags, "skipped plugins must not be tagged as warmup loads")
+end
+
+-- terminal short-circuit: blink.cmp already in means the lazy path won; stop
+do
+  local rec = fake_deps({ ["blink.cmp"] = true })
+  local state = warmup.run(rec.deps, { aborted = false, index = 1 })
+  assert_equal(0, #rec.loads, "a loaded blink.cmp must stop the warmup before any load")
+  assert_equal(true, state.done, "the short-circuit must settle as done")
+end
+
+-- prewarm failure is non-fatal: the run continues to the remaining units
+do
+  local rec = fake_deps({})
+  local units = {
+    { name = "a", plugin = "a" },
+    {
+      name = "boom",
+      prewarm = function()
+        error("boom")
+      end,
+    },
+    { name = "b", plugin = "b" },
+  }
+  local state = warmup.run(rec.deps, { aborted = false, index = 1 }, units)
+  drain(rec)
+  assert_deep_equal({ "a", "b" }, rec.loads, "a throwing prewarm must not stop the run")
+  assert_equal(true, state.done, "the run must complete past a throwing prewarm")
+end
+
+-- plugin load failure: abort, keep the error, load nothing further
+do
+  local rec = fake_deps({})
+  local failing = vim.tbl_extend("force", rec.deps, {
+    load = function(name)
+      if name == "blink.lib" then
+        error("boom")
+      end
+      rec.loads[#rec.loads + 1] = name
+    end,
+  })
+  local state = { aborted = false, index = 1 }
+  local saved_notify = vim.notify
+  vim.notify = function() end -- the abort path warns by design; keep the pass silent
+  warmup.run(failing, state)
+  drain(rec)
+  vim.notify = saved_notify
+  assert_equal(true, state.aborted, "a failing load must abort the warmup")
+  assert(state.error and state.error:find("boom", 1, true), "the abort must keep the load error")
+  assert_deep_equal({ "mini.icons" }, rec.loads, "nothing after the failing plugin may load")
+end
+
+-- tag shape: appends whole-list re-assignments into vim.g.warmup_loaded
+do
+  vim.g.warmup_loaded = nil
+  warmup.tag("mini.icons")
+  warmup.tag("LuaSnip")
+  assert_deep_equal({ "mini.icons", "LuaSnip" }, vim.g.warmup_loaded, "tag must append to the vim.g list")
+  vim.g.warmup_loaded = nil
+end
+
+-- Both-paths parity + per-tick budget. Two full-config headless child
+-- sessions load the insert stack -- one by driving warmup.run with real
+-- deps, one via lazy.load exactly as the InsertEnter chain would -- and
+-- must end in the same state: identical Go quote-swap maps, autopairs
+-- BS/CR maps, snippet counts, and a loaded blink.cmp.
+-- The warmup child also reports M.tick_ms;
+-- every tick must fit the 8 ms budget. Wall-clock is machine-load
+-- dependent, so the budget takes the per-tick MINIMUM over up to three
+-- child runs (config execution cost is deterministic; load spikes are
+-- not) -- a tick whose minimum still exceeds the budget regressed
+-- structurally, which is exactly what this must catch (e.g. a blink.cmp
+-- update moving cost from module load into setup()).
+local parity_probe_source = [[
+local report = { ok = true }
+local run_ok, run_err = pcall(function()
+  pcall(vim.lsp.enable, "gopls", false)
+  if vim.g.parity_mode == "warmup" then
+    local warmup = require("config.warmup")
+    local lazy = require("lazy")
+    local plugins = require("lazy.core.config").plugins
+    local state = warmup.run({
+      load = function(name)
+        lazy.load({ plugins = { name } })
+      end,
+      is_loaded = function(name)
+        local plugin = plugins[name]
+        return plugin ~= nil and plugin._ ~= nil and plugin._.loaded ~= nil
+      end,
+      schedule = function(fn)
+        vim.defer_fn(fn, 1)
+      end,
+      tag = warmup.tag,
+    }, { aborted = false, index = 1 })
+    vim.wait(30000, function()
+      return state.done == true
+    end, 10)
+    if not state.done then
+      error("warmup run did not complete: " .. vim.inspect(state))
+    end
+    report.tick_ms = warmup.tick_ms
+  else
+    require("lazy").load({ plugins = { "blink.cmp", "nvim-autopairs" } })
+  end
+  local buf = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_set_current_buf(buf)
+  vim.bo[buf].filetype = "go"
+  vim.api.nvim_exec_autocmds("FileType", { buffer = buf })
+  local ls = require("luasnip")
+  report.quote_desc = vim.fn.maparg('"', "i", false, true).desc
+  report.apos_desc = vim.fn.maparg("'", "i", false, true).desc
+  report.has_bs = vim.fn.maparg("<BS>", "i") ~= ""
+  report.has_cr = vim.fn.maparg("<CR>", "i") ~= ""
+  report.snips_go = #ls.get_snippets("go")
+  report.snips_all = #ls.get_snippets("all")
+  report.blink_loaded = package.loaded["blink.cmp"] ~= nil
+  -- Non-warmed filetype: yaml snippets must be absent until a yaml
+  -- buffer's first InsertEnter, then identical on both load paths. The
+  -- autocmd group is executed directly so unrelated InsertEnter handlers
+  -- (copilot, lazy events) stay out of this headless child; a missing
+  -- group fails the exec, which is itself the wiring assertion.
+  report.snips_yaml_pre = #ls.get_snippets("yaml")
+  local ybuf = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_set_current_buf(ybuf)
+  vim.bo[ybuf].filetype = "yaml"
+  vim.api.nvim_exec_autocmds("InsertEnter", { group = "luasnip_ft_snippets" })
+  report.snips_yaml = #ls.get_snippets("yaml")
+end)
+if not run_ok then
+  report.ok = false
+  report.err = tostring(run_err)
+end
+local f = assert(io.open(vim.g.parity_out, "w"))
+f:write(vim.json.encode(report))
+f:close()
+vim.cmd("qa!")
+]]
+
+local parity_probe_path = vim.fn.tempname() .. "_parity.lua"
+do
+  local f = assert(io.open(parity_probe_path, "w"))
+  f:write(parity_probe_source)
+  f:close()
+end
+
+local throwaway_shada = dofile(vim.fs.joinpath(vim.fn.getcwd(), "script", "lib", "throwaway_shada.lua"))
+
+--- Runs one full-config headless child in the given mode, returns its report.
+local function run_parity_child(mode)
+  local out = vim.fn.tempname() .. "_parity.json"
+  local job = vim.fn.jobstart({
+    vim.v.progpath,
+    "--headless",
+    -- full-config children write ShaDa on exit; keep them off the real one
+    "-i",
+    throwaway_shada(),
+    "--cmd",
+    string.format("lua vim.g.parity_mode=%q vim.g.parity_out=%q", mode, out),
+    "-c",
+    "luafile " .. parity_probe_path,
+  })
+  assert(job > 0, "failed to start the " .. mode .. " parity child")
+  local exited = vim.fn.jobwait({ job }, 60000)[1]
+  if exited == -1 then
+    vim.fn.jobstop(job)
+    error(mode .. " parity child did not finish within 60s")
+  end
+  local f = assert(io.open(out, "r"), mode .. " parity child wrote no report")
+  local body = f:read("*a")
+  f:close()
+  os.remove(out)
+  local report = vim.json.decode(body)
+  assert(report.ok, mode .. " parity child failed: " .. tostring(report.err))
+  return report
+end
+
+do
+  local tick_budget_ms = 8
+  local warmup_report = run_parity_child("warmup")
+  local lazy_report = run_parity_child("lazy")
+
+  local parity_fields = {
+    "quote_desc",
+    "apos_desc",
+    "has_bs",
+    "has_cr",
+    "snips_go",
+    "snips_all",
+    "snips_yaml_pre",
+    "snips_yaml",
+    "blink_loaded",
+  }
+  for _, field in ipairs(parity_fields) do
+    assert_equal(
+      lazy_report[field],
+      warmup_report[field],
+      "both-paths parity: " .. field .. " must match between the warmup and lazy load paths"
+    )
+  end
+  assert_equal("Pair '' inside Go strings", warmup_report.quote_desc, "the Go quote-swap map must exist")
+  assert_equal(true, warmup_report.blink_loaded, "blink.cmp must be loaded on both paths")
+  assert(warmup_report.snips_go > 0, "go snippets must be registered on both paths")
+  assert(warmup_report.snips_all > 0, "all-filetype snippets must be registered on both paths")
+  -- The non-driver set must NOT ride along with the warmup (or the
+  -- lazy driver scan) -- it appears only after its own ft's InsertEnter
+  assert_equal(0, warmup_report.snips_yaml_pre, "yaml snippets must not be loaded before a yaml InsertEnter")
+  assert(warmup_report.snips_yaml > 0, "yaml snippets must be registered by the yaml buffer's first InsertEnter")
+
+  -- per-tick budget: min over up to 3 warmup children; extra children run
+  -- only when a tick misses on the earlier attempt (fast path: one child)
+  local best = {}
+  for name, ms in pairs(warmup_report.tick_ms) do
+    best[name] = ms
+  end
+  for _ = 1, 2 do
+    local over = false
+    for _, ms in pairs(best) do
+      if ms > tick_budget_ms then
+        over = true
+        break
+      end
+    end
+    if not over then
+      break
+    end
+    local retry = run_parity_child("warmup")
+    for name, ms in pairs(retry.tick_ms) do
+      if best[name] == nil or ms < best[name] then
+        best[name] = ms
+      end
+    end
+  end
+  for name, ms in pairs(best) do
+    assert(
+      ms <= tick_budget_ms,
+      string.format(
+        "warmup tick %s costs %.2f ms; the per-tick budget is %d ms (min of 3 runs)",
+        name,
+        ms,
+        tick_budget_ms
+      )
+    )
+  end
+end
+
+os.remove(parity_probe_path)
+
+-- setup arming: UIEnter starts the timer; an InsertEnter before it fires
+-- aborts without touching deps (headless sessions never even reach here,
+-- so the autocmds are exercised via exec_autocmds)
+do
+  local rec = fake_deps({})
+  local saved_delay = warmup.delay_ms
+  warmup.delay_ms = 5
+  warmup.setup(rec.deps)
+  vim.api.nvim_exec_autocmds("UIEnter", {})
+  vim.api.nvim_exec_autocmds("InsertEnter", {})
+  vim.wait(200, function()
+    return warmup.state ~= nil and warmup.state.done == true
+  end)
+  assert_equal(true, warmup.state.aborted, "InsertEnter before the timer must abort")
+  assert_equal(0, #rec.loads, "an aborted armed warmup must not load anything")
+
+  -- and the undisturbed path runs to completion on the real scheduler
+  local rec2 = fake_deps({})
+  rec2.deps.schedule = vim.schedule
+  warmup.setup(rec2.deps)
+  vim.api.nvim_exec_autocmds("UIEnter", {})
+  vim.wait(2000, function()
+    return warmup.state ~= nil and warmup.state.done == true
+  end)
+  assert_equal(true, warmup.state.done, "an undisturbed armed warmup must finish")
+  assert_deep_equal(warmup.order, rec2.loads, "the armed run must load the whole stack in order")
+  warmup.delay_ms = saved_delay
+end

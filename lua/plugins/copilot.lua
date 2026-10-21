@@ -2,6 +2,52 @@ local util = require("util")
 
 local copilot = require("copilot")
 
+-- npm platform names (process.platform / process.arch) for os_uname() fields.
+local npm_os = { Darwin = "darwin", Linux = "linux", Windows_NT = "win32" }
+local npm_arch = { arm64 = "arm64", aarch64 = "arm64", x86_64 = "x64", AMD64 = "x64" }
+
+--- Returns the native copilot-language-server that bun's global install of
+--- @github/copilot-language-server pulls in as the optional dependency
+--- @github/copilot-language-server-<os>-<arch>. Running it directly keeps
+--- node out of the startup path: the nodejs server type makes copilot.setup()
+--- block on a synchronous `node --version`.
+---@return string? path executable path, nil when it cannot be resolved
+---@return string? err why it cannot, for the error notification
+local function native_server_path()
+  local uname = vim.uv.os_uname()
+  local os_name, arch = npm_os[uname.sysname], npm_arch[uname.machine]
+  if not os_name or not arch then
+    return nil, string.format("no copilot-language-server build for %s/%s", uname.sysname, uname.machine)
+  end
+  -- bun links a global package's bins into <install root>/bin, so the
+  -- copilot-language-server link util.bun_prefix finds ($BUN_INSTALL, else
+  -- bun's default ~/.bun, else $PATH; always absolute) names the root the
+  -- platform package sits under, with or without $BUN_INSTALL set. The link
+  -- is used unresolved: its target lies inside node_modules.
+  local root = vim.fs.dirname(vim.fs.dirname(util.bun_prefix("copilot-language-server")))
+  local path = vim.fs.joinpath(
+    root,
+    "install/global/node_modules/@github",
+    string.format("copilot-language-server-%s-%s", os_name, arch),
+    os_name == "win32" and "copilot-language-server.exe" or "copilot-language-server"
+  )
+  if vim.fn.executable(path) ~= 1 then
+    return nil, path .. " is not executable"
+  end
+  return path
+end
+
+local server_path, server_err = native_server_path()
+if not server_path then
+  -- Fail fast instead of handing copilot.lua a nil path, which would make it
+  -- download its own server build in the background.
+  vim.notify(
+    string.format("plugins.copilot: %s; install it with `bun add -g @github/copilot-language-server`", server_err),
+    vim.log.levels.ERROR
+  )
+  return
+end
+
 copilot.setup({
   panel = { enabled = false },
   suggestion = {
@@ -17,19 +63,17 @@ copilot.setup({
     },
   },
   filetypes = {
-    ["*"] = false,
-    go = true,
-    lua = true,
-    sh = true,
-    toml = true,
+    ["*"] = true,
   },
-  copilot_node_command = util.homebrew_binary("node", "node"),
+  -- ["*"] also matches buffers with no file behind them; copilot's default
+  -- check only rejects unlisted buffers and special buftypes, so a fresh
+  -- [No Name] buffer still got a client.
+  should_attach = function(bufnr, bufname)
+    return bufname ~= "" and vim.bo[bufnr].buflisted and vim.bo[bufnr].buftype == ""
+  end,
   server = {
-    type = "nodejs",
-    custom_server_filepath = vim.fs.joinpath(
-      util.getenv("BUN_INSTALL"),
-      "install/global/node_modules/@github/copilot-language-server/dist/language-server.js"
-    ),
+    type = "binary",
+    custom_server_filepath = server_path,
   },
   -- Completion (not chat) model. Valid IDs are served dynamically — list and
   -- switch with `:Copilot model`; an invalid ID logs a startup warning and the
@@ -41,10 +85,10 @@ copilot.setup({
     -- Stop copilot-language-server from encrypting its OAuth token with the macOS Keychain.
     -- When encryption is on, the server fetches a "KeytarMasterKey" from the Keychain
     -- (service=copilot-language-server, account=oauth-token-key). The Keychain "Always Allow"
-    -- ACL is bound to the code signature + path of the node binary that was granted access,
-    -- but Homebrew's node is ad-hoc signed and lives under a version-specific Cellar path
-    -- (e.g. Cellar/node/26.4.0/bin/node) that changes on every upgrade. So each node update
-    -- invalidates the ACL and the Keychain auth popup reappears on every file open.
+    -- ACL is bound to the code signature + path of the executable that was granted access,
+    -- and that executable is replaced on every upgrade (the native server binary on each bun
+    -- update; before it, Homebrew's ad-hoc signed node under a version-specific Cellar path).
+    -- So each update invalidates the ACL and the Keychain auth popup reappears on every file open.
     -- Injecting the env var equivalent of `internal.auth.tokenEncryption = "false"` makes the
     -- server store the token in plaintext (under ~/.config/github-copilot), eliminating the prompt.
     -- The env var name derives from the server's internal rus() (camelCase -> SNAKE_CASE)
@@ -65,8 +109,8 @@ copilot.setup({
         -- temperature = ["advanced", "temperature"],
         -- topP = ["advanced", "top_p"],
         indentationMode = false,
-        inlineSuggestCount = 3, -- #completions for getCompletions
-        listCount = 3, -- #completions for panel
+        inlineSuggestCount = 3,
+        listCount = 3,
         -- debugOverrideProxyUrl = ["advanced", "debug.overrideProxyUrl"],
         -- debugTestOverrideProxyUrl = ["advanced", "debug.testOverrideProxyUrl"],
         -- debugEnableGitHubTelemetry = ["advanced", "debug.githubCTSIntegrationEnabled"],
@@ -90,84 +134,3 @@ copilot.setup({
     },
   },
 })
-
--- configuration: [{
---   title: "GitHub Copilot",
---   properties: {
---     "github.copilot.selectedCompletionModel": {
---       type: "string",
---       default: "",
---       markdownDescription: "The currently selected completion model ID. To select from a list of available models, use the __\"Change Completions Model\"__ command or open the model picker (from the Copilot menu in the VS Code title bar, select __\"Configure Code Completions\"__ then __\"Change Completions Model\"__. The value must be a valid model ID. An empty value indicates that the default model will be used."
---     },
---     "github.copilot.advanced": {
---       type: "object",
---       title: "Advanced Settings",
---       properties: {
---         authProvider: {
---           type: "string",
---           enum: ["github", "github-enterprise"],
---           enumDescriptions: ["GitHub.com", "GitHub Enterprise"],
---           default: "github",
---           description: "The GitHub identity to use for Copilot"
---         },
---         authPermissions: {
---           type: "string",
---           enum: ["default", "minimal"],
---           markdownEnumDescriptions: ["Default (recommended) - The default permissions enable the best that Copilot has to offer including, but not limited to, faster repo indexing and the power of the `@github` agent.", "Minimal - The minimal permissions required for Copilot functionality."],
---           default: "default",
---           markdownDescription: "Controls what kind of permissions are asked for when signing in to Copilot. The options are\n* `default` - (strongly recommended) The default permissions enable the best that Copilot has to offer including, but not limited to, faster repo indexing and the power of the `@github` agent.\n* `minimal` - The minimal permissions are the least that Copilot needs to function. Some features may behave slower or not at all."
---         },
---         useLanguageServer: {
---           type: "boolean",
---           default: false,
---           description: "Experimental: Use language server"
---         },
---         "debug.overrideEngine": {
---           type: "string",
---           default: "",
---           description: "Override engine name"
---         },
---         "debug.overrideProxyUrl": {
---           type: "string",
---           default: "",
---           description: "Override GitHub authentication proxy full URL"
---         },
---         "debug.testOverrideProxyUrl": {
---           type: "string",
---           default: "",
---           description: "Override GitHub authentication proxy URL when running tests"
---         },
---         "debug.overrideCapiUrl": {
---           type: "string",
---           default: "",
---           description: "Override GitHub Copilot API full URL"
---         },
---         "debug.testOverrideCapiUrl": {
---           type: "string",
---           default: "",
---           description: "Override GitHub Copilot API URL when running tests"
---         },
---         "debug.filterLogCategories": {
---           type: "array",
---           default: [],
---           deprecationMessage: "Set overrideLogLevels.* to ERROR to filter out unwanted categories.",
---           description: "Show only log categories listed in this setting. If an array is empty, show all loggers"
---         }
---       }
---     },
---     "github.copilot.enable": {
---       type: "object",
---       scope: "window",
---       default: {
---         "*": true,
---         plaintext: false,
---         markdown: false,
---         scminput: false
---       },
---       additionalProperties: {
---         type: "boolean"
---       },
---       markdownDescription: "Enable or disable auto triggering of Copilot completions for specified [languages](https://code.visualstudio.com/docs/languages/identifiers). You can still trigger suggestions manually using `Alt + \\`"
---     }
---   }
--- }],

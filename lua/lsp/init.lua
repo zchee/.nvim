@@ -1,7 +1,4 @@
--- local util = require("util")
-
--- local lspconfig = require("lspconfig")
-local lspconfig_configs = require("lspconfig.configs")
+local util = require("util")
 
 -- Work around a Neovim 0.13-dev regression in the semantic-tokens capability.
 --
@@ -48,136 +45,22 @@ vim.diagnostic.config({
   virtual_lines = false,
   signs = true,
   float = nil,
+  -- true: live diagnostics while typing are worth the per-keystroke redraw.
   update_in_insert = true,
   severity_sort = true,
   jump = nil,
 })
 
-local hover = require("hover")
-hover.config({
-  --- @class Hover.UserConfig : Hover.Config
-  init = function()
-    require("hover.providers.dap")
-    require("hover.providers.diagnostic")
-    require("hover.providers.dictionary")
-    require("hover.providers.fold_preview")
-    require("hover.providers.gh")
-    require("hover.providers.gh_user")
-    require("hover.providers.highlight")
-    require("hover.providers.lsp")
-    require("hover.providers.man")
-  end,
-  providers = {
-    "hover.providers.diagnostic",
-    "hover.providers.lsp",
-    "hover.providers.dap",
-    "hover.providers.man",
-    "hover.providers.dictionary",
-  },
-  ---@type vim.api.keyset.win_config
-  preview_opts = {
-    -- explicit: hover.nvim's own default is "single", not vim.o.winborder
-    border = "rounded",
-  },
-  preview_window = false,
-  title = false,
-  mouse_providers = { "hover.providers.lsp" },
-  mouse_delay = 1000,
-})
+-- hover.nvim, nvim-lsp-endhints, tiny-inline-diagnostic and actions-preview
+-- are configured in their own `config` blocks (lua/plugins/init.lua, loading
+-- lua/plugins/{hover,lsp_endhints,tiny_inline_diagnostic,actions_preview}.lua)
+-- so their `event = "LspAttach"` triggers stay real: a require here would load
+-- them the moment the LSP stack initializes.
 
 local lspkind = require("lspkind")
 lspkind.init({
   mode = "symbol_text",
   preset = "codicons",
-})
-
-local lsp_endhints_pattern = {
-  -- "*.go",
-  "*.lua",
-  "*.py",
-}
-local lsp_endhints = require("lsp-endhints")
-vim.api.nvim_create_autocmd({ "LspAttach", "LspDetach" }, {
-  pattern = lsp_endhints_pattern,
-  callback = function()
-    lsp_endhints.setup({
-      icons = {
-        type = "󰜁  ",
-        parameter = "󰏪  ",
-        offspec = "  ",
-        unknown = "  ",
-      },
-      label = {
-        truncateAtChars = 100,
-        padding = 1,
-        marginLeft = 3,
-        sameKindSeparator = ", ",
-      },
-      extmark = {
-        priority = 3000,
-      },
-      autoEnableHints = true,
-    })
-  end,
-})
-
-local tiny_inline_diagnostic = require("tiny-inline-diagnostic")
-tiny_inline_diagnostic.setup({
-  preset = "modern", -- "modern", "classic", "minimal", "powerline", "ghost", "simple", "nonerdfont", "amongus"
-  transparent_bg = true,
-  transparent_cursorline = true,
-  hi = {
-    error = "DiagnosticError",
-    warn = "DiagnosticWarn",
-    info = "DiagnosticInfo",
-    hint = "DiagnosticHint",
-    arrow = "NonText",
-    background = "CursorLine", -- Background color for diagnostics. Can be a highlight group or a hexadecimal color (#RRGGBB)
-    mixing_color = "Normal", -- Color blending option for the diagnostic background. Use "None" or a hexadecimal color (#RRGGBB) to blend with another color
-  },
-  options = {
-    show_source = {
-      enabled = true,
-      if_many = true,
-    },
-    use_icons_from_diagnostic = true,
-    set_arrow_to_diag_color = false,
-    add_messages = true, -- Add messages to diagnostics when multiline diagnostics are enabled. If set to false, only signs will be displayed
-    throttle = 20, -- milliseconds
-    softwrap = 200, -- Minimum message length before wrapping to a new line
-    multilines = {
-      enabled = true,
-      always_show = true,
-      trim_whitespaces = true,
-      tabstop = 4,
-    },
-    show_all_diags_on_cursorline = false,
-    enable_on_insert = false,
-    enable_on_select = false,
-    overflow = {
-      mode = "wrap", -- "wrap" - Split long messages into multiple lines, "none" - Do not truncate messages, "oneline" - Keep the message on a single line, even if it's long
-      padding = 5, -- Trigger wrapping to occur this many characters earlier when mode == "wrap".
-    },
-    break_line = {
-      enabled = false,
-      after = 200, -- Number of characters after which to break the line
-    },
-    -- format = function(diagnostic)
-    --   return diagnostic.message .. " [" .. diagnostic.source .. "]"
-    -- end
-    format = nil,
-    virt_texts = {
-      priority = 2048,
-    },
-    severity = {
-      vim.diagnostic.severity.ERROR,
-      vim.diagnostic.severity.WARN,
-      vim.diagnostic.severity.INFO,
-      vim.diagnostic.severity.HINT,
-    },
-    overwrite_events = nil, -- Events to attach diagnostics to buffers. You should not change this unless the plugin does not work with your configuration
-  },
-  disabled_ft = {}, -- List of filetypes to disable the plugin
 })
 
 -- lspconfig.util.default_config = vim.tbl_extend(
@@ -223,63 +106,6 @@ tiny_inline_diagnostic.setup({
 --   vim.lsp.handlers["textDocument/inlayHint"](err, result, ctx)
 -- end
 
-local actions_preview = require("actions-preview")
-actions_preview.setup({
-  -- options for vim.diff(): https://neovim.io/doc/user/lua.html#vim.diff()
-  diff = {
-    ctxlen = 3,
-  },
-  highlight_command = {
-    require("actions-preview.highlight").delta(),
-    require("actions-preview.highlight").diff_so_fancy(),
-    require("actions-preview.highlight").diff_highlight(),
-  },
-  backend = {
-    "snacks",
-    "nui",
-  },
-  ---@type snacks.picker.Config
-  snacks = {
-    layout = {
-      preset = "default",
-    },
-  },
-  nui = {
-    dir = "col", -- "col" or "row"
-    -- keymap for selection component: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/menu#keymap
-    keymap = nil,
-    -- options for nui Layout component: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/layout
-    layout = {
-      position = "50%",
-      size = {
-        width = "60%",
-        height = "90%",
-      },
-      min_width = 40,
-      min_height = 10,
-      relative = "editor",
-    },
-    -- options for preview area: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/popup
-    preview = {
-      size = "60%",
-      border = {
-        style = "rounded",
-        padding = { 0, 1 },
-      },
-    },
-    -- options for selection area: https://github.com/MunifTanjim/nui.nvim/tree/main/lua/nui/menu
-    select = {
-      size = "40%",
-      border = {
-        style = "rounded",
-        padding = { 0, 1 },
-      },
-    },
-  },
-})
-
-local protocol = require("lsp.protocol")
-
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#clientCapabilities
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentClientCapabilities
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#serverCapabilities
@@ -287,17 +113,20 @@ local default_capabilities_config = function()
   ---@type lsp.ClientCapabilities
   local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-  -- merge blink.cmp client capabilities (second arg false: the base above
-  -- already starts from make_client_capabilities())
-  capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities({}, false))
+  -- merge blink.cmp client capabilities via the static snapshot module: a
+  -- require("blink.cmp") here would load blink at LSP-init time and defeat its
+  -- InsertEnter trigger. tests/lsp_capabilities_snapshot_spec.lua pins the
+  -- snapshot against blink's live output.
+  capabilities = vim.tbl_deep_extend("force", capabilities, require("lsp.capabilities"))
 
-  -- Neovim already advertises workspace.didChangeWatchedFiles with both
-  -- dynamicRegistration and relativePatternSupport, and the blink.cmp merge
-  -- above leaves them alone -- read back from the resolved markdown_oxide
-  -- client, the one server here whose upstream docs demand dynamic
-  -- registration (it watches the vault, and its create-unresolved-file code
-  -- action depends on the watcher). Nothing left to force.
+  -- workspace.didChangeWatchedFiles is left at Neovim's default, which offers
+  -- dynamicRegistration on macOS and Windows only. The one server that needs
+  -- it, markdown_oxide (its vault watcher), is configured but not enabled.
 
+  -- commitCharactersSupport and preselectSupport stay at blink's false: blink
+  -- implements neither (both are TODOs in its get_lsp_capabilities), so
+  -- advertising them only makes servers send commit characters and preselect
+  -- flags nothing acts on. tests/lsp_capabilities_snapshot_spec.lua guards it.
   ---@type lsp.ClientCapabilities
   local capabilities_override = {
     general = {
@@ -306,9 +135,7 @@ local default_capabilities_config = function()
     textDocument = {
       completion = {
         completionItem = {
-          commitCharactersSupport = true,
-          preselectSupport = true,
-          documentationFormat = { protocol.constants.MarkupKind.Markdown },
+          documentationFormat = { vim.lsp.protocol.MarkupKind.Markdown },
         },
       },
     },
@@ -319,77 +146,20 @@ local default_capabilities_config = function()
   return capabilities
 end
 
---- @param client vim.lsp.Client
---- @param bufnr integer
-local on_attach = function(client, bufnr)
-  if client.name == "bashls" or client.name == "lua_ls" then
-    return
-  end
-
-  if client.name == "dockerls" then
-    client.server_capabilities.documentHighlightProvider = false
-    client.server_capabilities.semanticTokensProvider = nil
-    -- client.server_capabilities.semanticTokensProvider.range = true
-    -- client.server_capabilities.semanticTokensProvider.full.delta = true
-  end
-
-  if client.name == "tsserver" then
-    local function filter_tsserver_diagnostics(_, result, ctx, config)
-      if result.diagnostics == nil then
-        return
-      end
-      -- ignore some tsserver diagnostics
-      local idx = 1
-      while idx <= #result.diagnostics do
-        local entry = result.diagnostics[idx]
-        -- codes: https://github.com/microsoft/TypeScript/blob/main/src/compiler/diagnosticMessages.json
-        if entry.code == 80001 then
-          -- { message = "File is a CommonJS module; it may be converted to an ES module.", }
-          table.remove(result.diagnostics, idx)
-        else
-          idx = idx + 1
-        end
-      end
-      vim.lsp.diagnostic.on_publish_diagnostics(_, result, ctx, config)
-    end
-    vim.lsp.handlers["textDocument/publishDiagnostics"] = filter_tsserver_diagnostics
-  end
-
-  if client.name == "yamlls" then
-    local bufname = vim.api.nvim_buf_get_name(bufnr)
-    if
-      bufname:match(".*/templates/.*%.ya?ml")
-      or bufname:match(".*/templates/.*%.tpl")
-      or bufname:match("helmfile.*%.ya?ml")
-    then
-      client:stop(true)
-    end
-  end
-end
-
----@param name string
----@param default_config any
-local register_lsp = function(name, default_config)
-  if not lspconfig_configs[tostring(name)] then
-    lspconfig_configs[tostring(name)] = {
-      default_config = default_config,
-    }
-  end
-end
-
-register_lsp("tsgo", {
-  cmd = { "tsgo", "--lsp", "-stdio" },
+-- Registered but not enabled (vtsls owns TypeScript buffers); start it
+-- explicitly with vim.lsp.enable("tsgo").
+vim.lsp.config("tsgo", {
+  -- node named explicitly and lsp.cmd.lazy, both as in lsp/jsonls.lua.
+  cmd = require("lsp.cmd").lazy(function()
+    return { util.nodenv_prefix("node"), util.bun_prefix("tsgo"), "--lsp", "-stdio" }
+  end),
   filetypes = {
     "javascript",
     "javascriptreact",
-    "javascript.jsx",
     "typescript",
     "typescriptreact",
-    "typescript.tsx",
   },
   root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
-  single_file_support = true,
-  capabilities = default_capabilities_config(),
 })
 
 -- Drop formatting edits that cannot change a single byte.
@@ -442,8 +212,8 @@ local function is_noop_edit(bufnr, edit, encoding)
   local end_row = math.min(e.line, line_count - 1)
   local start_line = vim.api.nvim_buf_get_lines(bufnr, s.line, s.line + 1, true)[1]
   local end_line = end_row == s.line and start_line or vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, true)[1]
-  local start_col = math.min(byte_col(start_line, s.character, encoding), #start_line)
-  local end_col = e.line > end_row and #end_line or math.min(byte_col(end_line, e.character, encoding), #end_line)
+  local start_col = byte_col(start_line, s.character, encoding)
+  local end_col = e.line > end_row and #end_line or byte_col(end_line, e.character, encoding)
   if end_row < s.line or (end_row == s.line and end_col < start_col) then
     return edit.newText == ""
   end
@@ -493,51 +263,50 @@ vim.api.nvim_create_autocmd("LspAttach", {
 --- @class vim.lsp.Config : vim.lsp.ClientConfig
 vim.lsp.config("*", {
   capabilities = default_capabilities_config(),
-  on_attach = on_attach,
+  -- Every server's attach-time work, one entry per server name.
+  on_attach = require("lsp.on_attach"),
   root_markers = { ".git" },
 })
 
--- https://github.com/neovim/nvim-lspconfig/tree/master/lsp
--- ["buf_ls"] = require("lsp.buf_ls"),
--- ["emmylua_ls"] = require("lsp.emmylua_ls"),
--- ["marksman"] = { cmd = { util.homebrew_binary("marksman", "marksman") } },
---   marksman stays out: it skips git-ignored files, so the agent memory
---   trees under the git-ignored claude/projects/ are invisible to it, and
---   rooted at that repository .git it spends 50s indexing before answering
---   nothing. markdown_oxide below covers the same links. Its edge -- broken
---   link diagnostics plus a "Create `file.md`" code action -- only pays off
---   on tracked documentation trees.
--- ["pyright"] = require("lsp.pyright"),
--- ["rust_analyzer"] = require("lsp.rust_analyzer"), -- rustaceanvim owns the rust-analyzer client (see lua/plugins/init.lua). Enabling this as well attaches a second rust-analyzer to every Rust buffer.
--- ["tilt_ls"] = require("lsp.tilt_ls"),
--- ["ts_ls"] = require("lsp.ts_ls"),
--- ["tsgo"] = require("lsp.tsgo"),
--- ["zizmor"] = require("lsp.zizmor"),
-local servers = {
-  ["asm_lsp"] = require("lsp.asm_lsp"),
-  ["bashls"] = require("lsp.bashls"),
-  ["clangd"] = require("lsp.clangd"),
-  ["dockerls"] = require("lsp.dockerls"),
-  ["gopls"] = require("lsp.gopls"),
-  ["helm_ls"] = require("lsp.helm_ls"),
-  ["jsonls"] = require("lsp.jsonls"),
-  ["lua_ls"] = require("lsp.lua_ls"),
-  ["markdown_oxide"] = require("lsp.markdown_oxide"),
-  ["neocmake"] = require("lsp.neocmake"),
-  ["basedpyright"] = require("lsp.basedpyright"),
-  ["protols"] = require("lsp.protols"),
-  ["ruby_lsp"] = require("lsp.ruby_lsp"),
-  ["sourcekit"] = require("lsp.sourcekit"),
-  ["terraformls"] = require("lsp.terraformls"),
-  ["tombi"] = require("lsp.tombi"),
-  ["vtsls"] = require("lsp.vtsls"),
-  ["yamlls"] = require("lsp.yamlls"),
-  ["zls"] = require("lsp.zls"),
-}
-for server, config in pairs(servers) do
-  vim.lsp.config(server, config)
-  vim.lsp.enable(server, true)
-end
+-- Deliberately absent servers:
+--   marksman: it skips git-ignored files, so the agent memory trees under
+--   the git-ignored claude/projects/ are invisible to it, and rooted at that
+--   repository .git it spends 50s indexing before answering nothing.
+--   markdown_oxide covers the same links. Its edge -- broken link
+--   diagnostics plus a "Create `file.md`" code action -- only pays off on
+--   tracked documentation trees.
+--   markdown_oxide: lsp/markdown_oxide.lua stays configured but is not
+--   started, so no markdown server runs; vim.lsp.enable("markdown_oxide")
+--   turns it back on.
+--   rust_analyzer: rustaceanvim owns the rust-analyzer client (see
+--   lua/plugins/init.lua); enabling it here as well would attach a second
+--   rust-analyzer to every Rust buffer.
+-- Every enabled server lives in the native runtimepath form, lsp/<name>.lua
+-- at the repo root, and none of them is lazy (see lua/lsp/cmd.lua): work a
+-- server needs only when it starts belongs in its before_init or a function
+-- cmd, never at module scope.
+vim.lsp.enable({
+  "asm_lsp",
+  "basedpyright",
+  "bashls",
+  "clangd",
+  "cue",
+  "dockerls",
+  "gopls",
+  "helm_ls",
+  "jsonls",
+  "lua_ls",
+  "neocmake",
+  "pkl_lsp",
+  "protols",
+  "ruby_lsp",
+  "sourcekit",
+  "terraformls",
+  "tombi",
+  "vtsls",
+  "yamlls",
+  "zls",
+})
 
 vim.keymap.set({ "n" }, "K", function()
   require("hover").open()
@@ -573,14 +342,12 @@ vim.keymap.set({ "n" }, "<LocalLeader>ca", function()
 end, { silent = true, desc = "LSP code action" })
 vim.keymap.set({ "n" }, "<LocalLeader>f", function()
   local conform = require("conform")
-  -- Mirrors format_on_save in lua/plugins/conform.lua: conform only consults a
-  -- formatters_by_ft entry's own lsp_format for keys the caller leaves nil, so
-  -- passing a literal "fallback" here would discard a pinned "never". json5
-  -- pins it because vscode-json-language-server has no JSON5 mode and rewrites
-  -- such a buffer as strict JSON, so an unavailable oxfmt must format nothing.
+  -- Mirrors format_on_save in lua/plugins/conform.lua: a literal lsp_format
+  -- here would discard whatever a filetype pins, so the pin is handed back
+  -- instead. lua/lsp/AGENTS.md lists the pins and why each exists.
   local ft_opts = conform.formatters_by_ft[vim.bo.filetype]
   local pinned = type(ft_opts) == "table" and ft_opts.lsp_format or nil
-  conform.format({ async = false, lsp_format = pinned == "never" and "never" or "fallback" })
+  conform.format({ async = false, lsp_format = pinned or "fallback" })
 end, { silent = true, desc = "Format buffer (conform)" })
 vim.keymap.set({ "n" }, "<LocalLeader>gci", "<Cmd>Trouble lsp_incoming_calls toggle<CR>", { silent = true })
 vim.keymap.set({ "n" }, "<LocalLeader>gco", "<Cmd>Trouble lsp_outgoing_calls toggle<CR>", { silent = true })
@@ -606,5 +373,8 @@ vim.keymap.set({ "n" }, "<LocalLeader>gt", function()
   require("snacks").picker.lsp_type_definitions()
 end, { silent = true })
 vim.keymap.set({ "n" }, "<Leader>e", function()
-  vim.lsp.buf.rename()
+  -- setup() is optional and only overrides defaults, so it is skipped: the
+  -- defaults already preview other occurrences (Search/CurSearch) and record
+  -- the edit as a macro, which is what makes `.` repeat the rename.
+  require("live-rename").rename()
 end, { silent = true, desc = "LSP rename" })

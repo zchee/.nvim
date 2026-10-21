@@ -1,27 +1,29 @@
 ---@diagnostic disable: undefined-global
--- Regression spec for lua/lsp/markdown_oxide.lua.
+-- Regression spec for lsp/markdown_oxide.lua.
 --
--- markdown_oxide is the markdown server this config runs, and three properties
--- of that choice are easy to undo by accident:
+-- markdown_oxide is configured but not enabled (lua/lsp/init.lua), and three
+-- properties of its config are easy to undo by accident:
 --
 --   * It never sends workspace/configuration. Measured against the real binary:
 --     the server registers workspace/didChangeWatchedFiles and then asks for no
 --     configuration section at all, so an LSP `settings` table would sit in the
 --     config doing nothing while looking authoritative. Its knobs live in
 --     `~/.config/moxide/settings.toml` or a per-vault `.moxide.toml`.
---   * nvim-lspconfig's own lsp/markdown_oxide.lua carries the cmd fallback,
---     the root markers, and an on_attach that registers the daily-note
---     commands. vim.lsp.config merges with tbl_deep_extend("force"), so an
---     on_attach or root_markers here would silently replace those.
+--   * Since nvim-lspconfig was removed from the dep tree, this config is the
+--     only source of the root markers and the daily-note commands that used
+--     to come from nvim-lspconfig's lsp/markdown_oxide.lua; both must stay
+--     inlined (the commands in lua/lsp/on_attach.lua, the on_attach every
+--     server shares) or they silently disappear.
 --   * It indexes files that git ignores. That is the whole reason marksman was
 --     rejected: the agent memory trees live under a git-ignored
 --     claude/projects/, invisible to a server that honours .gitignore.
---
--- Run: nvim --headless -u NONE -l tests/markdown_oxide_spec.lua
 vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
   vim.fn.getcwd() .. "/lua/?/init.lua",
+  -- lsp/markdown_oxide.lua lives in the native runtimepath form at the repo
+  -- root.
+  vim.fn.getcwd() .. "/?.lua",
   package.path,
 }, ";")
 
@@ -49,21 +51,67 @@ assert_true(vim.uv.fs_stat(config.cmd[1]) ~= nil, ("markdown-oxide is not instal
 assert_equal(1, #config.filetypes, "markdown_oxide serves markdown only (no mdx dialect support)")
 assert_equal("markdown", config.filetypes[1], "filetype must be markdown")
 assert_equal(nil, config.settings, "the server never pulls workspace/configuration, so settings would be dead weight")
-assert_equal(nil, config.on_attach, "an on_attach here would replace nvim-lspconfig's daily-note commands")
-assert_equal(nil, config.root_markers, "root markers stay with nvim-lspconfig so the nearest .moxide.toml still wins")
-
-local lspconfig_default = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "nvim-lspconfig", "lsp", "markdown_oxide.lua")
+-- A per-server on_attach would replace the shared one (tbl_deep_extend "force"
+-- does not merge functions), so the daily notes are an entry of the shared one.
+assert_equal(nil, config.on_attach, "lsp/markdown_oxide.lua must not replace the shared on_attach")
+do
+  local on_attach = require("lsp.on_attach")
+  local buf = vim.api.nvim_create_buf(false, true)
+  local executed = {}
+  local fake = {
+    name = "markdown_oxide",
+    exec_cmd = function(_, command, ctx)
+      executed[#executed + 1] = { command = command.command, argument = command.arguments[1], bufnr = ctx.bufnr }
+    end,
+  }
+  on_attach(fake, buf)
+  local commands = vim.api.nvim_buf_get_commands(buf, {})
+  for _, day in ipairs({ "Today", "Tomorrow", "Yesterday" }) do
+    assert_true(
+      commands["Lsp" .. day] ~= nil,
+      ("the shared on_attach must create :Lsp%s for markdown_oxide"):format(day)
+    )
+  end
+  vim.api.nvim_buf_call(buf, function()
+    vim.cmd("LspTomorrow")
+  end)
+  assert_equal("jump", executed[1] and executed[1].command, ":LspTomorrow must run the server's jump command")
+  assert_equal("tomorrow", executed[1].argument, ":LspTomorrow must ask for tomorrow's note")
+  vim.api.nvim_buf_delete(buf, { force = true })
+end
+assert_true(type(config.root_markers) == "table", "the root markers were inlined from nvim-lspconfig")
 assert_true(
-  vim.uv.fs_stat(lspconfig_default) ~= nil,
-  ("nvim-lspconfig is not installed at %s -- run: nvim --headless '+Lazy! sync' +qa"):format(lspconfig_default)
-)
-local defaults = dofile(lspconfig_default)
-assert_true(defaults.on_attach ~= nil, "nvim-lspconfig must still supply the on_attach this config leans on")
-assert_true(defaults.root_markers ~= nil, "nvim-lspconfig must still supply the root markers this config leans on")
-assert_true(
-  vim.tbl_contains(defaults.root_markers, ".git"),
+  vim.tbl_contains(config.root_markers, ".git"),
   "the .git marker is what roots a vault that carries no .moxide.toml"
 )
+
+-- vim.lsp tries root_markers in list order, so precedence is only real if the
+-- vault markers sit ahead of .git. Checked on a tree rather than by reading
+-- the list: a vault inside a repository must root at the vault, a note with
+-- no vault marker at the repository.
+do
+  local tree = vim.fs.joinpath(vim.fn.tempname(), "repo")
+  vim.fn.mkdir(vim.fs.joinpath(tree, ".git"), "p")
+  vim.fn.mkdir(vim.fs.joinpath(tree, "moxide", "notes"), "p")
+  vim.fn.mkdir(vim.fs.joinpath(tree, "obsidian", ".obsidian"), "p")
+  vim.fn.mkdir(vim.fs.joinpath(tree, "plain"), "p")
+  vim.fn.writefile({}, vim.fs.joinpath(tree, "moxide", ".moxide.toml"))
+  local function root_of(...)
+    return vim.fs.root(vim.fs.joinpath(tree, ...), config.root_markers)
+  end
+  assert_equal(
+    vim.fs.joinpath(tree, "moxide"),
+    root_of("moxide", "notes", "a.md"),
+    "a vault's .moxide.toml must root it ahead of the repository .git"
+  )
+  assert_equal(
+    vim.fs.joinpath(tree, "obsidian"),
+    root_of("obsidian", "b.md"),
+    "an .obsidian vault must root at itself ahead of the repository .git"
+  )
+  assert_equal(tree, root_of("plain", "c.md"), "a note outside any vault roots at the repository .git")
+  vim.fn.delete(vim.fs.dirname(tree), "rf")
+end
 
 -- The live half: a vault whose notes git ignores, which is the shape of the
 -- agent memory trees this server exists to navigate.

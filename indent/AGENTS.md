@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-07-31 | Updated: 2026-07-31 -->
+<!-- Generated: 2026-07-31 | Updated: 2026-09-29 -->
 
 # indent
 
@@ -37,8 +37,8 @@ and inspect the resulting indentation, or open interactively and check
 
 ### Common Patterns
 Delegate to the built-in filetype's indent file first, then override
-`indentexpr`/`indentkeys` with a custom function — the same layering pattern
-used by `ftdetect/jinja.vim` and `syntax/jinja.vim` for this filetype.
+`indentexpr`/`indentkeys` with a custom function -- the same layering
+`syntax/jinja.vim` uses on top of `syntax/html.vim`.
 
 ## Dependencies
 

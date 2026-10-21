@@ -8,7 +8,7 @@ package.path = table.concat({
 
 local compat = require("plugins.neo_tree_compat")
 
-local function assert_eq(actual, expected, message)
+local function assert_eq(expected, actual, message)
   assert(
     actual == expected,
     string.format("%s\nexpected: %s\nactual: %s", message, vim.inspect(expected), vim.inspect(actual))
@@ -32,7 +32,7 @@ do
       end,
     },
   })
-  assert_eq(actual, node, "get_node_safely should return the node when get_node succeeds")
+  assert_eq(node, actual, "get_node_safely should return the node when get_node succeeds")
 end
 
 do
@@ -87,8 +87,8 @@ do
     end,
     nvim_win_set_cursor = function(_, pos)
       set_cursor_calls = set_cursor_calls + 1
-      assert_eq(pos[1], 4, "handler should preserve the row")
-      assert_eq(pos[2], 7, "handler should move the cursor to the filename start")
+      assert_eq(4, pos[1], "handler should preserve the row")
+      assert_eq(7, pos[2], "handler should move the cursor to the filename start")
     end,
   }
 
@@ -101,8 +101,8 @@ do
     },
     manager = {
       get_state = function(source, _, winid)
-        assert_eq(source, "filesystem", "handler should forward the neo-tree source to the manager")
-        assert_eq(winid, 17, "handler should use the current window for neo-tree current-position buffers")
+        assert_eq("filesystem", source, "handler should forward the neo-tree source to the manager")
+        assert_eq(17, winid, "handler should use the current window for neo-tree current-position buffers")
         return {
           tree = {
             get_node = function()
@@ -118,8 +118,8 @@ do
     end,
   })
 
-  assert_eq(set_cursor_calls, 1, "handler should move the cursor when the node is available")
-  assert_eq(#debug_logs, 1, "handler should emit the hijack debug log once")
+  assert_eq(1, set_cursor_calls, "handler should move the cursor when the node is available")
+  assert_eq(1, #debug_logs, "handler should emit the hijack debug log once")
 end
 
 do
@@ -171,8 +171,8 @@ do
   end)
 
   assert(ok, string.format("handler should suppress stale window failures, got: %s", tostring(err)))
-  assert_eq(manager_calls, 1, "handler should still query neo-tree state once")
-  assert_eq(set_cursor_calls, 0, "handler should not move the cursor after a stale window failure")
+  assert_eq(1, manager_calls, "handler should still query neo-tree state once")
+  assert_eq(0, set_cursor_calls, "handler should not move the cursor after a stale window failure")
 end
 
 do
@@ -222,11 +222,11 @@ do
     hijack_cursor = hijack_cursor,
   })
 
-  assert_eq(hijack_cursor.setup, first_setup, "patch_hijack_cursor_module should be idempotent")
+  assert_eq(first_setup, hijack_cursor.setup, "patch_hijack_cursor_module should be idempotent")
   assert(hijack_cursor._zchee_hijack_cursor_patched, "patch_hijack_cursor_module should mark the module as patched")
 
   hijack_cursor.setup()
-  assert_eq(#subscriptions, 1, "patched setup should subscribe exactly one handler")
-  assert_eq(subscriptions[1].event, "vim_cursor_moved", "patched setup should subscribe to the cursor-moved event")
-  assert_eq(subscriptions[1].id, "neo-tree-hijack-cursor", "patched setup should preserve the upstream subscription id")
+  assert_eq(1, #subscriptions, "patched setup should subscribe exactly one handler")
+  assert_eq("vim_cursor_moved", subscriptions[1].event, "patched setup should subscribe to the cursor-moved event")
+  assert_eq("neo-tree-hijack-cursor", subscriptions[1].id, "patched setup should preserve the upstream subscription id")
 end

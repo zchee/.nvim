@@ -61,13 +61,11 @@ vim.api.nvim_create_user_command("TrimSpace", function()
   local ft = vim.api.nvim_get_option_value("filetype", { buf = 0 })
   local is_binary = vim.api.nvim_get_option_value("binary", { buf = 0 })
   if not is_binary and not (ft == "diff" or ft == "markdown") then
-    vim.cmd([[
-      normal mz
-      normal Hmy
-      %s/\s\+$//e
-      normal 'yz<CR>
-      normal `z
-    ]])
+    -- winsaveview keeps the cursor and view without using a mark;
+    -- keeppatterns keeps the search register.
+    local view = vim.fn.winsaveview()
+    vim.cmd([[silent keeppatterns keepjumps %s/\s\+$//e]])
+    vim.fn.winrestview(view)
   end
 end, {
   nargs = "*",
@@ -77,7 +75,7 @@ vim.api.nvim_create_user_command("LuaVimInspect", function(opts)
   vim.print(vim.inspect(opts.args))
 end, {
   nargs = "*",
-  desc = "Gets a human-readable representation of the given object.",
+  desc = "Print the argument text through vim.inspect (a quoted string; it is not evaluated).",
   complete = "lua",
 })
 
@@ -166,7 +164,27 @@ end, {
 vim.api.nvim_create_user_command("DiagramToggle", function()
   vim.cmd("Lazy load diagram.nvim")
 end, {
-  desc = "Toggle diagram.nvim.",
+  desc = "Load diagram.nvim",
+})
+
+-- Swap the statusline/tabline renderer without restarting; no argument
+-- toggles. The choice is written to stdpath("state")/ui-mode and picked up
+-- by every later session.
+vim.api.nvim_create_user_command("UiMode", function(opts)
+  local ui_mode = require("config.ui_mode")
+  local want = opts.args ~= "" and opts.args or (ui_mode.uses_plugins() and "chrome" or "plugins")
+  local ok, err = ui_mode.set(want)
+  if not ok then
+    vim.notify("UiMode: " .. tostring(err), vim.log.levels.ERROR)
+    return
+  end
+  vim.notify("UiMode: " .. want, vim.log.levels.INFO)
+end, {
+  nargs = "?",
+  complete = function()
+    return { "chrome", "plugins" }
+  end,
+  desc = "Switch the statusline/tabline between config.chrome and lualine+bufferline.",
 })
 
 -- Transrator

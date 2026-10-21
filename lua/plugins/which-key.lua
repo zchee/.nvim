@@ -7,10 +7,9 @@ return {
   delay = function(ctx)
     return ctx.plugin and 0 or 1000
   end,
-  ---@param mapping wk.Mapping
-  filter = function(mapping)
+  ---@param _ wk.Mapping
+  filter = function(_)
     -- return mapping.desc and mapping.desc ~= ""
-    _ = mapping
     return true
   end,
   ---@type wk.Spec

@@ -1,0 +1,82 @@
+local metaphrast = require("metaphrast")
+
+---@type MetaphrastConfig
+metaphrast.setup({
+  provider = "google_llm",
+  source_lang = "en",
+  target_lang = "ja",
+  max_chars = 8000,
+  ui = {
+    win = {
+      width = 150, -- fixed width (auto-sizes if omitted)
+      -- height = 12, -- optional fixed height
+      border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+      padding = {
+        top = 1,
+        bottom = 1,
+        left = 5,
+        right = 5,
+      },
+      row = 2,
+      col = 1,
+      wo = { wrap = false },
+    },
+  },
+  cache = {
+    enabled = true,
+    ttl = 7 * 24 * 3600,
+    max_estimated_cost = 1.0, -- USD per call guard
+    memory_enabled = true,
+    memory_max_entries = 512,
+    memory_skip_disk_ttl = 5,
+  },
+  http = {
+    backend = "plenary",
+  },
+  providers = {
+    deepl = {
+      api_key = vim.env.ZCHEE_DEEPL_API_KEY,
+      -- base_url = "https://api-free.deepl.com/v2/translate",
+      base_url = "https://api.deepl.com/v2/translate",
+      price_per_million_chars = 25.0,
+    },
+    google_llm = {
+      api_key = vim.env.GOOGLE_API_KEY or vim.env.GOOGLE_TRANSLATE_KEY,
+      gcp_project_id = "gaudiy-ai",
+      location = "global",
+    },
+    google = {
+      api_key = vim.env.GOOGLE_API_KEY or vim.env.GOOGLE_TRANSLATE_KEY,
+      -- The standard variable wins; METAFRASTIS_* is the spelling from before
+      -- the plugin was renamed to metaphrast, still what the shell exports.
+      gcp_project_id = vim.env.GOOGLE_CLOUD_PROJECT
+        or vim.env.METAPHRAST_GCP_PROJECT
+        or vim.env.METAFRASTIS_GCP_PROJECT,
+      model = "v2",
+      base_url = "https://translation.googleapis.com/language/translate/v2",
+      price_per_million_chars = 20.0,
+    },
+    openai = {
+      api_key = vim.env.OPENAI_API_KEY,
+      model = "gpt-5.6-luna",
+      base_url = "https://api.openai.com/v1/responses",
+      input_per_million = 0.15,
+      output_per_million = 0.60,
+    },
+    gemini = {
+      api_key = vim.env.GOOGLE_API_KEY,
+      model = "gemini-3.8-flash",
+      base_url = "https://generativelanguage.googleapis.com/v1beta/models",
+      input_per_million = 0.30,
+      output_per_million = 2.50,
+    },
+    openrouter = {
+      api_key = vim.env.OPENROUTER_METAPHRAST_API_KEY or vim.env.OPENROUTER_METAFRASTIS_API_KEY,
+      model = "deepseek/deepseek-v4-flash",
+      base_url = "https://openrouter.ai/api/v1/chat/completions",
+      input_per_million = 0.15,
+      output_per_million = 0.60,
+      referer = "https://github.com/zchee/metaphrast.nvim",
+    },
+  },
+})

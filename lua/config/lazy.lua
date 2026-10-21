@@ -8,8 +8,6 @@ local lazy_config = {
   root = vim.fs.joinpath(data_dir, "lazy"),
   defaults = {
     lazy = true,
-    version = nil,
-    cond = nil, ---@type boolean|fun(self:LazyPlugin):boolean|nil
   },
   spec = nil, ---@type LazySpec
   lockfile = vim.fs.joinpath(cache_dir, "lazy-lock.json"),
@@ -27,26 +25,20 @@ local lazy_config = {
     },
   },
   pkg = {
-    enabled = false,
+    enabled = true,
+    cache = vim.fs.joinpath(state_dir, "/lazy/pkg-cache.lua"),
   },
-  -- rocks = {
-  --   hererocks = true, -- recommended if you do not have global installation of Lua 5.1.
-  -- },
   rocks = {
     enabled = false,
   },
-  -- dev = {
-  --   -- directory where you store your local plugin projects
-  --   path = "~/projects",
-  --   ---@type string[] plugins that match these patterns will use your local versions instead of being fetched from GitHub
-  --   patterns = {},    -- For example {"folke"}
-  --   fallback = false, -- Fallback to git when local plugin doesn't exist
-  -- },
   install = {
     missing = true,
   },
   ui = {
-    size = { width = 0.8, height = 0.8 },
+    size = {
+      width = 0.8,
+      height = 0.8,
+    },
     wrap = true,
     border = "none",
     backdrop = 60,
@@ -96,9 +88,11 @@ local lazy_config = {
     frequency = 3600,
     check_pinned = false,
   },
+  -- false: watching every spec file for edits costs libuv fs handles and a
+  -- re-scan on each change; config edits here are followed by a restart anyway.
   change_detection = {
-    enabled = true,
-    notify = true,
+    enabled = false,
+    notify = false,
   },
   performance = {
     cache = {
@@ -107,9 +101,9 @@ local lazy_config = {
     reset_packpath = true,
     rtp = {
       reset = true,
-      paths = {
-        vim.fs.joinpath(data_dir, "lazy", "plenary.nvim"),
-      },
+      -- no force-added paths: nothing requires plenary before lazy.nvim
+      -- loads it as a plugin dependency
+      paths = {},
       disabled_plugins = {
         "editorconfig",
         "getscript",

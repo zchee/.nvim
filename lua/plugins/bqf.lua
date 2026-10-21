@@ -3,7 +3,12 @@ local bqf = require("bqf")
 ---@type BqfConfig
 bqf.setup({
   auto_enable = true,
-  magic_window = true,
+  -- Off while bqf's magicwin FFI binds find_window_by_handle, an nvim
+  -- internal this nightly no longer exports: every :copen died with E5108
+  -- (dlsym ... symbol not found, bqf/wffi.lua:11; upstream c282a62 still
+  -- binds it). magicwin is its only user. Re-enable once upstream stops
+  -- binding that symbol.
+  magic_window = false,
   auto_resize_height = true,
   previous_winid_ft_skip = {},
 

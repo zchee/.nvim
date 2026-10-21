@@ -10,8 +10,6 @@
 --                                                                                                                 --
 -- --------------------------------------------------------------------------------------------------------------- --
 
-local util = require("util")
-
 -- Environment Variables:
 
 vim.env.MANWIDTH = 999
@@ -59,38 +57,39 @@ vim.g.no_man_maps = 1
 
 -- Global Settings:
 
-vim.opt.autoindent = true
-vim.opt.autoread = true
-vim.opt.backup = true
-vim.opt.backupdir = vim.fn.stdpath("state") .. "/backup/" -- NOTE(zchee): can't use `vim.fs.joinpath`
-vim.opt.backupcopy = "yes"
-vim.opt.belloff = "all"
-vim.opt.cindent = true
+vim.o.autoindent = true
+vim.o.autoread = true
+vim.o.backup = true
+-- Trailing "//": name each backup after its full path, so two files with
+-- the same basename in different directories stop overwriting one backup.
+vim.o.backupdir = vim.fn.stdpath("state") .. "/backup//" -- NOTE(zchee): can't use `vim.fs.joinpath`
+vim.o.backupcopy = "yes"
+vim.o.belloff = "all"
+vim.o.cindent = true
 vim.opt.cinkeys:remove("0#") -- comments don't fiddle with indenting
-vim.opt.cinoptions = "" -- See :h cinoptions-values
+vim.o.cinoptions = "" -- See :h cinoptions-values
 -- vim.opt.clipboard = "unnamedplus"
-vim.opt.cmdheight = 2
-vim.opt.cmdwinheight = 50
-vim.opt.complete = "." -- default: .,w,b,u,t, .
+vim.o.cmdheight = 2
+vim.o.cmdwinheight = 50
+vim.o.complete = "." -- default: .,w,b,u,t, .
 -- vim.opt.completeopt = { "noinsert", "noselect", "menuone" } -- noinsert,noselect,longest,menu,menuone,preview
 vim.opt.completeopt = { "menu", "menuone", "noinsert" }
-vim.opt.concealcursor = "niv"
-vim.opt.conceallevel = 1
-vim.opt.copyindent = true
+vim.o.concealcursor = "niv"
+vim.o.conceallevel = 1
+vim.o.copyindent = true
 vim.opt.cpoptions:remove("_")
 vim.opt.diffopt:append("hiddenoff")
-vim.opt.directory = vim.fn.stdpath("state") .. "/swap/" -- NOTE(zchee): can't use `vim.fs.joinpath`
+vim.o.directory = vim.fn.stdpath("state") .. "/swap/" -- NOTE(zchee): can't use `vim.fs.joinpath`
 vim.opt.display:remove("msgsep")
-vim.opt.emoji = true
-vim.opt.encoding = "utf-8"
-vim.opt.expandtab = true
+vim.o.emoji = true
+vim.o.encoding = "utf-8"
+vim.o.expandtab = true
 vim.opt.fileformats = { "unix" }
 vim.opt.fillchars:append("diff:/")
-vim.opt.foldcolumn = "0"
-vim.opt.foldlevel = 0
-vim.opt.foldlevelstart = 99 -- open all folds by default
-vim.opt.foldmethod = "expr"
-vim.opt.foldnestmax = 1 -- maximum fold depth
+vim.o.foldcolumn = "0"
+vim.o.foldlevel = 0
+vim.o.foldlevelstart = 99 -- open all folds by default
+vim.o.foldmethod = "expr"
 vim.opt.formatoptions:append("c") -- Autowrap comments using textwidth - :help fo-table
 vim.opt.formatoptions:append("j") -- Delete comment character when joining commented lines
 vim.opt.formatoptions:append("l") -- do not wrap lines that have been longer when starting insert mode already
@@ -99,24 +98,24 @@ vim.opt.formatoptions:append("q") -- Allow formatting of comments with "gq"
 vim.opt.formatoptions:append("r") -- Insert comment leader after hitting <Enter>
 vim.opt.formatoptions:append("t") -- Auto-wrap text using textwidth
 vim.opt.formatoptions:remove("o") -- Automatically insert the current comment leader after hitting 'o' or'O' in Normal mode
-vim.opt.foldnestmax = 1 -- maximum fold depth
-vim.opt.grepformat = "%f:%l:%c:%m"
+vim.o.foldnestmax = 1 -- maximum fold depth
+vim.o.grepformat = "%f:%l:%c:%m"
 if vim.fn.executable("rg") == 1 then
-  vim.o.grepprg = "rg --vimgrep --hidden --glob ‘!.git’"
+  vim.o.grepprg = "rg --vimgrep --hidden --glob '!.git'"
 end
 vim.opt.helplang = { "en" }
-vim.opt.hidden = true
-vim.opt.history = 10000 -- default: 10000 (maximum)
-vim.opt.iminsert = 0
-vim.opt.imsearch = 0
-vim.opt.inccommand = "nosplit"
+vim.o.hidden = true
+vim.o.history = 1000 -- default: 10000 (maximum); capped: ShaDa saves/merges cmdline history up to this ('shada' sets no ':' cap), and 10k entries made every ShaDa read/write pay for history nobody scrolls back through
+vim.o.iminsert = 0
+vim.o.imsearch = 0
+vim.o.inccommand = "nosplit"
 vim.opt.isfname:remove("=")
-vim.opt.jumpoptions = "view"
-vim.opt.keywordprg = ":Help"
-vim.opt.langmenu = "none"
-vim.opt.laststatus = 3
-vim.opt.lazyredraw = false
-vim.opt.linebreak = true
+vim.o.jumpoptions = "view"
+vim.o.keywordprg = ":Help"
+vim.o.langmenu = "none"
+vim.o.laststatus = 3
+vim.o.lazyredraw = false
+vim.o.linebreak = true
 vim.opt.listchars = {
   tab = "»-",
   trail = "-",
@@ -124,39 +123,40 @@ vim.opt.listchars = {
   extends = "›",
   precedes = "‹",
 }
-vim.opt.makeprg = "make"
-vim.opt.matchtime = 0 -- disable nvim matchparen
-vim.opt.maxmempattern = 1000 -- default: 1000, max: 2000000
-vim.opt.modelines = 1
-vim.opt.mouse = "a"
-vim.opt.number = true
+vim.o.makeprg = "make"
+vim.o.matchtime = 0 -- disable nvim matchparen
+vim.o.maxmempattern = 1000 -- default: 1000, max: 2000000
+vim.o.modelines = 1
+vim.o.mouse = "a"
+-- 1-line wheel steps: kitty fans a trackpad gesture out into many wheel
+-- events, so ver:3 renders as 3-line jumps; ver:1 tracks the gesture
+-- smoothly (mouse-wheel notches scroll less per click as the tradeoff)
+vim.o.mousescroll = "ver:1,hor:6"
+vim.o.number = true
 vim.opt.path:append("$PWD/**")
 vim.opt.path:append("**")
-vim.opt.previewheight = 5
-vim.opt.pumblend = 25
-vim.opt.pumheight = 30
-vim.opt.pyxversion = 3
-vim.opt.redrawtime = 20000
-vim.opt.regexpengine = 2
-vim.opt.ruler = true
-vim.opt.scrollback = 100000
-vim.opt.scrolljump = 6
-vim.opt.scrolloff = 8 -- default: 0
-vim.opt.secure = true
+vim.o.previewheight = 5
+vim.o.pyxversion = 3
+vim.o.redrawtime = 20000
+vim.o.regexpengine = 2
+vim.o.ruler = true
+vim.o.scrollback = 100000
+vim.o.scrolljump = 6
+vim.o.scrolloff = 8 -- default: 0
+vim.o.secure = true
 -- "h": don't re-apply hlsearch to the restored last-search pattern at
 -- startup -- the auto-:nohlsearch on_key hook (autocmd.lua) only clears on
 -- the first typed key, so without it every freshly opened file showed the
 -- previous session's matches (e.g. one Search cell at each EOL for \s*$).
 vim.opt.shada = { "'20", "<50", "s10", "h" }
-vim.opt.shiftround = true
-vim.opt.shiftwidth = 2
+vim.o.shiftwidth = 2
 vim.opt.shortmess:append("c") -- atOIc " default: filnxtToOF
 vim.opt.shortmess:append("I") -- atOIc " default: filnxtToOF
-vim.opt.showfulltag = true
-vim.opt.showtabline = 2
-vim.opt.sidescroll = 1 -- 0
-vim.opt.sidescrolloff = 15 -- 0
-vim.opt.signcolumn = "yes:5"
+vim.o.showfulltag = true
+vim.o.showtabline = 2
+vim.o.sidescroll = 1 -- 0
+vim.o.sidescrolloff = 15 -- 0
+vim.o.signcolumn = "yes:5"
 vim.opt.sessionoptions = {
   "blank",
   "buffers",
@@ -170,30 +170,30 @@ vim.opt.sessionoptions = {
   "winpos",
   "winsize",
 }
-vim.opt.smartcase = true
-vim.opt.smartindent = true
-vim.opt.smarttab = true
-vim.opt.softtabstop = 2
-vim.opt.splitbelow = true
-vim.opt.splitright = true
+vim.o.smartcase = true
+vim.o.smartindent = true
+vim.o.smarttab = true
+vim.o.softtabstop = 2
+vim.o.splitbelow = true
+vim.o.splitright = true
 vim.opt.suffixes:append(".pyc")
-vim.opt.switchbuf = "uselast" -- useopen
-vim.opt.synmaxcol = 0 -- default: 3000, 0: unlimited, 400, 1500, 5000
-vim.opt.tabstop = 2
-vim.opt.tagcase = "smart"
-vim.opt.tags = "./tags;" -- http://d.hatena.ne.jp/thinca/20090723/1248286959
-vim.opt.textwidth = 0
-vim.opt.timeout = true -- mappnig timeout
-vim.opt.timeoutlen = 230 -- default: 1000
-vim.opt.ttimeout = true -- keycode timeout
-vim.opt.ttimeoutlen = 30 -- default: 50
-vim.opt.undodir = vim.fn.stdpath("state") .. "/undo/" -- NOTE(zchee): can't use `vim.fs.joinpath`
-vim.opt.undofile = true
-vim.opt.undolevels = 10000 -- default: 1000
-vim.opt.updatetime = 100 -- default: 4000
-vim.opt.pumblend = 15
-vim.opt.pumheight = 30
-vim.opt.virtualedit = "block"
+vim.o.switchbuf = "uselast" -- useopen
+vim.o.synmaxcol = 0 -- default: 3000, 0: unlimited, 400, 1500, 5000
+vim.o.tabstop = 2
+vim.o.tagcase = "smart"
+vim.o.tags = "./tags;" -- http://d.hatena.ne.jp/thinca/20090723/1248286959
+vim.o.textwidth = 0
+vim.o.timeout = true -- mappnig timeout
+vim.o.timeoutlen = 230 -- default: 1000
+vim.o.ttimeout = true -- keycode timeout
+vim.o.ttimeoutlen = 30 -- default: 50
+vim.o.undodir = vim.fn.stdpath("state") .. "/undo/" -- NOTE(zchee): can't use `vim.fs.joinpath`
+vim.o.undofile = true
+vim.o.undolevels = 10000 -- default: 1000
+vim.o.updatetime = 100 -- default: 4000
+vim.o.pumblend = 15
+vim.o.pumheight = 30
+vim.o.virtualedit = "block"
 -- vim.opt.winbar = vim.fn.expand('%:~:.:h')..'/%t'
 vim.opt.wildignore:append("*.jpg")
 vim.opt.wildignore:append("*.jpeg")
@@ -215,41 +215,53 @@ vim.opt.wildignore:append("*/.hg")
 vim.opt.wildignore:append("*/.svn")
 vim.opt.wildignore:append("tags")
 vim.opt.wildignore:append("*.tags")
-vim.opt.wildmenu = true
+vim.o.wildmenu = true
 vim.opt.wildmode = { "longest", "full" }
-vim.opt.wildoptions = "pum"
-vim.opt.winblend = 0
+vim.o.wildoptions = "pum"
+vim.o.winblend = 0
 -- default border for all floating windows opened without an explicit
 -- border; plugins that set their own border (or a different style, e.g.
 -- gitsigns/dap "single") still win
-vim.opt.winborder = "rounded"
-vim.opt.winminwidth = 5
-vim.opt.wrap = true
-vim.opt.writebackup = true
+vim.o.winborder = "rounded"
+vim.o.winminwidth = 5
+vim.o.wrap = true
+vim.o.writebackup = true
+-- 'termguicolors' is deliberately NOT set here. nvim turns it on by itself
+-- once the terminal answers its capability query; setting it earlier means
+-- the frames before :colorscheme below are painted with nvim's default
+-- Normal (#14161b) instead of the terminal background this colorscheme
+-- leaves showing through, which reads as a grey flash on every startup.
+-- lua/plugins/init.lua holds nvim-colorizer back until the option lands.
 
-vim.opt.autochdir = false
-vim.opt.cursorcolumn = false
-vim.opt.cursorline = false
-vim.opt.errorbells = false
-vim.opt.foldenable = false
-vim.opt.ignorecase = false
-vim.opt.joinspaces = false
-vim.opt.list = false
-vim.opt.shiftround = false
-vim.opt.showcmd = false
-vim.opt.showmatch = false
-vim.opt.showmode = false
-vim.opt.spell = false
-vim.opt.swapfile = false
-vim.opt.visualbell = false
-vim.opt.wrapscan = false
+vim.o.autochdir = false
+vim.o.cursorcolumn = false
+vim.o.cursorline = false
+vim.o.errorbells = false
+vim.o.foldenable = false
+vim.o.ignorecase = false
+vim.o.joinspaces = false
+vim.o.list = false
+vim.o.shiftround = false
+vim.o.showcmd = false
+vim.o.showmatch = false
+vim.o.showmode = false
+vim.o.spell = false
+vim.o.swapfile = false
+vim.o.visualbell = false
+vim.o.wrapscan = false
+
+-- :help vim.highlight.priorities
+vim.hl.priorities.syntax = 50
+vim.hl.priorities.treesitter = 130
+vim.hl.priorities.semantic_tokens = 125
+vim.hl.priorities.diagnostics = 150
+vim.hl.priorities.user = 200
 
 vim.cmd.colorscheme("equinusocio_material")
 
 -- Color:
 
 -- Go:
-vim.g["go#generate#test#template_dir"] = os.getenv("XDG_CONFIG_HOME") .. "/go/template/gotests"
 vim.g.go_highlight_array_whitespace_error = 0 -- default : 1
 vim.g.go_highlight_chan_whitespace_error = 0 -- default : 1
 vim.g.go_highlight_extra_types = 1 -- default : 1
@@ -273,28 +285,16 @@ vim.g.go_highlight_debug = 1 -- default : 1
 vim.g.go_fold_enable = { "block", "import", "varconst", "comment", "package_comment" }
 vim.g.go_highlight_error = 1
 vim.g.go_highlight_return = 1
-vim.api.nvim_set_hl(0, "goImportString", { link = "Comment", force = true })
-vim.api.nvim_set_hl(0, "goPredefinedIdentifiers", { link = "Keyword", force = true })
-vim.api.nvim_set_hl(0, "goReceiverType", { link = "Keyword", force = true })
 
 -- C:
 vim.g.c_ansi_constants = 1
 vim.g.c_ansi_typedefs = 1
 vim.g.c_comment_strings = 1
 vim.g.c_gnu = 0
-vim.g.c_no_curly_error = 1
 vim.g.c_no_tab_space_error = 1
 vim.g.c_no_trail_space_error = 1
 vim.g.c_syntax_for_h = 0
 vim.g.c_no_curly_error = 1
-
--- CPP:
-vim.g.cpp_class_scope_highlight = 1
-vim.g.cpp_experimental_template_highlight = 1
-vim.g.cpp_concepts_highlight = 1
-
--- Json:
-vim.g.vim_json_syntax_conceal = 0
 
 -- Asm:
 vim.g.nasm_loose_syntax = 1
@@ -328,28 +328,10 @@ vim.g.markdown_fenced_languages = {
   "help",
   "mermaid",
   "mysql",
-  "objective-c",
+  "objective-c=objc",
   "proto",
   "python",
   "sh",
   "sql",
   "typescript",
 }
-
-vim.g["vista#renderer#enable_icon"] = true
-vim.g["vista#renderer#enable_kind"] = true
-vim.g.vista_blink = { 0, 0 }
-vim.g.vista_cursor_delay = 400 -- default
-vim.g.vista_default_executive = "nvim_lsp"
-vim.g.vista_disable_statusline = 0
-vim.g.vista_echo_cursor_strategy = "floating_win" -- echo, scroll, floating_win, both
-vim.g.vista_executive_for = {
-  markdown = "toc",
-}
-vim.g.vista_sidebar_width = "150"
-vim.g.vista_update_on_text_changed = true
-vim.g.vista_executive_nvim_lsp_fetching = true
-
--- vim-wakatime
-vim.g.wakatime_CLIPath = util.homebrew_binary("wakatime-cli-head", "wakatime-cli")
-vim.g.wakatime_PythonBinary = util.homebrew_binary("python3.14", "python3")

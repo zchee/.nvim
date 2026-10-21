@@ -1,5 +1,5 @@
 ---@diagnostic disable: undefined-global
--- Regression spec for the json5 diagnostic filter in lua/lsp/jsonls.lua.
+-- Regression spec for the json5 diagnostic filter in lsp/jsonls.lua.
 --
 -- vscode-json-language-server relaxes its validation only for the literal
 -- languageId "jsonc", so a json5 buffer is validated as strict JSON. Measured
@@ -13,20 +13,18 @@ vim.opt.runtimepath:append(vim.fn.getcwd())
 package.path = table.concat({
   vim.fn.getcwd() .. "/lua/?.lua",
   vim.fn.getcwd() .. "/lua/?/init.lua",
+  -- lsp/jsonls.lua lives in the native runtimepath form at the repo root.
+  vim.fn.getcwd() .. "/?.lua",
   package.path,
 }, ";")
 
--- lua/lsp/jsonls.lua pulls its schema catalog from b0o/SchemaStore.nvim at
--- module scope, so the spec needs the plugin on the runtimepath that the real
--- config gets from lazy.nvim (lua/config/lazy.lua roots it at stdpath("data")).
-local schemastore = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "schemastore.nvim")
-assert(
-  vim.uv.fs_stat(schemastore),
-  ("schemastore.nvim is not installed at %s -- run: nvim --headless '+Lazy! sync' +qa"):format(schemastore)
-)
-vim.opt.runtimepath:append(schemastore)
-
 local config = require("lsp.jsonls")
+
+-- Config files under lsp/ are read on the first FileType event of any
+-- filetype, so loading the module must leave schemastore untouched: a
+-- non-JSON session never materializes the catalog.
+assert(package.loaded["schemastore"] == nil, "requiring lsp.jsonls must not load the SchemaStore catalog")
+assert(type(config.before_init) == "function", "the schema catalog must be filled in by before_init")
 local handler = config.handlers["textDocument/diagnostic"]
 assert(type(handler) == "function", "jsonls must install a textDocument/diagnostic handler")
 

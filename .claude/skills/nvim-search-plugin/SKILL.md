@@ -1,6 +1,6 @@
 ---
 name: nvim-search-plugin
-description: Search for a Neovim plugin with mcp-gemini-search and vet it against this config. Use when finding a plugin for a capability this config lacks, replacing an unmaintained one, or judging whether a named candidate is worth adopting.
+description: Search for a Neovim plugin with the mcp-gemini-google-search MCP server and vet it against this config. Use when finding a plugin for a capability this config lacks, replacing an unmaintained one, or judging whether a named candidate is worth adopting.
 ---
 
 ## Searching for a Neovim plugin
@@ -11,9 +11,10 @@ option name — is confirmed at its own source first.
 
 ### 1. Check what this config already has
 
-`lua/plugins/AGENTS.md` describes every spec in `lua/plugins/init.lua`, including
-the specs that are commented out and the config modules that are dead on disk.
-Read it before searching.
+`lua/plugins/init.lua` is the inventory: search it for the capability and the
+candidate's `owner/repo` (commented-out specs count — the plugin was tried).
+`lua/plugins/AGENTS.md` explains the config modules under `lua/plugins/`, but it
+is not a complete list of specs, so do not conclude "not present" from it alone.
 
 Done when: the closest existing plugin is named, or none covers the capability.
 
@@ -22,7 +23,7 @@ Done when: the closest existing plugin is named, or none covers the capability.
 Load the tool (deferred, one call):
 
 ```
-ToolSearch query: select:mcp__plugin_mcp-gemini-search_mcp-gemini-search__google_search
+ToolSearch query: select:mcp__plugin_mcp-gemini-google-search_mcp-gemini-google-search__google_search
 ```
 
 `google_search` answers a plugin question in one round trip. `deep_research` is
@@ -43,7 +44,7 @@ Done when: a candidate list of `owner/repo` names exists.
 | Claim | Source |
 |---|---|
 | maintained, archived, stars, last push | `gh api repos/<owner>/<repo> --jq '{full_name,pushed_at,archived,stargazers_count}'` |
-| option names, API shape | the installed source under `~/.local/share/nvim/lazy/<repo>/lua/`, after `nvim --headless "+Lazy! install" +qa` |
+| option names, API shape | the installed source under `~/.local/share/nvim/lazy/<repo>/lua/`, after `nvim --headless -i NONE "+Lazy! install" +qa` |
 | speed, startup cost | a measurement inside this config |
 
 `gh api` follows GitHub's redirect, so a `full_name` that differs from the path
@@ -54,8 +55,11 @@ a live maintainer.
 READMEs document APIs the plugin no longer has — dotprompt's still shows the
 pre-`main` nvim-treesitter registry schema. Read the installed source.
 
-Measure with `nvim --headless "+luafile <abs path>"`; `nvim -l` skips the user
-config, so it has no filetypes, no LSP, and no plugins. Gemini's performance
+Measure with `nvim --headless -i NONE "+luafile <abs path>"`; `nvim -l` skips
+the user config, so it has no filetypes, no LSP, and no plugins. `-i NONE`
+keeps the run off the real ShaDa: a full-config session writes it on exit, and
+sessions killed mid-write strand `main.shada.tmp.*` files until every later
+write fails with E138 (see `script/AGENTS.md`). Gemini's performance
 figures have been wrong here by two orders of magnitude and in the wrong
 direction — it ranked mini.pairs above nvim-autopairs where measurement showed
 the reverse.

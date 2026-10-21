@@ -8,10 +8,14 @@
 -- survive. It loads the plugin's own registry file first, then overlays.
 local util = require("util")
 
-local this = vim.fs.normalize(debug.getinfo(1, "S").source:sub(2))
+-- realpath, not normalize: when the repo sits on the runtimepath twice under
+-- different spellings (~/.config/nvim symlink + the checkout path), a string
+-- compare lets this file pick *itself* as the base registry and recurse until
+-- the stack overflows. Resolving symlinks identifies the file, not its path.
+local this = vim.uv.fs_realpath(vim.fs.normalize(debug.getinfo(1, "S").source:sub(2)))
 local base
 for _, f in ipairs(vim.api.nvim_get_runtime_file("lua/nvim-treesitter/parsers.lua", true)) do
-  if vim.fs.normalize(f) ~= this then
+  if vim.uv.fs_realpath(f) ~= this then
     base = f
     break
   end
@@ -24,12 +28,18 @@ local src = f:read("*a")
 f:close()
 local parsers = assert(load(src, "@" .. base, "t"))()
 
--- custom grammars (not in the upstream registry)
+-- custom grammars (not in the upstream registry). nvim-treesitter ships no
+-- queries for these, so `queries` makes install copy (url) or symlink (path)
+-- the grammar repo's own queries/ next to the parser. Without one the parser
+-- still attaches, vim.treesitter.start clears 'syntax', and the buffer has no
+-- highlighting. hujson's repo queries target Zed (see queries/hujson) and
+-- modulemap's repo has none.
 parsers.goasm = {
-  -- queries ship with the local tree-sitter-goasm plugin (see after/queries)
+  -- local checkout: nvim-treesitter symlinks its queries/, so query edits
+  -- there show up without a reinstall
   install_info = {
-    url = "https://github.com/zchee/tree-sitter-goasm",
-    branch = "main",
+    path = util.src_path("github.com/zchee/tree-sitter-goasm"),
+    queries = "queries",
   },
   maintainers = { "@zchee" },
   tier = 3,
@@ -37,6 +47,14 @@ parsers.goasm = {
 parsers.cel = {
   install_info = {
     url = "https://github.com/bufbuild/tree-sitter-cel",
+    branch = "main",
+    queries = "queries",
+  },
+  tier = 3,
+}
+parsers.hujson = {
+  install_info = {
+    url = "https://github.com/ggfevans/tree-sitter-hujson",
     branch = "main",
   },
   tier = 3,
@@ -48,10 +66,11 @@ parsers.modulemap = {
   },
   tier = 3,
 }
-parsers.x86asm = {
+parsers.ghostty = {
   install_info = {
-    url = "https://github.com/bearcove/tree-sitter-x86asm",
+    url = "https://github.com/bezhermoso/tree-sitter-ghostty",
     branch = "main",
+    queries = "queries/ghostty",
   },
   tier = 3,
 }
@@ -59,6 +78,15 @@ parsers.mustache = {
   install_info = {
     url = "https://github.com/zchee/tree-sitter-mustache",
     branch = "dev",
+    queries = "queries",
+  },
+  tier = 3,
+}
+parsers.x86asm = {
+  install_info = {
+    url = "https://github.com/bearcove/tree-sitter-x86asm",
+    branch = "main",
+    queries = "queries",
   },
   tier = 3,
 }

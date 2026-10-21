@@ -25,6 +25,15 @@ assert(
 )
 vim.opt.runtimepath:append(conform_dir)
 
+-- $XDG_CONFIG_HOME names a symlink, set before anything resolves it, so the
+-- personal config path tells util.xdg_config_home()'s realpath-resolved dir
+-- apart from one built from the variable inline, in every environment.
+local xdg_target = vim.fn.tempname()
+assert(vim.fn.mkdir(xdg_target, "p") == 1, "the XDG_CONFIG_HOME target should be created")
+local xdg_link = vim.fn.tempname()
+assert(vim.uv.fs_symlink(xdg_target, xdg_link), "the XDG_CONFIG_HOME symlink should be created")
+vim.env.XDG_CONFIG_HOME = xdg_link
+
 local opts = require("plugins.conform")
 require("conform").setup(opts)
 
@@ -95,21 +104,28 @@ end
 
 do
   -- No project config: the personal one, so oxfmt never runs on its defaults.
-  local original = vim.env.XDG_CONFIG_HOME
+  -- conform.lua resolves it through util.xdg_config_home(), which caches the
+  -- realpath-resolved dir per process: the symlinked $XDG_CONFIG_HOME set at
+  -- the top must come back resolved.
   local root = vim.fn.tempname()
   assert(vim.fn.mkdir(root, "p") == 1, "temp dir should be created")
-  vim.env.XDG_CONFIG_HOME = root
 
   local ok, flags = pcall(oxfmt_args, vim.fs.joinpath(root, "renovate.json5"), root)
-  vim.env.XDG_CONFIG_HOME = original
   vim.fn.delete(root, "rf")
   assert(ok, flags)
+  assert(flags["--config"] ~= nil, "--config must never be omitted")
+  local personal_home = flags["--config"]:match("^(.*)/oxfmt/%.oxfmtrc%.jsonc$")
+  assert(personal_home, "the personal config must be oxfmt/.oxfmtrc.jsonc under a config dir")
   assert_equal(
-    vim.fs.joinpath(root, "oxfmt", ".oxfmtrc.jsonc"),
+    vim.uv.fs_realpath(personal_home),
+    personal_home,
+    "the personal config dir must be realpath-resolved, not $XDG_CONFIG_HOME as set"
+  )
+  assert_equal(
+    vim.fs.joinpath(require("util").xdg_config_home(), "oxfmt", ".oxfmtrc.jsonc"),
     flags["--config"],
     "without a project config the personal one must be passed"
   )
-  assert(flags["--config"] ~= nil, "--config must never be omitted")
 end
 
 do

@@ -44,11 +44,6 @@ local in_fn = {
   condition = in_func,
 }
 
-local not_in_fn = {
-  show_condition = not in_func,
-  condition = not in_func,
-}
-
 local in_test_fn = {
   show_condition = is_in_test_function,
   condition = is_in_test_function,
@@ -68,7 +63,8 @@ local func_snippets = {
     },
     fmt([[len({})]], {
       ls.i(1, "object"),
-    }, in_fn)
+    }),
+    in_fn
   ),
 
   -- iter
@@ -90,9 +86,9 @@ local func_snippets = {
       {
         ls.i(1, "type"),
         ls.i(0),
-      },
-      in_fn
-    )
+      }
+    ),
+    in_fn
   ),
   -- Seq2 is an iterator over sequences of pairs of values, most commonly key-value pairs.
   -- When called as seq(yield), seq calls yield(k, v) for each pair (k, v) in the sequence,
@@ -113,9 +109,9 @@ local func_snippets = {
         ls.i(1, "type"),
         ls.i(2, "error"),
         ls.i(0),
-      },
-      in_fn
-    )
+      }
+    ),
+    in_fn
   ),
 
   -- fmt
@@ -127,7 +123,8 @@ local func_snippets = {
     fmt([[fmt.Printf("{}: %#v\n", {})]], {
       ls.i(1, ""),
       rep(1),
-    }, in_fn)
+    }),
+    in_fn
   ),
   ls.s(
     {
@@ -137,7 +134,8 @@ local func_snippets = {
     fmt([[fmt.Printf("{}: %[1]T = %#[1]v\n", {})]], {
       ls.i(1, ""),
       rep(1),
-    }, in_fn)
+    }),
+    in_fn
   ),
   ls.s(
     {
@@ -146,7 +144,8 @@ local func_snippets = {
     },
     fmt([[fmt.Println("{}")]], {
       ls.i(1, ""),
-    }, in_fn)
+    }),
+    in_fn
   ),
 
   -- error handling
@@ -163,9 +162,9 @@ local func_snippets = {
 				]],
       {
         ls.i(1, "return err"),
-      },
-      in_fn
-    )
+      }
+    ),
+    in_fn
   ),
   ls.s(
     {
@@ -180,9 +179,9 @@ local func_snippets = {
       ]],
       {
         ls.i(1, "return err"),
-      },
-      in_fn
-    )
+      }
+    ),
+    in_fn
   ),
 
   ls.s(
@@ -283,7 +282,8 @@ local test_snippets = {
     fmt([[t.Logf("{}: %#v", {})]], {
       ls.i(1, ""),
       rep(1),
-    }, in_test_fn)
+    }),
+    in_test_fn
   ),
   ls.s(
     {
@@ -293,7 +293,8 @@ local test_snippets = {
     fmt([[t.Logf("{}: %[1]T = %#[1]v\n", {})]], {
       ls.i(1, ""),
       rep(1),
-    }, in_test_fn)
+    }),
+    in_test_fn
   ),
 
   -- testcases
@@ -325,9 +326,9 @@ local test_snippets = {
         ls.i(1),
         ls.i(2),
         ls.i(3),
-      },
-      in_test_file
-    )
+      }
+    ),
+    in_test_file
   ),
   -- cmp.Diff
   ls.s(
@@ -344,9 +345,9 @@ local test_snippets = {
       {
         ls.i(1, "want"),
         ls.i(2, "got"),
-      },
-      in_test_fn
-    )
+      }
+    ),
+    in_test_fn
   ),
 
   -- benchmark
@@ -371,9 +372,9 @@ local test_snippets = {
         ls.i(1, "method name"),
         rep(1),
         ls.i(2, "args"),
-      },
-      in_test_file
-    )
+      }
+    ),
+    in_test_file
   ),
 
   -- benchmark with parallel
@@ -401,9 +402,9 @@ local test_snippets = {
         rep(1),
         ls.i(3, "function"),
         ls.i(4, "args"),
-      },
-      in_test_file
-    )
+      }
+    ),
+    in_test_file
   ),
 }
 

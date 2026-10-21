@@ -85,7 +85,10 @@ aerial.setup({
 
   -- When true, don't load aerial until a command or function is called
   -- Defaults to true, unless `on_attach` is provided, then it defaults to false
-  lazy_load = true,
+  -- false: on_attach below maps {/} per buffer, and a lazy aerial creates
+  -- its attach autocmds only on the first command, so the motions were
+  -- missing until then.
+  lazy_load = false,
 
   -- Disable aerial on files with this many lines
   disable_max_lines = 10000,

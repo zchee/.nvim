@@ -4,162 +4,18 @@
 -- (prebuilt download stays off). The pre-2025-10 migration failed because a
 -- broken RUSTFLAGS build line left no Rust matcher and "prefer_rust" fell
 -- back to the Lua matcher SILENTLY -- whose weak filterText handling drops
--- exactly the gopls deep/unimported candidates. Hence
--- "prefer_rust_with_warning": if the source build ever breaks again, it must
--- be loud, not a quiet completion downgrade.
+-- exactly the gopls deep/unimported candidates. Hence implementation = "rust",
+-- with which setup() raises when the matcher is missing: a broken source build
+-- must be loud, not a quiet completion downgrade.
 local blink = require("blink.cmp")
 
-local np = require("nvim-autopairs")
-local np_rule = require("nvim-autopairs.rule")
-local np_ts_conds = require("nvim-autopairs.ts-conds")
-
-local ls = require("luasnip")
-local ls_loader_lua = require("luasnip.loaders.from_lua")
-
--- autopairs
-np.setup({
-  disable_filetype = {
-    "AvanteInput",
-    "TelescopePrompt",
-  },
-  fast_wrap = {
-    map = "<M-e>",
-    chars = { "{", "[", "(", '"', "'" },
-    pattern = [=[[%'%"%>%]%)%}%,%`]]=],
-    end_key = "$",
-    avoid_move_to_end = true,
-    before_key = "h",
-    after_key = "l",
-    cursor_pos_before = true,
-    keys = "qwertyuiopzxcvbnmasdfghjkl",
-    highlight = "Search",
-    highlight_grey = "Comment",
-    manual_position = true,
-    use_virt_lines = true,
-  },
-  map_bs = true,
-  map_cr = true,
-  check_ts = true,
-  ts_config = {
-    go = { "string" },
-  },
-  disable_in_macro = false,
-  ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
-  enable_moveright = true,
-  enable_afterquote = true,
-  disable_in_visualblock = false,
-})
--- Go
-np.add_rules({
-  np_rule("[", "]", "go"):with_pair(np_ts_conds.is_ts_node({ "string", "comment" })),
-})
-
--- Inside a Go interpreted string the quote keys swap: `"` inserts a `''` pair
--- and `'` inserts a `""` one, because a bare `"` cannot appear there anyway.
---
--- This cannot be a Rule. autopairs_map inserts the key that was typed and only
--- appends the closing half, so no Rule can make one key produce a different
--- character -- and the built-in quote rules refuse to pair at all inside an
--- existing quote (not_add_quote_inside_quote), which is exactly where this has
--- to fire. Hence a mapping that builds the key sequence itself.
---
--- The node names come from the grammar as it stands: a cursor inside `"ab"`
--- reports interpreted_string_literal_content, and inside `""` the literal
--- itself. Neither is the plain "string" that ts_config above still names.
-local go_string_nodes = {
-  interpreted_string_literal = true,
-  interpreted_string_literal_content = true,
-}
-
----@param keys string
----@return string
-local function esc(keys)
-  return vim.api.nvim_replace_termcodes(keys, true, false, true)
-end
-
----@return boolean
-local function in_go_string()
-  local parser = vim.treesitter.get_parser(0, nil, { error = false })
-  if not parser then
-    return false
-  end
-  parser:parse()
-  local node = vim.treesitter.get_node()
-  return node ~= nil and go_string_nodes[node:type()] == true
-end
-
----@param typed string key being pressed
----@param other string quote inserted in its place inside a string
----@return fun(): string
-local function swap_quote(typed, other)
-  return function()
-    if not in_go_string() then
-      return np.autopairs_map(vim.api.nvim_get_current_buf(), typed)
-    end
-    local col = vim.api.nvim_win_get_cursor(0)[2]
-    if vim.api.nvim_get_current_line():sub(col + 1, col + 1) == other then
-      -- closing half already sits under the cursor: step over it
-      return esc("<C-g>U<Right>")
-    end
-    return esc("<C-g>u") .. other .. other .. esc("<C-g>U<Left><C-g>u")
-  end
-end
-
----@param bufnr integer
-local function map_go_quotes(bufnr)
-  if not vim.api.nvim_buf_is_valid(bufnr) or vim.bo[bufnr].filetype ~= "go" then
-    return
-  end
-  local opts = { buffer = bufnr, expr = true, replace_keycodes = false, noremap = true }
-  vim.keymap.set("i", '"', swap_quote('"', "'"), vim.tbl_extend("force", opts, { desc = "Pair '' inside Go strings" }))
-  vim.keymap.set("i", "'", swap_quote("'", '"'), vim.tbl_extend("force", opts, { desc = 'Pair "" inside Go strings' }))
-end
-
--- nvim-autopairs re-creates its buffer-local quote maps from on_attach on every
--- FileType/BufEnter/BufWinEnter. Autocommands run in definition order, and this
--- group is defined after np.setup() registered its own, so these maps land last
--- and win. The direct call covers the buffer that triggered this lazy load,
--- whose FileType has already fired.
-vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "BufWinEnter" }, {
-  group = vim.api.nvim_create_augroup("autopairs_go_quotes", { clear = true }),
-  callback = function(args)
-    map_go_quotes(args.buf)
-  end,
-})
-map_go_quotes(vim.api.nvim_get_current_buf())
-
--- LuaSnip
-ls.setup({
-  region_check_events = "InsertEnter",
-  history = true,
-  enable_autosnippets = true,
-  store_selection_keys = "<Tab>",
-})
---- @type LuaSnip.Loaders.LoadOpts
-ls_loader_lua.load({
-  lazy_paths = {
-    vim.fs.joinpath(tostring(vim.fn.stdpath("config")), "lua", "luasnippets"),
-  },
-  fs_event_providers = {
-    libuv = true,
-  },
-})
-
--- vim.api.nvim_create_autocmd('User', {
---   pattern = 'BlinkCmpMenuOpen',
---   callback = function()
---     require("copilot.suggestion").dismiss()
---     vim.b.copilot_suggestion_hidden = true
---     vim.b.copilot_suggestion_auto_trigger = false
---   end,
--- })
---
--- vim.api.nvim_create_autocmd('User', {
---   pattern = 'BlinkCmpMenuClose',
---   callback = function()
---     vim.b.copilot_suggestion_hidden = false
---   end,
--- })
+-- Safety net for the warmup-abort race: plugins/luasnip.lua defers its
+-- snippet-dir scan to the warmup's luasnip-snippets tick when a warmup is
+-- mid-flight, and an insert landing between those ticks aborts the warmup
+-- with the scan still pending. This config ends both load chains (the
+-- warmup's terminal tick and the lazy InsertEnter dependency chain), and
+-- the loader is idempotent, so exactly one scan happens on every path.
+require("plugins.luasnip").load_snippets()
 
 ---@type blink.cmp.Config
 blink.setup({
@@ -187,7 +43,7 @@ blink.setup({
       snippets = {
         name = "LuaSnip",
         module = "blink.cmp.sources.snippets",
-        score_offset = 300, -- receives a -3 from top level snippets.score_offset
+        score_offset = 100, -- receives a -3 from top level snippets.score_offset
         async = true,
         opts = {
           use_show_condition = true, -- Whether to use show_condition for filtering snippets
@@ -198,7 +54,7 @@ blink.setup({
       copilot = {
         name = "copilot",
         module = "blink-copilot",
-        score_offset = 100,
+        score_offset = 300,
         async = true,
         -- Same restriction the old cmp entry_filter enforced: in Go buffers,
         -- only offer Copilot on comment lines or inside fmt.Errorf format
@@ -217,64 +73,32 @@ blink.setup({
           kind_hl = false,
           debounce = 200,
           auto_refresh = {
-            backward = false,
-            forward = false,
+            backward = true,
+            forward = true,
           },
         },
       },
       lazydev = {
         name = "LazyDev",
         module = "lazydev.integrations.blink",
-        score_offset = 500,
+        score_offset = 600,
         async = true,
       },
     },
     per_filetype = {
-      -- codecompanion registers its own blink source/filetype mapping at
-      -- runtime (providers/completion/blink/setup.lua) -- do not list it here.
-      go = {
-        "lsp",
-        "snippets",
-        "copilot",
-        "path",
-        "buffer",
-      },
-      lua = {
-        "lsp",
-        "lazydev",
-        "snippets",
-        "path",
-        "buffer",
-        inherit_defaults = false,
-      },
-      sh = {
-        "lsp",
-        "snippets",
-        "path",
-        "buffer",
-        inherit_defaults = false,
-      },
-      snacks_picker_input = {
-        "path",
-        "buffer",
-        inherit_defaults = false,
-      },
+      go = { "copilot", inherit_defaults = true },
+      lua = { "lazydev", inherit_defaults = true },
+      python = { "copilot", inherit_defaults = true },
+      rust = { "copilot", inherit_defaults = true },
+      yaml = { "copilot", inherit_defaults = true },
+
+      snacks_picker_input = { "path", "buffer" },
     },
-    ---@param ctx blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
+    ---@param _ blink.cmp.Context Minimum number of characters in the keyword to trigger all providers
     ---@return number
-    min_keyword_length = function(ctx)
-      _ = ctx
+    min_keyword_length = function(_)
       return 1
     end,
-    -- transform_items = function(_, items)
-    --   -- return items
-    --   return vim.tbl_filter(
-    --     function(item)
-    --       return item.kind ~= require("blink.cmp.types").CompletionItemKind.Snippet
-    --     end,
-    --     items
-    --   )
-    -- end,
   },
   keymap = {
     preset = "none",
@@ -289,6 +113,34 @@ blink.setup({
     ["<C-n>"] = { "select_next", "fallback_to_mappings" },
     ["<C-b>"] = { "scroll_documentation_up", "fallback" },
     ["<C-f>"] = { "scroll_documentation_down", "fallback" },
+    -- wheel events land on the window under the POINTER, which after typing
+    -- is the menu/main buffer, not the docs float -- so trackpad scrolling
+    -- "did nothing" unless the pointer happened to hover the docs. While the
+    -- docs window is open, route wheel events to it (1-line steps: kitty
+    -- fans a trackpad gesture into many events) and consume them even when
+    -- the docs are already at that edge -- scroll_documentation_* returns
+    -- false there, and falling through scrolled the main buffer under the
+    -- open menu. fallback restores normal wheel behavior once docs close.
+    ["<ScrollWheelUp>"] = {
+      function(cmp)
+        if not cmp.is_documentation_visible() then
+          return false
+        end
+        cmp.scroll_documentation_up(1)
+        return true
+      end,
+      "fallback",
+    },
+    ["<ScrollWheelDown>"] = {
+      function(cmp)
+        if not cmp.is_documentation_visible() then
+          return false
+        end
+        cmp.scroll_documentation_down(1)
+        return true
+      end,
+      "fallback",
+    },
     ["<C-k>"] = { "snippet_forward", "show_signature", "hide_signature", "fallback" },
   },
   snippets = {
@@ -340,7 +192,7 @@ blink.setup({
     menu = {
       enabled = true,
       min_width = 40,
-      max_height = 50,
+      max_height = 100,
       -- border inherits vim.o.winborder
       winblend = 0,
       winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
@@ -365,8 +217,17 @@ blink.setup({
         gap = 1, -- Gap between columns
         treesitter = { "lsp" }, -- Use treesitter to highlight the label text for the given list of sources
         columns = { -- Components to render, grouped by column
-          { "label", "label_description", gap = 2 },
-          { "kind_icon", "kind", "source_name", gap = 2 },
+          {
+            "label",
+            "label_description",
+            gap = 2,
+          },
+          {
+            "kind_icon",
+            "kind",
+            "source_name",
+            gap = 2,
+          },
         },
         components = {
           kind_icon = {
@@ -386,7 +247,10 @@ blink.setup({
             end,
           },
           label = {
-            width = { fill = true, max = 60 },
+            width = {
+              fill = true,
+              max = 60,
+            },
             -- rust-analyzer carries the import hint in label_detail, so the
             -- two run together as `type_id()(use std::any::Any)`. Separate
             -- them; the highlight offsets below skip the two-space separator.
@@ -437,13 +301,6 @@ blink.setup({
             end,
             highlight = "BlinkCmpSource",
           },
-          source_id = {
-            width = { max = 30 },
-            text = function(ctx)
-              return ctx.source_id
-            end,
-            highlight = "BlinkCmpSource",
-          },
         },
       },
     },
@@ -452,10 +309,6 @@ blink.setup({
       auto_show_delay_ms = 500, -- Delay before showing the documentation window
       update_delay_ms = 50, -- Delay before updating the documentation window when selecting a new item, while an existing item is still visible
       treesitter_highlighting = true, -- Whether to use treesitter highlighting, disable if you run into performance issues
-      -- Draws the item in the documentation window, by default using an internal treesitter based implementation
-      draw = function(opts)
-        opts.default_implementation()
-      end,
       window = {
         min_width = 10,
         max_width = 80,

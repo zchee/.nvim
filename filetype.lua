@@ -17,9 +17,14 @@ end
 -- through to the remaining rules.
 local readme_filetypes = { md = "markdown", rst = "rst" }
 
+-- Metal Shading Language. Unmapped, these fell through to scripts.vim,
+-- which sees the leading #include and guesses "conf" -- no Tree-sitter
+-- and a "# %s" commentstring for a C++-derived language. The name has to
+-- be its own filetype rather than an alias for cpp: lsp/clangd.lua leaves
+-- metal out of its filetypes on purpose, since upstream clangd parses a
+-- shader as C.
 vim.filetype.add({
   extension = {
-    s = require("filetypes.goasm").detect,
     ["code-workspace"] = "json",
     actiongrap = "json",
     alfredappearance = "json",
@@ -38,6 +43,7 @@ vim.filetype.add({
     gcloudignore = "gitignore",
     go = "go",
     go2 = "go",
+    gotmpl = "helm", -- helmfile templated values (vim-helm ftdetect port)
     gunk = "gunk.go",
     hla = "hla",
     hujson = "hujson",
@@ -47,13 +53,7 @@ vim.filetype.add({
     ispc = "ispc",
     jsonc = "jsonc",
     jsonl = "jsonl",
-    -- Metal Shading Language. Unmapped, these fell through to scripts.vim,
-    -- which sees the leading #include and guesses "conf" -- no Tree-sitter
-    -- and a "# %s" commentstring for a C++-derived language. The name has to
-    -- be its own filetype rather than an alias for cpp: lsp/clangd.lua leaves
-    -- metal out of its filetypes on purpose, since upstream clangd parses a
-    -- shader as C.
-    metal = "metal",
+    metal = "metal", -- Metal Shading Language. Unmapped, these fell through to scripts.vim, which sees the leading #include and guesses "conf" -- no Tree-sitter
     mm = "objcpp",
     modulemap = "modulemap",
     pen = "json",
@@ -62,6 +62,7 @@ vim.filetype.add({
     pyx = "python",
     replay = "json",
     rl = "ragel",
+    s = require("filetypes.goasm").detect,
     sb = "scheme",
     slide = "goslide",
     sql = "mysql",
@@ -69,8 +70,6 @@ vim.filetype.add({
     swigcxx = "swig",
     tbd = "yaml",
     tfstate = "json", -- Terraform state
-    -- helmfile templated values (vim-helm ftdetect port)
-    gotmpl = "helm",
     tmpl = "gotmpl",
     tpl = "gotmpl",
     ts = "typescript",

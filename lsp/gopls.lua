@@ -449,7 +449,6 @@ return {
       mcpTools = vim.empty_dict(),
       renameMovesSubpackages = true,
       fileWatcher = "fsnotify", -- "off", "fsnotify", "poll"
-      moveType = true,
       moveDeclaration = true,
       -- Only the gopls-test-tmpl branch of ~/go/src/golang.org/x/tools reads
       -- this; upstream gopls answers it with "Invalid settings: unexpected setting".

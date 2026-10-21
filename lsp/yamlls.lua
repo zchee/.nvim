@@ -24,11 +24,11 @@ return {
       yamlVersion = 1.2,
       format = {
         enable = true,
-        singleQuote = false,
+        singleQuote = true,
         bracketSpacing = true,
         trailingComma = true,
         proseWrap = "preserve",
-        printWidth = 150,
+        printWidth = 200,
       },
       validate = true,
       hover = true,

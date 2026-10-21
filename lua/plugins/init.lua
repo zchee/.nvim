@@ -835,8 +835,11 @@ return {
     {
       {
         "MeanderingProgrammer/render-markdown.nvim",
-        ft = {
-          "markdown",
+        -- ft = {
+        --   "markdown",
+        -- },
+        cmd = {
+          "RenderMarkdown",
         },
         dependencies = {
           "nvim-treesitter/nvim-treesitter",

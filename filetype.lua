@@ -64,6 +64,7 @@ vim.filetype.add({
     rl = "ragel",
     s = require("filetypes.goasm").detect,
     sb = "scheme",
+    sh = "bash",
     slide = "goslide",
     sql = "mysql",
     swig = "swig",

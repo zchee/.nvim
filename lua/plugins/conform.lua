@@ -366,8 +366,6 @@ return {
         "2",
         "--binary-next-line",
         "--case-indent",
-        "--space-redirects",
-        "--keep-padding",
       },
     },
     stylua = {
